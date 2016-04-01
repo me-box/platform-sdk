@@ -1,4 +1,7 @@
-import { REQUEST_NODES, RECEIVE_NODES } from '../constants/ActionTypes';
+import React from 'react';
+import { render } from 'react-dom';
+
+import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE } from '../constants/ActionTypes';
 import fetch from 'isomorphic-fetch'
 
 export function requestNodes() {
@@ -7,14 +10,31 @@ export function requestNodes() {
   }
 }
 
+export function requestCode(){
+  return {
+    type: REQUEST_CODE,
+  }
+}
+
 export function receiveNodes(json) {
-  console.log(json);
+
+  require.ensure(["../nodes/b"], function(require){
+    var Node = require('../nodes/b');
+    //console.log("node is");
+    //console.log(Node);
+    //console.log(document.getElementById('additional'))
+    //console.log(React.createElement(Node));
+    console.log(Node);
+    render(React.createElement(Node.default),  document.getElementById('additional'));
+  });
+
   return {
     type: RECEIVE_NODES,
     nodes: json,
     receivedAt: Date.now()
   }
 }
+
 
 export function fetchNodes() {
 
