@@ -4,6 +4,13 @@ import { render } from 'react-dom';
 import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE } from '../constants/ActionTypes';
 import fetch from 'isomorphic-fetch'
 
+/* bunch of stuff - needs to be in dynamic bit! */
+
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import * as CounterActions from '../actions/CounterActions';
+import {register} from '../store/configureStore';
+
 export function requestNodes() {
   return {
     type: REQUEST_NODES,
@@ -18,14 +25,18 @@ export function requestCode(){
 
 export function receiveNodes(json) {
 
-  require.ensure(["../nodes/b"], function(require){
-    var Node = require('../nodes/b');
-    //console.log("node is");
-    //console.log(Node);
-    //console.log(document.getElementById('additional'))
-    //console.log(React.createElement(Node));
-    console.log(Node);
-    render(React.createElement(Node.default),  document.getElementById('additional'));
+  require.ensure(["../nodes/b/b"], function(require){
+    var BNode = require('../nodes/b/b');
+    
+    //export function injectAsyncReducer(store, name, asyncReducer) {
+     // store.asyncReducers[name] = asyncReducer;
+      //store.replaceReducer(createReducer(store.asyncReducers));
+    //}
+
+    //perhaps pass in the store here and have the element do what it needs to do to register its reducer?
+    let element = React.createElement(BNode.default, {data:'tom'});
+    console.log(element);
+    render(element,  document.getElementById('additional'));
   });
 
   return {
@@ -35,6 +46,25 @@ export function receiveNodes(json) {
   }
 }
 
+
+export function fetchComponent(store){
+
+    return function(dispatch){
+     
+      require.ensure(["../nodes/b/b"], function(require){
+          var BNode = require('../nodes/b/b');
+          console.log(BNode);
+          
+          let elementprops = {
+              register: register.bind(this, store),
+              dispatch: dispatch,
+          }
+      
+          let element = React.createElement(BNode.default, {...elementprops});
+          render(element,  document.getElementById('additional'));
+      });
+    }
+}
 
 export function fetchNodes() {
 
