@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE } from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED } from '../constants/ActionTypes';
 import fetch from 'isomorphic-fetch'
 
 /* bunch of stuff - needs to be in dynamic bit! */
@@ -20,6 +20,16 @@ export function requestNodes() {
 export function requestCode(){
   return {
     type: REQUEST_CODE,
+  }
+}
+
+export function dropNode(nt, def, x, y){
+  return {
+    type: NODE_DROPPED,
+    nt,
+    def,
+    x,
+    y,
   }
 }
 
@@ -54,7 +64,7 @@ export function fetchComponent(store){
       require.ensure(["../nodes/b/b"], function(require){
           var BNode = require('../nodes/b/b');
           console.log(BNode);
-          
+
           let elementprops = {
               register: register.bind(this, store),
               dispatch: dispatch,

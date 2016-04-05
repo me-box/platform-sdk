@@ -4,3 +4,4 @@ export const REQUEST_NODES = 'REQUEST_NODES';
 export const RECEIVE_NODES = 'RECEIVE_NODES';
 export const TEST_ACTION = 'TEST_ACTION';
 export const REGISTER_TYPE = 'REGISTER_TYPE';
+export const NODE_DROPPED = 'NODE_DROPPED';
