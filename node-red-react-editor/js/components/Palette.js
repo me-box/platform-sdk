@@ -1,14 +1,46 @@
 import React from 'react';
 import spinner from '../../style/images/spin.svg';
+import className from 'classnames';
+import Node from './Node';
 
 class Palette extends React.Component {
-	render() {
-	    console.log("the nodes in the palette are");
-        console.log(this.props.nodes);
+	
+    constructor(props){
+        super(props);
+        this._escapeNodeType = this._escapeNodeType.bind(this);
+    }
+
+    _escapeNodeType(nt) {
+        return nt.replace(" ","_").replace(".","_").replace(":","_");
+    }
+
+    render() {
+	    
+
+        let spinnerClassname = className({
+            'palleteSpinner': true,
+            'hide': this.props.types.length > 0,
+        });
+
+        //this should be categories, i.e. one level up!
         
+        let nodes = this.props.types.map((type)=>{
+            let nodeprops = {
+                nt: type.name,
+                def: type.def,
+                key: type.name,
+            }
+            return <Node {...nodeprops}/>
+        });
+
+        let palettecontainerstyle={
+            display: this.props.types.length > 0 ? 'block':'none',
+        }
+
 		return( 
 			<div id="palette">
-        		<img src={spinner} className="palette-spinner hide"/>
+        		<img src={spinner} className={spinnerClassname}/>
+
         		<div id="palette-search">
             		<i className="fa fa-search"></i>
             		<input id="palette-search-input" type="text" data-i18n="[placeholder]palette.filter"/>
@@ -16,7 +48,10 @@ class Palette extends React.Component {
             			<i className="fa fa-times"></i>
             		</a>
         		</div>
-        		<div id="palette-container" className="palette-scroll"></div>
+        		<div id="palette-container" className="palette-scroll" style={palettecontainerstyle}>
+                    {nodes}
+
+                </div>
         		<div id="palette-footer">
             		<a className="palette-button" id="palette-collapse-all" href="#">
             			<i className="fa fa-angle-double-up"></i>

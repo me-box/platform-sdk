@@ -1,4 +1,4 @@
-import { REQUEST_NODES, RECEIVE_NODES } from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES} from '../constants/ActionTypes';
 
 export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[]}, action) {
   switch (action.type) {

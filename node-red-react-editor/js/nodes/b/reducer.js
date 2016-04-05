@@ -1,6 +1,6 @@
 import { TEST_ACTION } from '../../constants/ActionTypes';
 
-export  function bnodereducer(state = 0, action) {
+export  function reducer(state = 0, action) {
   switch (action.type) {
 	  case TEST_ACTION:
 	  	console.log("ok I have seen a test action!");

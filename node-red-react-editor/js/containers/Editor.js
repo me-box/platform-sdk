@@ -5,7 +5,7 @@ import {fetchComponent}  from '../actions/NodeActions';
 import Palette from '../components/Palette';
 import Workspace from '../components/Workspace';
 import Sidebar from '../components/Sidebar';
-
+import DragDropContainer from './DragDropContainer';
 import '../../style/sass/style.scss';
 import '../../style/font-awesome/css/font-awesome.min.css';
 import '../../style/bootstrap/css/bootstrap.min.css';
@@ -36,10 +36,13 @@ class Editor extends Component {
 
   render() {
   	const {store} = this.context;
-   	const { nodes, dispatch } = this.props;
+   	const { types, dispatch } = this.props;
    	return (<div onClick={bindActionCreators(fetchComponent.bind(this,store), dispatch)}> //need to bind tsore too!
 	    		<div id="main-container-old" className="sidebar-closed-old ">
-	    			<Palette nodes={nodes}/>
+	    			<DragDropContainer>
+	    				<Palette types={types}/>
+	    				<Workspace />
+	    			</DragDropContainer>
 	    		</div>
 	    	</div>);
   
@@ -48,7 +51,7 @@ class Editor extends Component {
 
 function select(state) {
   return {
-    nodes: state.nodes
+    types: state.types
   };
 }
 

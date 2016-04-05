@@ -49,9 +49,12 @@
     "webpack-dev-server": "^1.8.2"
   },
   "dependencies": {
+    "classnames": "^2.2.3",
     "file-loader": "^0.8.5",
     "isomorphic-fetch": "^2.2.1",
     "react": "^0.14.8",
+    "react-dnd": "^2.1.4",
+    "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^0.14.6",
     "react-redux": "^4.1.0",
     "react-router": "^2.0.1",
