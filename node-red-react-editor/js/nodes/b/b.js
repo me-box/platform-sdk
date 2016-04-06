@@ -19,6 +19,7 @@ class BNode extends Component {
 		this.registerType('sample',	
 							{	
 						        category: 'input',      // the palette category
+						        color: '#a6bbcf',
 						        defaults: {             // defines the editable properties of the node
 						            name: {value:""},   //  along with default values.
 						            topic: {value:"", required:true}

@@ -16,9 +16,7 @@ class Palette extends React.Component {
 
     render() {
 	    
-        console.log("ok have the props");
-        console.log(this.props);
-
+        
         let spinnerClassname = className({
             'palleteSpinner': true,
             'hide': this.props.types.length > 0,

@@ -14,6 +14,7 @@ function createActiveNode(nt, def, x, y){
     outputs: _def.outputs,
     changed: true,
     selected: true,
+    dirty: true,
     w: NODE_WIDTH,
     h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
     x: x,

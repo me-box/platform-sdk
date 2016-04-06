@@ -28,8 +28,8 @@ export function dropNode(nt, def, x, y){
     type: NODE_DROPPED,
     nt,
     def,
-    x,
-    y,
+    x: x-180,
+    y: y- 35,
   }
 }
 
@@ -45,7 +45,7 @@ export function receiveNodes(json) {
 
     //perhaps pass in the store here and have the element do what it needs to do to register its reducer?
     let element = React.createElement(BNode.default, {data:'tom'});
-    console.log(element);
+ 
     render(element,  document.getElementById('additional'));
   });
 
@@ -63,7 +63,7 @@ export function fetchComponent(store){
      
       require.ensure(["../nodes/b/b"], function(require){
           var BNode = require('../nodes/b/b');
-          console.log(BNode);
+        
 
           let elementprops = {
               register: register.bind(this, store),

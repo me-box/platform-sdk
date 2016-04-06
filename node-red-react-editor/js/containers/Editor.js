@@ -39,11 +39,9 @@ class Editor extends Component {
   	
   	const {store} = this.context;
    	const { types, dispatch } = this.props;
-
-   	
    	const paletteprops =  {
   		types,
-  		dropNode: bindActionCreators(dropNode, dispatch)
+  		dropNode: bindActionCreators(dropNode, dispatch),
   	}
    	return (<div onClick={bindActionCreators(fetchComponent.bind(this,store), dispatch)}> //need to bind tsore too!
 	    		<div id="main-container-old" className="sidebar-closed-old ">
