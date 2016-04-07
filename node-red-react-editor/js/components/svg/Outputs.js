@@ -1,6 +1,6 @@
 
 import React, { Component, PropTypes } from 'react';
-import d3 from 'd3';
+import {range} from '../../utils/utils';
 import { bindActionCreators } from 'redux';
 import {portMouseUp} from '../../actions/PortMouseActions';
 import {portMouseDown} from '../../actions/PortMouseActions';
@@ -33,7 +33,7 @@ class Outputs extends Component {
           if (drawingPort === d.id){
             wire =  <Wire {...activeLink}/>
           }
-          const outputs = d3.range(numOutputs).map((port, i)=>{
+          const outputs = range(numOutputs).map((port, i)=>{
             const gprops = {
               key: `${d.id}${i}`,
               transform: `translate(${x}, ${(y+13*i)-5})`,
