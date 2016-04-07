@@ -24,3 +24,5 @@ export const NODE_MOUSE_LEAVE =  'NODE_MOUSE_LEAVE';
 
 export const PORT_MOUSE_DOWN = 'PORT_MOUSE_DOWN';
 export const PORT_MOUSE_UP = 'PORT_MOUSE_UP';
+export const PORT_MOUSE_OVER = 'PORT_MOUSE_OVER';
+export const PORT_MOUSE_OUT = 'PORT_MOUSE_OUT';
