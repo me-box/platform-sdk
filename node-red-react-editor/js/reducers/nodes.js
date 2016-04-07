@@ -1,4 +1,4 @@
-import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED} from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
 import { NODE_WIDTH, NODE_HEIGHT} from '../constants/ViewConstants';
 
 function createActiveNode(nt, def, x, y){
@@ -38,7 +38,8 @@ function createActiveNode(nt, def, x, y){
   return node;
 }
 
-export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[]}, action) {
+export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null}, action) {
+  
   switch (action.type) {
 	  
 	  case  REQUEST_NODES:
@@ -61,6 +62,40 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
                             createActiveNode(action.nt, action.def, action.x, action.y)
                           ]
         })
+
+    case MOUSE_UP:
+      return Object.assign({}, state, {
+        draggingNode: null,
+      });
+    
+
+    case NODE_MOUSE_DOWN:
+      
+      return Object.assign({}, state, {
+        draggingNode: action.node.id,
+      })
+
+    case NODE_DOUBLE_CLICKED:
+      return Object.assign({}, state, {
+        draggingNode: null,
+      })
+      return state;
+
+    case MOUSE_MOVE:
+      
+      if (state.draggingNode != null){
+
+        return Object.assign({}, state, {
+            activeNodes:  state.activeNodes.map((node)=>{
+                if (node.id === state.draggingNode ){
+                  node.x = action.x;
+                  node.y = action.y;
+                }
+                return node;
+            })
+        });
+      }
+      return state;
 
 	  default:
 	    return state;

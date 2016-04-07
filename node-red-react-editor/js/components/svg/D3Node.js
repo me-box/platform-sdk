@@ -12,15 +12,22 @@ class D3Node extends Component {
 	
 	constructor(props){
 		super(props);	
-		this._nodeMouseUp =	this._nodeMouseUp.bind(this);
-		this._nodeMouseDown = this._nodeMouseDown.bind(this);
+		this._nodeMouseDown =	this._nodeMouseDown.bind(this);
+		this._nodeDoubleClicked = this._nodeDoubleClicked.bind(this);
 		this._nodeTouchStart = this._nodeTouchStart.bind(this);
 		this._nodeTouchEnd = this._nodeTouchEnd.bind(this);
-		this._nodeMouseOver = this._nodeMouseOver.bind(this);
-		this._nodeMouseOut = this._nodeMouseOut.bind(this);
+		this._nodeMouseEnter = this._nodeMouseEnter.bind(this);
+		this._nodeMouseExit = this._nodeMouseExit.bind(this);
 	}
 
-	_nodeMouseUp(d,e){
+    shouldComponentUpdate(nextProps, nextState){
+        return true;//this.props.x != nextProps.x && this.props.y != nextProps.y;
+    }
+
+	_nodeMouseDown(d,e){
+       
+        this.props.nodeMouseDown(d,e);
+        //this.props.nodeMouseUp(d,e);
 		/*if (dblClickPrimed && mousedown_node == d && clickElapsed > 0 && clickElapsed < 750) {
             mouse_mode = RED.state.DEFAULT;
             if (d.type != "subflow") {
@@ -36,11 +43,42 @@ class D3Node extends Component {
         portMouseUp(d, direction, 0);*/
 	}
 	
-	_nodeMouseDown(d,e){
-		/*
-		focusView();
-    
-        if (mouse_mode == RED.state.IMPORT_DRAGGING) {
+
+    _nodeDoubleClicked(d,e){
+         console.log("double clicked!")
+        //this.props.nodeDoubleClicked(d,e);
+        /*mousedown_node = d;
+        var i;
+        if (d3.event.button != 2) {
+            mouse_mode = RED.state.MOVING;
+            var mouse = d3.touches(this)[0]||d3.mouse(this);
+            mouse[0] += d.x-d.w/2;
+            mouse[1] += d.y-d.h/2;
+            for (i=0;i<moving_set.length;i++) {
+                moving_set[i].ox = moving_set[i].n.x;
+                moving_set[i].oy = moving_set[i].n.y;
+                moving_set[i].dx = moving_set[i].n.x-mouse[0];
+                moving_set[i].dy = moving_set[i].n.y-mouse[1];
+            }
+            mouse_offset = d3.mouse(document.body);
+            if (isNaN(mouse_offset[0])) {
+                mouse_offset = d3.touches(document.body)[0];
+            }
+        }
+        d.dirty = true;
+        //updateSelection();
+        redraw();
+        d3.event.stopPropagation();*/
+    }
+
+	_nodeMouseDownORIGINAL(d,e){
+
+         /*focusView();
+        var touch0 = d3.event;
+        var pos = [touch0.pageX,touch0.pageY];
+        //RED.touch.radialMenu.show(d3.select(this),pos);
+        */
+        /*if (mouse_mode == RED.state.IMPORT_DRAGGING) {
             RED.keyboard.remove(27);
 
             if (activeSpliceLink) {
@@ -72,16 +110,19 @@ class D3Node extends Component {
             d3.event.stopPropagation();
             return;
         }
+        */
+        
         mousedown_node = d;
+        /*
         var now = Date.now();
         clickElapsed = now-clickTime;
         clickTime = now;
 
         dblClickPrimed = (lastClickNode == mousedown_node);
         lastClickNode = mousedown_node;
-
+        */
         var i;
-
+        /*
         if (d.selected && (d3.event.ctrlKey||d3.event.metaKey)) {
             mousedown_node.selected = false;
             for (i=0;i<moving_set.length;i+=1) {
@@ -106,7 +147,7 @@ class D3Node extends Component {
                 mousedown_node.selected = true;
                 moving_set.push({n:mousedown_node});
             }
-            selected_link = null;
+            selected_link = null;*/
             if (d3.event.button != 2) {
                 mouse_mode = RED.state.MOVING;
                 var mouse = d3.touches(this)[0]||d3.mouse(this);
@@ -123,14 +164,15 @@ class D3Node extends Component {
                     mouse_offset = d3.touches(document.body)[0];
                 }
             }
-        }
+        //}*/
         d.dirty = true;
-        updateSelection();
+        //updateSelection();
         redraw();
-        d3.event.stopPropagation();*/
+        d3.event.stopPropagation();
 	}
 	
 	_nodeTouchStart(d,e){
+        this.props.nodeTouchStart(d,e);
 		/*var obj = d3.select(this);
         var touch0 = d3.event.touches.item(0);
         var pos = [touch0.pageX,touch0.pageY];
@@ -143,6 +185,7 @@ class D3Node extends Component {
 	}
 	
 	_nodeTouchEnd(d,e){
+        this.props.nodeTouchEnd(d,e);
 		/*clearTimeout(touchStartTime);
         touchStartTime = null;
         if  (RED.touch.radialMenu.active()) {
@@ -152,19 +195,81 @@ class D3Node extends Component {
         nodeMouseUp.call(this,d);*/
 	}
 	
-	_nodeMouseOver(d,e){
+	_nodeMouseEnter(d,e){
+        this.props.nodeMouseOver(d,e);
+       
 		/*if (mouse_mode === 0) {
                                     var node = d3.select(this);
                                     node.classed("node_hovered",true);
                                 }*/
 	}
 
-	_nodeMouseOut(d,e){
+	_nodeMouseExit(d,e){
+         this.props.nodeMouseOut(d,e);
  		/*var node = d3.select(this);
         node.classed("node_hovered",false);*/
 	}
 
-	render(){
+    render(){
+
+        
+        const {d} = this.props;
+        const w = NODE_WIDTH;
+        const h = Math.max(NODE_HEIGHT,(d.outputs||0) * 15);
+
+        let badge,icon, inputs, outputs;
+
+        if (d._def.badge) {
+            badge = <Badge d={d}/>
+        }
+
+        if (d._def.icon){
+            icon = <Icon d={d}/>
+        }
+
+        if (d._def.inputs){
+            inputs = <Inputs d={d} />
+        }
+
+        if (d._def.outputs){
+            outputs = <Outputs d={d}/>
+        }
+
+        const mainrectclass= className({
+            node: true,
+            unknown: d.type == "unknown",
+            node_selected: d.selected,
+            node_highlighted: d.highlighted,
+        });
+
+        const mainrectprops = {
+            rx: 5,
+            ry: 5,
+            fill:  d._def.color,
+            width: w,
+            height: h,
+            onDoubleClick: this._nodeDoubleClicked.bind(this,d),
+            onMouseDown: this._nodeMouseDown.bind(this,d),
+
+        };
+
+        const mainrect =  <rect className={mainrectclass} {...mainrectprops}></rect>
+        let gprops = {
+            id: this.props.id,
+            transform: `translate(${(d.x-d.w/2)},${(d.y-d.h/2)})`,
+        }
+
+        return <g {...gprops}>
+                    {mainrect}
+                    {badge}
+                    {icon}
+                    {inputs}
+                    {outputs}
+                </g>
+        
+    }
+
+	renderold(){
 		let d = Object.assign({},this.props);
 
 		let l = d._def.label;
@@ -198,7 +303,7 @@ class D3Node extends Component {
         }
 
         if (d._def.outputs){
-            outputs = <Outputs d={d} />
+            outputs = <Outputs d={d}  />
         }
 
 		const mainrectclass= className({

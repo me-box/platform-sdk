@@ -17,9 +17,11 @@ module.exports = {
     },
 
     //&name=./img/[name].[ext]
+    //annot uglify as this craps up dynamic module loading it seems
     module: {
         loaders: [
-                { test: /\.js$/, loaders: ['uglify', 'react-hot', 'babel'], exclude: /node_modules/ },
+                { test: /\.js$/, loaders: ['react-hot', 'babel'], exclude: /node_modules/ },
+                //{ test: /\.js$/, loaders: ['babel'], exclude: /node_modules/ },
                 { test: /\.scss$/, loaders: ['style', 'css', 'sass'] },
                 { test: /\.css$/, loaders: ['style', 'css'] },
                 { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192&name=./img/[name].[ext]'},

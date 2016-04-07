@@ -33,6 +33,13 @@ export function dropNode(nt, def, x, y){
   }
 }
 
+export function selectNode(node){
+  return {
+    type: NODE_SELECTED,
+    node,
+  }
+}
+
 export function receiveNodes(json) {
 
   require.ensure(["../nodes/b/b"], function(require){
