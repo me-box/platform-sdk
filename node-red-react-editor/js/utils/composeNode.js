@@ -29,13 +29,12 @@ export default function composeNode(Component, nt, config){
     
            const dialogueprops = {
               cancel: this.nodeCancelClicked,
-              key: (1+Math.random()*4294967295).toString(16),
+              key: nt,
            }
           
            const componentprops = {
               register: this.props.register, 
               dispatch: dispatch,
-              key: (1+Math.random()*4294967295).toString(16),
            }
 
            if (selected && selected.type === nt){

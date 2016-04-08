@@ -18,10 +18,17 @@ class Editor extends Component {
   	super(props)
   } 
 
+  componentDidMount(){
+  	console.log("LOADING NDOES");
+  	//TODO: check state to ensure only happens once!
+  	const {store} = this.context;
+  	bindActionCreators(fetchNodes.bind(this,store), this.props.dispatch)()
+  }
+
   render() {
 
   	
-  	const {store} = this.context;
+  	
    	const { types, dispatch } = this.props;
    	const paletteprops =  {
   		types,
@@ -29,7 +36,7 @@ class Editor extends Component {
   	}
 
 
-   	return (<div onClick={bindActionCreators(fetchNodes.bind(this,store), dispatch)}> 
+   	return (<div> 
 	    		<div id="main-container-old" className="sidebar-closed-old ">
 	    			<DragDropContainer>
 	    				<Palette {...paletteprops}/>

@@ -72,7 +72,7 @@ export function fetchComponent(store){
 }
 
 export function loadNodes(json, store, dispatch){
-   console.log("loading nodes");
+   console.log("loading nodes!");
    console.log(json);
 
    json.nodes.forEach((node)=>{
@@ -128,6 +128,7 @@ export function fetchNodes(store) {
       })
       .then(response => response.json())
       .then(function(json){
+          console.log("-----> fetching again!! <-----------");
           loadNodes(json, store, dispatch);
           return json;
       }).then(function(json){
