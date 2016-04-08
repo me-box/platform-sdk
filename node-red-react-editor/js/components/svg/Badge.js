@@ -16,6 +16,10 @@ export default class Badge extends Component {
   render() {
           const {d} = this.props;
           
+          if (!d._def.badge){   
+              return null;
+          }
+
           const badgeprops = {
             rx: 5,
             ry: 5,

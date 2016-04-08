@@ -16,6 +16,11 @@ module.exports = {
         filename: '[name].js'
     },
 
+    "resolve": {
+        "alias": {
+           "../nodes/b/b":"../nodes/b/b",
+        }
+    },
     //&name=./img/[name].[ext]
     //annot uglify as this craps up dynamic module loading it seems
     module: {

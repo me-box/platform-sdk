@@ -17,6 +17,12 @@ module.exports = {
         filename: 'static/[name].js'
     },
 
+     "resolve": {
+        "alias": {
+           "nodeb":"../nodes/b/b",
+        }
+    },
+
     //&name=./img/[name].[ext]
     module: {
         loaders:[

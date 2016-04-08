@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {DragLayer} from 'react-dnd';
 import { connect } from 'react-redux';
 import D3Node from './svg/D3Node';
+import Link from './svg/Link';
+
 import * as NodeMouseActions from '../actions/NodeMouseActions';
 import * as MouseActions from '../actions/MouseActions';
 import { bindActionCreators } from 'redux';
@@ -33,7 +35,7 @@ class Chart extends Component {
   }
 
   render() {
-    const { nodes, item, itemType, currentOffset, isDragging, dispatch } = this.props;
+    const { nodes, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
     
     let chartstyle = {
     	left:180,
@@ -49,6 +51,15 @@ class Chart extends Component {
     	return <D3Node {...d3nodeprops}/>
     })
 
+    let connectors = links.map((link, i)=>{
+    	const linkprops = {
+    		key: `${i}${link.from.id}${link.to.id}`,
+    		from: link.from,
+    		to: link.to,
+    	}
+    	return <Link {...linkprops} />
+    })
+
     let chartprops = {
     	onMouseMove: this._onMouseMove,
     	onMouseUp: this.mouseUp,
@@ -58,6 +69,7 @@ class Chart extends Component {
     			<div mousecontainer {...chartprops} width="1000" height="800">
     			<svg id="svgchart" width='1000' height='800'>
     				{d3nodes}
+    				{connectors}
     			</svg>
     			</div>
     	   </div>
@@ -67,7 +79,8 @@ class Chart extends Component {
 
 function select(state) {
   return {
-    nodes: state.nodes.activeNodes
+    nodes: state.nodes.activeNodes,
+    links: state.ports.links,
   };
 }
 

@@ -1,9 +1,19 @@
-import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
-import { NODE_WIDTH, NODE_HEIGHT} from '../constants/ViewConstants';
+import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_CANCEL_CLICKED, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
+import { NODE_WIDTH, NODE_HEIGHT, GRID_SIZE} from '../constants/ViewConstants';
+import {calculateTextWidth} from '../utils/utils';
 
 function createActiveNode(nt, def, x, y){
   
-  const _def = Object.assign({},def);
+  let _def = Object.assign({},def);
+
+  _def.label  = _def.label ? _def.label : "";
+
+  try {
+        _def.label  = (typeof _def.label  === "function" ? _def.label.call(_def) : _def.label ) || _def.label ;
+  } catch(err) {
+        console.log(`Definition error: ${d.type}.label`,err);
+        _def.label = nt;
+  }
 
   let node = {
     id:(1+Math.random()*4294967295).toString(16),
@@ -15,7 +25,7 @@ function createActiveNode(nt, def, x, y){
     changed: true,
     selected: true,
     dirty: true,
-    w: NODE_WIDTH,
+    w: Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(_def.label, "node_label", 50)+(_def.inputs>0?7:0))/GRID_SIZE))),
     h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
     x: x,
     y: y,
@@ -38,7 +48,7 @@ function createActiveNode(nt, def, x, y){
   return node;
 }
 
-export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null}, action) {
+export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null}, action) {
   
   switch (action.type) {
 	  
@@ -76,8 +86,10 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       })
 
     case NODE_DOUBLE_CLICKED:
+     
       return Object.assign({}, state, {
         draggingNode: null,
+        selected: action.node,
       })
       return state;
 
@@ -96,6 +108,12 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
         });
       }
       return state;
+
+    case NODE_CANCEL_CLICKED:
+      return Object.assign({}, state, {
+        selected: null,
+      })
+      
 
 	  default:
 	    return state;

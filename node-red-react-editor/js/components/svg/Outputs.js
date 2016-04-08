@@ -23,14 +23,20 @@ class Outputs extends Component {
   }
 
   render() {
+          
 
           const {drawingPort, activeLink, d} = this.props;
+
+          if (!d._def.outputs){
+            return null;
+          }
+          
           const numOutputs = d.outputs || 1;
           const y = (d.h/2)-((numOutputs-1)/2)*13;
           const x = d.w - 5;
           let wire;
 
-          if (drawingPort === d.id){
+          if (drawingPort && drawingPort.id === d.id){
             wire =  <Wire {...activeLink}/>
           }
           const outputs = range(numOutputs).map((port, i)=>{

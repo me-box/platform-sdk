@@ -9,7 +9,10 @@ export default class Icon extends Component {
 
   render() {
        const {d} = this.props;
-      
+         
+        if (!d._def.icon){   
+          return null;
+        }
         /*
         var img = new Image();
         img.src = "icons/"+d._def.icon;

@@ -70,6 +70,11 @@ export default class Button extends Component {
         render(){
                 const {d} = this.props;
 
+                
+                if (!d._def.button){   
+                    return null;
+                }
+
                 const buttonClassName = className({
                                 node_button: true,
                                 node_right_button: d.def.align === "right",

@@ -19,6 +19,10 @@ class Inputs extends Component {
 
   render() {
           const {d} = this.props;
+		 
+		  if (!d._def.inputs){   
+            return null;
+          }
 
           const gprops = {
           	transform: `translate(-5,${( (d.h/2)-5)})`,
