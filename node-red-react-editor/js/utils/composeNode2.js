@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import {nodeCancelClicked} from '../actions/NodeMouseActions';
-export default function composeNode2(Component, nt){
+export default function composeNode2(Component, nt, config){
 
 	class Node extends React.Component{
 		
@@ -18,22 +18,7 @@ export default function composeNode2(Component, nt){
 
 	
 		componentDidMount(){
-          this.registerType('sentiment', {
-                  category: 'analysis-function',
-                  color:"#E6E0F8",
-                  defaults: {
-                      name: {value:""},
-                  },
-                  inputs:1,
-                  outputs:1,
-                  icon: "arrow-in.png",
-                  label: function() {
-                      return this.name||"sentiment";
-                  },
-                  labelStyle: function() {
-                      return this.name?"node_label_italic":"";
-                  }
-           });
+          this.registerType(nt, config);
        	}
 		
 
@@ -52,7 +37,7 @@ export default function composeNode2(Component, nt){
               dispatch: dispatch,
            }
           
-           if (selected && selected.type === 'sentiment'){
+           if (selected && selected.type === nt){
 				return <Dialogue>
 						<Component {...this.props} />
 					</Dialogue>
