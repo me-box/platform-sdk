@@ -4,7 +4,7 @@ import {reducer} from './reducer';
 import * as Actions from './actions';
 import composeNode from '../../utils/composeNode';
 
-class Node extends Component {
+class SampleNode extends Component {
 	
 	constructor(props){
 		super(props);
@@ -18,14 +18,15 @@ class Node extends Component {
 		this.props.register("sample", reducer);
 	}
 
+	//<Component  {...componentprops}/>
 	render() {	
-		return <form id="dialog-form" className="form-horizontal"></form> 			
+		return <h1> I am an input node! </h1> 			
 	}
 }
 
 export default composeNode(
 
-	Node, 
+	SampleNode, 
 	
 	'sample',
 	

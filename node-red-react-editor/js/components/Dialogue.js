@@ -9,16 +9,16 @@ class Dialogue extends Component {
 	render(){
 
 		const dialoguestyle = {
-				position: 'absolute',
-				height: 'auto',
-				width: '500px',
-				top: '238px', 
-				left: '476px', 
-				display: 'block',
+			position: 'absolute',
+			height: 'auto',
+			width: '500px',
+			top: '238px', 
+			left: '476px', 
+			display: 'block',
 		}
 
 		const dialogueprops = {
-			key: (1+Math.random()*4294967295).toString(16),
+			//key: this.props.node.id,
 			tabIndex: "-1",
 			role:"dialog",
 			"aria-describedby":"dialog",
@@ -37,15 +37,19 @@ class Dialogue extends Component {
 			zIndex: 90,
 		}
 
+		console.log("ok children are");
+		console.log(this.props.children);
+
+
 		return <div className="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-no-close ui-dialog-buttons ui-draggable ui-resizable" {...dialogueprops} style={dialoguestyle}>
 				 	<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-				 		<span id="ui-id-5" className="ui-dialog-title"> Edit http in node</span>
+				 		<span id="ui-id-5" className="ui-dialog-title">hello</span>
 			 			<button className="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close">
 			 				<span className="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
 			 				<span className="ui-button-text">close</span>
 			 			</button>
 				 	</div>
-				 	<div id="dialog" className="hide ui-dialog-content ui-widget-content" style={dialoguecontentstyle}>
+				 	<div className="hide ui-dialog-content ui-widget-content" style={dialoguecontentstyle}>
 				 		{this.props.children}
 					</div>
 					<div className="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
@@ -67,12 +71,14 @@ class Dialogue extends Component {
 					<div className="ui-resizable-handle ui-resizable-ne" style={handlestyle}></div>
 					<div className="ui-resizable-handle ui-resizable-nw" style={handlestyle}></div>
 				</div>
+
+		
 	}
 }
 
 Dialogue.defaultProps ={
    ok: ()=>{console.warn("no ok callback provided as prop!")},
-   cancel:()=>{console.warn("no cancel callback provided as prop!")}
+   cancel:()=>{console.warn("no cancel callback provided as prop!")},
 }
 
 export default Dialogue

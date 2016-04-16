@@ -76,15 +76,18 @@ export function loadNodes(json, store, dispatch){
    console.log(json);
 
    json.nodes.forEach((node)=>{
-      let n = require(`../nodes/${node}.js`);
+      let n = require(`../nodes/${node.file}.js`);
       let elementprops = {
           register: register.bind(this, store),
           dispatch: dispatch,
           store: store,
       }
+
+      console.log(n);
+      console.log(`attaching to id ${node.name}`)
       
       let element = React.createElement(n.default, {...elementprops});
-      render(element,  document.getElementById('additional'));
+      render(element,  document.getElementById(`${node.name}`));
       
       /*require.ensure([node], function(require){
             var BNode = require(node);

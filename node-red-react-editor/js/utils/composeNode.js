@@ -20,6 +20,7 @@ export default function composeNode(Component, nt, config){
        }
 
        componentDidMount(){
+          console.log("ok registering type: " + nt);
           this.registerType(nt, config);
        }
        
@@ -29,18 +30,25 @@ export default function composeNode(Component, nt, config){
     
            const dialogueprops = {
               cancel: this.nodeCancelClicked,
-              key: nt,
+              nt: nt,
+              node: selected,
            }
-          
+           
            const componentprops = {
               register: this.props.register, 
               dispatch: dispatch,
            }
-
+           console.log("in compose node and selected is");
+           console.log(selected);
+           console.log("node type");
+           console.log(nt);
+           
+           // 
            if (selected && selected.type === nt){
               return <Dialogue {...dialogueprops}>
-                        <Component  {...componentprops}/>
-                    </Dialogue>
+                          <Component  {...componentprops}/>
+                      </Dialogue>
+                    
            }
 
            return null;

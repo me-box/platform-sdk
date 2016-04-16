@@ -4,7 +4,7 @@ import {reducer} from './reducer';
 import * as Actions from './actions';
 import composeNode from '../../utils/composeNode';
 
-class Node extends Component {
+class SentimentNode extends Component {
 	
 	constructor(props){
 		super(props);
@@ -16,15 +16,17 @@ class Node extends Component {
 	}
 
 	render() {	
-		return <form id="dialog-form" className="form-horizontal"></form> 			
+		return <h2> And I am a sentiment node! </h2>	
 	}
 }
 
 export default composeNode(
 
-	Node, 
+	SentimentNode, 
 	
-	'sentiment',{
+	'sentiment',
+
+	{
         category: 'analysis-function',
         color:"#E6E0F8",
         defaults: {
