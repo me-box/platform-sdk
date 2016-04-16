@@ -87,8 +87,9 @@ export function loadNodes(json, store, dispatch){
       console.log(`attaching to id ${node.name}`)
       
       let element = React.createElement(n.default, {...elementprops});
-      render(element,  document.getElementById(`${node.name}`));
       
+      //ids for the node need to be injected at into index.html!
+      render(element,  document.getElementById(`${node.name}`));
       /*require.ensure([node], function(require){
             var BNode = require(node);
       
