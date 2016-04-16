@@ -37,13 +37,9 @@ class Dialogue extends Component {
 			zIndex: 90,
 		}
 
-		console.log("ok children are");
-		console.log(this.props.children);
-
-
 		return <div className="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-no-close ui-dialog-buttons ui-draggable ui-resizable" {...dialogueprops} style={dialoguestyle}>
 				 	<div className="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
-				 		<span id="ui-id-5" className="ui-dialog-title">hello</span>
+				 		<span id="ui-id-5" className="ui-dialog-title">{this.props.node ? this.props.node.id : "node"}</span>
 			 			<button className="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="close">
 			 				<span className="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
 			 				<span className="ui-button-text">close</span>

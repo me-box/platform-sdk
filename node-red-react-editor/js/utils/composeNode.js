@@ -1,32 +1,31 @@
-import React, {PropTypes } from 'react';
+import React, {PropTypes} from 'react';
+import Dialogue from '../components/Dialogue';
+import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import {nodeCancelClicked} from '../actions/NodeMouseActions';
-import { connect } from 'react-redux';
-import Dialogue from '../components/Dialogue';
 
 export default function composeNode(Component, nt, config){
 
-  class Node extends React.Component {
-
-       constructor(props){
-           
-           super(props);
-           
-           Object.assign(  this, 
+	class Node extends React.Component{
+		
+		constructor(props){
+			super(props);
+			Object.assign(  this, 
               ...bindActionCreators(RegisterActions, props.dispatch), 
               {nodeCancelClicked: bindActionCreators(nodeCancelClicked, props.dispatch)}
            );
-       }
+		}
 
-       componentDidMount(){
-          console.log("ok registering type: " + nt);
+	
+		componentDidMount(){
           this.registerType(nt, config);
-       }
-       
-       render() {
-           // here you can pass down whatever you want 'inherited' by the child
-           const {selected, dispatch} = this.props;
+       	}
+		
+
+		render(){
+
+			const {selected, dispatch} = this.props;
     
            const dialogueprops = {
               cancel: this.nodeCancelClicked,
@@ -38,38 +37,28 @@ export default function composeNode(Component, nt, config){
               register: this.props.register, 
               dispatch: dispatch,
            }
-           console.log("in compose node and selected is");
-           console.log(selected);
-           console.log("node type");
-           console.log(nt);
-           
-           // 
+          
            if (selected && selected.type === nt){
-              return <Dialogue {...dialogueprops}>
-                          <Component  {...componentprops}/>
-                      </Dialogue>
-                    
-           }
+				return <Dialogue {...dialogueprops}>
+							<Component {...this.props} />
+						</Dialogue>
+			}
+			return null;
+		}
+	}
 
-           return null;
-       }
-
-  }
-
-  Node.PropTypes = {
-    register: React.PropTypes.func, 
-    dispatch: React.PropTypes.func,
-    store: React.PropTypes.object,
-  }
-
-  
-
-  function select(state) {
+	function select(state) {
       return {
         selected: state.nodes.selected,
       //and need some details here!
-      }
-  }
+    	}
+    }
 
-  return connect(select)(Node)
+    Node.PropTypes = {
+    	register: React.PropTypes.func, 
+    	dispatch: React.PropTypes.func,
+    	store: React.PropTypes.object,
+	}
+
+	return connect(select)(Node)
 }
