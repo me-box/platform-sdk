@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import * as DialogueActions from '../actions/DialogueActions';
 
 class Dialogue extends Component {
 	
 	constructor(props){
 		super(props);
+		
 	}
 
 	render(){
@@ -51,21 +54,13 @@ class Dialogue extends Component {
 					<div className="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 						<div className="ui-dialog-buttonset">
 							<button type="button" id="node-dialog-ok" className="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
-								<span className="ui-button-text">Ok</span>
+								<span className="ui-button-text"onClick={this.props.ok}>Ok</span>
 							</button>
 							<button type="button" id="node-dialog-cancel" className="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
 								<span className="ui-button-text" onClick={this.props.cancel}>Cancel</span>
 							</button>
 						</div>
 					</div>
-					<div className="ui-resizable-handle ui-resizable-n" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-e" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-s" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-w" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-sw" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-ne" style={handlestyle}></div>
-					<div className="ui-resizable-handle ui-resizable-nw" style={handlestyle}></div>
 				</div>
 
 		

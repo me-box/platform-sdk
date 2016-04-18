@@ -49,11 +49,3 @@ export function nodeMouseLeave(node, event){
       event
     }
 }
-
-export function nodeCancelClicked(node, event){
-    return {
-      type: NODE_CANCEL_CLICKED,
-      node,
-      event
-    }
-}

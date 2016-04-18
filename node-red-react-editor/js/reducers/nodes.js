@@ -1,4 +1,4 @@
-import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_CANCEL_CLICKED, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_CHANGED, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED,  DIALOGUE_OK, DIALOGUE_CANCEL, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
 import { NODE_WIDTH, NODE_HEIGHT, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth} from '../utils/utils';
 
@@ -48,7 +48,7 @@ function createActiveNode(nt, def, x, y){
   return node;
 }
 
-export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null}, action) {
+export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null, editingbuffer: {}}, action) {
   
   switch (action.type) {
 	  
@@ -85,6 +85,13 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
         draggingNode: action.node.id,
       })
 
+    case NODE_CHANGED:
+     
+      return Object.assign({}, state, {
+        editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:action.value})
+      })
+      return state;
+    
     case NODE_DOUBLE_CLICKED:
      
       return Object.assign({}, state, {
@@ -109,11 +116,24 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       }
       return state;
 
-    case NODE_CANCEL_CLICKED:
+    case DIALOGUE_CANCEL:
       return Object.assign({}, state, {
         selected: null,
-      })
-      
+        editingbuffer: {},
+    })
+    
+    //set the values in current node to values in editingbuffer
+    case DIALOGUE_OK:
+      return Object.assign({}, state, {
+        selected: null,
+        editingbuffer: {},
+         activeNodes: state.activeNodes.map((node)=>{
+          if (node.id === state.selected.id){
+            return Object.assign(node, state.editingbuffer)    
+          }
+          return node;
+        })
+    })
 
 	  default:
 	    return state;

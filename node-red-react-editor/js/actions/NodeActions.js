@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { render, findDOMNode } from 'react-dom';
 
-import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED } from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_CHANGED } from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from '../constants/ViewConstants';
 import fetch from 'isomorphic-fetch'
 
@@ -42,8 +42,17 @@ export function selectNode(node){
   }
 }
 
+export function changeNode(node, property, event, value){
+
+  return {
+    type: NODE_CHANGED,
+    node,
+    property,
+    value: event.target.value,
+  }
+}
+
 export function receiveNodes(json) {
-  console.log ("dispatching receievd nodes!");
   return {
     type: RECEIVE_NODES,
     nodes: json,
@@ -72,9 +81,7 @@ export function fetchComponent(store){
 }
 
 export function loadNodes(json, store, dispatch){
-   console.log("loading nodes!");
-   console.log(json);
-
+  
    json.nodes.forEach((node)=>{
       let n = require(`../nodes/${node.file}.js`);
       let elementprops = {
@@ -87,9 +94,15 @@ export function loadNodes(json, store, dispatch){
       console.log(`attaching to id ${node.name}`)
       
       let element = React.createElement(n.default, {...elementprops});
+      let g = document.createElement('div');
+      g.id = node.name
+      document.body.appendChild(g);
+      //console.log("created");
+      //console.log(g);
+      //render(element,  g);//document.getElementById(`${node.name}`));
       
-      //ids for the node need to be injected at into index.html!
-      render(element,  document.getElementById(`${node.name}`));
+      //render(element,  document.getElementById(`${node.name}`));
+      render(element, document.getElementById(node.name));
       /*require.ensure([node], function(require){
             var BNode = require(node);
       

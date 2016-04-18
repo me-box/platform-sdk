@@ -3,7 +3,8 @@ import Dialogue from '../components/Dialogue';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
-import {nodeCancelClicked} from '../actions/NodeMouseActions';
+import * as DialogueActions  from '../actions/DialogueActions';
+import {changeNode} from '../actions/NodeActions';
 
 export default function composeNode(Component, nt, config){
 
@@ -13,7 +14,7 @@ export default function composeNode(Component, nt, config){
 			super(props);
 			Object.assign(  this, 
               ...bindActionCreators(RegisterActions, props.dispatch), 
-              {nodeCancelClicked: bindActionCreators(nodeCancelClicked, props.dispatch)}
+              ...bindActionCreators(DialogueActions, props.dispatch),
            );
 		}
 
@@ -25,10 +26,15 @@ export default function composeNode(Component, nt, config){
 
 		render(){
 
-			const {selected, dispatch} = this.props;
-    
+		   const {selected, dispatch} = this.props;
+    	   
+    	   const props = Object.assign({}, this.props,  {
+    	   		onChange: bindActionCreators(changeNode.bind(this, selected), this.props.dispatch),
+    	   })
+
            const dialogueprops = {
-              cancel: this.nodeCancelClicked,
+              cancel: this.cancel,
+              ok: this.ok,
               nt: nt,
               node: selected,
            }
@@ -40,7 +46,7 @@ export default function composeNode(Component, nt, config){
           
            if (selected && selected.type === nt){
 				return <Dialogue {...dialogueprops}>
-							<Component {...this.props} />
+							<Component {...props} />
 						</Dialogue>
 			}
 			return null;
@@ -50,6 +56,7 @@ export default function composeNode(Component, nt, config){
 	function select(state) {
       return {
         selected: state.nodes.selected,
+        values: state.nodes.editingbuffer,
       //and need some details here!
     	}
     }

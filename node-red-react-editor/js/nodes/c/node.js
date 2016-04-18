@@ -1,18 +1,25 @@
-import React, {PropTypes } from 'react';
+import React from 'react';
 import composeNode from '../../utils/composeNode';
+import Textfield from '../../components/Textfield';
 
 class Node extends React.Component {
 
        render() {
-           // here you can pass down whatever you want 'inherited' by the child
-          const {selected} = this.props 
-          return  <h1> It is me ${selected.id} </h1>
+          const nameprops = Object.assign({}, this.props, {name:"name"});
+          const ageprops = Object.assign({}, this.props, {name:"age"});
+
+          return <div className="form-row">
+             <Textfield {...nameprops}/>
+             <Textfield {...ageprops}/>
+          </div>
           
        }
 
 }
 
-export default composeNode(Node, 'sentiment', {
+export default composeNode(Node, 'sentiment', 
+
+          {
                   category: 'analysis-function',
                   color:"#E6E0F8",
                   defaults: {
@@ -27,4 +34,5 @@ export default composeNode(Node, 'sentiment', {
                   labelStyle: function() {
                       return this.name?"node_label_italic":"";
                   }
-            });
+            },
+);
