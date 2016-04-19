@@ -12,9 +12,7 @@ export default class Root extends Component {
   render(){
 
     const { store } = this.props;
-    console.log("ok in here the store is ");
-    console.log(store);
-    
+
     const history = syncHistoryWithStore(browserHistory, store);
     return (
       <Provider store={store}>

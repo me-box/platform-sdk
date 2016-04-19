@@ -9,11 +9,10 @@ export default class Label extends Component {
 
 
     render(){
-
+       
         const {d} = this.props;
 
-                
-        if (!d._def.label){   
+        if (!d._def.label || !d.label){   
             return null;
         }
         
@@ -23,16 +22,10 @@ export default class Label extends Component {
             node_label_left: d._def.align && d._def.align == "left", 
         };    
 
-        if (d._def.labelStyle){
-            try{
-                let s = (typeof d._def.labelStyle === "function") ? d._def.labelStyle.call(d) :  d._def.labelStyle || "";
-                nodelabelclassname[s] = true;
-            }catch (err){
-                console.log(`Definition error: ${d.type}.labelStyle`,err);
-            }
+        if (d.labelStyle){
+            nodelabelclassname[d.labelStyle] = true;
         }
-        
-
+    
         const nodelabelprops = {
             x: d._def.align && d.def.align === "right" ? d.w-38 : 38,
             y: (d.h/2)-1,
@@ -42,7 +35,7 @@ export default class Label extends Component {
 
 
         return  <text className={className(nodelabelclassname)} {...nodelabelprops}> 
-                    {d._def.label}
+                    {d.label}
                 </text>
 
     }

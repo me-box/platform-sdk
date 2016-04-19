@@ -1,5 +1,5 @@
 {
-	"nodes":[	{"name":"sample", "file":"b/node"}, 
-			 	{"name":"sentiment", "file":"c/node"}
-			 ]
+	"nodes":[	{"name":"sample", "file":"sample/node"}, 
+			 	{"name":"sentiment", "file":"sentiment/node"},
+			 	{"name":"inject", "file":"inject/node"}]
 }

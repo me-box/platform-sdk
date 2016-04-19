@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import className from 'classnames';
+import {NODE_HEIGHT} from '../../constants/ViewConstants';
 
 export default class Button extends Component {
   
@@ -76,9 +77,9 @@ export default class Button extends Component {
                 }
 
                 const buttonClassName = className({
-                                node_button: true,
-                                node_right_button: d.def.align === "right",
-                                node_left_button: d.def.align != "right",
+                    node_button: true,
+                    node_right_button: d._def.align === "right",
+                    node_left_button: d._def.align != "right",
                 });
                         
                 const transX = d._def.align === "right" ? 94 : -25;
@@ -109,7 +110,7 @@ export default class Button extends Component {
                         onMouseOver: this._buttonMouseOver.bind(this,d),
                         onMouseOut: this._buttonMouseOut.bind(this,d),
                         onClick: this._buttonMouseClick.bind(this, d),
-                        onTouchStart: this.buttonMouseClick.bind(this,d),
+                        onTouchStart: this._buttonMouseClick.bind(this,d),
                 }
 
                 return  (<g className={buttonClassName} {...buttonprops}>

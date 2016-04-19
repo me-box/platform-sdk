@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 
 class Textfield extends React.Component {
-	
+	static defaultProps = {
+    	icon: "fa fa-tag",
+  	};
+
 	render() {
 		
-		const {values, selected, name, onChange} = this.props;
+		const {values, selected, name, onChange, icon} = this.props;
 
 		const props = {
             value: values[name] || selected[name] || "",
@@ -14,7 +17,7 @@ class Textfield extends React.Component {
 		return( 
 			  <div>
 				  <label>
-	                  <i className="fa fa-tag"></i>
+	                  <i className={this.props.icon}></i>
 	                  <span data-i18n="common.label.name">{name}</span>
 	              </label>
 	              <input type="text" {...props}/>

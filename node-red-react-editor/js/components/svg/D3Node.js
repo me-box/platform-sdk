@@ -22,11 +22,13 @@ class D3Node extends Component {
 		this._nodeMouseLeave = this.props.nodeMouseLeave.bind(this);
 	}
 
-    shouldComponentUpdate(nextProps, nextState){
-        return true;//this.props.x != nextProps.x && this.props.y != nextProps.y;
-    }
+    //shouldComponentUpdate(nextProps, nextState){
+    //    return true;//this.props.x != nextProps.x && this.props.y != nextProps.y;
+   //}
 
     render(){
+        
+        console.log("rendeing d3 node!");
 
         const {d} = this.props;
         
@@ -55,9 +57,11 @@ class D3Node extends Component {
         }
 
         return <g {...gprops}>
+                    <Button d={d}/>
                     {mainrect}
                     <Label d={d}/>
                     <Badge d={d}/>
+
                     <Icon d={d}/>
                     <Inputs d={d}/>
                     <Outputs d={d}/>

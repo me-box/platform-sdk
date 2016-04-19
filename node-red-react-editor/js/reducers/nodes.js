@@ -6,29 +6,39 @@ function createActiveNode(nt, def, x, y){
   
   let _def = Object.assign({},def);
 
-  _def.label  = _def.label ? _def.label : "";
-
-  try {
-        _def.label  = (typeof _def.label  === "function" ? _def.label.call(_def) : _def.label ) || _def.label ;
-  } catch(err) {
-        console.log(`Definition error: ${d.type}.label`,err);
-        _def.label = nt;
-  }
-
   let node = {
     id:(1+Math.random()*4294967295).toString(16),
     z:1,
     type: nt,
     _def: _def,
+    _: _def._,
     inputs: _def.inputs || 0,
     outputs: _def.outputs,
     changed: true,
     selected: true,
     dirty: true,
-    w: Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(_def.label, "node_label", 50)+(_def.inputs>0?7:0))/GRID_SIZE))),
     h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
     x: x,
     y: y,
+  }
+
+  //create label
+  try {
+        node.label  = (typeof _def.label  === "function" ? _def.label.bind(_def).call() : _def.label ) || _def.label ;
+  } catch(err) {
+       console.log(`Definition error: ${_def.type}.label`,err);
+        node.label = nt;
+  }
+
+  node.w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(node.label, "node_label", 50)+(_def.inputs>0?7:0))/GRID_SIZE)));
+
+  //create label style
+  if (_def.labelStyle){
+      try{
+        node.labelStyle = (typeof _def.labelStyle === "function") ? _def.labelStyle.bind(_def).call() : _def.labelStyle || "";    
+      }catch (err){
+                console.log(`Definition error: ${d.type}.labelStyle`,err);
+      }
   }
   
   for (var d in _def.defaults) {
@@ -46,6 +56,33 @@ function createActiveNode(nt, def, x, y){
   }*/
   
   return node;
+}
+
+
+function updateNode(current, changes){
+  let _n = Object.assign(current, changes);
+
+  try {
+        _n.label  = (typeof _n._def.label  === "function" ? _n._def.label.bind(_n).call() : _n._def.label ) || _n._def.label ;
+  } catch(err) {
+       console.log(`Definition error: ${_n.type}.label`,err);
+        _n.label = _n.nt;
+  }
+
+  if (_n._def.labelStyle){
+      try{
+        _n.labelStyle = (typeof _n._def.labelStyle === "function") ? _n._def.labelStyle.bind(_n).call() : _n._def.labelStyle || "";    
+      }catch (err){
+        console.log(`Definition error: ${d.type}.labelStyle`,err);
+      }
+  }
+  
+  const w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(_n.label, "node_label", 50)+(_n.inputs>0?7:0))/GRID_SIZE)));
+  
+  _n.w = w; 
+
+  return _n;
+
 }
 
 export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null, editingbuffer: {}}, action) {
@@ -124,12 +161,15 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     
     //set the values in current node to values in editingbuffer
     case DIALOGUE_OK:
+      
+     
+      
       return Object.assign({}, state, {
-        selected: null,
-        editingbuffer: {},
+         selected: null,
+         editingbuffer: {},
          activeNodes: state.activeNodes.map((node)=>{
           if (node.id === state.selected.id){
-            return Object.assign(node, state.editingbuffer)    
+            return updateNode(node, state.editingbuffer);
           }
           return node;
         })
