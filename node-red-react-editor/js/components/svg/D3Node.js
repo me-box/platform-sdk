@@ -27,8 +27,7 @@ class D3Node extends Component {
    //}
 
     render(){
-        
-        console.log("rendeing d3 node!");
+    
 
         const {d} = this.props;
         

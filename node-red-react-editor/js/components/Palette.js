@@ -25,10 +25,14 @@ class Palette extends React.Component {
         //this should be categories, i.e. one level up!
 
         let nodes = this.props.types.map((type)=>{
+            console.log("binding to reducer");
+            console.log(type.reducer);
+
             let nodeprops = {
                 nt: type.name,
                 def: type.def,
                 key: type.name,
+                reducer: type.reducer,
                 handleDrop: this.props.dropNode,
             }
             return <Node {...nodeprops}/>

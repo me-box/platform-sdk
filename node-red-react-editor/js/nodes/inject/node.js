@@ -1,10 +1,33 @@
 import React from 'react';
 import composeNode from '../../utils/composeNode';
 import Textfield from '../../components/Textfield';
+import { connect } from 'react-redux';
+import {reducer} from './reducer'
 
 class Node extends React.Component {
 
+       constructor(props){
+            super(props);
+       }
+
+       /*componentDidMount(){
+            this.props.register(this.props.selected.id, reducer);
+       }
+
+       componentWillUnmount(){
+            console.log("component unmounting!!");
+            this.props.unregister(this.props.selected.id, reducer);
+       }*/
+
+
        render() {
+          //need some way of only gioving it it's relevant reducer part of the state tree!!!
+          const {test, selected} = this.props;
+         
+          if (selected && test){
+            console.log(test[selected.id]);
+          }
+  
           const payloadprops = Object.assign({}, this.props, {name:"name"});
           const topicProps   = Object.assign({}, this.props, {name:"topic"});
           const nameProps   = Object.assign({}, this.props, {name:"name"});
@@ -121,7 +144,14 @@ class Node extends React.Component {
 
 }
 
-export default composeNode(Node, 'inject',{
+function select(state) {
+  return {
+   test: state,
+   selected: state.selected,
+  };
+}
+
+export default connect(select)(composeNode(Node, 'inject',{
 
         category: 'input',
 
@@ -186,5 +216,5 @@ export default composeNode(Node, 'inject',{
                
             }
         },
-   }
-);
+   }, reducer
+));

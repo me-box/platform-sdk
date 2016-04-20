@@ -6,7 +6,7 @@ import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
 import {changeNode} from '../actions/NodeActions';
 
-export default function composeNode(Component, nt, config){
+export default function composeNode(Component, nt, config, reducer=null){
 
 	class Node extends React.Component{
 		
@@ -15,12 +15,17 @@ export default function composeNode(Component, nt, config){
 			Object.assign(  this, 
               ...bindActionCreators(RegisterActions, props.dispatch), 
               ...bindActionCreators(DialogueActions, props.dispatch),
-           );
+           	);
+			
+	
 		}
 
+		/*
+		* This is called once, when the node is loaded to the palette
+		*/
 	
 		componentDidMount(){
-          this.registerType(nt, config);
+          this.registerType(nt, config, reducer);
        	}
 		
 
@@ -38,11 +43,6 @@ export default function composeNode(Component, nt, config){
               nt: nt,
               node: selected,
            }
-           
-           const componentprops = {
-              register: this.props.register, 
-              dispatch: dispatch,
-           }
           
            if (selected && selected.type === nt){
 				return <Dialogue {...dialogueprops}>
@@ -54,10 +54,9 @@ export default function composeNode(Component, nt, config){
 	}
 
 	function select(state) {
-      return {
-        selected: state.nodes.selected,
-        values: state.nodes.editingbuffer,
-      //and need some details here!
+      	return {
+        	selected: state.nodes.selected,
+        	values: state.nodes.editingbuffer,
     	}
     }
 

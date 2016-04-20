@@ -9,6 +9,7 @@ export default function types(state = [], action) {
         {
             name: action.name,
             def: action.def,
+            reducer: action.reducer,
         }
       ]
       

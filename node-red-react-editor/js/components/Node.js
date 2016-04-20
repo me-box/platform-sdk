@@ -16,9 +16,9 @@ const boxSource = {
 
   endDrag(props, monitor) {
     //what's the simplest way to figure out whether this is a legal drop or not?
-    const {nt, def} = props;
+    const {nt, def, reducer} = props;
     const {x,y} = monitor.getClientOffset();
-    props.handleDrop(nt, def, x, y);
+    props.handleDrop(reducer, nt, def, x, y);
   }
 };
 

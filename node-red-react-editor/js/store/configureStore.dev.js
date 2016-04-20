@@ -14,7 +14,7 @@ const enhancer = compose(
   )
 );
 
-export  default function configureStore(initialState) {
+export default function configureStore(initialState) {
   
   const store = createStore(combineReducers(rootReducers), initialState, enhancer);
 
@@ -33,10 +33,26 @@ export function register(store, name, reducer){
 
   store.asyncReducers[name] = reducer;  
 
-  let reducers = {
+  const reducers = {
     ...rootReducers,
     ...store.asyncReducers,
   }
 
+  console.log("reducersa re");
+  console.log(Object.keys(store.asyncReducers));
+
   store.replaceReducer(combineReducers(reducers));
+}
+
+
+export function unregister(store, name){
+
+  if (store.asyncReducers[name]){
+    delete store.asyncReducers[name];
+    const reducers = {
+      ...rootReducers,
+      ...store.asyncReducers,
+    }
+    store.replaceReducer(combineReducers(reducers));
+  }
 }

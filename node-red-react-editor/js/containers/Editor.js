@@ -23,17 +23,20 @@ class Editor extends Component {
   componentDidMount(){
   	//TODO: check state to ensure only happens once!
   	const {store} = this.context;
+  	
+  	//might be able tro get rid of bind to store here, as better to do register reducers with store at
+  	//point node is dropped into workspace
   	bindActionCreators(fetchNodes.bind(this,store), this.props.dispatch)()
   }
 
   render() {
 
   	
-  	
+  	const {store} = this.context;
    	const { types, dispatch } = this.props;
    	const paletteprops =  {
   		types,
-  		dropNode: bindActionCreators(dropNode, dispatch),
+  		dropNode: bindActionCreators(dropNode.bind(this,store), dispatch),
   	}
 
    	return (<div> 

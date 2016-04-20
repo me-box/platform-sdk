@@ -2,62 +2,6 @@ import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_CHANGED, NODE_MOUSE_DO
 import { NODE_WIDTH, NODE_HEIGHT, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth} from '../utils/utils';
 
-function createActiveNode(nt, def, x, y){
-  
-  let _def = Object.assign({},def);
-
-  let node = {
-    id:(1+Math.random()*4294967295).toString(16),
-    z:1,
-    type: nt,
-    _def: _def,
-    _: _def._,
-    inputs: _def.inputs || 0,
-    outputs: _def.outputs,
-    changed: true,
-    selected: true,
-    dirty: true,
-    h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
-    x: x,
-    y: y,
-  }
-
-  //create label
-  try {
-        node.label  = (typeof _def.label  === "function" ? _def.label.bind(_def).call() : _def.label ) || _def.label ;
-  } catch(err) {
-       console.log(`Definition error: ${_def.type}.label`,err);
-        node.label = nt;
-  }
-
-  node.w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(node.label, "node_label", 50)+(_def.inputs>0?7:0))/GRID_SIZE)));
-
-  //create label style
-  if (_def.labelStyle){
-      try{
-        node.labelStyle = (typeof _def.labelStyle === "function") ? _def.labelStyle.bind(_def).call() : _def.labelStyle || "";    
-      }catch (err){
-                console.log(`Definition error: ${d.type}.labelStyle`,err);
-      }
-  }
-  
-  for (var d in _def.defaults) {
-      if (_def.defaults.hasOwnProperty(d)) {
-          node[d] = _def.defaults[d].value;
-      }
-  }
-
-  /*if (_def.onadd) {
-      try {
-          _def.onadd.call(nn);
-      } catch(err) {
-          console.log("onadd:",err);
-      }
-  }*/
-  
-  return node;
-}
-
 
 function updateNode(current, changes){
   let _n = Object.assign(current, changes);
@@ -104,9 +48,10 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       	})
 
     case NODE_DROPPED:
+       
         return Object.assign({}, state, {
             activeNodes: [  ...state.activeNodes,
-                            createActiveNode(action.nt, action.def, action.x, action.y)
+                            action.node,
                           ]
         })
 
@@ -161,8 +106,6 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     
     //set the values in current node to values in editingbuffer
     case DIALOGUE_OK:
-      
-     
       
       return Object.assign({}, state, {
          selected: null,

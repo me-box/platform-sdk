@@ -32,7 +32,7 @@ export default class Link extends Component {
         }
 
         const x1 = this.props.from.x + (this.props.from.w/2) + 5;
-        const x2 = this.props.to.x - (this.props.from.w/2) - 14;
+        const x2 = this.props.to.x - (this.props.to.w/2) - 5;
         const y1 = this.props.from.y-7;
         const y2 = this.props.to.y;
 

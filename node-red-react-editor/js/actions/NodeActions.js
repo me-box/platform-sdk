@@ -2,7 +2,8 @@ import React from 'react';
 import { render, findDOMNode } from 'react-dom';
 
 import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_CHANGED } from '../constants/ActionTypes';
-import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from '../constants/ViewConstants';
+import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET, NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
+import {calculateTextWidth} from '../utils/utils';
 import fetch from 'isomorphic-fetch'
 
 /* bunch of stuff - needs to be in dynamic bit! */
@@ -10,8 +11,7 @@ import fetch from 'isomorphic-fetch'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as CounterActions from '../actions/CounterActions';
-import {register} from '../store/configureStore';
-
+import {register, unregister} from '../store/configureStore';
 
 export function requestNodes() {
   return {
@@ -25,13 +25,61 @@ export function requestCode(){
   }
 }
 
-export function dropNode(nt, def, x, y){
+export function dropNode(store, reducer, nt, def, x, y){
+
+  let _def = Object.assign({},def);
+
+  let node = {
+    id:(1+Math.random()*4294967295).toString(16),
+    z:1,
+    type: nt,
+    _def: _def,
+    _: _def._,
+    inputs: _def.inputs || 0,
+    outputs: _def.outputs,
+    changed: true,
+    selected: true,
+    dirty: true,
+    h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
+    x: x,
+    y: y,
+  }
+
+  //create label
+  try {
+        node.label  = (typeof _def.label  === "function" ? _def.label.bind(_def).call() : _def.label ) || _def.label ;
+  } catch(err) {
+       console.log(`Definition error: ${_def.type}.label`,err);
+        node.label = nt;
+  }
+
+  node.w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(node.label, "node_label", 50)+(_def.inputs>0?7:0))/GRID_SIZE)));
+
+  //create label style
+  if (_def.labelStyle){
+      try{
+        node.labelStyle = (typeof _def.labelStyle === "function") ? _def.labelStyle.bind(_def).call() : _def.labelStyle || "";    
+      }catch (err){
+                console.log(`Definition error: ${d.type}.labelStyle`,err);
+      }
+  }
+  
+  for (var d in _def.defaults) {
+      if (_def.defaults.hasOwnProperty(d)) {
+          node[d] = _def.defaults[d].value;
+      }
+  }
+
+
+  if (reducer){
+    console.log("regsietring reducer");
+    console.log(node.id);
+    console.log(reducer);
+    register(store, node.id, reducer)
+  }
   return {
     type: NODE_DROPPED,
-    nt,
-    def,
-    x:x + MOUSE_X_OFFSET,
-    y:y + MOUSE_Y_OFFSET,
+    node: node,
   }
 }
 
@@ -83,38 +131,20 @@ export function fetchComponent(store){
 export function loadNodes(json, store, dispatch){
   
    json.nodes.forEach((node)=>{
-      let n = require(`../nodes/${node.file}.js`);
-      let elementprops = {
+      const n = require(`../nodes/${node.file}.js`);
+      
+      const elementprops = {
           register: register.bind(this, store),
+          unregister: unregister.bind(this, store),
           dispatch: dispatch,
           store: store,
       }
-
-      console.log(n);
-      console.log(`attaching to id ${node.name}`)
       
-      let element = React.createElement(n.default, {...elementprops});
-      let g = document.createElement('div');
+      const element = React.createElement(n.default, {...elementprops});
+      const g = document.createElement('div');
       g.id = node.name
       document.body.appendChild(g);
-      //console.log("created");
-      //console.log(g);
-      //render(element,  g);//document.getElementById(`${node.name}`));
-      
-      //render(element,  document.getElementById(`${node.name}`));
       render(element, document.getElementById(node.name));
-      /*require.ensure([node], function(require){
-            var BNode = require(node);
-      
-            let elementprops = {
-              register: register.bind(this, store),
-              dispatch: dispatch,
-              store: store,
-            }
-      
-            let element = React.createElement(BNode.default, {...elementprops});
-            render(element,  document.getElementById('additional'));
-      });*/
    });    
 }
 
