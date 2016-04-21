@@ -1,4 +1,4 @@
-import { INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED } from './constants';
+import { INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU } from './constants';
 
 export function intervalChanged(id,event){
 
@@ -17,10 +17,19 @@ export function unitsChanged(id,event){
   }
 }
 
+
 export function timeIntervalUnitsChanged(id,event){
   return {
     type: TIMEINTERVAL_UNITS_CHANGED,
     value:event.target.value,
     id
+  }
+}
+
+export function togglePayloadMenu(id){
+  
+  return {
+    type: TOGGLE_PAYLOAD_MENU,
+  	id
   }
 }

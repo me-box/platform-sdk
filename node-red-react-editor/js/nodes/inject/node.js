@@ -26,7 +26,7 @@ class Node extends React.Component {
        render() {
           //local is all of the stuff in its reducer
           const {local} = this.props;
-          const {repeatOption} = local;
+          const {repeatOption, payloadMenu} = local;
           const nameprops = Object.assign({}, this.props, {name:"name"});
           
           const repeatprops = {
@@ -48,8 +48,7 @@ class Node extends React.Component {
           }
 
           
-          const payloadmenu = null;
-          /* <div className="red-ui-typedInput-options" style={{top: 35, left: 115, display: 'block'}}>
+          const menu = payloadMenu ? <div className="red-ui-typedInput-options" style={{top: 35, left: 115, display: 'block'}}>
                                       <a href="#" value="flow" style={{paddingLeft: '18px'}}>flow.</a>
                                       <a href="#" value="global" style={{paddingLeft: '18px'}}>global.</a>
                                       <a href="#" value="str"><img src="images/typedInput/az.png" style={{marginRight: '4px', height: '18px'}}/>string</a>
@@ -57,7 +56,7 @@ class Node extends React.Component {
                                       <a href="#" value="bool"><img src="images/typedInput/bool.png" style={{marginRight: '4px', height: '18px'}}/>boolean</a>
                                       <a href="#" value="json"><img src="images/typedInput/json.png" style={{marginRight: '4px', height: '18px'}}/>JSON</a>
                                       <a href="#" value="date" style={{paddingLeft: '18px'}}>timestamp</a>
-                                  </div>*/
+                                  </div> : null;
 
           let options = null;
 
@@ -153,7 +152,7 @@ class Node extends React.Component {
 
           return  <div>
 
-                      {payloadmenu}
+                      {menu}
 
 
                       <div className="form-row">
@@ -161,7 +160,7 @@ class Node extends React.Component {
                               <i className="fa fa-envelope"></i> <span data-i18n="node-red:common.label.payload">Payload</span>
                           </label>
                           <div className="red-ui-typedInput-container red-ui-typedInput-focus" style={{marginRight: '0px', marginLeft: '0px'}}>
-                            <a href="#" style={{width: '305px'}}>
+                            <a onClick = {this.togglePayloadMenu} style={{width: '305px'}}>
                               <i className="fa fa-sort-desc"></i>
                               <span>timestamp</span>
                             </a>

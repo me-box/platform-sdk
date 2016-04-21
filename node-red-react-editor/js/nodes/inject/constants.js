@@ -1,7 +1,7 @@
 export const INTERVAL_CHANGED = 'INTERVAL_CHANGED';
 export const UNITS_CHANGED = 'UNITS_CHANGED';
 export const TIMEINTERVAL_UNITS_CHANGED = 'TIMEINTERVAL_UNITS_CHANGED';
-
+export const TOGGLE_PAYLOAD_MENU = 'TOGGLE_PAYLOAD_MENU';
 
 export const REPEAT_OPTIONS =  [
 									{name:'none', value:'none'},

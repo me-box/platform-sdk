@@ -1,7 +1,7 @@
-import {INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED} from './constants';
+import {INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU} from './constants';
 
-export function reducer(state = {repeatOption:'none', units:'s', timeintervalunits:1}, action){
-
+export function reducer(state = {repeatOption:'none', units:'s', timeintervalunits:1, payloadMenu:false}, action){
+	 
 	 switch (action.type) {
 	 	
 	 	case INTERVAL_CHANGED:
@@ -12,6 +12,9 @@ export function reducer(state = {repeatOption:'none', units:'s', timeintervaluni
 	  	
 	  	case TIMEINTERVAL_UNITS_CHANGED:
 	    	return Object.assign({}, state, {timeintervalunits:action.value})
+	  	
+	  	case TOGGLE_PAYLOAD_MENU:
+	    	return Object.assign({}, state, {payloadMenu:!state.payloadMenu})
 	  	
 	  	default:
 	    	return state;
