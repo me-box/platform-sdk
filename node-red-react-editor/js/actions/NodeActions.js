@@ -1,17 +1,11 @@
 import React from 'react';
-import { render, findDOMNode } from 'react-dom';
-
-import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_CHANGED } from '../constants/ActionTypes';
+import { render } from 'react-dom';
+import { REGISTER_TYPE, REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_CHANGED } from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET, NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth} from '../utils/utils';
 import fetch from 'isomorphic-fetch'
-
-/* bunch of stuff - needs to be in dynamic bit! */
-
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import * as CounterActions from '../actions/CounterActions';
-import {register, unregister} from '../store/configureStore';
+import {register} from '../store/configureStore';
+import {scopeify} from '../utils/scopeify';
 
 export function requestNodes() {
   return {
@@ -26,7 +20,7 @@ export function requestCode(){
 }
 
 export function dropNode(store, reducer, nt, def, x, y){
-
+  
   let _def = Object.assign({},def);
 
   let node = {
@@ -34,15 +28,15 @@ export function dropNode(store, reducer, nt, def, x, y){
     z:1,
     type: nt,
     _def: _def,
-    _: _def._,
+    _: (id)=>{return id},
     inputs: _def.inputs || 0,
     outputs: _def.outputs,
     changed: true,
     selected: true,
     dirty: true,
     h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
-    x: x,
-    y: y,
+    x: x + MOUSE_X_OFFSET,
+    y: y + MOUSE_Y_OFFSET,
   }
 
   //create label
@@ -70,12 +64,11 @@ export function dropNode(store, reducer, nt, def, x, y){
       }
   }
 
-
+  //register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
+  //this means that instances of the same node can trasparently make use of the same action constants without a clash!.
   if (reducer){
-    console.log("regsietring reducer");
-    console.log(node.id);
-    console.log(reducer);
-    register(store, node.id, reducer)
+    
+    register(store, node.id, scopeify(node.id, reducer));
   }
   return {
     type: NODE_DROPPED,
@@ -109,6 +102,13 @@ export function receiveNodes(json) {
 }
 
 
+export function registerNodes(nodes){
+  return{
+    type: REGISTER_TYPE,
+    nodes,
+  }
+}
+
 export function fetchComponent(store){
 
     return function(dispatch){
@@ -130,22 +130,27 @@ export function fetchComponent(store){
 
 export function loadNodes(json, store, dispatch){
   
+   let toregister = [];
+
    json.nodes.forEach((node)=>{
       const n = require(`../nodes/${node.file}.js`);
-      
+    
       const elementprops = {
-          register: register.bind(this, store),
-          unregister: unregister.bind(this, store),
           dispatch: dispatch,
           store: store,
       }
       
-      const element = React.createElement(n.default, {...elementprops});
+      const element = React.createElement(n.default.node, {...elementprops});
+     
       const g = document.createElement('div');
       g.id = node.name
       document.body.appendChild(g);
+      toregister.push({name: n.default.type, def: n.default.def, reducer: n.default.reducer});
       render(element, document.getElementById(node.name));
+      
    });    
+
+   dispatch(registerNodes(toregister));
 }
 
 export function fetchNodes(store) {
@@ -175,7 +180,7 @@ export function fetchNodes(store) {
       })
       .then(response => response.json())
       .then(function(json){
-          console.log("-----> fetching again!! <-----------");
+          console.info("fetching nodes");
           loadNodes(json, store, dispatch);
           return json;
       }).then(function(json){

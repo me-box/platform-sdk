@@ -15,7 +15,6 @@ class Palette extends React.Component {
     }
 
     render() {
-	    
         
         let spinnerClassname = className({
             'palleteSpinner': true,
@@ -23,11 +22,7 @@ class Palette extends React.Component {
         });
 
         //this should be categories, i.e. one level up!
-
         let nodes = this.props.types.map((type)=>{
-            console.log("binding to reducer");
-            console.log(type.reducer);
-
             let nodeprops = {
                 nt: type.name,
                 def: type.def,

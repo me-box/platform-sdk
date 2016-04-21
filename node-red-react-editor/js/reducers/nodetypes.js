@@ -6,11 +6,7 @@ export default function types(state = [], action) {
     case REGISTER_TYPE:
       return [
         ...state,
-        {
-            name: action.name,
-            def: action.def,
-            reducer: action.reducer,
-        }
+        ...action.nodes,
       ]
       
 

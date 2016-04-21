@@ -1,157 +1,207 @@
 import React from 'react';
 import composeNode from '../../utils/composeNode';
-import Textfield from '../../components/Textfield';
+import Textfield from '../../components/form/Textfield';
+import Spinner from  '../../components/form/Spinner';
+import Select from '../../components/form/Select';
 import { connect } from 'react-redux';
-import {reducer} from './reducer'
+import {reducer} from './reducer';
+import { bindActionCreators } from 'redux';
+import { bindNodeIds } from '../../utils/utils';
+import * as Actions from './actions';
+import {REPEAT_OPTIONS, INTERVAL_OPTIONS, TIMEUNIT_OPTIONS} from './constants';
+
+import './style.css';
+
 
 class Node extends React.Component {
 
        constructor(props){
             super(props);
+            const id = props.selected.id;
+            Object.assign(  this, 
+              ...bindActionCreators(bindNodeIds(Actions, id), props.dispatch), 
+            );  
        }
-
-       /*componentDidMount(){
-            this.props.register(this.props.selected.id, reducer);
-       }
-
-       componentWillUnmount(){
-            console.log("component unmounting!!");
-            this.props.unregister(this.props.selected.id, reducer);
-       }*/
-
 
        render() {
-          //need some way of only gioving it it's relevant reducer part of the state tree!!!
-          const {test, selected} = this.props;
-         
-          if (selected && test){
-            console.log(test[selected.id]);
+          //local is all of the stuff in its reducer
+          const {local} = this.props;
+          const {repeatOption} = local;
+          const nameprops = Object.assign({}, this.props, {name:"name"});
+          
+          const repeatprops = {
+            options: REPEAT_OPTIONS,
+            onSelect: this.intervalChanged,
+            style: {width:'73%'},
           }
-  
-          const payloadprops = Object.assign({}, this.props, {name:"name"});
-          const topicProps   = Object.assign({}, this.props, {name:"topic"});
-          const nameProps   = Object.assign({}, this.props, {name:"name"});
-          return  <div>
-                      <div className="form-row">
-                          <label for="node-input-payload"><i className="fa fa-envelope"></i> <span data-i18n="common.label.payload"></span></label>
-                          <input type="text" id="node-input-payload" style={{width:300}}/>
-                          <input type="hidden" id="node-input-payloadType"/>
-                      </div>
+       
+          const intervalprops = {
+            options: INTERVAL_OPTIONS,
+            onSelect: this.unitsChanged,
+            style: {width: 100},
+          }
 
-                      <div className="form-row">
-                          <label for="node-input-topic"><i className="fa fa-tasks"></i> <span data-i18n="common.label.topic"></span></label>
-                          <input type="text" id="node-input-topic" style={{width: '70%'}}/>
-                      </div>
+          const timeintervalunitprops = {
+            options: TIMEUNIT_OPTIONS,
+            onSelect: this.timeIntervalUnitsChanged,
+            style: {width:90}
+          }
 
-                      <div className="form-row">
-                          <label for=""><i className="fa fa-repeat"></i> <span data-i18n="inject.label.repeat"></span></label>
-                          <select id="inject-time-type-select" style={{width: '73%'}}>
-                              <option value="none" data-i18n="inject.none"></option>
-                              <option value="interval" data-i18n="inject.interval"></option>
-                              <option value="interval-time" data-i18n="inject.interval-time"></option>
-                              <option value="time" data-i18n="inject.time"></option>
-                          </select>
-                          <input type="hidden" id="node-input-repeat"/>
-                          <input type="hidden" id="node-input-crontab"/>
-                      </div>
+          
+          const payloadmenu = null;
+          /* <div className="red-ui-typedInput-options" style={{top: 35, left: 115, display: 'block'}}>
+                                      <a href="#" value="flow" style={{paddingLeft: '18px'}}>flow.</a>
+                                      <a href="#" value="global" style={{paddingLeft: '18px'}}>global.</a>
+                                      <a href="#" value="str"><img src="images/typedInput/az.png" style={{marginRight: '4px', height: '18px'}}/>string</a>
+                                      <a href="#" value="num"><img src="images/typedInput/09.png" style={{marginRight: '4px', height: '18px'}}/>number</a>
+                                      <a href="#" value="bool"><img src="images/typedInput/bool.png" style={{marginRight: '4px', height: '18px'}}/>boolean</a>
+                                      <a href="#" value="json"><img src="images/typedInput/json.png" style={{marginRight: '4px', height: '18px'}}/>JSON</a>
+                                      <a href="#" value="date" style={{paddingLeft: '18px'}}>timestamp</a>
+                                  </div>*/
 
-                      <div className="form-row inject-time-row hidden" id="inject-time-row-interval">
-                          <span data-i18n="inject.every"></span>
-                          <input id="inject-time-interval-count" className="inject-time-count" value="1"/>
-                          <select style={{width: 100}} id="inject-time-interval-units">
-                              <option value="s" data-i18n="inject.seconds"></option>
-                              <option value="m" data-i18n="inject.minutes"></option>
-                              <option value="h" data-i18n="inject.hours"></option>
-                          </select><br/>
-                      </div>
+          let options = null;
 
-                      <div className="form-row inject-time-row hidden" id="inject-time-row-interval-time">
-                          <span data-i18n="inject.every"></span> <select style={{width: 90}} id="inject-time-interval-time-units" className="inject-time-int-count" value="1">
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                              <option value="5">5</option>
-                              <option value="6">6</option>
-                              <option value="10">10</option>
-                              <option value="12">12</option>
-                              <option value="15">15</option>
-                              <option value="20">20</option>
-                              <option value="30">30</option>
-                              <option value="0">60</option>
-                          </select> 
-                          <span data-i18n="inject.minutes"></span><br/>
-                          <span data-i18n="inject.between"></span> 
-                          <select id="inject-time-interval-time-start" className="inject-time-times"></select>
-                          <span data-i18n="inject.and"></span> 
-                          <select id="inject-time-interval-time-end" className="inject-time-times"></select><br/>
-                          <div id="inject-time-interval-time-days" className="inject-time-days">
-                              <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: '5px'}} data-i18n="inject.on">on</div>
-                              <div style={{display:'inline-block'}}>
-                                  <div>
-                                      <label><input type='checkbox' checked value='1'/> <span data-i18n="inject.days.0"></span></label>
-                                      <label><input type='checkbox' checked value='2'/> <span data-i18n="inject.days.1"></span></label>
-                                      <label><input type='checkbox' checked value='3'/> <span data-i18n="inject.days.2"></span></label>
-                                  </div>
-                                  <div>
-                                      <label><input type='checkbox' checked value='4'/> <span data-i18n="inject.days.3"></span></label>
-                                      <label><input type='checkbox' checked value='5'/> <span data-i18n="inject.days.4"></span></label>
-                                      <label><input type='checkbox' checked value='6'/> <span data-i18n="inject.days.5"></span></label>
-                                  </div>
-                                  <div>
-                                      <label><input type='checkbox' checked value='0'/> <span data-i18n="inject.days.6"></span></label>
-                                  </div>
-                              </div>
+
+          switch (repeatOption){
+
+            case "none":
+              
+              options = <div className="form-row" id="node-once">
+                          <label>&nbsp;</label>
+                          <input type="checkbox" id="node-input-once" style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
+                          <label style={{width: '70%'}}>inject once at start?</label>
+                        </div>
+              break;
+
+            case "interval":
+              
+              options = <div>
+                          <div className="form-row inject-time-row" style={{display:'block'}}>
+                            <span data-i18n="inject.every">every</span>
+                            <Spinner />
+                            <Select  {...intervalprops}/>
+                            <br/>
+                          </div> 
+                          <div className="form-row" id="node-once">
+                            <label>&nbsp;</label>
+                            <input type="checkbox" id="node-input-once" style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
+                            <label style={{width: '70%'}}>inject once at start?</label>
+                          </div>
+                        </div>
+                break;
+
+            case "interval-time":
+
+               options =  <div className="form-row inject-time-row">
+                    <span data-i18n="inject.every"></span>
+                    <Select {...timeintervalunitprops} />
+                    <span data-i18n="inject.minutes">minutes</span>
+                    <br/>
+                    <span data-i18n="inject.between">between</span> 
+                    <select id="inject-time-interval-time-start" className="inject-time-times"></select>
+                    <span data-i18n="inject.and">and</span>
+                    <select id="inject-time-interval-time-end" className="inject-time-times"></select><br/>
+                    <div id="inject-time-interval-time-days" className="inject-time-days">
+                      <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: '5px'}} data-i18n="inject.on">on</div>
+                      <div style={{display:'inline-block'}}>
+                          <div>
+                              <label><input type='checkbox' checked value='1'/><span data-i18n="inject.days.0">Monday</span></label>
+                              <label><input type='checkbox' checked value='2'/><span data-i18n="inject.days.1">Tuesday</span></label>
+                              <label><input type='checkbox' checked value='3'/><span data-i18n="inject.days.2">Wednesday</span></label>
+                          </div>
+                          <div>
+                              <label><input type='checkbox' checked value='4'/> <span data-i18n="inject.days.3">Thursday</span></label>
+                              <label><input type='checkbox' checked value='5'/> <span data-i18n="inject.days.4">Friday</span></label>
+                              <label><input type='checkbox' checked value='6'/> <span data-i18n="inject.days.5">Saturday</span></label>
+                          </div>
+                          <div>
+                              <label><input type='checkbox' checked value='0'/> <span data-i18n="inject.days.6">Sunday</span></label>
                           </div>
                       </div>
+                    </div>
+                </div>
+                break;
 
-                      <div className="form-row inject-time-row hidden" id="inject-time-row-time">
-                          <span data-i18n="inject.at"></span> <input id="inject-time-time" value="12:00"/><br/>
+            case "time":
+                options = <div className="form-row inject-time-row" id="inject-time-row-time">
+                          <span data-i18n="inject.at"></span>at<input id="inject-time-time" value="12:00"/><br/>
                           <div id="inject-time-time-days" className="inject-time-days">
                               <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: 5}}>on </div>
                               <div style={{display:'inline-block'}}>
                                   <div>
-                                      <label><input type='checkbox' checked value='1'/> <span data-i18n="inject.days.0"></span></label>
-                                      <label><input type='checkbox' checked value='2'/> <span data-i18n="inject.days.1"></span></label>
-                                      <label><input type='checkbox' checked value='3'/> <span data-i18n="inject.days.2"></span></label>
+                                      <label><input type='checkbox' checked value='1'/> <span data-i18n="inject.days.0">Monday</span></label>
+                                      <label><input type='checkbox' checked value='2'/> <span data-i18n="inject.days.1">Tuesday</span></label>
+                                      <label><input type='checkbox' checked value='3'/> <span data-i18n="inject.days.2">Wednesday</span></label>
                                   </div>
                                   <div>
-                                      <label><input type='checkbox' checked value='4'/> <span data-i18n="inject.days.3"></span></label>
-                                      <label><input type='checkbox' checked value='5'/> <span data-i18n="inject.days.4"></span></label>
-                                      <label><input type='checkbox' checked value='6'/> <span data-i18n="inject.days.5"></span></label>
+                                      <label><input type='checkbox' checked value='4'/> <span data-i18n="inject.days.3">Thursday</span></label>
+                                      <label><input type='checkbox' checked value='5'/> <span data-i18n="inject.days.4">Friday</span></label>
+                                      <label><input type='checkbox' checked value='6'/> <span data-i18n="inject.days.5">Saturday</span></label>
                                   </div>
                                   <div>
-                                      <label><input type='checkbox' checked value='0'/> <span data-i18n="inject.days.6"></span></label>
+                                      <label><input type='checkbox' checked value='0'/> <span data-i18n="inject.days.6">Sunday</span></label>
                                   </div>
                               </div>
                           </div>
                       </div>
+                  break;
 
-                      <div className="form-row" id="node-once">
-                          <label>&nbsp;</label>
-                          <input type="checkbox" id="node-input-once" style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
-                          <label for="node-input-once" style={{width: '70%'}} data-i18n="inject.onstart"></label>
+              default:
+                 options = null;
+
+          }
+
+          return  <div>
+
+                      {payloadmenu}
+
+
+                      <div className="form-row">
+                          <label>
+                              <i className="fa fa-envelope"></i> <span data-i18n="node-red:common.label.payload">Payload</span>
+                          </label>
+                          <div className="red-ui-typedInput-container red-ui-typedInput-focus" style={{marginRight: '0px', marginLeft: '0px'}}>
+                            <a href="#" style={{width: '305px'}}>
+                              <i className="fa fa-sort-desc"></i>
+                              <span>timestamp</span>
+                            </a>
+                            <input type="text" style={{width: 300, marginRight: '0px', marginLeft: '0px', display:'block'}} className="red-ui-typedInput" />
+                                <a href="#" className="red-ui-typedInput-option-trigger" style={{display:'none'}}>
+                                  <span></span>
+                                  <i className="fa fa-sort-desc"></i>
+                                </a>
+                          </div>
+                      </div>
+                  
+
+                      <div className="form-row">
+                          <label><i className="fa fa-tasks"></i> <span data-i18n="common.label.topic">topic</span></label>
+                          <input type="text" id="node-input-topic" style={{width: '70%'}}/>
                       </div>
 
                       <div className="form-row">
-                          <label for="node-input-name"><i className="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-                          <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name"/>
+                          <label><i className="fa fa-repeat"></i> <span data-i18n="inject.label.repeat">repeat</span></label>
+                          <Select {...repeatprops}/>
+                          <input type="hidden" id="node-input-repeat"/>
+                          <input type="hidden" id="node-input-crontab"/>
                       </div>
 
-                      <div className="form-tips" data-i18n="[html]inject.tip"></div>
+                      {options}
+
+                     
+                      <div className="form-row">
+                        <Textfield {...nameprops}/>
+                      </div>
+
+                      <div className="form-tips" data-i18n="[html]inject.tip">
+                          <strong>Note:</strong> "interval between times" and "at a specific time" will use cron. See info box for details.
+                      </div>
                   </div>
        }
 
 }
 
-function select(state) {
-  return {
-   test: state,
-   selected: state.selected,
-  };
-}
-
-export default connect(select)(composeNode(Node, 'inject',{
+export default composeNode(Node, 'inject',{
 
         category: 'input',
 
@@ -203,18 +253,10 @@ export default connect(select)(composeNode(Node, 'inject',{
             return this.name?"node_label_italic":"";
         },
 
-        oneditprepare: function() {
-            //dont think we need this crazy shit!
-        },
-
-        oneditsave: function() {
-           
-        },
-
         button: {
             onclick: function() {
                
             }
         },
    }, reducer
-));
+);

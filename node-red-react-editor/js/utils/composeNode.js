@@ -15,9 +15,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 			Object.assign(  this, 
               ...bindActionCreators(RegisterActions, props.dispatch), 
               ...bindActionCreators(DialogueActions, props.dispatch),
-           	);
-			
-	
+           	);	
 		}
 
 		/*
@@ -25,7 +23,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 		*/
 	
 		componentDidMount(){
-          this.registerType(nt, config, reducer);
+          //this.registerType(nt, config, reducer);
        	}
 		
 
@@ -54,10 +52,14 @@ export default function composeNode(Component, nt, config, reducer=null){
 	}
 
 	function select(state) {
-      	return {
-        	selected: state.nodes.selected,
+		let stateobj = {
+			selected: state.nodes.selected,
         	values: state.nodes.editingbuffer,
-    	}
+		}
+      	if (reducer){
+      		stateobj.local = state.nodes.selected ? state[state.nodes.selected.id] : null;
+      	}
+        return stateobj;
     }
 
     Node.PropTypes = {
@@ -66,5 +68,10 @@ export default function composeNode(Component, nt, config, reducer=null){
     	store: React.PropTypes.object,
 	}
 
-	return connect(select)(Node)
+	return {
+		type: 		nt,
+		def: 		config,
+		reducer: 	reducer,
+		node: 		connect(select)(Node),
+	}
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import composeNode from '../../utils/composeNode';
-import Textfield from '../../components/Textfield';
+import Textfield from '../../components/form/Textfield';
 
 class Node extends React.Component {
 

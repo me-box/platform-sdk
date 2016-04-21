@@ -42,3 +42,24 @@ export function range(start, stop, step) {
   return range;
 };
 
+export function partial(fn /*, args...*/) {
+	var slice = Array.prototype.slice;
+	var args = slice.call(arguments, 1);
+	return function() {
+		return fn.apply(this, args.concat(slice.call(arguments, 0)));
+	};
+}
+
+export function bindNodeIds(actionCreators, id){
+  
+  var keys = Object.keys(actionCreators)
+  var boundActionCreators = {}
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i]
+    var actionCreator = actionCreators[key]
+    if (typeof actionCreator === 'function') {
+       boundActionCreators[key] = partial(actionCreator, id);
+    }
+  }
+  return boundActionCreators
+};

@@ -56,7 +56,7 @@ class Node extends Component {
     static propTypes = {
         connectDragSource: PropTypes.func.isRequired,
         isDragging: PropTypes.bool.isRequired,
-        nt: PropTypes.string.isRequired
+        //nt: PropTypes.string.isRequired
     }
 
     render() {
