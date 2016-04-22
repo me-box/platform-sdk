@@ -29,7 +29,6 @@ export function reducer(state = {repeatOption:'none', units:'s', timeintervaluni
 	    									})
 	  	
 	  	case TOGGLE_BOOL_MENU:
-	  		console.log("tpggle biil menu!");
 	    	return Object.assign({}, state, {
 	    										boolMenu:!state.boolMenu,
 	    									})

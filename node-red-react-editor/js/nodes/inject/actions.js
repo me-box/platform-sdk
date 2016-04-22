@@ -41,7 +41,6 @@ export function togglePayloadMenu(id){
 }
 
 export function toggleBoolMenu(id){
-	console.log("toggling bool menu!")
 	return {
     	type: TOGGLE_BOOL_MENU,
   		id
