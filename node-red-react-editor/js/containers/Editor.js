@@ -9,10 +9,10 @@ import Sidebar from '../components/Sidebar';
 import Toolbar from '../components/Toolbar';
 
 import DragDropContainer from './DragDropContainer';
-import '../../style/sass/style.scss';
+
 import '../../style/font-awesome/css/font-awesome.min.css';
 import '../../style/bootstrap/css/bootstrap.min.css';
-
+import '../../style/sass/style.scss';
 
 class Editor extends Component {
 

@@ -3,6 +3,7 @@ import composeNode from '../../utils/composeNode';
 import Textfield from '../../components/form/Textfield';
 import Spinner from  '../../components/form/Spinner';
 import Select from '../../components/form/Select';
+import Payload from '../../components/form/Payload';
 import { connect } from 'react-redux';
 import {reducer} from './reducer';
 import { bindActionCreators } from 'redux';
@@ -29,6 +30,12 @@ class Node extends React.Component {
           const {repeatOption, payloadMenu} = local;
           const nameprops = Object.assign({}, this.props, {name:"name"});
           
+          const payloadprops = {
+              payloadMenu: payloadMenu,
+              type: 'timestamp',
+              togglePayloadMenu: this.togglePayloadMenu,
+          }
+
           const repeatprops = {
             options: REPEAT_OPTIONS,
             onSelect: this.intervalChanged,
@@ -47,16 +54,11 @@ class Node extends React.Component {
             style: {width:90}
           }
 
-          
-          const menu = payloadMenu ? <div className="red-ui-typedInput-options" style={{top: 35, left: 115, display: 'block'}}>
-                                      <a href="#" value="flow" style={{paddingLeft: '18px'}}>flow.</a>
-                                      <a href="#" value="global" style={{paddingLeft: '18px'}}>global.</a>
-                                      <a href="#" value="str"><img src="images/typedInput/az.png" style={{marginRight: '4px', height: '18px'}}/>string</a>
-                                      <a href="#" value="num"><img src="images/typedInput/09.png" style={{marginRight: '4px', height: '18px'}}/>number</a>
-                                      <a href="#" value="bool"><img src="images/typedInput/bool.png" style={{marginRight: '4px', height: '18px'}}/>boolean</a>
-                                      <a href="#" value="json"><img src="images/typedInput/json.png" style={{marginRight: '4px', height: '18px'}}/>JSON</a>
-                                      <a href="#" value="date" style={{paddingLeft: '18px'}}>timestamp</a>
-                                  </div> : null;
+          /*switch (payloadOption){
+
+
+
+          }*/
 
           let options = null;
 
@@ -150,29 +152,15 @@ class Node extends React.Component {
 
           }
 
+
           return  <div>
-
-                      {menu}
-
-
                       <div className="form-row">
                           <label>
                               <i className="fa fa-envelope"></i> <span data-i18n="node-red:common.label.payload">Payload</span>
                           </label>
-                          <div className="red-ui-typedInput-container red-ui-typedInput-focus" style={{marginRight: '0px', marginLeft: '0px'}}>
-                            <a onClick = {this.togglePayloadMenu} style={{width: '305px'}}>
-                              <i className="fa fa-sort-desc"></i>
-                              <span>timestamp</span>
-                            </a>
-                            <input type="text" style={{width: 300, marginRight: '0px', marginLeft: '0px', display:'block'}} className="red-ui-typedInput" />
-                                <a href="#" className="red-ui-typedInput-option-trigger" style={{display:'none'}}>
-                                  <span></span>
-                                  <i className="fa fa-sort-desc"></i>
-                                </a>
-                          </div>
+                          <Payload {...payloadprops}/>
                       </div>
                   
-
                       <div className="form-row">
                           <label><i className="fa fa-tasks"></i> <span data-i18n="common.label.topic">topic</span></label>
                           <input type="text" id="node-input-topic" style={{width: '70%'}}/>
