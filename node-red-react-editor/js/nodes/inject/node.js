@@ -27,13 +27,18 @@ class Node extends React.Component {
        render() {
           //local is all of the stuff in its reducer
           const {local} = this.props;
-          const {repeatOption, payloadMenu} = local;
+          const {repeatOption, payloadMenu, boolMenu, selectedPayload, selectedBool} = local;
           const nameprops = Object.assign({}, this.props, {name:"name"});
           
           const payloadprops = {
               payloadMenu: payloadMenu,
-              type: 'timestamp',
+              boolMenu: boolMenu,
               togglePayloadMenu: this.togglePayloadMenu,
+              toggleBoolMenu: this.toggleBoolMenu,
+              selectPayload: this.selectPayload,
+              selectedPayload: selectedPayload,
+              selectBool: this.selectBool,
+              selectedBool: selectedBool,
           }
 
           const repeatprops = {
@@ -53,15 +58,6 @@ class Node extends React.Component {
             onSelect: this.timeIntervalUnitsChanged,
             style: {width:90}
           }
-
-          /*switch (payloadOption){
-
-
-
-          }*/
-
-          let options = null;
-
 
           switch (repeatOption){
 

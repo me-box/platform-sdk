@@ -1,4 +1,4 @@
-import { INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU } from './constants';
+import { INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU, TOGGLE_BOOL_MENU, PAYLOAD_SELECTED, BOOL_SELECTED } from './constants';
 
 export function intervalChanged(id,event){
 
@@ -16,7 +16,14 @@ export function unitsChanged(id,event){
     id
   }
 }
-
+export function selectPayload(id, payload){
+	
+	return {
+    type: PAYLOAD_SELECTED,
+    payload,
+    id
+  }
+}
 
 export function timeIntervalUnitsChanged(id,event){
   return {
@@ -27,9 +34,27 @@ export function timeIntervalUnitsChanged(id,event){
 }
 
 export function togglePayloadMenu(id){
-  
   return {
     type: TOGGLE_PAYLOAD_MENU,
   	id
   }
 }
+
+export function toggleBoolMenu(id){
+	console.log("toggling bool menu!")
+	return {
+    	type: TOGGLE_BOOL_MENU,
+  		id
+  	}
+}
+
+export function selectBool(id, value){
+	return {
+    	type: BOOL_SELECTED,
+  		value,
+  		id
+  	}
+}
+
+
+
