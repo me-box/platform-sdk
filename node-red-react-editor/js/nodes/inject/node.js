@@ -59,6 +59,8 @@ class Node extends React.Component {
             style: {width:90}
           }
 
+          let options = null;
+
           switch (repeatOption){
 
             case "none":
