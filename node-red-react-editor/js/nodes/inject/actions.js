@@ -1,10 +1,10 @@
 import { INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU, TOGGLE_BOOL_MENU, PAYLOAD_SELECTED, BOOL_SELECTED } from './constants';
 
-export function intervalChanged(id,event){
+export function intervalChanged(id,value){
 
   return {
     type: INTERVAL_CHANGED,
-    value:event.target.value,
+    value,
     id
   }
 }

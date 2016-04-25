@@ -1,4 +1,4 @@
-import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_CHANGED, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED,  DIALOGUE_OK, DIALOGUE_CANCEL, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES,NODE_UPDATE_VALUE_KEY, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED,  DIALOGUE_OK, DIALOGUE_CANCEL, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
 import { NODE_WIDTH, NODE_HEIGHT, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth} from '../utils/utils';
 
@@ -66,13 +66,6 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       return Object.assign({}, state, {
         draggingNode: action.node.id,
       })
-
-    case NODE_CHANGED:
-     
-      return Object.assign({}, state, {
-        editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:action.value})
-      })
-      return state;
     
     case NODE_DOUBLE_CLICKED:
      
@@ -117,6 +110,34 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
           return node;
         })
     })
+
+    case NODE_INIT_VALUES:
+     
+      return Object.assign({}, state, {
+        editingbuffer : {[action.property]:action.value}
+      })
+    
+      return state;
+
+
+    case NODE_UPDATE_VALUE:
+      //handle array case here too?
+      return Object.assign({}, state, {
+        editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:action.value})
+      })
+    
+      return state;
+
+    
+    case NODE_UPDATE_VALUE_KEY:
+      //do some magic with the acuon value too - if array etc.
+      const newobject = Object.assign({}, state.editingbuffer[action.key] || {}, action.value);
+
+      return Object.assign({}, state, {
+        editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:newobject}),
+      })
+    
+      return state;
 
 	  default:
 	    return state;

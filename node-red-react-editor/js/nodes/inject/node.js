@@ -9,7 +9,7 @@ import {reducer} from './reducer';
 import { bindActionCreators } from 'redux';
 import { bindNodeIds } from '../../utils/utils';
 import * as Actions from './actions';
-import {REPEAT_OPTIONS, INTERVAL_OPTIONS, TIMEUNIT_OPTIONS} from './constants';
+import {REPEAT_OPTIONS, INTERVAL_OPTIONS, TIMEUNIT_OPTIONS, REPEAT_DEFAULT_OBJECTS} from './constants';
 
 import './style.css';
 
@@ -21,14 +21,24 @@ class Node extends React.Component {
             const id = props.selected.id;
             Object.assign(  this, 
               ...bindActionCreators(bindNodeIds(Actions, id), props.dispatch), 
-            );  
+            ); 
+            //props.initNodeValue() 
        }
 
        render() {
           //local is all of the stuff in its reducer
           const {local} = this.props;
           const {repeatOption, payloadMenu, boolMenu, selectedPayload, selectedBool} = local;
-          const nameprops = Object.assign({}, this.props, {name:"name"});
+          
+          const nameprops = {
+              name: "name",
+              values: this.props.values,
+              icon: this.props.icon,
+              onChange: (property, event)=>{
+                  this.props.updateNode(property, event.target.value);
+              },
+              selected: this.props.selected,
+          }
           
           const payloadprops = {
               payloadMenu: payloadMenu,
@@ -43,7 +53,12 @@ class Node extends React.Component {
 
           const repeatprops = {
             options: REPEAT_OPTIONS,
-            onSelect: this.intervalChanged,
+
+            onSelect: (event)=>{
+              this.intervalChanged(event.target.value);
+              this.props.initNodeValue(event.target.value, REPEAT_DEFAULT_OBJECTS[event.target.value] || {});
+            },
+            
             style: {width:'73%'},
           }
        

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
-import {changeNode} from '../actions/NodeActions';
+import {updateNode, initNodeValue, updateNodeValueKey} from '../actions/NodeActions';
 
 export default function composeNode(Component, nt, config, reducer=null){
 
@@ -32,7 +32,9 @@ export default function composeNode(Component, nt, config, reducer=null){
 		   const {selected, dispatch} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
-    	   		onChange: bindActionCreators(changeNode.bind(this, selected), this.props.dispatch),
+    	   		updateNode: bindActionCreators(updateNode.bind(this, selected), this.props.dispatch),
+    	   		initNodeValue: bindActionCreators(initNodeValue.bind(this, selected), this.props.dispatch),
+    	   		updateNodeValueKey: bindActionCreators(updateNodeValueKey.bind(this, selected), this.props.dispatch),
     	   })
 
            const dialogueprops = {

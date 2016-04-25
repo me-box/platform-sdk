@@ -33,3 +33,10 @@ export const TIMEUNIT_OPTIONS = [
 					                {name: '30', value: '30'},
 					                {name: '60', value: '0'},
 					            ];
+
+export const REPEAT_DEFAULT_OBJECTS = {
+		'none':				{type:'none'},
+		'interval':			{type:'interval', duration:1, fidelity: 'seconds'},
+		'interval-time':	{type:'interval', duration:1, fidelity: 'seconds'},
+		'time':				{type:'interval', duration:1, fidelity: 'seconds'},
+};

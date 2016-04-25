@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { REGISTER_TYPE, REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_CHANGED } from '../constants/ActionTypes';
+import { REGISTER_TYPE, REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY} from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET, NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth} from '../utils/utils';
 import fetch from 'isomorphic-fetch'
@@ -83,13 +83,34 @@ export function selectNode(node){
   }
 }
 
-export function changeNode(node, property, event, value){
+export function initNodeValue(node, property, value){
 
   return {
-    type: NODE_CHANGED,
+    type: NODE_INIT_VALUES,
     node,
     property,
-    value: event.target.value,
+    value,
+  }
+}
+
+export function updateNode(node, property, value){
+
+  return {
+    type: NODE_UPDATE_VALUE,
+    node,
+    property,
+    value,
+  }
+}
+
+export function updateNodeValueKey(node, property, key, value){
+
+  return {
+    type: NODE_UPDATE_VALUE_KEY,
+    node,
+    property,
+    key,
+    value,
   }
 }
 
