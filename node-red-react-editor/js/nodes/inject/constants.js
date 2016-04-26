@@ -35,8 +35,8 @@ export const TIMEUNIT_OPTIONS = [
 					            ];
 
 export const REPEAT_DEFAULT_OBJECTS = {
-		'none':				{type:'none'},
-		'interval':			{type:'interval', duration:1, fidelity: 'seconds'},
-		'interval-time':	{type:'interval', duration:1, fidelity: 'seconds'},
-		'time':				{type:'interval', duration:1, fidelity: 'seconds'},
+		'none':				{type:'none', atstart:false},
+		'interval':			{type: 'interval', duration:1, fidelity: 'seconds', atstart:false},
+		'interval-time':	{type: 'interval-time', duration:1, start: 0, end: 0, on:["1","2","4"]},
+		'time':				{type:'time', at:'12:00', on:[1,2,4]},
 };

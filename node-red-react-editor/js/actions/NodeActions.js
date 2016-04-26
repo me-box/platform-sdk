@@ -104,7 +104,7 @@ export function updateNode(node, property, value){
 }
 
 export function updateNodeValueKey(node, property, key, value){
-
+  
   return {
     type: NODE_UPDATE_VALUE_KEY,
     node,
@@ -205,7 +205,7 @@ export function fetchNodes(store) {
           loadNodes(json, store, dispatch);
           return json;
       }).then(function(json){
-          dispatch(receiveNodes(json));
+          dispatch(receiveNodes(json.nodes));
       });
     
       

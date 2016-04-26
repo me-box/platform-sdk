@@ -56,7 +56,7 @@ class Node extends React.Component {
 
             onSelect: (event)=>{
               this.intervalChanged(event.target.value);
-              this.props.initNodeValue(event.target.value, REPEAT_DEFAULT_OBJECTS[event.target.value] || {});
+              this.props.updateNode('repeat', REPEAT_DEFAULT_OBJECTS[event.target.value] || {});
             },
             
             style: {width:'73%'},
@@ -119,17 +119,17 @@ class Node extends React.Component {
                       <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: '5px'}} data-i18n="inject.on">on</div>
                       <div style={{display:'inline-block'}}>
                           <div>
-                              <label><input type='checkbox' checked value='1'/><span data-i18n="inject.days.0">Monday</span></label>
-                              <label><input type='checkbox' checked value='2'/><span data-i18n="inject.days.1">Tuesday</span></label>
-                              <label><input type='checkbox' checked value='3'/><span data-i18n="inject.days.2">Wednesday</span></label>
+                              <label><input type='checkbox' value='1' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/><span data-i18n="inject.days.0">Monday</span></label>
+                              <label><input type='checkbox' value='2' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/><span data-i18n="inject.days.1">Tuesday</span></label>
+                              <label><input type='checkbox' value='3' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/><span data-i18n="inject.days.2">Wednesday</span></label>
                           </div>
                           <div>
-                              <label><input type='checkbox' checked value='4'/> <span data-i18n="inject.days.3">Thursday</span></label>
-                              <label><input type='checkbox' checked value='5'/> <span data-i18n="inject.days.4">Friday</span></label>
-                              <label><input type='checkbox' checked value='6'/> <span data-i18n="inject.days.5">Saturday</span></label>
+                              <label><input type='checkbox' value='4' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.3">Thursday</span></label>
+                              <label><input type='checkbox' value='5' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.4">Friday</span></label>
+                              <label><input type='checkbox' value='6' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.5">Saturday</span></label>
                           </div>
                           <div>
-                              <label><input type='checkbox' checked value='0'/> <span data-i18n="inject.days.6">Sunday</span></label>
+                              <label><input type='checkbox' value='0' onClick={this._handleSelectDay.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.6">Sunday</span></label>
                           </div>
                       </div>
                     </div>
@@ -199,6 +199,9 @@ class Node extends React.Component {
                   </div>
        }
 
+       _handleSelectDay(property, key, event){
+          this.props.updateNodeValueKey(property, key, event.target.value)
+       }
 }
 
 export default composeNode(Node, 'inject',{

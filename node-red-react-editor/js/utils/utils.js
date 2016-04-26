@@ -63,3 +63,14 @@ export function bindNodeIds(actionCreators, id){
   }
   return boundActionCreators
 };
+
+export function toggleItem(anarray, item){
+	let newarray = Object.assign([], anarray);
+	const index = newarray.indexOf(item);
+	if (index != -1){
+		newarray.splice(index,1);
+	}else{
+		newarray.push(item);
+	}
+	return newarray;
+}

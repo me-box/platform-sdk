@@ -1,6 +1,6 @@
 import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES,NODE_UPDATE_VALUE_KEY, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED,  DIALOGUE_OK, DIALOGUE_CANCEL, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
 import { NODE_WIDTH, NODE_HEIGHT, GRID_SIZE} from '../constants/ViewConstants';
-import {calculateTextWidth} from '../utils/utils';
+import {calculateTextWidth, toggleItem} from '../utils/utils';
 
 
 function updateNode(current, changes){
@@ -26,7 +26,6 @@ function updateNode(current, changes){
   _n.w = w; 
 
   return _n;
-
 }
 
 export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null, editingbuffer: {}}, action) {
@@ -131,7 +130,28 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     
     case NODE_UPDATE_VALUE_KEY:
       //do some magic with the acuon value too - if array etc.
-      const newobject = Object.assign({}, state.editingbuffer[action.key] || {}, action.value);
+      
+      const property = state.editingbuffer[action.property] || {};
+      const value    = property[action.key];
+      let v = {};
+
+      if (value){
+         if (value.constructor === Array){
+          v[action.key] = toggleItem(value, action.value);
+         }else{
+           v[action.key] = action.value;
+         }
+      }
+
+      console.log("ok trying an assign of ");
+      console.log(state.editingbuffer[action.property]);
+      console.log("key " + property);
+      console.log("and");
+      console.log(v);
+
+      const newobject = Object.assign({}, state.editingbuffer[action.property] || {}, v);
+      console.log("and got");
+      console.log(newobject);
 
       return Object.assign({}, state, {
         editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:newobject}),
