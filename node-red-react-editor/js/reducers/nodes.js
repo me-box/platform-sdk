@@ -1,5 +1,5 @@
-import { REQUEST_NODES, RECEIVE_NODES, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES,NODE_UPDATE_VALUE_KEY, NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED,  DIALOGUE_OK, DIALOGUE_CANCEL, NODE_MOUSE_ENTER, NODE_MOUSE_LEAVE, MOUSE_UP, MOUSE_MOVE} from '../constants/ActionTypes';
-import { NODE_WIDTH, NODE_HEIGHT, GRID_SIZE} from '../constants/ViewConstants';
+import * as ActionType from '../constants/ActionTypes';
+import { NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth, toggleItem} from '../utils/utils';
 
 
@@ -30,15 +30,17 @@ function updateNode(current, changes){
 
 export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null, editingbuffer: {}}, action) {
   
+  let property, value, v;
+
   switch (action.type) {
 	  
-	  case  REQUEST_NODES:
+	  case  ActionType.REQUEST_NODES:
 	    return Object.assign({}, state, {
         	isFetching: true,
         	didInvalidate: false
       	})
 	  
-	  case RECEIVE_NODES:
+	  case ActionType.RECEIVE_NODES:
 	  	return Object.assign({}, state, {
         	isFetching: false,
         	didInvalidate: false,
@@ -46,7 +48,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
         	lastUpdated: action.receivedAt
       	})
 
-    case NODE_DROPPED:
+    case ActionType.NODE_DROPPED:
        
         return Object.assign({}, state, {
             activeNodes: [  ...state.activeNodes,
@@ -54,19 +56,19 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
                           ]
         })
 
-    case MOUSE_UP:
+    case ActionType.MOUSE_UP:
       return Object.assign({}, state, {
         draggingNode: null,
       });
     
 
-    case NODE_MOUSE_DOWN:
+    case ActionType.NODE_MOUSE_DOWN:
       
       return Object.assign({}, state, {
         draggingNode: action.node.id,
       })
     
-    case NODE_DOUBLE_CLICKED:
+    case ActionType.NODE_DOUBLE_CLICKED:
      
       return Object.assign({}, state, {
         draggingNode: null,
@@ -74,7 +76,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       })
       return state;
 
-    case MOUSE_MOVE:
+    case ActionType.MOUSE_MOVE:
       
       if (state.draggingNode != null){
 
@@ -90,14 +92,14 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       }
       return state;
 
-    case DIALOGUE_CANCEL:
+    case ActionType.DIALOGUE_CANCEL:
       return Object.assign({}, state, {
         selected: null,
         editingbuffer: {},
     })
     
     //set the values in current node to values in editingbuffer
-    case DIALOGUE_OK:
+    case ActionType.DIALOGUE_OK:
       
       return Object.assign({}, state, {
          selected: null,
@@ -110,7 +112,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
         })
     })
 
-    case NODE_INIT_VALUES:
+    case ActionType.NODE_INIT_VALUES:
      
       return Object.assign({}, state, {
         editingbuffer : {[action.property]:action.value}
@@ -119,7 +121,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       return state;
 
 
-    case NODE_UPDATE_VALUE:
+    case ActionType.NODE_UPDATE_VALUE:
       //handle array case here too?
       return Object.assign({}, state, {
         editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:action.value})
@@ -127,13 +129,30 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     
       return state;
 
-    
-    case NODE_UPDATE_VALUE_KEY:
+    case ActionType.NODE_INCREMENT_VALUE_KEY:
+      
+      console.log('sene node increment vaklye key')
+      property = state.editingbuffer[action.property] || {};
+      value    = property[action.key] || 1;
+      v = {};
+
+      v[action.key] = Math.max(1, value + action.amount);
+            
+      const nobj = Object.assign({}, state.editingbuffer[action.property] || {}, v);
+      
+      return Object.assign({}, state, {
+          editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:nobj}),
+       })
+      
+
+      return state;
+
+    case ActionType.NODE_UPDATE_VALUE_KEY:
       //do some magic with the acuon value too - if array etc.
       
-      const property = state.editingbuffer[action.property] || {};
-      const value    = property[action.key];
-      let v = {};
+      property = state.editingbuffer[action.property] || {};
+      value    = property[action.key];
+      v = {};
 
       if (value){
          if (value.constructor === Array){
@@ -143,15 +162,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
          }
       }
 
-      console.log("ok trying an assign of ");
-      console.log(state.editingbuffer[action.property]);
-      console.log("key " + property);
-      console.log("and");
-      console.log(v);
-
       const newobject = Object.assign({}, state.editingbuffer[action.property] || {}, v);
-      console.log("and got");
-      console.log(newobject);
 
       return Object.assign({}, state, {
         editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:newobject}),

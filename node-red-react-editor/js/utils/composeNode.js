@@ -4,12 +4,16 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
-import {updateNode, initNodeValue, updateNodeValueKey} from '../actions/NodeActions';
+import {updateNode, initNodeValue, updateNodeValueKey, incrementNodeValueKey} from '../actions/NodeActions';
 
 export default function composeNode(Component, nt, config, reducer=null){
 
 	class Node extends React.Component{
 		
+		static defaultProps = {
+      		values: {}
+  		}
+
 		constructor(props){
 			super(props);
 			Object.assign(  this, 
@@ -35,6 +39,7 @@ export default function composeNode(Component, nt, config, reducer=null){
     	   		updateNode: bindActionCreators(updateNode.bind(this, selected), this.props.dispatch),
     	   		initNodeValue: bindActionCreators(initNodeValue.bind(this, selected), this.props.dispatch),
     	   		updateNodeValueKey: bindActionCreators(updateNodeValueKey.bind(this, selected), this.props.dispatch),
+    	   		incrementNodeValueKey: bindActionCreators(incrementNodeValueKey.bind(this, selected), this.props.dispatch),
     	   })
 
            const dialogueprops = {

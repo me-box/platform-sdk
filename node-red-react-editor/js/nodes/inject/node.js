@@ -9,7 +9,7 @@ import {reducer} from './reducer';
 import { bindActionCreators } from 'redux';
 import { bindNodeIds } from '../../utils/utils';
 import * as Actions from './actions';
-import {REPEAT_OPTIONS, INTERVAL_OPTIONS, TIMEUNIT_OPTIONS, REPEAT_DEFAULT_OBJECTS} from './constants';
+import {REPEAT_OPTIONS, INTERVAL_OPTIONS,TIMEINTERVAL_OPTIONS, TIMEUNIT_OPTIONS, REPEAT_DEFAULT_OBJECTS} from './constants';
 
 import './style.css';
 
@@ -22,6 +22,8 @@ class Node extends React.Component {
             Object.assign(  this, 
               ...bindActionCreators(bindNodeIds(Actions, id), props.dispatch), 
             ); 
+            this._incrementInterval = this._incrementInterval.bind(this);
+            this._decrementInterval = this._decrementInterval.bind(this);
             //props.initNodeValue() 
        }
 
@@ -30,6 +32,8 @@ class Node extends React.Component {
           const {local} = this.props;
           const {repeatOption, payloadMenu, boolMenu, selectedPayload, selectedBool} = local;
           
+          console.log(this.props.values);
+
           const nameprops = {
               name: "name",
               values: this.props.values,
@@ -74,6 +78,25 @@ class Node extends React.Component {
             style: {width:90}
           }
 
+          const timeintervalstartprops = {
+            options: TIMEINTERVAL_OPTIONS,
+            onSelect: this.timeIntervalStartChanged,
+            style: {width:90}
+          }
+
+          const timeintervalendprops = {
+            options: TIMEINTERVAL_OPTIONS,
+            onSelect: this.timeIntervalEndChanged,
+            style: {width:90}
+          }
+
+          const spinnerprops = {
+            onIncrement: this._incrementInterval,
+            onDecrement: this._decrementInterval,
+            value: this.props.values.repeat ? this.props.values.repeat.duration || 1 : 1, 
+          }
+
+
           let options = null;
 
           switch (repeatOption){
@@ -92,7 +115,7 @@ class Node extends React.Component {
               options = <div>
                           <div className="form-row inject-time-row" style={{display:'block'}}>
                             <span data-i18n="inject.every">every</span>
-                            <Spinner />
+                            <Spinner {...spinnerprops} />
                             <Select  {...intervalprops}/>
                             <br/>
                           </div> 
@@ -112,9 +135,10 @@ class Node extends React.Component {
                     <span data-i18n="inject.minutes">minutes</span>
                     <br/>
                     <span data-i18n="inject.between">between</span> 
-                    <select id="inject-time-interval-time-start" className="inject-time-times"></select>
+                    <Select {...timeintervalstartprops} />
                     <span data-i18n="inject.and">and</span>
-                    <select id="inject-time-interval-time-end" className="inject-time-times"></select><br/>
+                    <Select {...timeintervalendprops} />
+                    <br/>
                     <div id="inject-time-interval-time-days" className="inject-time-days">
                       <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: '5px'}} data-i18n="inject.on">on</div>
                       <div style={{display:'inline-block'}}>
@@ -197,6 +221,14 @@ class Node extends React.Component {
                           <strong>Note:</strong> "interval between times" and "at a specific time" will use cron. See info box for details.
                       </div>
                   </div>
+       }
+
+       _incrementInterval(){
+          this.props.incrementNodeValueKey('repeat', 'duration', 1);
+       }
+
+       _decrementInterval(){
+          this.props.incrementNodeValueKey('repeat', 'duration', -1);
        }
 
        _handleSelectDay(property, key, event){

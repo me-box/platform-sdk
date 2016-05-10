@@ -28,7 +28,23 @@ export function selectPayload(id, payload){
 export function timeIntervalUnitsChanged(id,event){
   return {
     type: TIMEINTERVAL_UNITS_CHANGED,
+    value: event.target.value,
+    id
+  }
+}
+
+export function timeIntervalStartChanged(id,event){
+  return {
+    type: TIMEINTERVAL_START_CHANGED,
     value:event.target.value,
+    id
+  }
+}
+
+export function timeIntervalEndChanged(id,event){
+  return {
+    type: TIMEINTERVAL_END_CHANGED,
+    value: event.target.value,
     id
   }
 }

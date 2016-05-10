@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { REGISTER_TYPE, REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY} from '../constants/ActionTypes';
+import { REGISTER_TYPE, REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET, NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth} from '../utils/utils';
 import fetch from 'isomorphic-fetch'
@@ -104,13 +104,24 @@ export function updateNode(node, property, value){
 }
 
 export function updateNodeValueKey(node, property, key, value){
-  
+
   return {
     type: NODE_UPDATE_VALUE_KEY,
     node,
     property,
     key,
     value,
+  }
+}
+
+export function incrementNodeValueKey(node, property, key, amount){
+  console.log("seen incremant actoion!");
+  return {
+    type: NODE_INCREMENT_VALUE_KEY,
+    node,
+    property,
+    key,
+    amount,
   }
 }
 
