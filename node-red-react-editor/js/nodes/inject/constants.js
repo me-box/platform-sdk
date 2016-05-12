@@ -1,12 +1,9 @@
 export const INTERVAL_CHANGED = 'INTERVAL_CHANGED';
-export const UNITS_CHANGED = 'UNITS_CHANGED';
-export const TIMEINTERVAL_UNITS_CHANGED = 'TIMEINTERVAL_UNITS_CHANGED';
-export const TIMEINTERVAL_START_CHANGED = 'TIMEINTERVAL_START_CHANGED';
-export const TIMEINTERVAL_END_CHANGED = 'TIMEINTERVAL_END_CHANGED';
 export const TOGGLE_PAYLOAD_MENU = 'TOGGLE_PAYLOAD_MENU';
 export const TOGGLE_BOOL_MENU = 'TOGGLE_BOOL_MENU';
 export const PAYLOAD_SELECTED = 'PAYLOAD_SELECTED';
 export const BOOL_SELECTED = 'BOOL_SELECTED';
+export const INCREMENT_INTERVAL = 'INCREMENT_INTERVAL';
 
 export const REPEAT_OPTIONS =  [
 									{name:'none', value:'none'},
@@ -65,7 +62,7 @@ export const TIMEINTERVAL_OPTIONS = [
 
 export const REPEAT_DEFAULT_OBJECTS = {
 		'none':				{type:'none', atstart:false},
-		'interval':			{type: 'interval', duration:1, fidelity: 'seconds', atstart:false},
-		'interval-time':	{type: 'interval-time', duration:1, start: 0, end: 0, on:["1","2","4"]},
-		'time':				{type:'time', at:'12:00', on:[1,2,4]},
+		'interval':			{type: 'interval', frequency:1, units: 's', atstart:false},
+		'interval-time':	{type: 'interval-time', frequency:1, start: 0, end: 0, on:[]},
+		'time':				{type:'time', at:'12:00', on:[1,2,4], timeInterval: 0},
 };

@@ -130,13 +130,12 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       return state;
 
     case ActionType.NODE_INCREMENT_VALUE_KEY:
-      
-      console.log('sene node increment vaklye key')
+
       property = state.editingbuffer[action.property] || {};
-      value    = property[action.key] || 1;
+      value    = property[action.key];
       v = {};
 
-      v[action.key] = Math.max(1, value + action.amount);
+      v[action.key] = Math.max(action.min || value + action.amount, value + action.amount);
             
       const nobj = Object.assign({}, state.editingbuffer[action.property] || {}, v);
       
@@ -152,21 +151,23 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       
       property = state.editingbuffer[action.property] || {};
       value    = property[action.key];
-      v = {};
 
-      if (value){
-         if (value.constructor === Array){
-          v[action.key] = toggleItem(value, action.value);
-         }else{
-           v[action.key] = action.value;
-         }
+
+      if (value != undefined){
+        v = {};
+    
+        if (value.constructor === Array){
+            v[action.key] = toggleItem(value, action.value);
+        }else{
+             v[action.key] = action.value;
+        }
+
+        const newobject = Object.assign({}, state.editingbuffer[action.property] || {}, v);
+
+        return Object.assign({}, state, {
+          editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:newobject}),
+        })
       }
-
-      const newobject = Object.assign({}, state.editingbuffer[action.property] || {}, v);
-
-      return Object.assign({}, state, {
-        editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:newobject}),
-      })
     
       return state;
 

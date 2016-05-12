@@ -18,7 +18,7 @@ class Select extends React.Component {
         return <option key={option.value} value={option.value}>{option.name}</option>
     });
 
-		return(  <select onChange={this.props.onSelect} style={this.props.style}>
+		return(  <select onChange={this.props.onSelect} value={this.props.value} style={this.props.style}>
                 {options}
              </select>);
 	}

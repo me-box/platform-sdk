@@ -1,9 +1,19 @@
-import {INTERVAL_CHANGED, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU, TOGGLE_BOOL_MENU, PAYLOAD_SELECTED, BOOL_SELECTED} from './constants';
+import {INTERVAL_CHANGED, INCREMENT_INTERVAL, UNITS_CHANGED, TIMEINTERVAL_UNITS_CHANGED, TOGGLE_PAYLOAD_MENU, TOGGLE_BOOL_MENU, PAYLOAD_SELECTED, BOOL_SELECTED} from './constants';
+import nodes from '../../reducers/nodes';
 
-export function reducer(state = {repeatOption:'none', units:'s', timeintervalunits:1, payloadMenu:false, boolMenu: false, selectedPayload:'date', selectedBool:'true'}, action){
-	 
+export function reducer(state = {repeatOption:'none', units:'s', timeintervalunits:1, payloadMenu:false, boolMenu: false, selectedPayload:'date', selectedBool:'true', timeInterval:0}, action){
+	
+	
+	console.log("ok stat is ");
+	console.log(state);
+	
 	 switch (action.type) {
 	 	
+	 	case INCREMENT_INTERVAL:	
+	 		return Object.assign({}, state, {
+	 			timeInterval: state.timeInterval + action.amount,
+	 		});
+
 	 	case INTERVAL_CHANGED:
 	    	return Object.assign({}, state, {
 	    										repeatOption:action.value,

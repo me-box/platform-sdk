@@ -31,6 +31,9 @@ export default function configureStore(initialState) {
 
 export function register(store, name, reducer){
 
+  console.log('registering reducer');
+  console.log(reducer);
+  
   store.asyncReducers[name] = reducer;  
 
   const reducers = {

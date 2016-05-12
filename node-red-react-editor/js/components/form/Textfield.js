@@ -7,10 +7,10 @@ class Textfield extends React.Component {
 
 	render() {
 		
-		const {values, selected, name, onChange, icon} = this.props;
+		const {value, selected, name, onChange, icon} = this.props;
 
 		const props = {
-            value: values[name] || selected[name] || "",
+            value: value,
             onChange: onChange.bind(this, name),
         }
 

@@ -36,10 +36,10 @@ export default function composeNode(Component, nt, config, reducer=null){
 		   const {selected, dispatch} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
-    	   		updateNode: bindActionCreators(updateNode.bind(this, selected), this.props.dispatch),
-    	   		initNodeValue: bindActionCreators(initNodeValue.bind(this, selected), this.props.dispatch),
-    	   		updateNodeValueKey: bindActionCreators(updateNodeValueKey.bind(this, selected), this.props.dispatch),
-    	   		incrementNodeValueKey: bindActionCreators(incrementNodeValueKey.bind(this, selected), this.props.dispatch),
+    	   		updateNode: bindActionCreators(updateNode, this.props.dispatch),
+    	   		initNodeValue: bindActionCreators(initNodeValue, this.props.dispatch),
+    	   		updateNodeValueKey: bindActionCreators(updateNodeValueKey, this.props.dispatch),
+    	   		incrementNodeValueKey: bindActionCreators(incrementNodeValueKey, this.props.dispatch),
     	   })
 
            const dialogueprops = {

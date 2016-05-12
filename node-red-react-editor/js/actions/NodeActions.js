@@ -83,45 +83,42 @@ export function selectNode(node){
   }
 }
 
-export function initNodeValue(node, property, value){
+export function initNodeValue(property, value){
 
   return {
     type: NODE_INIT_VALUES,
-    node,
     property,
     value,
   }
 }
 
-export function updateNode(node, property, value){
+export function updateNode(property, value){
 
   return {
     type: NODE_UPDATE_VALUE,
-    node,
     property,
     value,
   }
 }
 
-export function updateNodeValueKey(node, property, key, value){
+export function updateNodeValueKey(property, key, value){
 
   return {
     type: NODE_UPDATE_VALUE_KEY,
-    node,
     property,
     key,
     value,
   }
 }
 
-export function incrementNodeValueKey(node, property, key, amount){
-  console.log("seen incremant actoion!");
+export function incrementNodeValueKey(property, key, amount, min, max){
   return {
     type: NODE_INCREMENT_VALUE_KEY,
-    node,
     property,
     key,
     amount,
+    min,
+    max,
   }
 }
 
