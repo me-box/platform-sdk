@@ -4,6 +4,10 @@ import {calculateTextWidth, toggleItem} from '../utils/utils';
 
 
 function updateNode(current, changes){
+
+  console.log("changes are");
+  console.log(changes);
+  
   let _n = Object.assign(current, changes);
 
   try {

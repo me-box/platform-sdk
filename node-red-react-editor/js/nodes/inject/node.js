@@ -22,21 +22,14 @@ class Node extends React.Component {
             const id = props.selected.id;
             Object.assign(  this, 
               ...bindActionCreators(bindNodeIds(Actions, id), props.dispatch), 
-            ); 
-
-            
-            this._incrementInterval = this._incrementInterval.bind(this);
-            this._decrementInterval = this._decrementInterval.bind(this);
-
-            this._timeIntervalStartChanged = this._timeIntervalStartChanged.bind(this);
-            this._timeIntervalEndChanged = this._timeIntervalEndChanged.bind(this);
+            );
        }
 
 
        render() {
           //local is all of the stuff in its reducer
           const {local} = this.props;
-          const {repeatOption, payloadMenu, boolMenu, selectedPayload, selectedBool} = local;
+          const {repeatOption, payloadMenu, boolMenu, payloadType, payload, selectedBool} = local;
           
 
           const nameprops = {
@@ -59,17 +52,16 @@ class Node extends React.Component {
               selected: this.props.selected,
 
           }
-
-          /*<label><i className="fa fa-tasks"></i> <span data-i18n="common.label.topic">topic</span></label>
-                          <input type="text" id="node-input-topic" style={{width: '70%'}}/>*/
           
           const payloadprops = {
               payloadMenu: payloadMenu,
               boolMenu: boolMenu,
               togglePayloadMenu: this.togglePayloadMenu,
               toggleBoolMenu: this.toggleBoolMenu,
-              selectPayload: this.selectPayload,
-              selectedPayload: selectedPayload,
+              selectPayloadType: this.selectPayloadType,
+              payloadType: payloadType,
+              payload: payload,
+              onChange: this.updatePayload,
               selectBool: this.selectBool,
               selectedBool: selectedBool,
           }
@@ -78,26 +70,28 @@ class Node extends React.Component {
             options: REPEAT_OPTIONS,
 
             onSelect: (event)=>{
-              this.intervalChanged(event.target.value);
-              this.props.updateNode('repeat', REPEAT_DEFAULT_OBJECTS[event.target.value] || {});
+              this.repeatOptionChanged(event.target.value);
+              //this.props.updateNode('repeat', REPEAT_DEFAULT_OBJECTS[event.target.value] || {});
             },
             
             style: {width:'73%'},
           }
        
           /******** props for 'interval' components ************/
+          console.log("local is!!!");
+          console.log(local);
 
           const unitprops = {
             options: INTERVAL_OPTIONS,
-            onSelect: this._updateProperty.bind(this, 'repeat', 'units'),
+            onSelect: this.updateRepeatUnits.bind(this),
             style: {width: 100},
-            value: this.props.values.repeat ? this.props.values.repeat.units : 's',
+            value: local.units ? local.units : 's',
           }
 
           const intervalspinnerprops = {
-            onIncrement: this._incrementInterval.bind(this,{property:'repeat', key:'frequency', amount:1}),
-            onDecrement:this._incrementInterval.bind(this,{property:'repeat', key:'frequency', amount:-1, min: -5}),
-            value: this.props.values.repeat ? this.props.values.repeat.frequency || 1 : 1, 
+            onIncrement: this.incrementRepeat.bind(this,{amount:1}),
+            onDecrement: this.incrementRepeat.bind(this,{amount:-1, min: -5}),
+            value: local.repeat ? local.repeat || 1 : 1, 
             classes : ['inject-time-count'],
           }
 
@@ -105,20 +99,20 @@ class Node extends React.Component {
 
           const timeintervalfrequencyprops = {
             options: TIMEUNIT_OPTIONS,
-            onSelect: this._updateProperty.bind(this, 'repeat', 'frequency'),
+            onSelect: this.updateTimeIntervalFrequency.bind(this),
             style: {width:90}
           }
 
           const timeintervalstartprops = {
             options: TIMEINTERVAL_OPTIONS,
-            onSelect: this._timeIntervalStartChanged,
+            onSelect: this.updateTimeIntervalStart.bind(this),
             style: {width:90},
             value: this.props.values.repeat ? this.props.values.repeat.start : '0',
           }
 
           const timeintervalendprops = {
             options: TIMEINTERVAL_OPTIONS,
-            onSelect: this._timeIntervalEndChanged,
+            onSelect: this.updateTimeIntervalEnd.bind(this),
             style: {width:90},
             value: this.props.values.repeat ? this.props.values.repeat.end : '0',
           }
@@ -126,9 +120,9 @@ class Node extends React.Component {
           /******** props for 'time' components ************/
           const timespinnerprops = {
             //these inceremant. decrement should be handled in the local actions!! then pased on to the main later!
-            onIncrement: this.incrementInterval.bind(this,{property:'repeat', key:'at', amount:1}),//generalise this
-            onDecrement: this.incrementInterval.bind(this,{property:'repeat', key:'at', amount:-1}),
-            value: this.props.values.repeat ? this.props.values.repeat.at : "12.00",
+            onIncrement: this.incrementSpecificTime.bind(this,1),//generalise this
+            onDecrement: this.incrementSpecificTime.bind(this,-1),
+            value: local.specificTime ? local.specificTime : "12.00",
             classes : [],
             style: {width: 75},
           }
@@ -141,7 +135,7 @@ class Node extends React.Component {
               
               options = <div className="form-row" id="node-once">
                           <label>&nbsp;</label>
-                          <input type="checkbox" onChange={this._updateChecked.bind(this, 'repeat', 'atstart')} style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
+                          <input type="checkbox" onChange={this.updateOnce.bind(this)} style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
                           <label style={{width: '70%'}}>inject once at start?</label>
                         </div>
               break;
@@ -157,7 +151,7 @@ class Node extends React.Component {
                           </div> 
                           <div className="form-row" id="node-once">
                             <label>&nbsp;</label>
-                            <input type="checkbox" onChange={this._updateChecked.bind(this, 'repeat', 'atstart')} id="node-input-once" style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
+                            <input type="checkbox" onChange={this.updateOnce.bind(this)} id="node-input-once" style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
                             <label style={{width: '70%'}}>inject once at start?</label>
                           </div>
                         </div>
@@ -179,17 +173,17 @@ class Node extends React.Component {
                       <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: '5px'}} data-i18n="inject.on">on</div>
                       <div style={{display:'inline-block'}}>
                           <div>
-                              <label><input type='checkbox' value='1' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/><span data-i18n="inject.days.0">Monday</span></label>
-                              <label><input type='checkbox' value='2' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/><span data-i18n="inject.days.1">Tuesday</span></label>
-                              <label><input type='checkbox' value='3' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/><span data-i18n="inject.days.2">Wednesday</span></label>
+                              <label><input type='checkbox' value='1' onClick={this.updateTimeIntervalOn.bind(this)}/><span data-i18n="inject.days.0">Monday</span></label>
+                              <label><input type='checkbox' value='2' onClick={this.updateTimeIntervalOn.bind(this)}/><span data-i18n="inject.days.1">Tuesday</span></label>
+                              <label><input type='checkbox' value='3' onClick={this.updateTimeIntervalOn.bind(this)}/><span data-i18n="inject.days.2">Wednesday</span></label>
                           </div>
                           <div>
-                              <label><input type='checkbox' value='4' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.3">Thursday</span></label>
-                              <label><input type='checkbox' value='5' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.4">Friday</span></label>
-                              <label><input type='checkbox' value='6' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.5">Saturday</span></label>
+                              <label><input type='checkbox' value='4' onClick={this.updateTimeIntervalOn.bind(this)}/> <span data-i18n="inject.days.3">Thursday</span></label>
+                              <label><input type='checkbox' value='5' onClick={this.updateTimeIntervalOn.bind(this)}/> <span data-i18n="inject.days.4">Friday</span></label>
+                              <label><input type='checkbox' value='6' onClick={this.updateTimeIntervalOn.bind(this)}/> <span data-i18n="inject.days.5">Saturday</span></label>
                           </div>
                           <div>
-                              <label><input type='checkbox' value='0' onClick={this._updateProperty.bind(this, 'repeat', 'on')}/> <span data-i18n="inject.days.6">Sunday</span></label>
+                              <label><input type='checkbox' value='0' onClick={this.updateTimeIntervalOn.bind(this)}/> <span data-i18n="inject.days.6">Sunday</span></label>
                           </div>
                       </div>
                     </div>
@@ -205,17 +199,17 @@ class Node extends React.Component {
                               <div style={{display: 'inline-block', verticalAlign: 'top', marginRight: 5}}>on </div>
                               <div style={{display:'inline-block'}}>
                                   <div>
-                                      <label><input type='checkbox' checked value='1'/> <span data-i18n="inject.days.0">Monday</span></label>
-                                      <label><input type='checkbox' checked value='2'/> <span data-i18n="inject.days.1">Tuesday</span></label>
-                                      <label><input type='checkbox' checked value='3'/> <span data-i18n="inject.days.2">Wednesday</span></label>
+                                      <label><input type='checkbox' value='1' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.0">Monday</span></label>
+                                      <label><input type='checkbox' value='2' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.1">Tuesday</span></label>
+                                      <label><input type='checkbox' value='3' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.2">Wednesday</span></label>
                                   </div>
                                   <div>
-                                      <label><input type='checkbox' checked value='4'/> <span data-i18n="inject.days.3">Thursday</span></label>
-                                      <label><input type='checkbox' checked value='5'/> <span data-i18n="inject.days.4">Friday</span></label>
-                                      <label><input type='checkbox' checked value='6'/> <span data-i18n="inject.days.5">Saturday</span></label>
+                                      <label><input type='checkbox' value='4' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.3">Thursday</span></label>
+                                      <label><input type='checkbox' value='5' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.4">Friday</span></label>
+                                      <label><input type='checkbox' value='6' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.5">Saturday</span></label>
                                   </div>
                                   <div>
-                                      <label><input type='checkbox' checked value='0'/> <span data-i18n="inject.days.6">Sunday</span></label>
+                                      <label><input type='checkbox' value='0' onClick={this.updateSpecificTimeOn.bind(this)}/> <span data-i18n="inject.days.6">Sunday</span></label>
                                   </div>
                               </div>
                           </div>
@@ -243,13 +237,10 @@ class Node extends React.Component {
                       <div className="form-row">
                           <label><i className="fa fa-repeat"></i> <span data-i18n="inject.label.repeat">repeat</span></label>
                           <Select {...repeatprops}/>
-                          <input type="hidden" id="node-input-repeat"/>
-                          <input type="hidden" id="node-input-crontab"/>
                       </div>
 
                       {options}
 
-                     
                       <div className="form-row">
                         <Textfield {...nameprops}/>
                       </div>
@@ -261,30 +252,11 @@ class Node extends React.Component {
        }
 
        _incrementInterval(options, event){
-          console.log("options are");
-          console.log(options);
           this.props.incrementNodeValueKey(options.property, options.key, options.amount, options.min, options.max);
        }
 
        _decrementInterval(){
           this.props.incrementNodeValueKey('repeat', 'frequency', -1, 1);
-       }
-
-       _timeIntervalStartChanged(event){
-          //also need to fire an internal event to let the end types know to shrink..
-          this.props.updateNodeValueKey('repeat', 'start', event.target.value);
-       }
-
-       _timeIntervalEndChanged(event){
-          this.props.updateNodeValueKey('repeat', 'end', event.target.value);
-       }
-
-       _updateChecked(property, key, event){
-          this.props.updateNodeValueKey(property, key, event.target.checked);
-       }
-
-       _updateProperty(property, key, event){
-          this.props.updateNodeValueKey(property, key, event.target.value);
        }
 }
 

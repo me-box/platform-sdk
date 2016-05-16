@@ -4,14 +4,16 @@ class Payload extends React.Component {
 
   static defaultProps = {
       style: {},
-      selectedPayload: 'date',
+      payloadType: 'date',
+      payload: '',
       payloadMenu: false,
+      onChange: ()=>{},
   };
 
   static propTypes = { 
       toggleBoolMenu: PropTypes.func.isRequired,
       togglePayloadMenu: PropTypes.func.isRequired,
-      selectPayload: PropTypes.func.isRequired,
+      selectPayloadType: PropTypes.func.isRequired,
       selectBool: PropTypes.func.isRequired,
   }
 
@@ -24,13 +26,13 @@ class Payload extends React.Component {
       };
       
      const menu = this.props.payloadMenu ? <div className="red-ui-typedInput-options" style={{top: 35, left: 115, display: 'block'}}>
-                                  <a onClick={this.props.selectPayload.bind(this, 'flow')} value="flow" style={{paddingLeft: '18px'}}>flow.</a>
-                                  <a onClick={this.props.selectPayload.bind(this, 'global')} value="global" style={{paddingLeft: '18px'}}>global.</a>
-                                  <a onClick={this.props.selectPayload.bind(this, 'str')}  value="str"><img src="images/typedInput/az.png" style={{marginRight: '4px', height: '18px'}}/>string</a>
-                                  <a onClick={this.props.selectPayload.bind(this, 'num')}  value="num"><img src="images/typedInput/09.png" style={{marginRight: '4px', height: '18px'}}/>number</a>
-                                  <a onClick={this.props.selectPayload.bind(this, 'bool')} value="bool"><img src="images/typedInput/bool.png" style={{marginRight: '4px', height: '18px'}}/>boolean</a>
-                                  <a onClick={this.props.selectPayload.bind(this, 'json')} value="json"><img src="images/typedInput/json.png" style={{marginRight: '4px', height: '18px'}}/>JSON</a>
-                                  <a onClick={this.props.selectPayload.bind(this, 'date')} value="date" style={{paddingLeft: '18px'}}>timestamp</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'flow')} value="flow" style={{paddingLeft: '18px'}}>flow.</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'global')} value="global" style={{paddingLeft: '18px'}}>global.</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'str')}  value="str"><img src="images/typedInput/az.png" style={{marginRight: '4px', height: '18px'}}/>string</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'num')}  value="num"><img src="images/typedInput/09.png" style={{marginRight: '4px', height: '18px'}}/>number</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'bool')} value="bool"><img src="images/typedInput/bool.png" style={{marginRight: '4px', height: '18px'}}/>boolean</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'json')} value="json"><img src="images/typedInput/json.png" style={{marginRight: '4px', height: '18px'}}/>JSON</a>
+                                  <a onClick={this.props.selectPayloadType.bind(this, 'date')} value="date" style={{paddingLeft: '18px'}}>timestamp</a>
                               </div> : null;
 
       const boolmenu = this.props.boolMenu ? <div className="red-ui-typedInput-options" style={{minWidth: 243, top: 35, left: 155, display: 'block'}}>
@@ -38,7 +40,7 @@ class Payload extends React.Component {
                             <a onClick={this.props.selectBool.bind(this, 'false')} value="false" style={{paddingLeft: 18}}>false</a>
                         </div> : null;
           
-      switch (this.props.selectedPayload){
+      switch (this.props.payloadType){
         
         case 'flow':
           props = Object.assign({}, props, {
@@ -107,7 +109,7 @@ class Payload extends React.Component {
                         <i className="fa fa-sort-desc"></i>
                         <span>{props.label}</span>
                       </a>
-                      <input type="text" style={props.inputstyle} className="red-ui-typedInput"/>
+                      <input type="text" onChange={this.props.onChange} style={props.inputstyle} value={this.props.payload} className="red-ui-typedInput"/>
                         <a onClick={this.props.toggleBoolMenu} className="red-ui-typedInput-option-trigger" style={props.triggerstyle}>
                             <span style={props.spanstyle}>true</span>
                             <i className="fa fa-sort-desc"></i>
