@@ -7,7 +7,7 @@ function updateNode(current, changes){
 
   console.log("changes are");
   console.log(changes);
-  
+
   let _n = Object.assign(current, changes);
 
   try {
@@ -104,7 +104,6 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     
     //set the values in current node to values in editingbuffer
     case ActionType.DIALOGUE_OK:
-      
       return Object.assign({}, state, {
          selected: null,
          editingbuffer: {},
@@ -119,10 +118,8 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     case ActionType.NODE_INIT_VALUES:
      
       return Object.assign({}, state, {
-        editingbuffer : {[action.property]:action.value}
+        editingbuffer : action.keys,
       })
-    
-      return state;
 
 
     case ActionType.NODE_UPDATE_VALUE:
@@ -130,8 +127,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       return Object.assign({}, state, {
         editingbuffer : Object.assign({}, state.editingbuffer, {[action.property]:action.value})
       })
-    
-      return state;
+  
 
     case ActionType.NODE_INCREMENT_VALUE_KEY:
 

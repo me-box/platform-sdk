@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import * as DialogueActions from '../actions/DialogueActions';
+
 
 class Dialogue extends Component {
 	
 	constructor(props){
 		super(props);
-		
 	}
 
 	render(){

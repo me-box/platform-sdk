@@ -1,4 +1,4 @@
-import {NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_CANCEL_CLICKED, NODE_TOUCH_START, NODE_TOUCH_END, NODE_MOUSE_ENTER, NODE_MOUSE_EXIT } from '../constants/ActionTypes';
+import {NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_CANCEL_CLICKED, NODE_TOUCH_START, NODE_TOUCH_END, NODE_MOUSE_ENTER, NODE_MOUSE_EXIT, NODE_LOAD} from '../constants/ActionTypes';
  
 
 
@@ -11,11 +11,22 @@ export function nodeMouseDown(node, event){
 } 
 
 export function nodeDoubleClicked(node, event){
-    return {
-      type: NODE_DOUBLE_CLICKED,
-      node,
-      event,
-    }
+
+  return function (dispatch, getState) {
+
+    dispatch ({
+        type: NODE_DOUBLE_CLICKED,
+        node,
+        event,
+    });
+
+    console.log("node id is" + node.id);
+    dispatch({
+        type: NODE_LOAD,
+        node,
+        id: node.id
+    })
+  }
 } 
 
 export function nodeTouchStart(node, event){

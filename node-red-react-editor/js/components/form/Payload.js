@@ -19,6 +19,10 @@ class Payload extends React.Component {
 
 	render() {  
       
+
+      console.log("in the props and the patoad is");
+      console.log(this.props.payload);
+    
       let props = {
           containerstyle: {marginRight: '0px', marginLeft: '0px'},
           selectstyle: {width: 'auto'},
@@ -37,7 +41,7 @@ class Payload extends React.Component {
 
       const boolmenu = this.props.boolMenu ? <div className="red-ui-typedInput-options" style={{minWidth: 243, top: 35, left: 155, display: 'block'}}>
                             <a onClick={this.props.selectBool.bind(this, 'true')} value="true" style={{paddingLeft: 18}}>true</a>
-                            <a onClick={this.props.selectBool.bind(this, 'false')} value="false" style={{paddingLeft: 18}}>false</a>
+                           <a onClick={this.props.selectBool.bind(this, 'false')} value="false" style={{paddingLeft: 18}}>false</a>
                         </div> : null;
           
       switch (this.props.payloadType){
@@ -111,7 +115,7 @@ class Payload extends React.Component {
                       </a>
                       <input type="text" onChange={this.props.onChange} style={props.inputstyle} value={this.props.payload} className="red-ui-typedInput"/>
                         <a onClick={this.props.toggleBoolMenu} className="red-ui-typedInput-option-trigger" style={props.triggerstyle}>
-                            <span style={props.spanstyle}>true</span>
+                            <span style={props.spanstyle}>{this.props.payload && this.props.payload === "true" ? "true" : "false"}</span>
                             <i className="fa fa-sort-desc"></i>
                         </a>
                   </div>

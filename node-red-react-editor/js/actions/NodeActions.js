@@ -83,12 +83,19 @@ export function selectNode(node){
   }
 }
 
-export function initNodeValue(property, value){
+/*export function initNodeValue(property, value){
 
   return {
     type: NODE_INIT_VALUES,
     property,
     value,
+  }
+}*/
+
+export function initNodeKeys(keys){
+  return {
+    type: NODE_INIT_VALUES,
+    keys
   }
 }
 

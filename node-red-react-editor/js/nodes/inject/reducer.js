@@ -1,8 +1,44 @@
-
-
 import * as Constants from './constants';
-import nodes from '../../reducers/nodes';
 import {toggleItem} from '../../utils/utils';
+import {NODE_LOAD} from '../../constants/ActionTypes';
+
+const multiplier = { 's': 1, 'm': 60, 'h': 60*60};
+
+
+function translateToLocalState(node){
+	
+	let local = {};
+
+	if (node.repeat && node.repeat != ""){ //node is a standard repeat
+		local.units = node.repeat <= 60 ? 's' : node.repeat <= 60*60 ? 'm' : 'h';
+		local.repeat = node.repeat / multiplier[local.units];
+		local.repeatOption = 'interval';
+		local.once = node.once;
+		return local;
+	}
+
+	if (node.crontab && node.crontab.substring(0,1) === "*"){ //time-interval
+		local.repeatOptioj = 'time-interval';
+		const [frequency, interval,,,days] = node.crontab.split(/\s+/);
+		local.intervalFrequency = frequency.split("\/")[1];
+		[local.intervalStart, local.intervalEnd] = interval.split("-");
+		local.intervalEnd = `${parseInt(local.intervalEnd) + 1}`;
+		local.intervalOn = days.split(",");
+		return local;
+	}
+
+	if (node.crontab && node.crontab != ""){ //specific time
+		const [m,h,,,days] = node.crontab.split(/\s+/);
+		local.specificTime = `${h}:${m}`;
+		local.specificTimeOn = days.split(",");
+		return local;
+	}
+	
+	local.repeatOption = 'none';
+	local.once = node.once;
+	return local;
+	
+}
 
 export function reducer(state = {
 									//internal node state
@@ -11,7 +47,8 @@ export function reducer(state = {
 									
 									units: 's',
 									repeat: 1,
-											
+									once: false,
+
 									intervalFrequency: 1,
 									intervalStart: 0,
 									intervalEnd:1,
@@ -22,13 +59,22 @@ export function reducer(state = {
 									//view state
 									payloadMenu:false, 
 									boolMenu: false, 
-									selectedBool:'true', 
 									repeatOption: 'none',
 								}, action){
 	
 
 	 switch (action.type) {
 	 	
+	 	case NODE_LOAD: //this is where we initialise our values that will be used by the dialogue (i.e convert from node values to our local state)
+	 		return Object.assign({}, state, translateToLocalState(action.node));
+	 		return state;
+
+	 	case Constants.ONCE:
+	 		return Object.assign({}, state, {
+	    										once:action.once,
+	    										boolMenu: false,
+	    									})
+
 	 	case Constants.REPEAT_UNITS_CHANGED:
 
 	 		return Object.assign({}, state, {
@@ -91,7 +137,6 @@ export function reducer(state = {
 
 
 	  	case Constants.TOGGLE_PAYLOAD_MENU:
-
 	    	return Object.assign({}, state, {
 	    										payloadMenu:!state.payloadMenu,
 	    										boolMenu: false,
@@ -120,9 +165,8 @@ export function reducer(state = {
 	    	return Object.assign({}, state, {
 	    										boolMenu: false,
 	    										payloadMenu: false,
-	    										selectedBool: action.value,
+	    										payload: action.value,
 	    									})
-
 
 	  	default:
 	    	return state;

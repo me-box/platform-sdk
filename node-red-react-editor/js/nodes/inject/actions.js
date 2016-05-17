@@ -1,20 +1,22 @@
 import * as Action from './constants';
-import {NODE_UPDATE_VALUE} from '../../constants/ActionTypes';
-import {updateNode, updateNodeValueKey}  from '../../actions/NodeActions';
+import {updateNode, updateNodeValueKey, initNodeKeys}  from '../../actions/NodeActions';
 import moment from 'moment';
 
 
-//these are the keys for this node that will be updated
-
-//repeat:"", 
-//once: false,
-//crontab:"", 
-//payload: "",
-//payloadType:'date', 
 const multiplier = { 's': 1, 'm': 60, 'h': 60*60};
 
 function crontab(state){
-	return "0 0 0 1 1";
+
+	if (state.repeatOption === "interval-time"){
+		return `*/${state.intervalFrequency} ${state.intervalStart}-${state.intervalEnd-1} * * ${state.intervalOn.join(",")}`
+	}
+
+	else if (state.repeatOption === "time"){
+		const [h,m] = state.specificTime.split(":");
+		return `${m} ${h} * * ${state.specificTimeOn.join(",")}`;
+	}
+
+	return "";
 }
 
 //this will change the multiplier for the 'repeat' value 
@@ -107,11 +109,15 @@ export function updateTimeIntervalOn(id,event){
 
 
 export function updateOnce(id, event){
-	return {
-   	 	type: NODE_UPDATE_VALUE,
-    	property: 'once',
-    	value: event.target.checked,
-  	}
+
+	return function (dispatch, getState) {
+		dispatch({
+			type: Action.ONCE,
+			id,
+			once: event.target.checked,
+		});
+		dispatch(updateNode('once', getState()[id].once));
+	}
 }
 
 /* this is a thunk, because we need to dispatch two actions and one is dependent upon the result of the other 
@@ -150,14 +156,16 @@ export function updateSpecificTimeOn(id, event){
 
 //and heer
 export function repeatOptionChanged(id,value){
-	console.log("repeat option changed!!");
-	console.log(value);
-	
-  	return {
-  		type: Action.REPEAT_OPTION_CHANGED,
-    	value,
-    	id
-  	}
+	return function (dispatch, getState) {
+		dispatch({
+			type: Action.REPEAT_OPTION_CHANGED,
+    		value,
+    		id,
+		});
+		
+		//set the defaults here and remove the current defaults! - in the editing buffer!!
+		dispatch(initNodeKeys(Action.REPEAT_DEFAULT_OBJECTS[getState()[id].repeatOption]));
+	}
 }
 
 export function selectPayloadType(id, payloadType){

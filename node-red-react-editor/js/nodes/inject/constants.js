@@ -7,6 +7,8 @@ export const INTERVAL_START = 'INTERVAL_START';
 export const INTERVAL_END = 'INTERVAL_END';
 export const INTERVAL_ON = 'INTERVAL_ON';
 
+export const ONCE='ONCE';
+
 export const SPECIFIC_TIME = 'SPECIFIC_TIME';
 export const SPECIFIC_TIME_ON = 'SPECIFIC_TIME_ON';
 
@@ -74,8 +76,8 @@ export const TIMEINTERVAL_OPTIONS = [
 					            ];
 
 export const REPEAT_DEFAULT_OBJECTS = {
-		'none':				{type:'none', atstart:false},
-		'interval':			{type: 'interval', frequency:1, units: 's', atstart:false},
-		'interval-time':	{type: 'interval-time', frequency:1, start: 0, end: 0, on:[]},
-		'time':				{type:'time', at:'12:00', on:[1,2,4], timeInterval: 0},
+		'none':				{once: false, repeat:"", crontab:""},
+		'interval':			{once: false, repeat:1,  crontab:""},
+		'interval-time':	{once: false, repeat:"", crontab: "0 0 0 0 1"},
+		'time':				{once: false, repeat:"", crontab: "1 0 0 0 1"},
 };

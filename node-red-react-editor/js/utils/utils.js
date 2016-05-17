@@ -72,5 +72,6 @@ export function toggleItem(anarray, item){
 	}else{
 		newarray.push(item);
 	}
+  newarray.sort()
 	return newarray;
 }

@@ -3,8 +3,6 @@ import Menu from './Menu';
 
 class Main extends Component {
   render() {
-     console.log("in main, context is");
-     console.log(this.context);
     return (
     	<div>
 	     	<div>
