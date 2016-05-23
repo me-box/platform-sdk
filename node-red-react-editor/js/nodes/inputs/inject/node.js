@@ -1,15 +1,15 @@
 import React from 'react';
 import moment from 'moment';
-import composeNode from '../../utils/composeNode';
-import Textfield from '../../components/form/Textfield';
-import Spinner from  '../../components/form/Spinner';
-import Select from '../../components/form/Select';
-import DayGrid from '../../components/form/DayGrid';
-import Payload from '../../components/form/Payload';
+import composeNode from '../../../utils/composeNode';
+import Textfield from '../../../components/form/Textfield';
+import Spinner from  '../../../components/form/Spinner';
+import Select from '../../../components/form/Select';
+import DayGrid from '../../../components/form/DayGrid';
+import Payload from '../../../components/form/Payload';
 import { connect } from 'react-redux';
 import {reducer} from './reducer';
 import { bindActionCreators } from 'redux';
-import { bindNodeIds } from '../../utils/utils';
+import { bindNodeIds } from '../../../utils/utils';
 import * as Actions from './actions';
 import {REPEAT_OPTIONS, INTERVAL_OPTIONS,TIMEINTERVAL_OPTIONS, TIMEUNIT_OPTIONS, REPEAT_DEFAULT_OBJECTS} from './constants';
 
@@ -252,14 +252,14 @@ class Node extends React.Component {
        }
 }
 
-export default composeNode(Node, 'inject',{
+export default composeNode(Node, 'timer',{
 
         category: 'input',
 
         color:"#a6bbcf",
 
         defaults: {
-            name: {value:""},
+            name: {value:"timer"},
             topic: {value:""},
             payload: {value:"", validate:function(v) {
                 return true
@@ -277,7 +277,7 @@ export default composeNode(Node, 'inject',{
         icon: "inject.png",
 
         label: function() {
-
+           
             if (this.name) {
                 return this.name;
             } 
@@ -309,5 +309,6 @@ export default composeNode(Node, 'inject',{
                
             }
         },
+
    }, reducer
 );

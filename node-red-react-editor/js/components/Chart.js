@@ -29,13 +29,8 @@ class Chart extends Component {
   	this.mouseUp = bindActionCreators(MouseActions.mouseUp, this.props.dispatch);
   }
 
-  _onMouseMove(e){
-  	const {clientX, clientY} = e;
-  	this.mouseMove(clientX,clientY);
-  }
-
   render() {
-    const { nodes, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
+    const { nodes, selected, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
     
     let chartstyle = {
     	left:180,
@@ -45,6 +40,7 @@ class Chart extends Component {
     let d3nodes = nodes.map((node)=>{
     	const d3nodeprops = {
     		key: node.id,
+        selected: selected ? selected.id == node.id : false,
     		d: node,
     		...bindActionCreators(NodeMouseActions, dispatch),
     	}
@@ -53,9 +49,9 @@ class Chart extends Component {
 
     let connectors = links.map((link, i)=>{
     	const linkprops = {
-    		key: `${i}${link.from.id}${link.to.id}`,
-    		from: link.from,
-    		to: link.to,
+    		key: `${i}${link.source.id}${link.target.id}`,
+    		source: link.source,
+    		target: link.target,
     	}
     	return <Link {...linkprops} />
     })
@@ -75,11 +71,19 @@ class Chart extends Component {
     	   </div>
     
   }
+
+  _onMouseMove(e){
+    const {clientX, clientY} = e;
+    this.mouseMove(clientX,clientY);
+  }
+
 }
+
 
 function select(state) {
   return {
-    nodes: state.nodes.activeNodes,
+    nodes: state.nodes.nodes,
+    selected: state.nodes.selected,
     links: state.ports.links,
   };
 }

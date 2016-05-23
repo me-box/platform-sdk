@@ -1,5 +1,5 @@
 import * as Action from './constants';
-import {updateNode, updateNodeValueKey, initNodeKeys}  from '../../actions/NodeActions';
+import {updateNode, updateNodeValueKey, initNodeKeys}  from '../../../actions/NodeActions';
 import moment from 'moment';
 
 

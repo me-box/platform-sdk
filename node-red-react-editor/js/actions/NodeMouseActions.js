@@ -13,19 +13,24 @@ export function nodeMouseDown(node, event){
 export function nodeDoubleClicked(node, event){
 
   return function (dispatch, getState) {
-
+  
+    
     dispatch ({
         type: NODE_DOUBLE_CLICKED,
         node,
         event,
     });
-
-    console.log("node id is" + node.id);
+    
     dispatch({
         type: NODE_LOAD,
         node,
         id: node.id
     })
+    
+    console.log("dispacthin node double ckceld");
+    
+
+   
   }
 } 
 

@@ -1,4 +1,4 @@
-import { TEST_ACTION } from '../../constants/ActionTypes';
+import { TEST_ACTION } from '../../../constants/ActionTypes';
 
 export function testAction(){
   return {

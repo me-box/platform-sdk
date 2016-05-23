@@ -51,11 +51,11 @@ class Dialogue extends Component {
 					</div>
 					<div className="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
 						<div className="ui-dialog-buttonset">
-							<button type="button" id="node-dialog-ok" className="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
-								<span className="ui-button-text"onClick={this.props.ok}>Ok</span>
+							<button type="button" onClick={this.props.ok} className="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+								<span className="ui-button-text">Ok</span>
 							</button>
-							<button type="button" id="node-dialog-cancel" className="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false">
-								<span className="ui-button-text" onClick={this.props.cancel}>Cancel</span>
+							<button type="button" onClick={this.props.cancel} className="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+								<span className="ui-button-text" >Cancel</span>
 							</button>
 						</div>
 					</div>

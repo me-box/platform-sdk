@@ -1,12 +1,15 @@
 import * as Constants from './constants';
-import {toggleItem} from '../../utils/utils';
-import {NODE_LOAD} from '../../constants/ActionTypes';
+import {toggleItem} from '../../../utils/utils';
+import {NODE_LOAD} from '../../../constants/ActionTypes';
 
 const multiplier = { 's': 1, 'm': 60, 'h': 60*60};
 
 
 function translateToLocalState(node){
-	
+	console.log("translating ");
+	console.log(node);
+	console.log("to local state!");
+
 	let local = {};
 
 	if (node.repeat && node.repeat != ""){ //node is a standard repeat
@@ -28,7 +31,11 @@ function translateToLocalState(node){
 	}
 
 	if (node.crontab && node.crontab != ""){ //specific time
+		console.log("ok doing thigs with crontab");
+		console.log(node.crontab);
 		const [m,h,,,days] = node.crontab.split(/\s+/);
+		console.log(`${m} ${h} ${days}`);
+
 		local.specificTime = `${h}:${m}`;
 		local.specificTimeOn = days.split(",");
 		return local;
@@ -36,6 +43,8 @@ function translateToLocalState(node){
 	
 	local.repeatOption = 'none';
 	local.once = node.once;
+
+	console.log(local);
 	return local;
 	
 }
@@ -66,9 +75,9 @@ export function reducer(state = {
 	 switch (action.type) {
 	 	
 	 	case NODE_LOAD: //this is where we initialise our values that will be used by the dialogue (i.e convert from node values to our local state)
+	 		
 	 		return Object.assign({}, state, translateToLocalState(action.node));
-	 		return state;
-
+	 		
 	 	case Constants.ONCE:
 	 		return Object.assign({}, state, {
 	    										once:action.once,

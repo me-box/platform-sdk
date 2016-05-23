@@ -29,12 +29,13 @@ class D3Node extends Component {
     render(){
     
 
-        const {d} = this.props;
+        const {d,selected} = this.props;
+        
         
         const mainrectclass= className({
             node: true,
             unknown: d.type == "unknown",
-            node_selected: d.selected,
+            node_selected: selected,
             node_highlighted: d.highlighted,
         });
 

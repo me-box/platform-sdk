@@ -33,7 +33,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 		render(){
 
-		   const {selected, dispatch} = this.props;
+		   const {configuring, dispatch} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
     	   		updateNode: bindActionCreators(updateNode, this.props.dispatch),
@@ -44,11 +44,11 @@ export default function composeNode(Component, nt, config, reducer=null){
            const dialogueprops = {
               cancel: this.cancel,
               ok: this.ok,
-              node: selected,
+              node: configuring,
               nt,
            }
           
-           if (selected && selected.type === nt){
+           if (configuring && configuring.type === nt){
 				return <Dialogue {...dialogueprops}>
 							<Component {...props} />
 						</Dialogue>
@@ -60,6 +60,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 	function select(state) {
 		let stateobj = {
 			selected: state.nodes.selected,
+			configuring: state.nodes.configuring,
         	values: state.nodes.editingbuffer,
 		}
       	if (reducer){
@@ -76,7 +77,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 	return {
 		type: 		nt,
-		def: 		config,
+		def: 		Object.assign({_: (id)=>{return id}}, config), //TODO: find out what this '_' identity function is for
 		reducer: 	reducer,
 		node: 		connect(select)(Node),
 	}

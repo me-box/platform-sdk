@@ -1,4 +1,4 @@
-import { TEST_ACTION } from '../../constants/ActionTypes';
+import { TEST_ACTION } from '../../../constants/ActionTypes';
 
 export  function reducer(state = 0, action) {
   switch (action.type) {

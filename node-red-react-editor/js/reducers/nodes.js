@@ -1,12 +1,9 @@
 import * as ActionType from '../constants/ActionTypes';
 import { NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {calculateTextWidth, toggleItem} from '../utils/utils';
-
+import {ports} from './ports';
 
 function updateNode(current, changes){
-
-  console.log("changes are");
-  console.log(changes);
 
   let _n = Object.assign(current, changes);
 
@@ -32,30 +29,21 @@ function updateNode(current, changes){
   return _n;
 }
 
-export default function nodes(state = {isFetching:false, didInvalidate:false, nodes:[], activeNodes:[], draggingNode: null, selected: null, editingbuffer: {}}, action) {
+export default function nodes(state = {nodes:[], draggingNode: null, selected: null, configuring: null, editingbuffer: {}}, action) {
   
   let property, value, v;
 
-  switch (action.type) {
-	  
-	  case  ActionType.REQUEST_NODES:
-	    return Object.assign({}, state, {
-        	isFetching: true,
-        	didInvalidate: false
-      	})
-	  
-	  case ActionType.RECEIVE_NODES:
-	  	return Object.assign({}, state, {
-        	isFetching: false,
-        	didInvalidate: false,
-        	nodes: action.nodes,
-        	lastUpdated: action.receivedAt
-      	})
+  switch (action.type) {  
+
+    case ActionType.RECEIVE_FLOWS:
+        return Object.assign({}, state, {
+            nodes: action.nodes,
+        })
 
     case ActionType.NODE_DROPPED:
        
         return Object.assign({}, state, {
-            activeNodes: [  ...state.activeNodes,
+            nodes: [  ...state.nodes,
                             action.node,
                           ]
         })
@@ -70,6 +58,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       
       return Object.assign({}, state, {
         draggingNode: action.node.id,
+        selected: action.node,
       })
     
     case ActionType.NODE_DOUBLE_CLICKED:
@@ -77,15 +66,22 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
       return Object.assign({}, state, {
         draggingNode: null,
         selected: action.node,
+        configuring: action.node,
       })
-      return state;
+   
+
+    case ActionType.DELETE_PRESSED:
+
+      return Object.assign({}, state, {
+            nodes: state.nodes.filter(item => state.selected ? state.selected.id === item.id ? false : true : true),
+      });
 
     case ActionType.MOUSE_MOVE:
       
       if (state.draggingNode != null){
 
         return Object.assign({}, state, {
-            activeNodes:  state.activeNodes.map((node)=>{
+            nodes:  state.nodes.map((node)=>{
                 if (node.id === state.draggingNode ){
                   node.x = action.x;
                   node.y = action.y;
@@ -98,17 +94,17 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
 
     case ActionType.DIALOGUE_CANCEL:
       return Object.assign({}, state, {
-        selected: null,
+        configuring: null,
         editingbuffer: {},
     })
     
     //set the values in current node to values in editingbuffer
     case ActionType.DIALOGUE_OK:
       return Object.assign({}, state, {
-         selected: null,
+         configuring: null,
          editingbuffer: {},
-         activeNodes: state.activeNodes.map((node)=>{
-          if (node.id === state.selected.id){
+         nodes: state.nodes.map((node)=>{
+          if (node.id === state.configuring.id){
             return updateNode(node, state.editingbuffer);
           }
           return node;
@@ -118,7 +114,7 @@ export default function nodes(state = {isFetching:false, didInvalidate:false, no
     case ActionType.NODE_INIT_VALUES:
      
       return Object.assign({}, state, {
-        editingbuffer : action.keys,
+        editingbuffer : Object.assign({}, state.editingbuffer, action.keys)
       })
 
 

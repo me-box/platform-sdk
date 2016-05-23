@@ -1,11 +1,12 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { REGISTER_TYPE, REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
-import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET, NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
-import {calculateTextWidth} from '../utils/utils';
+import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
+import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from '../constants/ViewConstants';
+import {fetchFlows} from './FlowActions';
 import fetch from 'isomorphic-fetch'
 import {register} from '../store/configureStore';
 import {scopeify} from '../utils/scopeify';
+import {getID, addViewProperties} from '../utils/nodeUtils';
 
 export function requestNodes() {
   return {
@@ -24,7 +25,7 @@ export function dropNode(store, reducer, nt, def, x, y){
   let _def = Object.assign({},def);
 
   let node = {
-    id:(1+Math.random()*4294967295).toString(16),
+    id: getID(),
     z:1,
     type: nt,
     _def: _def,
@@ -34,36 +35,19 @@ export function dropNode(store, reducer, nt, def, x, y){
     changed: true,
     selected: true,
     dirty: true,
-    h: Math.max(NODE_HEIGHT,(_def.outputs||0) * 15),
     x: x + MOUSE_X_OFFSET,
     y: y + MOUSE_Y_OFFSET,
   }
 
-  //create label
-  try {
-        node.label  = (typeof _def.label  === "function" ? _def.label.bind(_def).call() : _def.label ) || _def.label ;
-  } catch(err) {
-       console.log(`Definition error: ${_def.type}.label`,err);
-        node.label = nt;
-  }
-
-  node.w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(node.label, "node_label", 50)+(_def.inputs>0?7:0))/GRID_SIZE)));
-
-  //create label style
-  if (_def.labelStyle){
-      try{
-        node.labelStyle = (typeof _def.labelStyle === "function") ? _def.labelStyle.bind(_def).call() : _def.labelStyle || "";    
-      }catch (err){
-                console.log(`Definition error: ${d.type}.labelStyle`,err);
+  for (var d in node._def.defaults) {
+      if (node._def.defaults.hasOwnProperty(d)) {
+        node[d] = node._def.defaults[d].value;
       }
   }
+
+  addViewProperties(node);
   
-  for (var d in _def.defaults) {
-      if (_def.defaults.hasOwnProperty(d)) {
-          node[d] = _def.defaults[d].value;
-      }
-  }
-
+ 
   //register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
   //this means that instances of the same node can trasparently make use of the same action constants without a clash!.
   if (reducer){
@@ -129,48 +113,29 @@ export function incrementNodeValueKey(property, key, amount, min, max){
   }
 }
 
-export function receiveNodes(json) {
-  return {
-    type: RECEIVE_NODES,
-    nodes: json,
-    receivedAt: Date.now()
+export function receiveNodes(store, nodes) {
+
+  return function(dispatch, getState){
+    dispatch({
+      type: RECEIVE_NODES,
+      nodes,
+      receivedAt: Date.now()
+    })
+
+    dispatch(fetchFlows(store));
   }
 }
 
 
-export function registerNodes(nodes){
-  return{
-    type: REGISTER_TYPE,
-    nodes,
-  }
-}
+//load up and regsiter all of the nodes that are in the file returned by fetchNodes
+export function _loadNodes(json, store, dispatch){
 
-export function fetchComponent(store){
-
-    return function(dispatch){
-     
-      /*require.ensure(["../nodes/b/b"], function(require){
-          var BNode = require('../nodes/b/b');
-      
-          let elementprops = {
-              register: register.bind(this, store),
-              dispatch: dispatch,
-              store: store,
-          }
-      
-          let element = React.createElement(BNode.default, {...elementprops});
-          render(element,  document.getElementById('additional'));
-      });*/
-    }
-}
-
-export function loadNodes(json, store, dispatch){
-  
    let toregister = [];
 
    json.nodes.forEach((node)=>{
       const n = require(`../nodes/${node.file}.js`);
-    
+     console.log("required");
+     console.log(n);
       const elementprops = {
           dispatch: dispatch,
           store: store,
@@ -186,9 +151,11 @@ export function loadNodes(json, store, dispatch){
       
    });    
 
-   dispatch(registerNodes(toregister));
+   dispatch(receiveNodes(store, toregister));
 }
 
+
+//fetch the list of nodes that we want to load in the editor
 export function fetchNodes(store) {
 
   // Thunk middleware knows how to handle functions.
@@ -216,17 +183,8 @@ export function fetchNodes(store) {
       })
       .then(response => response.json())
       .then(function(json){
-          console.info("fetching nodes");
-          loadNodes(json, store, dispatch);
+          _loadNodes(json, store, dispatch);
           return json;
-      }).then(function(json){
-          dispatch(receiveNodes(json.nodes));
-      });
-    
-      
-      //.then(json =>dispatch(receiveNodes(json, store, dispatch)))
-
-      // In a real world app, you also want to
-      // catch any error in the network call.
+      })
   }
 }

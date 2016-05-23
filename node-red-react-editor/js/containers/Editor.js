@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {fetchNodes}  from '../actions/NodeActions';
-import {dropNode} from '../actions/NodeActions';
+import {fetchNodes, dropNode}  from '../actions/NodeActions';
+import {deletePressed} from '../actions/KeyboardActions';
 import Palette from '../components/Palette';
 import Workspace from '../components/Workspace';
 import Sidebar from '../components/Sidebar';
@@ -23,23 +23,34 @@ class Editor extends Component {
   componentDidMount(){
   	//TODO: check state to ensure only happens once!
   	const {store} = this.context;
-  	
-  	//might be able tro get rid of bind to store here, as better to do register reducers with store at
-  	//point node is dropped into workspace
   	bindActionCreators(fetchNodes.bind(this,store), this.props.dispatch)()
+    bindActionCreators(deletePressed, this.props.dispatch);
+    window.addEventListener('keydown', function (e) {
+       var rx = /INPUT|SELECT|TEXTAREA/i;
+       if( e.which == 8 ){ // 8 == backspace
+            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+                this.props.dispatch(deletePressed());
+                e.preventDefault();
+            }
+      }
+    }.bind(this));
+  	//this is the place that kicks of loading all of the node red node types!
+  	
   }
 
   render() {
 
   	
   	const {store} = this.context;
-   	const { types, dispatch } = this.props;
+   	const { types, categories, dispatch } = this.props;
+
    	const paletteprops =  {
   		types,
+      categories,
   		dropNode: bindActionCreators(dropNode.bind(this,store), dispatch),
   	}
 
-   	return (<div> 
+   	return (<div onKeyDown={this._keyPress}> 
 				<Toolbar />
 	    		<div id="main-container" className="sidebar-closed">
 	    			<DragDropContainer>
@@ -54,7 +65,8 @@ class Editor extends Component {
 
 function select(state) {
   return {
-    types: state.types
+    types: state.types.nodetypes,
+    categories: state.types.categories,
   };
 }
 
