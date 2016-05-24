@@ -25,14 +25,14 @@ class Inputs extends Component {
           }
 
           const gprops = {
-          	transform: `translate(-5,${( (d.h/2)-5)})`,
+          	transform: `translate(0,${( (d.h/2))})`,
           }
 
           const portprops = {
-          	rx:3,
-          	ry:3,
-          	width:10,
-          	height:10,
+            key: `${d.id}`,
+          	cx:0,
+          	cy:0,
+          	r:5,
           	onMouseDown: this._portMouseDown.bind(this, d, 1, 0),
           	onTouchStart: this._portMouseDown.bind(this, d, 1, 0),
           	onMouseUp:this._portMouseUp.bind(this, d, 1, 0),
@@ -43,7 +43,7 @@ class Inputs extends Component {
           
 
           return (<g className="port_input" {...gprops}>
-                  	<rect className="port" {...portprops}></rect>
+                  	<circle className="port" {...portprops}></circle>
                  </g>)                
   }
 }

@@ -27,7 +27,7 @@ class Outputs extends Component {
     
     const numOutputs = d.outputs || 1;
     const y = (d.h/2)-((numOutputs-1)/2)*13;
-    const x = d.w - 5;
+    const x = d.w;
     let wire;
 
     if (drawingPort && drawingPort.id === d.id){
@@ -36,12 +36,13 @@ class Outputs extends Component {
     const outputs = range(numOutputs).map((port, i)=>{
       const gprops = {
         key: `${d.id}${i}`,
-        transform: `translate(${x}, ${(y+13*i)-5})`,
+        transform: `translate(${x}, ${(y+13*i)})`,
       }
       const portprops = {
         key: `${d.id}${i}`,
-        rx:3,
-        ry:3,
+        cx: 0,
+        cy: 0,
+        r:5,
         width:OUTPUT_WIDTH,
         height:OUTPUT_WIDTH,
         onMouseDown: this.portMouseDown.bind(this, d, 0, i),
@@ -51,8 +52,10 @@ class Outputs extends Component {
         onMouseOver: this.portMouseOver.bind(this,d, 0, i),
         onMouseOut: this.portMouseOut.bind(this,d, 0, i),
       }
+
+
       return  <g className="port_output" {...gprops}>
-                <rect className="port" {...portprops}></rect>
+                <circle className="port" {...portprops}></circle>
                {wire}
               </g>
     })

@@ -15,8 +15,8 @@ export function addViewProperties(node){
        console.log(`Definition error: ${node._def.type}.label`,err);
         node.label = node.type;
   }
-  node.h = Math.max(NODE_HEIGHT,(node._def.outputs||0) * 15);
-  node.w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(node.label, "node_label", 50)+(node._def.inputs>0?7:0))/GRID_SIZE)));
+  node.h = NODE_HEIGHT; //Math.max(NODE_HEIGHT,(node._def.outputs||0) * 15);
+  node.w = NODE_WIDTH; //Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(node.label, "node_label", 50)+(node._def.inputs>0?7:0))/GRID_SIZE)));
 
   //create label style
   if (node._def.labelStyle){

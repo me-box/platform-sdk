@@ -6,7 +6,7 @@ export const REQUEST_FLOWS = 'REQUEST_FLOWS';
 export const RECEIVE_FLOWS = 'RECEIVE_FLOWS';
 export const RECEIVE_FLOWS_ERROR = 'RECEIVE_FLOWS_ERROR';
 
-
+export const WINDOW_RESIZE = 'WINDOW_RESIZE';
 export const TEST_ACTION = 'TEST_ACTION';
 export const MOUSE_MOVE = 'MOUSE_MOVE';
 export const MOUSE_UP = 'MOUSE_UP';

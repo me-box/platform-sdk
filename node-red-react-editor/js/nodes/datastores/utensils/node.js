@@ -13,7 +13,7 @@ class Node extends React.Component {
 export default composeNode(Node, 'utensils', 
                             {
                                 category: 'datastores',      
-                                color: '#a6bbcf',
+                                color: '#ffcc00',
                                 defaults: {             
                                     name: {value:""},   
                                     topic: {value:"", required:true}
@@ -21,7 +21,8 @@ export default composeNode(Node, 'utensils',
                                 inputs:0,               
                                 outputs:1,             
                                
-                                icon: "debug.png",     
+                                icon: "fa-cutlery", 
+                                unicode: '\uf0f5',       
                                 label: function() {     
                                     return this.name||this.topic||"utensils";
                                 },

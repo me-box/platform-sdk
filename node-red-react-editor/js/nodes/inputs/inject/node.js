@@ -256,7 +256,7 @@ export default composeNode(Node, 'timer',{
 
         category: 'input',
 
-        color:"#a6bbcf",
+        color:"#d40000",
 
         defaults: {
             name: {value:"timer"},
@@ -274,8 +274,10 @@ export default composeNode(Node, 'timer',{
 
         outputs:1,
 
-        icon: "inject.png",
-
+        icon: "fa-clock-o",
+        
+        unicode: '\uf017',   
+        
         label: function() {
            
             if (this.name) {
@@ -299,6 +301,8 @@ export default composeNode(Node, 'timer',{
                 return this._("inject.inject");
             }
         },
+
+        description: "<p>Pressing the button on the left side of the node allows a message on a topic to be injected into the flow.</p> <p>The payload defaults to the current time in millisecs since 1970, but can also be set to various other javascript types.</p> <p>The repeat function allows the payload to be sent on the required schedule.</p><p>The <i>Inject once at start</i> option actually waits a short interval before firing to give other nodes a chance to instantiate properly.</p><p>The <i>Flow</i> and <i>Global</i> options allow one to inject a flow or global context value.</p> <p><b>Note: </b>'Interval between times' and 'at a specific time' uses cron. This means that 20 minutes will be at the next hour, 20 minutes past and 40 minutes past - not in 20 minutes time. If you want every 20 minutes from now - use the 'interval' option.</p><p><b>Note: </b>all string input is escaped. To add a carriage return to a string you should use a following function.</p>",
 
         labelStyle: function() {
             return this.name?"node_label_italic":"";

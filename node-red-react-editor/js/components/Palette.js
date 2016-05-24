@@ -2,6 +2,7 @@ import React from 'react';
 import spinner from '../../style/images/spin.svg';
 import className from 'classnames';
 import Node from './Node';
+import {PALETTE_WIDTH} from '../constants/ViewConstants';
 
 class Palette extends React.Component {
 	
@@ -23,8 +24,6 @@ class Palette extends React.Component {
 
         //this should be categories, i.e. one level up!
         let categories = Object.keys(this.props.categories).map((key,i)=>{
-            console.log('reasing in');
-            console.log(this.props.categories[key]);
             let nodes = this.props.categories[key].map((type,i)=>{
                 let nodeprops = {
                     nt: type.name,
@@ -36,9 +35,14 @@ class Palette extends React.Component {
                 return <Node key={`i${type}`} {...nodeprops}/>
             });
             
+            let style = {
+                paddingBottom: '15px',
+                fontWeight: 'bold',
+            }
+
             return (<div key={i}>
-                        <div id="palette-container-events" className="palette-category palette-close">
-                            <div id="palette-header-events" className="palette-header">
+                        <div id="palette-container-events">
+                            <div id="palette-header-events" style={style}>
                                <span>{key}</span>
                             </div>
                             {nodes}
@@ -49,19 +53,18 @@ class Palette extends React.Component {
 
         let palettecontainerstyle={
             display: this.props.types.length > 0 ? 'block':'none',
+            background: '#4d4d4d',
+            color: 'white',
+            letterSpacing: 1,
+            WebkitFontSmoothing: 'antialiased',
+            textRendering: 'optimizeLegibility',
+            width: PALETTE_WIDTH,
         }
 
 		return( 
 			<div id="palette">
         		<img src={spinner} className={spinnerClassname}/>
 
-        		<div id="palette-search">
-            		<i className="fa fa-search"></i>
-            		<input id="palette-search-input" type="text" data-i18n="[placeholder]palette.filter"/>
-            		<a href="#" id="palette-search-clear">
-            			<i className="fa fa-times"></i>
-            		</a>
-        		</div>
         		<div id="palette-container" className="palette-scroll" style={palettecontainerstyle}>
                      {categories}
                 </div>

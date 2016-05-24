@@ -9,6 +9,20 @@ import Outputs from './Outputs';
 import Label from './Label';
 import Status from './Status'; 
 
+
+/*
+return <g {...gprops}>
+                    <Button d={d}/>
+                    {mainrect}
+                    <Label d={d}/>
+                    <Badge d={d}/>
+
+                    <Icon d={d}/>
+                    <Inputs d={d}/>
+                    <Outputs d={d}/>
+                    <Status d={d}/>
+                </g> */
+
 class D3Node extends Component {
 	
 	constructor(props){
@@ -40,8 +54,6 @@ class D3Node extends Component {
         });
 
         const mainrectprops = {
-            rx: 5,
-            ry: 5,
             fill:  d._def.color,
             width: d.w,
             height: d.h,
@@ -56,16 +68,22 @@ class D3Node extends Component {
             transform: `translate(${(d.x-d.w/2)},${(d.y-d.h/2)})`,
         }
 
+        let textprops = {
+                y: 35,
+                x: 25,
+                fontFamily: 'FontAwesome',
+                fontSize: '30px',
+                fill: 'white',
+                textAnchor: 'middle',
+        }
+        
+        let icontxt = d._def.unicode || '\uf040'
+        
         return <g {...gprops}>
-                    <Button d={d}/>
-                    {mainrect}
-                    <Label d={d}/>
-                    <Badge d={d}/>
-
-                    <Icon d={d}/>
+                  {mainrect}
+                    <text {...textprops}>{icontxt}</text>
                     <Inputs d={d}/>
                     <Outputs d={d}/>
-                    <Status d={d}/>
                 </g>
         
     }

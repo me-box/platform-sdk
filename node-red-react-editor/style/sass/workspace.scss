@@ -19,8 +19,8 @@
    overflow: auto;
    background: #e3e3e3;
    position: absolute;
-   bottom:25px;
-   top: 35px;
+   bottom:0px;
+   top: 0px;
    left:0px;
    right:0px;
    box-sizing:border-box;
@@ -39,6 +39,7 @@
     bottom: 0px;
     right: 322px;
     overflow: hidden;
+    background: green;
     @include component-border;
 }
 

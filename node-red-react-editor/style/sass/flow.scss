@@ -84,9 +84,9 @@
     font-size: 12px;
 }
 .node {
-    stroke: #999;
+    stroke: #fff;
     cursor: move;
-    stroke-width: 1;
+    stroke-width: 2;
 }
 .node_unknown {
     stroke-dasharray:10,4;
@@ -115,8 +115,8 @@
 
 }
 .port {
-    stroke: #999;
-    stroke-width: 1;
+    stroke: #fff;
+    stroke-width: 2;
     fill: #ddd;
     cursor: crosshair;
 }
@@ -186,7 +186,7 @@
 
 .drag_line {
     stroke: $node-selected-color;
-    stroke-width: 3;
+    stroke-width: 2;
     fill: none;
     pointer-events: none;
 }

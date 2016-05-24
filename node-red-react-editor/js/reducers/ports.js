@@ -55,8 +55,8 @@ export default function ports(state = {drawingPort:null, activeLink:{source:{x:0
 		    						//need a soruce port!
 
 		    						source: {	
-		    								x: OUTPUT_WIDTH,
-		    								y: 0,
+		    								x: OUTPUT_WIDTH-5,
+		    								y: -5,
 										  },
 
 		    						target: {

@@ -1,16 +1,28 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
+import Textfield from '../../../components/form/Textfield';
 
 class Node extends React.Component {
 
        render() {
-          const {selected} = this.props;
-          return  <h1> It is me ${selected.id} </h1>
+         const nameprops = {
+              name: "name",
+              values: this.props.values,
+              icon: this.props.icon,
+              onChange: (property, event)=>{
+                  this.props.updateNode(property, event.target.value);
+              },
+              selected: this.props.selected,
+          }
+
+          return <div className="form-row">
+             <Textfield {...nameprops}/>
+          </div>
           
        }
 }
 
-export default composeNode(Node, 'databox app', 
+export default composeNode(Node, 'bulbs', 
                             {
                                 category: 'outputs',      
                                 color: '#d45500',
@@ -21,14 +33,11 @@ export default composeNode(Node, 'databox app',
                                 inputs:1,               
                                 outputs:0,             
                                
-                                icon: "fa-mobile", 
-                                unicode: '\uf10b',       
+                                icon: "fa-lightbulb-o",
+                                unicode: '\uf0eb',     
                                 label: function() {     
-                                    return this.name||this.topic||"media player";
+                                    return this.name||this.topic||"bulbs";
                                 },
-                                
-                                description: "<p>The databox app is the standard messaging endpoint for users in a household.</p>  The <code>msg.payload</code> must be formatted as a json object with values <p> <code>{ contenttype: [numeric, table, html], content: [your content]}</code></p> <p> Where there are multiple companion apps associated with a databox, the message will be sent to the owner or owners of the datastore(s) used in your flow </p>", 
-
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 }

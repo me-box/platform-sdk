@@ -9,6 +9,7 @@
 
 			 	{"name":"function", "file":"processors/function/node"},
 
-			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"}
+			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
+			 	{"name":"bulbs", "file":"outputs/bulbs/node"}
 			 ]
 }

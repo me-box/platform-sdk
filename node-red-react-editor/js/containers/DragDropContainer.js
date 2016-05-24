@@ -5,7 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 class DragDropContainer extends Component {
   
   render(){
-  	let style = {width:'100%', height:'100%'}
+  	let style = {width:1000, height:1000, background:'green'}
     return <div style={style}>
  				{this.props.children}
     		</div>

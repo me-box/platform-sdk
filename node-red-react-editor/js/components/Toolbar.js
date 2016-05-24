@@ -18,11 +18,37 @@ class Toolbar extends Component {
       display: expanded ? 'block' : 'none',
     }
 
+    const logoStyle ={
+      WebkitFontSmoothing: 'antialiased',
+      textRendering: 'optimizeLegibility',
+      margin:0, 
+      color:'white'
+    }
+
+    const buttonstyle = {
+      background: '#8C101C',
+      color: '#eee',
+      paddingTop: 6,
+      paddingBottom: 8,
+      paddingRight: 8,
+      paddingLeft: 8,
+      marginLeft: '14',
+
+    }
+
     return (<div id="header">
-          <span className="logo">
-            <a href="#"><span>databox app editor</span></a>
+          <span className="logo" style={logoStyle}>
+            <a href="#"><span>databox app SDK</span></a>
           </span>
             <ul className="header-toolbar">
+
+              <li>
+                 <a style={buttonstyle} href="#">publish</a>
+              </li>
+              <li>
+                 <a style={buttonstyle} href="#">save</a>
+              </li>
+
               <li>
                 <span className="deploy-button-group button-group">
                   <a id="btn-deploy" className="deploy-button" onClick={this.deploy}>

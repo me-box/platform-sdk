@@ -2,6 +2,14 @@ import React, {PropTypes, Component} from 'react';
 import className from 'classnames';
 import { DragSource } from 'react-dnd';
 
+
+ /*return  connectDragSource(<div onClick={this._handleClick.bind(this,def,nt)} className="palette_node" id={`pallete_node${nodeTypeId}`} style={{style, ...opacity}}>
+                    <div className={labelClass}>{label}</div>
+                    {iconContainer}  
+                    {portOut}
+                    {portIn}
+                </div>);*/
+
 const ItemTypes = {
   BOX: 'box'
 };
@@ -128,12 +136,48 @@ class Node extends Component {
             portIn = <div className="palette_port palette_port_input"/>
         }
 
-        return  connectDragSource(<div onClick={this._handleClick.bind(this,def,nt)} className="palette_node" id={`pallete_node${nodeTypeId}`} style={{style, ...opacity}}>
-                    <div className={labelClass}>{label}</div>
-                    {iconContainer}  
-                    {portOut}
-                    {portIn}
-                </div>);
+        let labelstyle = {
+            paddingTop:10,
+            paddingBottom: 20,
+
+        }
+
+        let container = {
+            display: 'flex',
+            display: '-webkit-box',
+            display: '-moz-box',
+            display: '-ms-flexbox',
+            display: '-webkit-flex',
+            WebkitFlexFlow: 'column',
+            flexFlow: 'column',
+            textAlign: 'center',
+            width: 178,
+        }
+
+        let iconstyle = {
+            alignSelf: 'center',
+            height: '4em',
+            width: '4em',
+            color:'white',
+            fontWeight: 'regular',
+            background: def.color || '#ca2525',
+            border: '2px solid white', 
+            lineHeight: '5.5em',
+            textAlign: 'center',
+            boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.9), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+            color: '#445662',
+        }
+
+
+        let icon = def.icon || 'fa-bug';
+
+        let draggable = connectDragSource( <div style={iconstyle}><i className={`fa ${icon} fa-3x fa-fw`}></i></div>);
+
+        return              (<div style={container} onClick={this._handleClick.bind(this,def,nt)}>
+                                   {draggable}
+                                    <div style={labelstyle}>{label}</div>
+                                </div>)
+       
 	}
 }
 

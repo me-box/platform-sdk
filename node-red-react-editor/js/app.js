@@ -5,4 +5,5 @@ import Root from './containers/Root';
 
 const store = configureStore();
 
+
 render(<Root store={store} />, document.getElementById('root'));

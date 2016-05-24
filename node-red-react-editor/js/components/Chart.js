@@ -30,7 +30,7 @@ class Chart extends Component {
   }
 
   render() {
-    const { nodes, selected, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
+    const { w,h,nodes, selected, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
     
     let chartstyle = {
     	left:180,
@@ -62,8 +62,8 @@ class Chart extends Component {
     }
 
     return <div id="chart"  style={chartstyle}>
-    			<div mousecontainer {...chartprops} width="1000" height="800">
-    			<svg id="svgchart" width='1000' height='800'>
+    			<div mousecontainer {...chartprops} width={w} height={h}>
+    			<svg id="svgchart" width={w} height={h}>
     				{d3nodes}
     				{connectors}
     			</svg>

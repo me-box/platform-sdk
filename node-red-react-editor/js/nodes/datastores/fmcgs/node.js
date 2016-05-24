@@ -13,7 +13,7 @@ class Node extends React.Component {
 export default composeNode(Node, 'fmcgs', 
                             {
                                 category: 'datastores',      
-                                color: '#a6bbcf',
+                                color: '#ffcc00',
                                 defaults: {             
                                     name: {value:""},   
                                     topic: {value:"", required:true}
@@ -21,10 +21,14 @@ export default composeNode(Node, 'fmcgs',
                                 inputs:0,               
                                 outputs:1,             
                                
-                                icon: "debug.png",     
+                                icon: "fa-barcode",   
+                                unicode: '\uf02a',     
+                                
                                 label: function() {     
                                     return this.name||this.topic||"fmcgs";
                                 },
+
+                                description: "<p>FMCGs are 'Fast Moving Consumer Goods' and refer to any consumables (food, clothes, toys etc) that have been registered in a household.</P  <p> The data will be of the form <em>{timestamp, event, product, data}</em> where the product is a UPC code.</p>",
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 }
