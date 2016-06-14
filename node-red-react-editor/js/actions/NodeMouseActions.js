@@ -26,11 +26,6 @@ export function nodeDoubleClicked(node, event){
         node,
         id: node.id
     })
-    
-    console.log("dispacthin node double ckceld");
-    
-
-   
   }
 } 
 

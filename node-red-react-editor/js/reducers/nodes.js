@@ -22,8 +22,8 @@ function updateNode(current, changes){
       }
   }
   
-  const w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(_n.label, "node_label", 50)+(_n.inputs>0?7:0))/GRID_SIZE)));
-  
+  //const w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(_n.label, "node_label", 50)+(_n.inputs>0?7:0))/GRID_SIZE)));
+  const w = NODE_WIDTH;
   _n.w = w; 
 
   return _n;

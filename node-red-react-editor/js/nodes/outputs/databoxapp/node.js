@@ -1,22 +1,39 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
+import Textfield from '../../../components/form/Textfield';
 
 class Node extends React.Component {
 
-       render() {
-          const {selected} = this.props;
-          return  <h1> It is me ${selected.id} </h1>
-          
+      
+      render() {
+         
+         const nameprops = {
+
+              name: "name",
+             
+              value: this.props.values['name'] || this.props.selected['name'] || "",
+              
+              icon: "fa fa-tasks",
+             
+              onChange: (property, event)=>{
+                  this.props.updateNode(property, event.target.value);
+              },
+             
+              selected: this.props.selected,
+          }
+
+          return <div className="form-row">
+                    <Textfield {...nameprops}/>
+                </div>  
        }
 }
 
-export default composeNode(Node, 'databox app', 
+export default composeNode(Node, 'app', 
                             {
                                 category: 'outputs',      
                                 color: '#d45500',
                                 defaults: {             
-                                    name: {value:""},   
-                                    topic: {value:"", required:true}
+                                    name: {value:""}
                                 },
                                 inputs:1,               
                                 outputs:0,             
