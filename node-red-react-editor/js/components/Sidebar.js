@@ -10,11 +10,9 @@ class Sidebar extends React.Component {
 		let node = this.props.selected;
 
 		let sidebarstyle = {
+			display: '-webkit-flex',
             display: 'flex',
-            display: '-webkit-box',
-            display: '-moz-box',
-            display: '-ms-flexbox',
-            display: '-webkit-flex',
+            
             WebkitFlexFlow: 'column',
             flexFlow: 'column',
             textAlign: 'center',
@@ -51,8 +49,7 @@ class Sidebar extends React.Component {
         	marginBottom: '1.5em',
 
         }
-        console.log("in sidebar and node is");
-        console.log(node);
+       
 
 		return( 
 			 <div id="sidebar" style={{display:'block'}}>

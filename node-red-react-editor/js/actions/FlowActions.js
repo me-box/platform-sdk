@@ -4,6 +4,7 @@ import { NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {getID, addViewProperties} from '../utils/nodeUtils';
 import {register} from '../store/configureStore';
 import {scopeify} from '../utils/scopeify';
+import config from '../config';
 
 function _lookup(nodeTypes, nodetype){
 	const indx = nodeTypes.map(item=>item.name).indexOf(nodetype);
@@ -415,7 +416,7 @@ export function fetchFlows(store){
 	return function (dispatch, getState) {
 		dispatch(requestFlows());
 		request
-  			.get('http://localhost:1880/flows')
+  			.get(`http://${config.redurl}/flows`)
   			.set('Accept', 'application/json')
   			.type('json')
   			.end(function(err, res){

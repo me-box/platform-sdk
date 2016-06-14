@@ -43,7 +43,7 @@ class Toolbar extends Component {
             <ul className="header-toolbar">
 
               <li>
-                 <a style={buttonstyle} href="#">publish</a>
+                 <a style={buttonstyle} onClick={this.publish}>publish</a>
               </li>
               <li>
                  <a style={buttonstyle} href="#">save</a>

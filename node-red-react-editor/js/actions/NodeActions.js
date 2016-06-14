@@ -7,6 +7,7 @@ import fetch from 'isomorphic-fetch'
 import {register} from '../store/configureStore';
 import {scopeify} from '../utils/scopeify';
 import {getID, addViewProperties} from '../utils/nodeUtils';
+import config from '../config';
 
 export function requestNodes() {
   return {
@@ -175,7 +176,7 @@ export function fetchNodes(store) {
     // In this case, we return a promise to wait for.
     // This is not required by thunk middleware, but it is convenient for us.
 
-    return fetch(`http://localhost:8080/nodes/nodes.json`,{
+    return fetch(`http://${config.root}/nodes/nodes.json`,{
     	headers: {
         	'Accept': 'application/json',
         	'Content-Type': 'application/json',

@@ -8,7 +8,8 @@
 			 	{"name":"mediaplayer", "file":"datastores/mediaplayer/node"},
 
 			 	{"name":"function", "file":"processors/function/node"},
-
+				{"name":"listify", "file":"processors/listify/node"},
+			 	
 			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
 			 	{"name":"bulbs", "file":"outputs/datastore/node"},
 			 	{"name":"bulbs", "file":"outputs/bulbs/node"}

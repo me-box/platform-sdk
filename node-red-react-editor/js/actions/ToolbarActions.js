@@ -1,31 +1,89 @@
 import request  from 'superagent';
-import { TOGGLE_DEPLOY_MENU, DEPLOY_CLICKED, SUBMITTING_FLOWS, SUBMISSION_RESPONSE, SUBMISSION_ERROR } from '../constants/ActionTypes';
+import * as ActionType from '../constants/ActionTypes';
 import {convertNode} from '../utils/nodeUtils';
+import config from '../config';
 
 export function toggleDeployMenu(){
     return {
-      type: TOGGLE_DEPLOY_MENU,
+      type: ActionType.TOGGLE_DEPLOY_MENU,
     }
 }
 
 export function postFlows(){
 	return {
-		type: SUBMITTING_FLOWS
+		type: ActionType.SUBMITTING_FLOWS
 	}
 }
 
 export function submissionError(err){
 	return {
-		type: SUBMISSION_ERROR,
+		type: ActionType.SUBMISSION_ERROR,
 		err,
 	}
 }
 
 export function submissionResponse(data){
 	return {
-		type: SUBMISSION_RESPONSE,
+		type: ActionType.SUBMISSION_RESPONSE,
 		data,
 	}
+}
+
+export function publishFlows(){
+	return {
+		type: ActionType.PUBLISHING_FLOWS
+	}
+}
+
+export function publishError(err){
+	return {
+		type: ActionType.PUBLISH_ERROR,
+		err,
+	}
+}
+
+export function publishResponse(data){
+	return {
+		type: ActionType.PUBLISH_RESPONSE,
+		data,
+	}
+}
+
+export function publish(){
+	return function (dispatch, getState) {
+		
+		dispatch(publishFlows())
+		
+		const jsonnodes = getState().nodes.nodes.map((node)=>{
+			return Object.assign({}, convertNode(node, getState().ports.links), {z:'2cc3b486.16d4ec'});
+		});
+	    
+	    request
+  			.post(`http://${config.root}/publish`)
+  			.send([
+  					{
+  						type:"tab",
+  						id:"2cc3b486.16d4ec",
+  						label:"Flow 1"
+  					},
+  					...jsonnodes
+  				])
+  			.set('Accept', 'application/json')
+  			.type('json')
+  			.end(function(err, res){
+  				if (err){
+  					console.log(err);
+  					dispatch(publishError(err));
+  				}else{
+          			console.log("got");
+          			console.log(res.body);
+          			dispatch(publishResponse(res.body));
+  	 			}
+  	 		});		
+	}
+
+		
+		
 }
 
 //this will change the multiplier for the 'repeat' value 
@@ -39,10 +97,10 @@ export function deploy(){
 			return Object.assign({}, convertNode(node, getState().ports.links), {z:'2cc3b486.16d4ec'});
 		});
 		
-		console.log(jsonnodes);
+		
 
 	    request
-  			.post('http://localhost:1880/flows')
+  			.post(`http://${config.redurl}/flows`)
   			.send([
   					{
   						type:"tab",

@@ -143,11 +143,8 @@ class Node extends Component {
         }
 
         let container = {
-            display: 'flex',
-            display: '-webkit-box',
-            display: '-moz-box',
-            display: '-ms-flexbox',
             display: '-webkit-flex',
+            display: 'flex',
             WebkitFlexFlow: 'column',
             flexFlow: 'column',
             textAlign: 'center',
