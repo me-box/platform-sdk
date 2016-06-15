@@ -10,6 +10,8 @@ import Workspace from '../components/Workspace';
 import Sidebar from '../components/Sidebar';
 import Toolbar from '../components/Toolbar';
 import DragDropContainer from './DragDropContainer';
+import RepoManager from './RepoManager';
+
 import {PALETTE_WIDTH, HELP_WIDTH, TOOLBAR_HEIGHT} from '../constants/ViewConstants';
 import '../../style/font-awesome/css/font-awesome.min.css';
 import '../../style/bootstrap/css/bootstrap.min.css';
@@ -70,7 +72,8 @@ class Editor extends Component {
 	    				<Palette {...paletteprops}/>
 	    				<Workspace {...workspaceprops}/>
 	    			</DragDropContainer>
-            <Sidebar {...sidebarprops}/>
+            		<Sidebar {...sidebarprops}/>
+            		<RepoManager />
 	    		</div>
 	    	</div>);
     }

@@ -3,6 +3,13 @@ import * as ActionType from '../constants/ActionTypes';
 import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 
+
+export function toggleSave(){
+	return {
+		type: ActionType.TOGGLE_SAVE,
+	}
+}
+
 export function toggleDeployMenu(){
     return {
       type: ActionType.TOGGLE_DEPLOY_MENU,

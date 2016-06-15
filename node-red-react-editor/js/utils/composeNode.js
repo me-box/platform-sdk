@@ -44,8 +44,7 @@ export default function composeNode(Component, nt, config, reducer=null){
            const dialogueprops = {
               cancel: this.cancel,
               ok: this.ok,
-              node: configuring,
-              nt,
+              title: configuring ? configuring.id : "",
            }
           
            if (configuring && configuring.type === nt){

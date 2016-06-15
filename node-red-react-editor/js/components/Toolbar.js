@@ -37,16 +37,15 @@ class Toolbar extends Component {
     }
 
     return (<div id="header">
-          <span className="logo" style={logoStyle}>
-            <a href="#"><span>databox app SDK</span></a>
-          </span>
+          	<span className="logo" style={logoStyle}>
+            	<a href="#"><span>databox app SDK</span></a>
+          	</span>
             <ul className="header-toolbar">
-
               <li>
                  <a style={buttonstyle} onClick={this.publish}>publish</a>
               </li>
               <li>
-                 <a style={buttonstyle} href="#">save</a>
+                 <a style={buttonstyle} onClick={this.toggleSave}>save app</a>
               </li>
 
               <li>

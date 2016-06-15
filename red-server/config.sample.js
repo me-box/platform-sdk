@@ -1,8 +1,18 @@
 module.exports = {
+
 	secret: 'a secret phrase',
-	GITHUB_CLIENT_ID: [yourgithubclientid],
-    GITHUB_CLIENT_SECRET: [yourgithubclientsecret],
-    mongourl : 'mongodb://localhost/passport',
+
+	github:{
+	
+		CLIENT_ID: [yourgithubclientid],
+    	CLIENT_SECRET: [yourgithubclientsecret],
+    	CALLBACK: [githubcallbackurl]
+    },
+    
+    mongo:{
+    	url : 'mongodb://localhost/passport',
+    },
+    
     redis: {
    		 host: 127.0.0.1,
          port: 6379,

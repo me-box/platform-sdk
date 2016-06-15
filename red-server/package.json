@@ -4,7 +4,8 @@
   "description": "test red server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node server.js"
   },
   "author": "Tom Lodge",
   "license": "MIT",
@@ -19,5 +20,10 @@
     "passport": "^0.3.2",
     "passport-github": "^1.1.0",
     "superagent": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "nodemon": "^1.9.2"
   }
 }

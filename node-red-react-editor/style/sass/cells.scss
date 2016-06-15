@@ -1,0 +1,97 @@
+html{
+  -webkit-font-smoothing: antialiased;  
+}
+
+ *, *:before, *:after {
+	 -moz-box-sizing: border-box;
+	 -webkit-box-sizing: border-box;
+	 box-sizing: border-box;
+ }
+         
+.flexcolumncontainer{
+  width: 500px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: auto;
+
+}
+
+.flexcell{
+	display: flex;
+	flex: 1 0 auto;
+}
+
+.flexrowcontainer{
+  flex: 1 0 auto;
+  display:flex;
+  border-bottom: 1px solid #b6b6b6;   
+} 
+
+.title{
+   display:flex;
+   width: 130px;
+   border-right:  1px solid #b6b6b6;
+   text-align: center;
+   background: #f2f2f2;
+   text-transform: uppercase;
+   font-size: 0.75em;
+}
+
+.label{
+ color: #727272;
+  margin: auto;
+}
+
+.contentrow{ 
+  width: calc(500px - 130px);
+  display:flex;
+  flex-flow: row wrap;
+}
+
+.flexbutton{
+  min-width: 100px;
+  margin: 5px;
+  display:flex;
+  flex: 1 1 auto;
+}
+
+.button{
+  margin: auto;
+  padding: 9px;
+  color: #727272;
+  text-transform: uppercase;
+}
+
+.button.selected{
+  background: #d35a51;
+  color: white;
+  -webkit-box-shadow: 5px 0px 7px -3px rgba(0,0,0,0.36);
+   -moz-box-shadow: 5px 0px 7px -3px rgba(0,0,0,0.36);
+   box-shadow: 5px 0px 7px -3px rgba(0,0,0,0.36);
+}
+
+
+.cellcolumncontainer{
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.centered{
+  text-align: center;
+  margin:auto;
+}
+
+#repomanager .ui-dialog .ui-dialog-content {
+	padding: 0px;
+	overflow: hidden;
+}
+
+#repomanager input{
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
