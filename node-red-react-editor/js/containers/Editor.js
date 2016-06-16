@@ -7,7 +7,7 @@ import {windowResize} from '../actions/WindowActions';
 
 import Palette from '../components/Palette';
 import Workspace from '../components/Workspace';
-import Sidebar from '../components/Sidebar';
+import Sidebar from './Sidebar';
 import Toolbar from '../components/Toolbar';
 import DragDropContainer from './DragDropContainer';
 import RepoManager from './RepoManager';
@@ -48,11 +48,11 @@ class Editor extends Component {
 
   	
   	const {store} = this.context;
-   	const { types, categories, dimensions, selected, dispatch } = this.props;
+   	const { types, categories, dimensions, dispatch } = this.props;
 
    	const paletteprops =  {
   		types,
-      categories,
+        categories,
   		dropNode: bindActionCreators(dropNode.bind(this,store), dispatch),
   	}
 
@@ -61,9 +61,6 @@ class Editor extends Component {
       h: dimensions.h - TOOLBAR_HEIGHT,
     }
 
-    const sidebarprops = {
-        selected : selected,
-    }
 
    	return (<div onKeyDown={this._keyPress}> 
 				<Toolbar />
@@ -72,7 +69,7 @@ class Editor extends Component {
 	    				<Palette {...paletteprops}/>
 	    				<Workspace {...workspaceprops}/>
 	    			</DragDropContainer>
-            		<Sidebar {...sidebarprops}/>
+            		<Sidebar />
             		<RepoManager />
 	    		</div>
 	    	</div>);
@@ -102,7 +99,6 @@ function select(state) {
     types: state.types.nodetypes,
     categories: state.types.categories,
     dimensions: state.screen.dimensions,
-    selected: state.nodes.selected,
   };
 }
 

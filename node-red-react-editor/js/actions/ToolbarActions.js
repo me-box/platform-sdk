@@ -4,9 +4,10 @@ import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 
 
-export function toggleSave(){
+
+export function toggleAppManager(){
 	return {
-		type: ActionType.TOGGLE_SAVE,
+		type: ActionType.TOGGLE_APPMANAGER,
 	}
 }
 

@@ -6,57 +6,85 @@ html{
 	 -moz-box-sizing: border-box;
 	 -webkit-box-sizing: border-box;
 	 box-sizing: border-box;
- }
-         
-.flexcolumncontainer{
-  width: 500px;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  margin: auto;
-
+}
+ 
+.flexcontainer {
+	width: 100%;
 }
 
-.flexcell{
+.flexcolumn {
+    width: inherit;
+    height: inherit;
+    display: -webkit-flex;
+    display: flex;
+    flex: 1 1 0;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    
+}
+
+.flexcolumn > div {
+    display: flex;
+    flex: 1 1 0;
+    border-bottom:  1px solid #b6b6b6;
+    min-height: 60px;
+}
+
+.flexrow {
+    height: inherit;
+    width: inherit;
+    display: -webkit-flex;
+    display: flex;
+    flex: 1 1 auto;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    
+}
+
+.flexrow > div {
+    display: flex;
+    flex: 1 1 0;
+    height: inherit;
+}
+
+
+.centered{
+    margin: auto;
+    text-align: center;
+}
+.column > .headerstyle {
+    display: flex;
+    flex: 0 0 auto;
+    height: 40px;
+}
+
+.column > .footerstyle {
+    display: flex;
+    flex: 0 0 auto;
+    height: 40px;
+}
+
+.flexrow > .title {
 	display: flex;
-	flex: 1 0 auto;
+    flex: 0 0 auto;
+    width: 100px;
+   	border-right:  1px solid #b6b6b6;
+   	background: #f2f2f2;
+   	text-transform: uppercase;
+   	font-size: 0.75em;    
 }
 
-.flexrowcontainer{
-  flex: 1 0 auto;
-  display:flex;
-  border-bottom: 1px solid #b6b6b6;   
-} 
-
-.title{
-   display:flex;
-   width: 130px;
-   border-right:  1px solid #b6b6b6;
-   text-align: center;
-   background: #f2f2f2;
-   text-transform: uppercase;
-   font-size: 0.75em;
+.flexrow > .icon {
+    display: flex;
+    flex: 0 1 auto;
+    width: 50px;
 }
 
-.label{
- color: #727272;
-  margin: auto;
+.flexrow > .icon img{
+    width: 50px;
+    margin: auto;
+    object-fit: cover;
 }
-
-.contentrow{ 
-  width: calc(500px - 130px);
-  display:flex;
-  flex-flow: row wrap;
-}
-
-.flexbutton{
-  min-width: 100px;
-  margin: 5px;
-  display:flex;
-  flex: 1 1 auto;
-}
-
 .button{
   margin: auto;
   padding: 9px;
@@ -72,19 +100,12 @@ html{
    box-shadow: 5px 0px 7px -3px rgba(0,0,0,0.36);
 }
 
-
-.cellcolumncontainer{
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  flex: 1 1 auto;
-}
-
 .centered{
   text-align: center;
   margin:auto;
 }
+
+
 
 #repomanager .ui-dialog .ui-dialog-content {
 	padding: 0px;
@@ -94,4 +115,13 @@ html{
 #repomanager input{
 	margin-top: 5px;
 	margin-bottom: 5px;
+}
+
+.flexcontainer  textarea {
+     width: 100%;
+     height: inherit;
+     margin: 0;
+     padding: 0;
+     border-radius: 0;
+     border: none;
 }

@@ -5,6 +5,7 @@ import mouse from './mouse';
 import ports from './ports';
 import editor from './editor';
 import screen from './screen';
+import repos from './repos';
 
 import {routerReducer} from 'react-router-redux';
 
@@ -16,6 +17,7 @@ const rootReducers = {
   ports,
   editor,
   screen,
+  repos,
   routing: routerReducer,
 };
 

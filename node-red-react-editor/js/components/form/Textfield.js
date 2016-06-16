@@ -7,19 +7,25 @@ class Textfield extends React.Component {
 
 	render() {
 		
-		const {value, selected, name, onChange, icon} = this.props;
-
+		const {value, name, onChange, icon} = this.props;
+		const id = this.props.id || name;
+		
+		let label;
+		
 		const props = {
             value: value,
-            onChange: onChange.bind(this, name),
+            onChange: onChange.bind(this, id),
         }
-
-		return( 
-			  <div>
-				  <label>
+        
+        if (name && icon){
+        	label = <label>
 	                  <i className={this.props.icon}></i>
 	                  <span data-i18n="common.label.name">{name}</span>
-	              </label>
+	              	</label>
+		}
+		return( 
+			  <div>
+				  {label}		 
 	              <input type="text" {...props}/>
 			  </div>
 		);

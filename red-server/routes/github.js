@@ -1,5 +1,7 @@
 import express from 'express';
 import request from 'superagent';
+import config from '../config.js';
+
 const router = express.Router();
 
 //list all apps owned by this user
@@ -57,21 +59,19 @@ router.get('/flow', function(req,res){
 // published repo for all PUBLISHED repos?
 router.post('/repo/new', function(req,res){
 	var user 		= req.user;
-	var repo 		= req.body.repo.startsWith("databox.") ? req.body.repo : `databox.${req.body.repo}`;
+	var name 		= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
 	var description = req.body.description || "";
-	var homepage    = req.body.homepage || "";
-	var isprivate   = req.body.isprivate || false;
-	var content     = req.body.flow || [];
-	var message 	= req.body.message || "first commit";
+	var isprivate   = false;
+	var content     = req.body.flows || [];
+	var commit 	= req.body.message || "first commit";
 	
 	return new Promise((resolve,reject)=>{
 		
 		request
    			.post(`${config.github.API}/user/repos`)
    			.send({
-  				"name": repo,
+  				"name": name,
   				"description": description,
-  				"homepage": homepage,
   				"private": isprivate,
   				"has_issues": false,
   				"has_wiki": false,
@@ -80,35 +80,46 @@ router.post('/repo/new', function(req,res){
    			.set('Authorization', `token ${req.user.accessToken}`)
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
-     			if (err || !res.ok) {
-       				console.log('error');
-       				reject(error);
+     			if (err) {
+       				console.log('error creating repo!');
+       				console.log(err);
+       				reject(err);
      			} 
      			else {
+     			 	
+     			 	const result = data.body;
+     			 	
+     			 	console.log(result);
+     			 	
        				resolve({
-       						name: data.name, 
-       						updated: data.updated_at, 
-       						icon:data.owner.avatar_url, 
-       						url:data.url
+       						name: result.name, 
+       						updated: result.updated_at, 
+       						icon:result.owner.avatar_url, 
+       						url:result.url
        				});
      			}
    			})
    	}).then( repo => {
    		
+   		console.log("writing flows");
+   		console.log(content);
+   		
    		return new Promise((resolve, reject)=>{
    			request
    				.put(`${config.github.API}/repos/${user.username}/${repo.name}/contents/flows.json`)
    				.send({
-  					"message": message,
+  					"message": commit,
  					"committer": {
-    					"name": user.username
+    					"name": user.username,
+    					"email": req.user.email || `${req.user.username}@me-box.com`
   					},
   					"content": new Buffer(JSON.stringify(content)).toString('base64'),
 				})
    				.set('Authorization', `token ${req.user.accessToken}`)
    				.set('Accept', 'application/json')
    				.end((err, res)=>{
-     				if (err || !res.ok) {
+     				if (err) {
+     					console.log("---error creating first commit!----");
        					console.log('error');
        					console.log(err);
      				} else {
@@ -134,7 +145,7 @@ router.post('/repo/update', function(req, res){
   					"message": message,
  					"committer": {
     					"name": req.user.username,
-    					//"email": "tlodge@gmail.com" //get the emai
+    					"email": req.user.email || `${req.user.username}@me-box.com`
   					},
   					"content": content,
   					"sha":sha,

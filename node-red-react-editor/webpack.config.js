@@ -7,13 +7,15 @@ module.exports = {
     entry: {
         editor: [
             './js/app.js',
-            'webpack-dev-server/client?http://localhost:8080',
+            //'webpack-dev-server/client?http://localhost:8080',
+	    'webpack-dev-server/client?http://178.62.110.78/editor',
             'webpack/hot/only-dev-server'
         ]
     },
     
     output: {
         publicPath: 'http://localhost:8080/',
+	//publicPath: 'http://178.62.110.78/editor/',
         filename: 'static/[name].js'
     },
 
