@@ -9,6 +9,8 @@ import Cell from '../components/Cell';
 import Cells from '../components/Cells';
 
 import * as RepoActions from '../actions/RepoActions';
+import {fetchFlow} from '../actions/FlowActions';
+
 //import {toggleSave} from '../actions/ToolbarActions';
 import cx from 'classnames';
 
@@ -19,9 +21,12 @@ class RepoManager extends Component {
 	constructor(props){
 		super(props);
 		Object.assign(this, ...bindActionCreators(RepoActions, props.dispatch));
+		this._load = this._load.bind(this);
 	} 
 	
 	componentDidMount(){
+		const {store} = this.context;
+		this.fetchFlow = bindActionCreators(fetchFlow.bind(this,store), this.props.dispatch);
 		this.requestRepos();
 	}
 
@@ -72,7 +77,7 @@ class RepoManager extends Component {
 			disabled: !cansave,
 		});		
 		
-		
+		//onClick={this.fetchFlow.bind(this, repo.name)}
 		var saved = repos.map((repo)=>{
 			return  <div>
 						<div className="flexrow">
@@ -82,6 +87,11 @@ class RepoManager extends Component {
 							<div> 
 								<div className="centered">
 									{repo.name}
+								</div>
+				 			</div>
+				 			<div className="submit"> 
+								<div className="centered">
+									<div onClick={this._load.bind(this, repo.name)} className="button selected">load</div>
 								</div>
 				 			</div>
 						</div>
@@ -94,11 +104,7 @@ class RepoManager extends Component {
 		 	content = 	<div>
 							<div className="flexcontainer">									
 								<Cells>
-									<div>
-										<div className="centered">
-										 	<h4> save </h4> 
-										 </div>
-									</div>
+									
 									<Cell title={"name"} content={nameinput}/>
 									<Cell title={"description"} content={descriptioninput}/>
 									<Cell title={"commit message"} content={commitinput}/>
@@ -107,20 +113,11 @@ class RepoManager extends Component {
 										 	<div onClick={this.savePressed} className={buttoncname}>Save</div>
 										 </div>
 									</div>
+									{saved}
 								</Cells>
 							</div>
 							
-							<div className="flexcontainer">									
-								<Cells>
-									<div>
-										<div className="centered">
-										 	<h4> saved </h4> 
-										 </div>
-									</div>
-									{saved}
-									
-								</Cells>
-							</div>
+							
 							
 						</div>	
 						
@@ -128,6 +125,11 @@ class RepoManager extends Component {
 		return <div>
 					{content}
 			   </div>
+	}
+	
+	_load(repo){
+		console.log("loading " + repo);
+		this.fetchFlow(repo);
 	}
 };
 
@@ -143,5 +145,10 @@ function select(state) {
     repos: state.repos.saved,
   };
 }
+
+RepoManager.contextTypes = {
+	store: React.PropTypes.object,
+}
+
 
 export default connect(select)(RepoManager);

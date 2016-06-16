@@ -85,6 +85,13 @@ html{
     margin: auto;
     object-fit: cover;
 }
+
+.flexrow > .submit {
+    display: flex;
+    flex: 0 1 auto;
+    width: 50px;
+}
+
 .button{
   margin: auto;
   padding: 9px;

@@ -412,11 +412,13 @@ function extractPorts(data){
 
 }
 
-export function fetchFlows(store){
+export function fetchFlow(store, repo){
+	
 	return function (dispatch, getState) {
 		dispatch(requestFlows());
 		request
-  			.get(`http://${config.redurl}/flows`)
+  			.get(`http://${config.root}/github/flow`)
+  			.query({repo:repo})
   			.set('Accept', 'application/json')
   			.type('json')
   			.end(function(err, res){

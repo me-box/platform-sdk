@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from '../constants/ViewConstants';
-import {fetchFlows} from './FlowActions';
+//import {fetchFlows} from './FlowActions';
 import fetch from 'isomorphic-fetch'
 import {register} from '../store/configureStore';
 import {scopeify} from '../utils/scopeify';
@@ -123,7 +123,7 @@ export function receiveNodes(store, nodes) {
       receivedAt: Date.now()
     })
 
-    dispatch(fetchFlows(store));
+    //dispatch(fetchFlows(store));
   }
 }
 
