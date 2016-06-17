@@ -4,22 +4,14 @@ module.exports = {
     entry: {
         editor: [
             './js/app.js',
-            'webpack-dev-server/client?http://178.62.110.78',
+            'webpack-dev-server/client?http://localhost:8080',
             'webpack/hot/only-dev-server'
         ]
     },
     
     output: {
-        publicPath: 'http://178.62.110.78/',
-        filename: '[name].js'
-    },
-
-    devServer:{
-   	 proxy: {
-            '/github/*': {
-                target: 'http://localhost:9000',
-            },
-    	}
+        publicPath: 'http://localhost:8080/',
+        filename: 'static/[name].js'
     },
 
     module: {

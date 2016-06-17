@@ -8,6 +8,13 @@ import mongoose from 'mongoose';
 import initPassport from './strategies';
 
 const RedisStore 	 = connectredis(expressSession);
+let PORT; 
+
+if (process.argv.length > 2){
+  PORT = parseInt(process.argv[2]);
+}
+
+PORT = PORT || 8080
 
 mongoose.connect(config.mongo.url);
 
@@ -63,5 +70,5 @@ app.get('/', ensureAuthenticated, function(req,res){
 });
 
 
-
-server.listen(8080);
+console.log(`listening on port ${PORT}`);
+server.listen(PORT);

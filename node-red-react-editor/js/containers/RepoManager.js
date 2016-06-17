@@ -78,8 +78,8 @@ class RepoManager extends Component {
 		});		
 		
 		//onClick={this.fetchFlow.bind(this, repo.name)}
-		var saved = repos.map((repo)=>{
-			return  <div>
+		var saved = repos.map((repo, i)=>{
+			return  <div key={i}>
 						<div className="flexrow">
 							<div className="icon">
 								<img src={repo.icon}/>

@@ -12,17 +12,10 @@ module.exports = {
     output: {
         
         path: __dirname + "/static",
-        publicPath: 'http://178.62.110.78/editor',
+        publicPath: 'http://178.62.110.78',
         filename: '[name].js'
     },
 
-    "resolve": {
-        "alias": {
-           "../nodes/b/b":"../nodes/b/b",
-        }
-    },
-    //&name=./img/[name].[ext]
-    //annot uglify as this craps up dynamic module loading it seems
     module: {
         loaders: [
                 { test: /\.js$/, loaders: ['react-hot', 'babel'], exclude: /node_modules/ },

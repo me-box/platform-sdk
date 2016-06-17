@@ -34,6 +34,9 @@ router.get('/repos', function(req,res){
 //load up an app from a repo
 router.get('/flow', function(req,res){
 	
+	console.log("greet - bben called with");
+	console.log(req.query.repo);
+	
 	const repo = req.query.repo;
 	const user = req.user;
 	
