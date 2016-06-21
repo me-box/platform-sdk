@@ -23,41 +23,45 @@ export function requestCode(){
 
 export function dropNode(store, reducer, nt, def, x, y){
   
-  let _def = Object.assign({},def);
+  return function(dispatch, getState){
+  	let _def = Object.assign({},def);
 
-  let node = {
-    id: getID(),
-    z:1,
-    type: nt,
-    _def: _def,
-    _: (id)=>{return id},
-    inputs: _def.inputs || 0,
-    outputs: _def.outputs,
-    changed: true,
-    selected: true,
-    dirty: true,
-    x: x + MOUSE_X_OFFSET,
-    y: y + MOUSE_Y_OFFSET,
-  }
+  	let node = {
+		id: getID(),
+		z:getState().tabs.current.id,
+		type: nt,
+		_def: _def,
+		_: (id)=>{return id},
+		inputs: _def.inputs || 0,
+		outputs: _def.outputs,
+		changed: true,
+		selected: true,
+		dirty: true,
+		x: x + MOUSE_X_OFFSET,
+		y: y + MOUSE_Y_OFFSET,
+  	}
 
-  for (var d in node._def.defaults) {
+  	for (var d in node._def.defaults) {
       if (node._def.defaults.hasOwnProperty(d)) {
         node[d] = node._def.defaults[d].value;
       }
-  }
+  	}
 
-  addViewProperties(node);
+  	addViewProperties(node);
   
  
-  //register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
-  //this means that instances of the same node can trasparently make use of the same action constants without a clash!.
-  if (reducer){
+  	//register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
+  	//this means that instances of the same node can trasparently make use of the same action constants without a clash!.
+  	if (reducer){
     
-    register(store, node.id, scopeify(node.id, reducer));
-  }
-  return {
-    type: NODE_DROPPED,
-    node: node,
+    	register(store, node.id, scopeify(node.id, reducer));
+  	}
+  	dispatch(
+    	{
+    		type: NODE_DROPPED,
+    		node: node,
+    	}
+  	);
   }
 }
 
@@ -134,9 +138,10 @@ export function _loadNodes(json, store, dispatch){
    let toregister = [];
 
    json.nodes.forEach((node)=>{
+    
       const n = require(`../nodes/${node.file}.js`);
-     console.log("required");
-     console.log(n);
+     //console.log("required");
+     //console.log(n);
       const elementprops = {
           dispatch: dispatch,
           store: store,
@@ -146,6 +151,7 @@ export function _loadNodes(json, store, dispatch){
      
       const g = document.createElement('div');
       g.id = node.name
+     
       document.body.appendChild(g);
       toregister.push({name: n.default.type, def: n.default.def, reducer: n.default.reducer});
       render(element, document.getElementById(node.name));

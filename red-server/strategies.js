@@ -12,7 +12,8 @@ export default function initPassport(app){
     				callbackURL: config.github.CALLBACK
   				 },
  
-				function(accessToken, refreshToken, profile, cb) {		
+				function(accessToken, refreshToken, profile, cb) {
+					
 					User.findOne({ githubId: profile.id }, function (err, user) {
 						if (user == null){
 							var newuser = new User({ githubId: profile.id, 

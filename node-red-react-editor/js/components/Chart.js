@@ -3,6 +3,7 @@ import {DragLayer} from 'react-dnd';
 import { connect } from 'react-redux';
 import D3Node from './svg/D3Node';
 import Link from './svg/Link';
+import { createSelector } from 'reselect'
 
 import * as NodeMouseActions from '../actions/NodeMouseActions';
 import * as MouseActions from '../actions/MouseActions';
@@ -33,7 +34,7 @@ class Chart extends Component {
     const { w,h,nodes, selected, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
     
     let chartstyle = {
-    	left:180,
+    	top: 35,
     	width:'100%',
     }
 
@@ -79,13 +80,34 @@ class Chart extends Component {
 
 }
 
+const getTab = (state) => state.tabs.current;
+const getNodes = (state) => state.nodes.nodes;
+const getLinks = (state) => state.ports.links;
 
-function select(state) {
+const getVisibleNodes = createSelector(
+	[getTab, getNodes],
+	(tab, nodes)=>{
+		return nodes.filter((node)=>{
+    		return tab ? tab.id === node.z : false
+    	});
+	}
+);
+
+const getVisibleLinks= createSelector(
+	[getTab, getLinks],
+	(tab,links)=>{
+		return links.filter((link)=>{
+    		return tab ? tab.id === link.source.z : false
+    	});
+    }
+);
+
+function mapStateToProps(state) {
   return {
-    nodes: state.nodes.nodes,
+    nodes: getVisibleNodes(state), 
     selected: state.nodes.selected,
-    links: state.ports.links,
+    links: getVisibleLinks(state)
   };
 }
 
-export default connect(select)(DragLayer(collect)(Chart))
+export default connect(mapStateToProps)(DragLayer(collect)(Chart))

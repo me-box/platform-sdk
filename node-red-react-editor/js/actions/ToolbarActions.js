@@ -57,41 +57,10 @@ export function publishResponse(data){
 	}
 }
 
-export function publish(){
-	return function (dispatch, getState) {
-		
-		dispatch(publishFlows())
-		
-		const jsonnodes = getState().nodes.nodes.map((node)=>{
-			return Object.assign({}, convertNode(node, getState().ports.links), {z:'2cc3b486.16d4ec'});
-		});
-	    
-	    request
-  			.post(`http://${config.root}/publish`)
-  			.send([
-  					{
-  						type:"tab",
-  						id:"2cc3b486.16d4ec",
-  						label:"Flow 1"
-  					},
-  					...jsonnodes
-  				])
-  			.set('Accept', 'application/json')
-  			.type('json')
-  			.end(function(err, res){
-  				if (err){
-  					console.log(err);
-  					dispatch(publishError(err));
-  				}else{
-          			console.log("got");
-          			console.log(res.body);
-          			dispatch(publishResponse(res.body));
-  	 			}
-  	 		});		
-	}
-
-		
-		
+export function togglePublisher(){
+	return {
+		type: ActionType.TOGGLE_PUBLISHER,
+	}	
 }
 
 //this will change the multiplier for the 'repeat' value 
@@ -102,19 +71,15 @@ export function deploy(){
 		dispatch(postFlows())
 
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
-			return Object.assign({}, convertNode(node, getState().ports.links), {z:'2cc3b486.16d4ec'});
+			return Object.assign({}, convertNode(node, getState().ports.links));
 		});
 		
+		const tabs = getState().tabs.tabs;
 		
-
 	    request
   			.post(`http://${config.redurl}/flows`)
   			.send([
-  					{
-  						type:"tab",
-  						id:"2cc3b486.16d4ec",
-  						label:"Flow 1"
-  					},
+  					...tabs,
   					...jsonnodes
   				])
   			.set('Accept', 'application/json')

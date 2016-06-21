@@ -6,17 +6,14 @@ import bodyparser from 'body-parser';
 import config from './config';
 import mongoose from 'mongoose';
 import initPassport from './strategies';
-
 const RedisStore 	 = connectredis(expressSession);
-let PORT; 
+mongoose.connect(config.mongo.url);
+
+let PORT = 8080
 
 if (process.argv.length > 2){
-  PORT = parseInt(process.argv[2]);
+	PORT = parseInt(process.argv[2]);
 }
-
-PORT = PORT || 8080
-
-mongoose.connect(config.mongo.url);
 
 let app = express();
 
@@ -55,7 +52,7 @@ const ensureAuthenticated = (req, res, next) => {
     return  next(null);
   }
   console.log("not authenticated - so redirecting!");
-  res.redirect("/editor/auth/github");
+  res.redirect("/auth/github");
 };
 
 
@@ -70,5 +67,5 @@ app.get('/', ensureAuthenticated, function(req,res){
 });
 
 
-console.log(`listening on port ${PORT}`);
+console.log(`listening on port ${PORT}`)
 server.listen(PORT);

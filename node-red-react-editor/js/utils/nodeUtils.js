@@ -91,5 +91,8 @@ export function convertNode(n, links, exportCreds) {
             }
         }
     }
+    console.log("converted node is");
+    console.log(node);
+    
     return node;
 }

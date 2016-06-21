@@ -12,6 +12,7 @@ router.get('/repos', function(req,res){
 	request
    		.get(`${config.github.API}/users/${user.username}/repos`)
    		.set('Accept', 'application/json')
+   		.set('Authorization', `token ${req.user.accessToken}`)
    		.end((err, data)=>{
      		if (err){
      			console.log(err);
@@ -34,15 +35,13 @@ router.get('/repos', function(req,res){
 //load up an app from a repo
 router.get('/flow', function(req,res){
 	
-	console.log("greet - bben called with");
-	console.log(req.query.repo);
-	
 	const repo = req.query.repo;
 	const user = req.user;
 	
 	request
 		.get(`${config.github.API}/repos/${user.username}/${repo}/contents/flows.json`)
 		.set('Accept', 'application/json')
+		.set('Authorization', `token ${req.user.accessToken}`)
 		.end((err, data)=>{
 			if (err || !data.ok) {
 				console.log('error');
@@ -92,7 +91,14 @@ router.post('/repo/new', function(req,res){
      			 	
      			 	const result = data.body;
      			 	
-     			 	console.log(result);
+     			 	console.log("successfully created repo");
+     			 	console.log({
+       						name: result.name, 
+       						updated: result.updated_at, 
+       						icon:result.owner.avatar_url, 
+       						url:result.url
+       				});
+     			 	
      			 	
        				resolve({
        						name: result.name, 
@@ -103,33 +109,45 @@ router.post('/repo/new', function(req,res){
      			}
    			})
    	}).then( repo => {
+   	    
+   		//we need to wait a bit here before creating afirst commit, else might find that repo hasn't been created
    		
-   		console.log("writing flows");
+   		console.log("..now writing flows");
+   		console.log(`${config.github.API}/repos/${user.username}/${repo.name}/contents/flows.json`);
+   		
    		console.log(content);
    		
    		return new Promise((resolve, reject)=>{
-   			request
-   				.put(`${config.github.API}/repos/${user.username}/${repo.name}/contents/flows.json`)
-   				.send({
-  					"message": commit,
- 					"committer": {
-    					"name": user.username,
-    					"email": req.user.email || `${req.user.username}@me-box.com`
-  					},
-  					"content": new Buffer(JSON.stringify(content)).toString('base64'),
-				})
-   				.set('Authorization', `token ${req.user.accessToken}`)
-   				.set('Accept', 'application/json')
-   				.end((err, res)=>{
-     				if (err) {
-     					console.log("---error creating first commit!----");
-       					console.log('error');
-       					console.log(err);
-     				} else {
-       					console.log(JSON.stringify(res.body));
-     				}
-   				})
-   		})
+   			
+   			console.log("waiting 2s before commit");
+   			
+   			setTimeout(
+   				function(){
+				  console.log("committing now");
+				  request
+						.put(`${config.github.API}/repos/${user.username}/${repo.name}/contents/flows.json`)
+						.send({
+							"message": commit,
+							"committer": {
+							"name": user.username,
+							"email": req.user.email || `${req.user.username}@me-box.com`
+						},
+						"content": new Buffer(JSON.stringify(content)).toString('base64'),
+						})
+						.set('Authorization', `token ${req.user.accessToken}`)
+						.set('Accept', 'application/json')
+						.end((err, res)=>{
+							if (err) {
+								console.log("---error creating first commit!----");
+								console.log(err.body);
+							} else {
+								console.log(JSON.stringify(res.body));
+							}
+						}) 
+   				  }
+   			 ,2000);
+   			
+   			})
    	})
    
 });

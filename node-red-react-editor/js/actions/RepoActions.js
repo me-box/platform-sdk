@@ -86,8 +86,10 @@ export function savePressed(){
 		dispatch(savingSubmission())
 
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
-			return Object.assign({}, convertNode(node, getState().ports.links), {z:'2cc3b486.16d4ec'});
+			return Object.assign({}, convertNode(node, getState().ports.links));
 		});
+		
+		const tabs = getState().tabs.tabs;
 		
 		const {name, description, commit} = getState().repos.current;
 		
@@ -97,11 +99,7 @@ export function savePressed(){
 			description,
 			commit,
 			flows: [
-  					{
-  						type:"tab",
-  						id:"2cc3b486.16d4ec",
-  						label:"Databox Flow"
-  					},
+  					...tabs,
   					...jsonnodes
   			]
 		}
