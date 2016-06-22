@@ -8,43 +8,41 @@ html{
 	 box-sizing: border-box;
 }
  
-.flexcontainer {
-	width: 100%;
-}
 
 .flexcolumn {
     width: inherit;
     height: inherit;
     display: -webkit-flex;
     display: flex;
-    flex: 1 1 0;
+    flex: 0 1 auto;
     -webkit-flex-direction: column;
     flex-direction: column;
     
 }
 
+
+
 .flexcolumn > div {
     display: flex;
-    flex: 1 1 0;
-    border-bottom:  1px solid #b6b6b6;
-    min-height: 60px;
+    flex: 0 1 auto;
+    border-bottom: 1px solid #b6b6b6;
+ 	min-height: 40px;  
 }
 
 .flexrow {
-    height: inherit;
-    width: inherit;
+   
     display: -webkit-flex;
     display: flex;
     flex: 1 1 auto;
     -webkit-flex-direction: row;
     flex-direction: row;
-    
 }
 
 .flexrow > div {
     display: flex;
     flex: 1 1 0;
     height: inherit;
+    
 }
 
 
@@ -52,13 +50,13 @@ html{
     margin: auto;
     text-align: center;
 }
-.column > .headerstyle {
+.flexcolumn > .headerstyle {
     display: flex;
     flex: 0 0 auto;
     height: 40px;
 }
 
-.column > .footerstyle {
+.flexcolumn > .footerstyle {
     display: flex;
     flex: 0 0 auto;
     height: 40px;
@@ -68,20 +66,38 @@ html{
 	display: flex;
     flex: 0 0 auto;
     width: 100px;
+   
+   	border-right:  1px solid #b6b6b6;
+   	border-left:  1px solid #b6b6b6;
+   	background: #f2f2f2;
+   	text-transform: uppercase;
+   	font-size: 0.75em;    
+}
+
+.flexrow > .header {
+	display: flex;
    	border-right:  1px solid #b6b6b6;
    	background: #f2f2f2;
    	text-transform: uppercase;
    	font-size: 0.75em;    
 }
 
-.flexrow > .icon {
-    display: flex;
-    flex: 0 1 auto;
-    width: 50px;
+.flexrow > .disabled {
+	display: flex;
+   	background: #f2f2f2;
 }
 
-.flexrow > .icon img{
+
+.flexrow  .icon {
+    display: flex;
+    flex: 0 1 50px;
     width: 50px;
+	padding: 5px;
+}
+
+.flexrow  .icon img{
+   
+    height: 50px;
     margin: auto;
     object-fit: cover;
 }
@@ -89,7 +105,7 @@ html{
 .flexrow > .submit {
     display: flex;
     flex: 0 1 auto;
-    width: 50px;
+    width: 70px;
 }
 
 .button{
@@ -112,23 +128,52 @@ html{
   margin:auto;
 }
 
-
-
-#repomanager .ui-dialog .ui-dialog-content {
-	padding: 0px;
-	overflow: hidden;
-}
-
 #repomanager input{
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
 
-.flexcontainer  textarea {
+#publisher input{
+	width: 100%;
+	border-radius: 0;
+	padding: 0;
+	margin: 0;
+	height: inherit;
+	border: none;
+}
+
+#publisher .flexcontainer textarea{
+	width: 100%;
+	border-radius: 0;
+	padding: 0;
+	margin: 0;
+	height: 100px;
+	border: none;
+}
+
+
+.flexcontainer  textarea, .repocontainer textarea {
      width: 100%;
      height: inherit;
      margin: 0;
      padding: 0;
      border-radius: 0;
      border: none;
+}
+
+
+.flexcontainer{
+	display: flex;	
+	width: inherit;
+	/*height: inherit;*/
+	-webkit-flex-direction: column;
+    flex-direction: column;
+}
+
+.repocontainer{
+	display: flex;	
+	width: inherit;
+	height: inherit;
+	-webkit-flex-direction: column;
+    flex-direction: column;
 }

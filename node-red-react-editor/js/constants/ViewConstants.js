@@ -8,3 +8,4 @@
  export const PALETTE_WIDTH = 178;
  export const SIDEBAR_WIDTH = 322;
  export const TOOLBAR_HEIGHT = 40;
+ export const WORKSPACE_FOOTER = 25;

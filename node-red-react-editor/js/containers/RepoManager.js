@@ -79,32 +79,40 @@ class RepoManager extends Component {
 		
 		//onClick={this.fetchFlow.bind(this, repo.name)}
 		var saved = repos.map((repo, i)=>{
-			return  <div key={i}>
-						<div className="flexrow">
+			
+			return <div key={i}>
+					<div className="flexrow">
+						
 							<div className="icon">
 								<img src={repo.icon}/>
 							</div>
-							<div> 
-								<div className="centered">
-									{repo.name}
-								</div>
-				 			</div>
-				 			<div className="submit"> 
-								<div className="centered">
-									<div onClick={this._load.bind(this, repo.name)} className="button selected">load</div>
-								</div>
-				 			</div>
+						
+						<div> 
+							<div className="centered">
+								{repo.name}
+							</div>
+						</div>
+						<div className="submit">
+						
+							<div className="centered">
+								<div onClick={this._load.bind(this, repo.name)} className="button selected">load</div>
+							</div>
+						
 						</div>
 					</div>
+				</div>
 				
-			
 		});
-				  				  			
+			//{saved}  			
 		if (showappmanager)
 		 	content = 	<div>
-							<div className="flexcontainer">									
+							<div className="repocontainer">									
 								<Cells>
-									
+									<div>
+										<div className="centered">
+											save as new repo
+										</div>
+									</div>
 									<Cell title={"name"} content={nameinput}/>
 									<Cell title={"description"} content={descriptioninput}/>
 									<Cell title={"commit message"} content={commitinput}/>
@@ -113,12 +121,15 @@ class RepoManager extends Component {
 										 	<div onClick={this.savePressed} className={buttoncname}>Save</div>
 										 </div>
 									</div>
+									<div>
+										<div className="centered">
+											saved repos
+										</div>
+									</div>
+									
 									{saved}
 								</Cells>
 							</div>
-							
-							
-							
 						</div>	
 						
 		
