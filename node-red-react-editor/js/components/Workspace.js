@@ -51,7 +51,7 @@ class Workspace extends React.Component {
 						 	const inputprops = {
 								value: this.props.currentTab ? this.props.currentTab.label : "",
 								onClick: this.props.selectTab.bind(this, item),
-								onChange: this._updateTab,
+								onChange: this._updateTab.bind(this,item.id),
 							}
 							
 							tabcontent = <input type="text" {...inputprops} style={tabtextstyle}></input>
@@ -98,8 +98,8 @@ class Workspace extends React.Component {
 		);
 	}
 	
-	_updateTab(event){
-		this.props.updateTab(event.target.value);
+	_updateTab(id, event){
+		this.props.updateTab(id, event.target.value);
 	}
 }
 

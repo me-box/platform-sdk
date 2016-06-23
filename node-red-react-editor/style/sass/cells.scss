@@ -110,6 +110,8 @@ html{
 
 .button{
   margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
   padding: 9px;
   color: #727272;
   text-transform: uppercase;
@@ -176,4 +178,16 @@ html{
 	height: inherit;
 	-webkit-flex-direction: column;
     flex-direction: column;
+}
+
+
+.publishernode {
+	height: 4em;
+	width: 4em;
+	color: #fff;
+	border: 2px solid white;
+	line-height: 5.5em;
+	text-align:center;
+	box-shadow: 5px 0px 7px -3px rgba(0, 0, 0, 0.36);
+	margin: 10px;
 }

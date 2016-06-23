@@ -22,7 +22,7 @@ export function requestCode(){
 }
 
 export function dropNode(store, reducer, nt, def, x, y){
-  
+  	
   return function(dispatch, getState){
   	let _def = Object.assign({},def);
 

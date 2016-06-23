@@ -16,11 +16,12 @@ export function addTab(){
 	}
 }
 
-export function updateTab(label){
-	console.log("updating tab!!");
+export function updateTab(id, label){
+	console.log("updating tab!! " + id);
 	console.log(label);
 	return {
 		type: TAB_UPDATE,
+		id,
 		label,
 	}
 }
