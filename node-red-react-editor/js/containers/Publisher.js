@@ -145,8 +145,7 @@ class Packages extends React.Component {
 	render(){
 	
 		const packages = this.props.packages.map((pkg,i)=>{
-			console.log("checking " + pkg.id + " against");
-			console.log(this.props.selected.id);
+			
 			
 			const className = cx({
 				button: true,

@@ -52,7 +52,7 @@ class Toolbar extends Component {
 						<span className="deploy-button-group button-group">
 						  <a id="btn-deploy" className="deploy-button" onClick={this.deploy}>
 						  <img id="btn-deploy-icon" src="images/deploy-full-o.png"/> 
-						  <span>Deploy</span>
+						  <span>Test</span>
 						  </a>
 						  <a id="btn-deploy-options" data-toggle="dropdown" className="deploy-button" onClick={this.toggleDeployMenu}>
 							<i className="fa fa-caret-down"></i>

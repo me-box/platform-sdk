@@ -8,6 +8,7 @@ import screen from './screen';
 import repos from './repos';
 import tabs from './tabs';
 import publisher from './publisher';
+import apps from './apps';
 
 import {routerReducer} from 'react-router-redux';
 
@@ -22,6 +23,7 @@ const rootReducers = {
   screen,
   repos,
   publisher,
+  apps,
   routing: routerReducer,
 };
 
