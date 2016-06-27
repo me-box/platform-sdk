@@ -37,8 +37,11 @@ export default class Wire extends Component {
     }   
 
     render(){
+    
+		
         const pathprops = {
             d: this._path(),
+            
         }
 
         return <path className="drag_line" {...pathprops} />

@@ -7,6 +7,8 @@ import { createSelector } from 'reselect'
 
 import * as NodeMouseActions from '../actions/NodeMouseActions';
 import * as MouseActions from '../actions/MouseActions';
+import {linkSelected} from '../actions/PortMouseActions';
+
 import { bindActionCreators } from 'redux';
 
 function collect(monitor) { 
@@ -28,10 +30,11 @@ class Chart extends Component {
   	this._onMouseMove = this._onMouseMove.bind(this);
   	this.mouseMove = bindActionCreators(MouseActions.mouseMove, this.props.dispatch);
   	this.mouseUp = bindActionCreators(MouseActions.mouseUp, this.props.dispatch);
+  	this.linkSelected = bindActionCreators(linkSelected, this.props.dispatch);
   }
 
   render() {
-    const { w,h,nodes, selected, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
+    const { w,h,nodes, selectedNode, selectedLink, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
     
     let chartstyle = {
     	top: 35,
@@ -41,7 +44,7 @@ class Chart extends Component {
     let d3nodes = nodes.map((node)=>{
     	const d3nodeprops = {
     		key: node.id,
-        selected: selected ? selected.id == node.id : false,
+        	selected: selectedNode ? selectedNode.id == node.id : false,
     		d: node,
     		...bindActionCreators(NodeMouseActions, dispatch),
     	}
@@ -49,12 +52,21 @@ class Chart extends Component {
     })
 
     let connectors = links.map((link, i)=>{
+    	let selected = false;
+    	
+    	if (this.props.selectedLink){
+    		if (this.props.selectedLink.source.id === link.source.id && this.props.selectedLink.target.id === link.target.id){
+    			selected = true;
+    		}
+    	}
     	const linkprops = {
     		key: `${i}${link.source.id}${link.target.id}`,
     		source: link.source,
     		target: link.target,
+    		onClick: this.linkSelected.bind(this, link),
+    		selected: selected,
     	}
-    	return <Link {...linkprops} />
+    	return <Link{...linkprops} />
     })
 
     let chartprops = {
@@ -63,10 +75,10 @@ class Chart extends Component {
     }
 
     return <div id="chart"  style={chartstyle}>
-    			<div mousecontainer {...chartprops} width={w} height={h}>
+    			<div {...chartprops} width={w} height={h}>
     			<svg id="svgchart" width={w} height={h}>
-    				{d3nodes}
     				{connectors}
+    				{d3nodes}
     			</svg>
     			</div>
     	   </div>
@@ -105,7 +117,8 @@ const getVisibleLinks= createSelector(
 function mapStateToProps(state) {
   return {
     nodes: getVisibleNodes(state), 
-    selected: state.nodes.selected,
+    selectedNode: state.nodes.selected,
+    selectedLink: state.ports.selected,
     links: getVisibleLinks(state)
   };
 }

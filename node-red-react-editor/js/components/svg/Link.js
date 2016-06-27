@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {NODE_HEIGHT, LINE_CURVE_SCALE} from '../../constants/ViewConstants';
-
+import cx from 'classnames';
 
 export default class Link extends Component {
 
@@ -43,11 +43,35 @@ export default class Link extends Component {
     }   
 
     render(){
+    
+    
+    	
         const pathprops = {
             d: this._path(),
         }
+        
+         const DELTA = (this.props.source.w/2) + 5;
+        
+         const clickrectprops = {
+            fill: 'transparent',
+            x: Math.min(this.props.source.x, this.props.target.x) + DELTA,
+            y: Math.min(this.props.source.y, this.props.target.y),
+            width: Math.abs(this.props.target.x - this.props.source.x) - (2*DELTA),
+            height: Math.abs(this.props.target.y - this.props.source.y),
+            onClick: this.props.onClick,
+        };
 
-        return <path className="drag_line" {...pathprops} />
+		const className = cx({
+			'link_line' : !this.props.selected,
+			'drag_line' : this.props.selected,
+		});
+		
+        return <g>
+        			<rect {...clickrectprops} ></rect>
+        			<path className={className} {...pathprops} />
+        	   </g>
+        
+        
 
     }
 }

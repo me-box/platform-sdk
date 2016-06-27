@@ -1,4 +1,17 @@
-import {PORT_MOUSE_DOWN, PORT_MOUSE_UP, PORT_MOUSE_OVER, PORT_MOUSE_OUT} from '../constants/ActionTypes';
+import {PORT_MOUSE_DOWN, LINK_SELECTED, PORT_MOUSE_UP, PORT_MOUSE_OVER, PORT_MOUSE_OUT, NODE_DESELECTED} from '../constants/ActionTypes';
+
+
+export function linkSelected(link){
+	return function (dispatch, getState) {
+		dispatch({
+			type: LINK_SELECTED,
+			link,
+		});
+		dispatch({
+			type: NODE_DESELECTED,
+		});
+	}	
+}
 
 export function portMouseDown(node,portType,portIndex,e){
     return {

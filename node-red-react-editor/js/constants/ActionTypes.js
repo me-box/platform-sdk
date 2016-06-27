@@ -15,6 +15,7 @@ export const DELETE_PORT = 'DELETE_PORT';
 
 export const NODE_DROPPED = 'NODE_DROPPED';
 export const NODE_SELECTED = 'NODE SELECTED'
+export const NODE_DESELECTED = 'NODE DESELECTED'
 export const NODE_TOUCH_START = 'NODE_TOUCH_START'; 
 export const NODE_TOUCH_END = 'NODE_TOUCH_END';
 export const NODE_DOUBLE_CLICKED = 'NODE_DOUBLE_CLICKED';
@@ -22,6 +23,9 @@ export const NODE_LOAD = 'NODE_LOAD';
 export const NODE_MOUSE_DOWN = 'NODE_MOUSE_DOWN';
 export const NODE_MOUSE_ENTER =  'NODE_MOUSE_ENTER';
 export const NODE_MOUSE_LEAVE =  'NODE_MOUSE_LEAVE';
+
+export const LINK_SELECTED = 'LINK_SELECTED';
+export const LINK_DESELECTED = 'LINK_DESELECTED';
 
 export const TAB_ADD = 'TAB_ADD';
 export const TAB_DELETE = 'TAB_DELETE';

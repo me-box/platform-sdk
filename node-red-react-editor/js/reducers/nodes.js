@@ -69,6 +69,10 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
         configuring: action.node,
       })
    
+    case ActionType.NODE_DESELECTED:
+    	return Object.assign({}, state, {
+    		selected: null,
+    	});
 
     case ActionType.DELETE_PRESSED:
 

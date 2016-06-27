@@ -57,8 +57,7 @@ class D3Node extends Component {
             fill:  d._def.color,
             width: d.w,
             height: d.h,
-            onDoubleClick: this._nodeDoubleClicked.bind(this,d),
-            onMouseDown: this._nodeMouseDown.bind(this,d),
+           onMouseDown: this._nodeMouseDown.bind(this,d),
 
         };
 
@@ -66,6 +65,8 @@ class D3Node extends Component {
         let gprops = {
             id: this.props.id,
             transform: `translate(${(d.x-d.w/2)},${(d.y-d.h/2)})`,
+             onDoubleClick: this._nodeDoubleClicked.bind(this,d),
+            
         }
 
         let textprops = {

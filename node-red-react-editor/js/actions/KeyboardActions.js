@@ -4,18 +4,20 @@ export function deletePressed() {
 
   return function(dispatch, getState) {
       
-      const selected = getState().nodes.selected;
-
-      if (selected){
+      const nodeselected = getState().nodes.selected;
+	  const linkselected = getState().ports.selected;
+	  
+      if (nodeselected || linkselected){
         dispatch({
            type: DELETE_PRESSED
         })
 
-
-        dispatch({
-            type: DELETE_PORT,
-            selected: selected
-        })
+		if (nodeselected){
+        	dispatch({
+            	type: DELETE_PORT,
+            	selected: nodeselected
+        	})
+        }
       }
    
   };

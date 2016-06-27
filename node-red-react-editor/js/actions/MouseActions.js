@@ -6,7 +6,7 @@ export function mouseMove(x,y){
     return {
       type: MOUSE_MOVE,
       x:x + MOUSE_X_OFFSET,
-      y:y + MOUSE_Y_OFFSET - TOOLBAR_HEIGHT,
+      y:y + MOUSE_Y_OFFSET,
     }
 }
 

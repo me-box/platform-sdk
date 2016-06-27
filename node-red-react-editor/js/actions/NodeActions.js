@@ -65,12 +65,7 @@ export function dropNode(store, reducer, nt, def, x, y){
   }
 }
 
-export function selectNode(node){
-  return {
-    type: NODE_SELECTED,
-    node,
-  }
-}
+
 
 /*export function initNodeValue(property, value){
 

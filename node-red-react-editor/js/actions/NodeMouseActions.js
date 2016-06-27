@@ -1,13 +1,22 @@
-import {NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_CANCEL_CLICKED, NODE_TOUCH_START, NODE_TOUCH_END, NODE_MOUSE_ENTER, NODE_MOUSE_EXIT, NODE_LOAD} from '../constants/ActionTypes';
+import {NODE_MOUSE_DOWN, NODE_DOUBLE_CLICKED, NODE_CANCEL_CLICKED, NODE_TOUCH_START, NODE_TOUCH_END, NODE_MOUSE_ENTER, NODE_MOUSE_EXIT, NODE_LOAD, LINK_DESELECTED} from '../constants/ActionTypes';
  
 
 
 export function nodeMouseDown(node, event){
-    return {
-      type: NODE_MOUSE_DOWN,
-      node,
-      event,
-    }
+   
+   
+	return function(dispatch, getState){
+	
+		dispatch ({
+			type: LINK_DESELECTED,
+		});
+	
+		dispatch ({
+	  		type: NODE_MOUSE_DOWN,
+      		node,
+      		event,
+		})
+	}
 } 
 
 export function nodeDoubleClicked(node, event){
@@ -25,7 +34,7 @@ export function nodeDoubleClicked(node, event){
         type: NODE_LOAD,
         node,
         id: node.id
-    })
+    });
   }
 } 
 

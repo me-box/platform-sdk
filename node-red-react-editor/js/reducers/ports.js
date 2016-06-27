@@ -1,10 +1,32 @@
-import { RECEIVE_FLOWS, DELETE_PORT, MOUSE_UP, PORT_MOUSE_DOWN, PORT_MOUSE_OVER, PORT_MOUSE_OUT, MOUSE_MOVE } from '../constants/ActionTypes';
+import { RECEIVE_FLOWS, DELETE_PORT, DELETE_PRESSED, MOUSE_UP, PORT_MOUSE_DOWN, PORT_MOUSE_OVER, PORT_MOUSE_OUT, MOUSE_MOVE, LINK_SELECTED, LINK_DESELECTED } from '../constants/ActionTypes';
 import {NODE_WIDTH, NODE_HEIGHT, OUTPUT_WIDTH} from '../constants/ViewConstants';
 
-export default function ports(state = {drawingPort:null, activeLink:{source:{x:0,y:0}, target:{x:0,y:0}}, links:[], offset:{x:0, y:0}}, action) {
+export default function ports(state = {drawingPort:null, selected: null, activeLink:{source:{x:0,y:0}, target:{x:0,y:0}}, links:[], offset:{x:0, y:0}}, action) {
 
 	switch (action.type) {
 
+		case LINK_SELECTED:
+			return Object.assign({}, state, {selected: action.link});
+		
+		case LINK_DESELECTED:
+			return Object.assign({}, state, {selected: null});
+			
+		case DELETE_PRESSED:
+			
+      		return Object.assign({}, state, {
+            	links: state.links.filter( (item) => {
+            		if (state.selected){
+            			const link = state.selected;
+            			if (link.source.id === item.source.id && link.target.id === item.target.id){
+            				return false;
+            			}
+            		} 
+            		return true;
+            	}),
+            	selected: null,
+            });
+            
+            	
 		case DELETE_PORT:
       		return Object.assign({}, state, {
             	links: state.links.filter(link => {
