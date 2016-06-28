@@ -24,8 +24,8 @@ class Publisher extends React.Component {
 			left: PALETTE_WIDTH, 
 			width: `calc(100vw - ${PALETTE_WIDTH}px)`,
 			height: `calc(100vh - ${TOOLBAR_HEIGHT+WORKSPACE_FOOTER}px)`,
-			background: '#fff'
-		
+			background: '#fff',
+			overflowY: 'auto'
 		}
 	
 		const detailprops = {

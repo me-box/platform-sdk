@@ -59,7 +59,7 @@ class Editor extends Component {
   	}
 
     const workspaceprops = {
-      w: dimensions.w - PALETTE_WIDTH - SIDEBAR_WIDTH,
+      w: dimensions.w - PALETTE_WIDTH,
       h: dimensions.h - TOOLBAR_HEIGHT,
       tabs,
       currentTab,

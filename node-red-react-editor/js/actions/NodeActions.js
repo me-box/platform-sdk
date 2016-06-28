@@ -25,7 +25,11 @@ export function dropNode(store, reducer, nt, def, x, y){
   	
   return function(dispatch, getState){
   	let _def = Object.assign({},def);
-
+	
+	
+	console.log("ok _def is ");
+	console.log(def);
+	
   	let node = {
 		id: getID(),
 		z:getState().tabs.current.id,
@@ -48,7 +52,8 @@ export function dropNode(store, reducer, nt, def, x, y){
   	}
 
   	addViewProperties(node);
-  
+  	console.log("defaults are");
+  	console.log(node._def.defaults);
  
   	//register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
   	//this means that instances of the same node can trasparently make use of the same action constants without a clash!.

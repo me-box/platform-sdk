@@ -135,16 +135,18 @@ html{
 	margin-bottom: 5px;
 }
 
-#publisher input{
+#publisher input[type="text"], 
+.ui-dialog input[type="text"], 
+.ui-dialog select{
 	width: 100%;
-	border-radius: 0;
-	padding: 0;
-	margin: 0;
 	height: inherit;
-	border: none;
+	border-radius: 0;
+	padding: 0px;
+	margin: 0px;
 }
 
-#publisher .flexcontainer textarea{
+#publisher .flexcontainer textarea,,
+.ui-dialog textarea{
 	width: 100%;
 	border-radius: 0;
 	padding: 0;
@@ -154,7 +156,8 @@ html{
 }
 
 
-.flexcontainer  textarea, .repocontainer textarea {
+.flexcontainer  textarea, .repocontainer textarea, 
+.ui-dialog textarea {
      width: 100%;
      height: inherit;
      margin: 0;

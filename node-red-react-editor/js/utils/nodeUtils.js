@@ -38,7 +38,13 @@ export function convertNode(n, links, exportCreds) {
     node.id = n.id;
     node.type = n.type;
     node.z = n.z;
+    
+    //add node properties
+    console.log("node defaults are");
+    console.log(n._def.defaults);
+    
     if (node.type == "unknown") {
+    	console.log("nde type is unklnown!");
         for (var p in n._orig) {
             if (n._orig.hasOwnProperty(p)) {
                 node[p] = n._orig[p];
@@ -46,27 +52,17 @@ export function convertNode(n, links, exportCreds) {
         }
     } else {
         for (var d in n._def.defaults) {
+        	console.log("checking if defaults")
+        	console.log(n._def.defaults)
+        	
+        	console.log("has own proeprty");
+        	console.log(d);
+        	
             if (n._def.defaults.hasOwnProperty(d)) {
+            	console.log("yes!");
                 node[d] = n[d];
-            }
-        }
-        if(exportCreds && n.credentials) {
-            var credentialSet = {};
-            node.credentials = {};
-            for (var cred in n._def.credentials) {
-                if (n._def.credentials.hasOwnProperty(cred)) {
-                    if (n._def.credentials[cred].type == 'password') {
-                        if (n.credentials["has_"+cred] != n.credentials._["has_"+cred] ||
-                            (n.credentials["has_"+cred] && n.credentials[cred])) {
-                            credentialSet[cred] = n.credentials[cred];
-                        }
-                    } else if (n.credentials[cred] != null && n.credentials[cred] != n.credentials._[cred]) {
-                        credentialSet[cred] = n.credentials[cred];
-                    }
-                }
-            }
-            if (Object.keys(credentialSet).length > 0) {
-                node.credentials = credentialSet;
+            }else{
+            	console.log("nope!");
             }
         }
     }
