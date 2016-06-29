@@ -74,7 +74,7 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
     		selected: null,
     	});
 
-    case ActionType.DELETE_PRESSED:
+    case ActionType.DELETE_NODE:
 
       return Object.assign({}, state, {
             nodes: state.nodes.filter(item => state.selected ? state.selected.id === item.id ? false : true : true),

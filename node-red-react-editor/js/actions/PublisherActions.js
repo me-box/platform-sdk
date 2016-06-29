@@ -1,4 +1,6 @@
 import { PUBLISHER_PACKAGE_SELECTED,PUBLISHER_APP_NAME_CHANGED,PUBLISHER_APP_DESCRIPTION_CHANGED,PUBLISHER_APP_TAGS_CHANGED,PUBLISHER_PACKAGE_DESCRIPTION_CHANGED,PUBLISHER_PACKAGE_INSTALL_CHANGED,PUBLISHER_PACKAGE_BENEFITS_CHANGED,PUBLISHER_TOGGLE_GRID } from '../constants/ActionTypes';
+import request from 'superagent';
+import {convertNode} from '../utils/nodeUtils';
 
 export function packageSelected(id){
 	return {
@@ -55,4 +57,64 @@ export function toggleGrid(pkga, pkgb){
 		pkga,
 		pkgb,
 	}
+}
+
+export function submit(){
+
+	return function (dispatch, getState) {
+		
+		const jsonnodes = getState().nodes.nodes.map((node)=>{
+			return Object.assign({}, convertNode(node, getState().ports.links));
+		});
+		
+		const tabs = getState().tabs.tabs;
+	
+		const flows = [
+  					...tabs,
+  					...jsonnodes
+  		]
+  		
+  		
+  		
+  		console.log("flows are");
+  		console.log(flows);
+  		
+  		
+  		const app = {
+  			app: getState().publisher.app,
+  			packages: getState().publisher.packages,
+  			forbidmix: getState().publisher.grid,
+  		}
+  		
+  		console.log("app is ");
+  		console.log(app);
+  	
+		/*dispatch(publishingApp());
+		
+		request
+  			.get(`http://${config.root}/github/flow`)
+  			.query({repo:repo})
+  			.set('Accept', 'application/json')
+  			.type('json')
+  			.end(function(err, res){
+  				if (err){
+  					console.log(err);
+  					dispatch(receiveFlowsError(err));
+  				}else{
+  				
+  					//create all of the tabs
+  					dispatch(receiveTabs(res.body.filter((node)=>{
+  						return node.type === "tab"
+  					})));
+  					
+  					//create all of the flows
+          			dispatch(receiveFlows(res.body, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types
+  	 			}
+  	 		});		
+		*/
+	}
+}
+
+export function cancel(){
+
 }

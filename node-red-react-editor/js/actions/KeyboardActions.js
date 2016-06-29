@@ -1,4 +1,4 @@
-import { DELETE_PRESSED, DELETE_PORT } from '../constants/ActionTypes';
+import { DELETE_NODE, DELETE_LINK} from '../constants/ActionTypes';
 
 export function deletePressed() {
 
@@ -7,18 +7,21 @@ export function deletePressed() {
       const nodeselected = getState().nodes.selected;
 	  const linkselected = getState().ports.selected;
 	  
-      if (nodeselected || linkselected){
-        dispatch({
-           type: DELETE_PRESSED
-        })
-
-		if (nodeselected){
-        	dispatch({
-            	type: DELETE_PORT,
-            	selected: nodeselected
+      
+      
+      	if (nodeselected){
+      		dispatch({
+           		type: DELETE_NODE,
+           		node: nodeselected,
         	})
-        }
-      }
+      	}
+      	
+      	if (linkselected){
+      		dispatch({
+           		type: DELETE_LINK,
+           		link: linkselected,
+        	})
+      	}
    
   };
 }

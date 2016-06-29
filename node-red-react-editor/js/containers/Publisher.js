@@ -51,11 +51,17 @@ class Publisher extends React.Component {
 			toggleGrid: this.toggleGrid,
 		}
 		
+		const submitprops = {
+			submit: this.submit,
+			cancel: this.cancel,	
+		}
+		
 		return( <div id="publisher" style={style}>
                 	<div className="flexcontainer">
                 		<Details {...detailprops} />
                 		<Packages {...packagesprops}/>
         				<Combinations {...combiprops}/>   	
+        				<Submit {...submitprops}/>
 			    	</div>
 			    </div>
 		);
@@ -405,6 +411,29 @@ class Node extends React.Component {
 							<i className={className}></i>
 						</div>
 						<div style={labelstyle}>{this.props.type}</div>
+					</div>
+				</div>
+				
+	}
+	
+}
+
+class Submit extends React.Component {
+
+	render(){
+			
+		return  <div>
+					<div className="flexrow">
+						<div>
+							<div className="centered">
+								<div onClick={this.props.cancel} className="button selected">cancel</div>
+							</div>
+						</div>
+						<div>
+							<div className="centered">
+								<div onClick={this.props.submit} className="button selected">publish</div>
+							</div>
+						</div>
 					</div>
 				</div>
 				

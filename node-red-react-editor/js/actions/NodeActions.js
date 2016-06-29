@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-dom';
 import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from '../constants/ViewConstants';
-//import {fetchFlows} from './FlowActions';
 import fetch from 'isomorphic-fetch'
 import {register} from '../store/configureStore';
 import {scopeify} from '../utils/scopeify';
@@ -24,49 +23,49 @@ export function requestCode(){
 export function dropNode(store, reducer, nt, def, x, y){
   	
   return function(dispatch, getState){
-  	let _def = Object.assign({},def);
+  	
+  	if ((x + MOUSE_X_OFFSET) > 0){
+		let _def = Object.assign({},def);
 	
 	
-	console.log("ok _def is ");
-	console.log(def);
-	
-  	let node = {
-		id: getID(),
-		z:getState().tabs.current.id,
-		type: nt,
-		_def: _def,
-		_: (id)=>{return id},
-		inputs: _def.inputs || 0,
-		outputs: _def.outputs,
-		changed: true,
-		selected: true,
-		dirty: true,
-		x: x + MOUSE_X_OFFSET,
-		y: y + MOUSE_Y_OFFSET,
-  	}
+		let node = {
+			id: getID(),
+			z:getState().tabs.current.id,
+			type: nt,
+			_def: _def,
+			_: (id)=>{return id},
+			inputs: _def.inputs || 0,
+			outputs: _def.outputs,
+			changed: true,
+			selected: true,
+			dirty: true,
+			x: x + MOUSE_X_OFFSET,
+			y: y + MOUSE_Y_OFFSET,
+		}
 
-  	for (var d in node._def.defaults) {
-      if (node._def.defaults.hasOwnProperty(d)) {
-        node[d] = node._def.defaults[d].value;
-      }
-  	}
+		for (var d in node._def.defaults) {
+		  if (node._def.defaults.hasOwnProperty(d)) {
+			node[d] = node._def.defaults[d].value;
+		  }
+		}
 
-  	addViewProperties(node);
-  	console.log("defaults are");
-  	console.log(node._def.defaults);
- 
-  	//register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
-  	//this means that instances of the same node can trasparently make use of the same action constants without a clash!.
-  	if (reducer){
-    
-    	register(store, node.id, scopeify(node.id, reducer));
-  	}
-  	dispatch(
-    	{
-    		type: NODE_DROPPED,
-    		node: node,
-    	}
-  	);
+		addViewProperties(node);
+		
+		//register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
+		//this means that instances of the same node can trasparently make use of the same action constants without a clash!.
+		if (reducer){
+	
+			register(store, node.id, scopeify(node.id, reducer));
+		}
+		dispatch(
+			{
+				type: NODE_DROPPED,
+				node: node,
+			}
+		);
+  	}else{
+  		console.log("failed to drop node!");
+  	}	
   }
 }
 

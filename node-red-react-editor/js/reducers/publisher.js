@@ -1,6 +1,6 @@
 import {PUBLISHER_PACKAGE_SELECTED,PUBLISHER_APP_NAME_CHANGED,PUBLISHER_APP_DESCRIPTION_CHANGED,PUBLISHER_APP_TAGS_CHANGED,PUBLISHER_PACKAGE_DESCRIPTION_CHANGED,PUBLISHER_PACKAGE_INSTALL_CHANGED,PUBLISHER_PACKAGE_BENEFITS_CHANGED,PUBLISHER_TOGGLE_GRID } from '../constants/ActionTypes';
-import {TAB_ADD, TAB_UPDATE, TAB_SELECT} from '../constants/ActionTypes';
-import {NODE_DROPPED} from '../constants/ActionTypes';
+import {TAB_ADD, TAB_UPDATE, TAB_SELECT, TABS_LOAD } from '../constants/ActionTypes';
+import {NODE_DROPPED,RECEIVE_FLOWS, DELETE_NODE} from '../constants/ActionTypes';
 
 const pkg = (state = {id:"", name:"", description:"", install:"optional", datastores:[], outputs:[], risk:"", benefits:"", }, action)=>{
 	switch (action.type) {
@@ -14,26 +14,33 @@ const pkg = (state = {id:"", name:"", description:"", install:"optional", datast
 			return Object.assign({}, state, {name:action.tab.label, id:action.tab.id}); //initialise the state properly if it doesn't exist!
 		
 		
+		//and node removed??
+		
+		
 		case NODE_DROPPED:
-			if (action.node._def.category === "datastores"){
-				if (state.datastores.map((d)=>d.type).indexOf(action.node.type) < 0){
-					return Object.assign({}, state, {datastores: [...state.datastores, {
-																							type: action.node.type, 
-																							color: action.node._def.color, 
-																							icon: action.node._def.icon,												
-											}]})
-				}
-			} 
+				
+				if (action.node._def.category === "datastores"){
+					//if (state.datastores.map((d)=>d.type).indexOf(action.node.type) < 0){
+						return Object.assign({}, state, {datastores: [...state.datastores, {
+																								id: action.node.id,
+																								type: action.node.type, 
+																								color: action.node._def.color, 
+																								icon: action.node._def.icon,												
+												}]})
+					//}
+				} 
 			
-			if (action.node._def.category === "outputs"){
-				if (state.outputs.map((d)=>d.type).indexOf(action.node.type) < 0){
-					return Object.assign({}, state, {outputs: [...state.outputs, {
-																							type: action.node.type, 
-																							color: action.node._def.color, 
-																							icon: action.node._def.icon,												
-											}]})
-				}
-			} 
+				if (action.node._def.category === "outputs"){
+					//if (state.outputs.map((d)=>d.type).indexOf(action.node.type) < 0){
+						return Object.assign({}, state, {outputs: [...state.outputs, {
+																								id: action.node.id,
+																								type: action.node.type, 
+																								color: action.node._def.color, 
+																								icon: action.node._def.icon,												
+												}]})
+					//}
+				} 
+			
 			return state;
 			
 		case PUBLISHER_PACKAGE_DESCRIPTION_CHANGED:
@@ -89,8 +96,37 @@ export default function publisher(state = {app:{},  currentpkg:0, packages:[], g
 	  case TAB_UPDATE: 
 	  	return Object.assign({}, state, {packages: state.packages.map((p)=>pkg(p,action))}); 
 	  
-	 
-	  	
+	  case TABS_LOAD:
+	  	 return Object.assign({}, state, {packages: action.tabs.map((t)=>pkg(undefined, {type: TAB_ADD, tab: t}))});
+	  
+	  case RECEIVE_FLOWS:
+	  	 return Object.assign({}, state, {packages: state.packages.map((p)=>{
+	  	 	return Object.assign({}, p, { 
+	  	 									datastores : action.nodes.filter((n) => (n.z===p.id && n._def.category ==="datastores")).map((n)=>{
+	  	 											return {
+	  	 													id: n.id,
+	  	 													type: n.type, 
+															color: n._def.color, 
+															icon: n._def.icon
+													}			
+	  	 									}),
+	  	 									
+	  	 									outputs: action.nodes.filter((n) => (n.z===p.id && n._def.category ==="outputs")).map((n)=>{
+	  	 											return {
+	  	 												id: n.id,
+	  	 												type: n.type, 
+														color: n._def.color, 
+														icon: n._def.icon,
+													}			
+	  	 									}),
+	  	 								}
+	  	 		);
+	  	 	})
+	  	 });
+	  	 
+	  	 // action.nodes.map((n)=>pkg(undefined, {type: NODE_DROPPED, node: n}))});	
+	  
+	  
 	  case PUBLISHER_PACKAGE_SELECTED:
 	  	return Object.assign({}, state, {currentpkg: Math.max(0,state.packages.map((p)=>p.id).indexOf(action.id))});
 	  
@@ -99,6 +135,20 @@ export default function publisher(state = {app:{},  currentpkg:0, packages:[], g
 	  case PUBLISHER_APP_DESCRIPTION_CHANGED:
 	  	return Object.assign({}, state, {app: application(state.app, action)});
 	 	
+	  case DELETE_NODE:
+	 	return Object.assign({}, state, {packages: state.packages.map((p)=>{
+	 		if (p.id === action.node.z){
+	 			return Object.assign({}, p, {
+	 											datastores:p.datastores.filter((d)=>{
+	 													return d.id !== action.node.id
+	 											}), 
+	 											outputs:p.outputs.filter((o)=>{
+	 													return o.id !== action.node.id
+	 											})
+	 										});
+	 		}
+	 		return p;
+	 	})})	
 	 
 	  case NODE_DROPPED: 
 	  case PUBLISHER_PACKAGE_BENEFITS_CHANGED:
@@ -122,7 +172,7 @@ export default function publisher(state = {app:{},  currentpkg:0, packages:[], g
 	    	return Object.assign({}, state, {grid: [...state.grid.slice(0,idx), ...state.grid.slice(idx+1)]});
 	    }
 	  
-	  	
+	 
 	  default:
 	    return state;
 	}

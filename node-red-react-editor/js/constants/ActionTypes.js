@@ -10,8 +10,9 @@ export const WINDOW_RESIZE = 'WINDOW_RESIZE';
 export const TEST_ACTION = 'TEST_ACTION';
 export const MOUSE_MOVE = 'MOUSE_MOVE';
 export const MOUSE_UP = 'MOUSE_UP';
-export const DELETE_PRESSED = 'DELETE_PRESSED';
-export const DELETE_PORT = 'DELETE_PORT';
+
+export const DELETE_NODE = 'DELETE_NODE';
+export const DELETE_LINK = 'DELETE_LINK';
 
 export const NODE_DROPPED = 'NODE_DROPPED';
 export const NODE_SELECTED = 'NODE SELECTED'
