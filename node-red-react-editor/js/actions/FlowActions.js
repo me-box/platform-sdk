@@ -3,6 +3,7 @@ import { REQUEST_FLOWS, RECEIVE_FLOWS, RECEIVE_FLOWS_ERROR, TABS_LOAD} from '../
 import { NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {getID, addViewProperties} from '../utils/nodeUtils';
 import {register} from '../store/configureStore';
+import {receivedCommit} from '../actions/RepoActions';
 import {scopeify} from '../utils/scopeify';
 import config from '../config';
 
@@ -234,13 +235,18 @@ export function fetchFlow(store, repo){
   					dispatch(receiveFlowsError(err));
   				}else{
   				
+  
   					//create all of the tabs
-  					dispatch(receiveTabs(res.body.filter((node)=>{
+  					dispatch(receiveTabs(res.body.flows.filter((node)=>{
   						return node.type === "tab"
   					})));
   					
+  					//update the sha of this repo
+  					dispatch(receivedCommit(res.body.commit))
+  					
+  					
   					//create all of the flows
-          			dispatch(receiveFlows(res.body, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types
+          			dispatch(receiveFlows(res.body.flows, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types
   	 			}
   	 		});		
 

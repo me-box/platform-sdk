@@ -58,6 +58,12 @@ export function receivedRepos(repos){
 	}
 }
 
+export function receivedCommit(commit){
+	return {
+		type: ActionType.REPO_COMMIT_RETRIEVED,
+		commit
+	}
+}
 
 export function requestRepos(){
 	return function (dispatch, getState) {
@@ -91,7 +97,7 @@ export function savePressed(){
 		
 		const tabs = getState().tabs.tabs;
 		
-		const {name, description, commit} = getState().repos.current;
+		const {name, description, commit} = getState().repos.tosave;
 		
 		const submission = {
 		

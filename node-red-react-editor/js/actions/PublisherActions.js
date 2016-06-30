@@ -1,6 +1,7 @@
 import { PUBLISHER_PACKAGE_SELECTED,PUBLISHER_APP_NAME_CHANGED,PUBLISHER_APP_DESCRIPTION_CHANGED,PUBLISHER_APP_TAGS_CHANGED,PUBLISHER_PACKAGE_DESCRIPTION_CHANGED,PUBLISHER_PACKAGE_INSTALL_CHANGED,PUBLISHER_PACKAGE_BENEFITS_CHANGED,PUBLISHER_TOGGLE_GRID } from '../constants/ActionTypes';
 import request from 'superagent';
 import {convertNode} from '../utils/nodeUtils';
+import config from '../config';
 
 export function packageSelected(id){
 	return {
@@ -59,6 +60,7 @@ export function toggleGrid(pkga, pkgb){
 	}
 }
 
+
 export function submit(){
 
 	return function (dispatch, getState) {
@@ -79,39 +81,48 @@ export function submit(){
   		console.log("flows are");
   		console.log(flows);
   		
+  		//https://raw.githubusercontent.com/tlodge/databox.threepackages/02c299dd4b8f03eda5b83f710fc026b572a59837/flows.json
   		
-  		const app = {
-  			app: getState().publisher.app,
-  			packages: getState().publisher.packages,
-  			forbidmix: getState().publisher.grid,
-  		}
+  		//have to ensure that the latest commit is saved before can publish! (or do this automatically at server end!)
   		
-  		console.log("app is ");
-  		console.log(app);
+  		const app = getState().publisher.app;
+  		const packages = getState().publisher.packages;
+  		
+  		
+  		const data = {
+  		    
+  		    repo: {
+  		    		name: getState().repos.loaded.name, 
+  		    		sha: getState().repos.loaded.sha
+  		    },
+  
+  			manifest: {
+  				app: getState().publisher.app,
+  				packages: getState().publisher.packages,
+  				'forbidden-combinations': getState().publisher.grid,
+  			}
+  		};
   	
-		/*dispatch(publishingApp());
+		/*dispatch(publishingApp());*/
 		
-		request
-  			.get(`http://${config.root}/github/flow`)
-  			.query({repo:repo})
+		 request
+  			.post(`http://${config.root}/github/publish`)
+  			.send(data)
   			.set('Accept', 'application/json')
   			.type('json')
   			.end(function(err, res){
   				if (err){
   					console.log(err);
-  					dispatch(receiveFlowsError(err));
+  					//dispatch(submissionError(err));
   				}else{
-  				
-  					//create all of the tabs
-  					dispatch(receiveTabs(res.body.filter((node)=>{
-  						return node.type === "tab"
-  					})));
-  					
-  					//create all of the flows
-          			dispatch(receiveFlows(res.body, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types
+          			console.log("got");
+          			console.log(res.body);
+          			//dispatch(submissionResponse(res.body));
   	 			}
-  	 		});		
-		*/
+  	 		});	
+		
+		 	
+		
 	}
 }
 

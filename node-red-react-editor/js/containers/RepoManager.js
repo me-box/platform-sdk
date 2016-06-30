@@ -32,8 +32,8 @@ class RepoManager extends Component {
 
 	render() {
 	
-		const {cansave, showappmanager, currentrepo, repos, dispatch} = this.props;
-		const {name, description, commit} = currentrepo;
+		const {cansave, showappmanager, tosave, repos, dispatch} = this.props;
+		const {name, description, commit} = tosave;
 		
 		
 		let content;
@@ -151,9 +151,9 @@ function cansave(current){
 function select(state) {
   return {
     showappmanager: state.editor.appmanager,
-    currentrepo: state.repos.current,
-    cansave: cansave(state.repos.current),
-    repos: state.repos.saved,
+    tosave: state.repos.tosave,
+    cansave: cansave(state.repos.tosave),
+    repos: state.repos.repos,
   };
 }
 
