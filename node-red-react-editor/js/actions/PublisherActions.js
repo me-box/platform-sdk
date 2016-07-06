@@ -1,52 +1,53 @@
-import { PUBLISHER_PACKAGE_SELECTED,PUBLISHER_APP_NAME_CHANGED,PUBLISHER_APP_DESCRIPTION_CHANGED,PUBLISHER_APP_TAGS_CHANGED,PUBLISHER_PACKAGE_DESCRIPTION_CHANGED,PUBLISHER_PACKAGE_INSTALL_CHANGED,PUBLISHER_PACKAGE_BENEFITS_CHANGED,PUBLISHER_TOGGLE_GRID } from '../constants/ActionTypes';
+import * as ActionTypes from '../constants/ActionTypes';
 import request from 'superagent';
-import {convertNode} from '../utils/nodeUtils';
+import {convertNode, getID} from '../utils/nodeUtils';
 import config from '../config';
+import {networkAccess, networkError, networkSuccess} from './NetworkActions';
 
 export function packageSelected(id){
 	return {
-		type: PUBLISHER_PACKAGE_SELECTED,
+		type: ActionTypes.PUBLISHER_PACKAGE_SELECTED,
 		id
 	}
 }
 
 export function updateAppName(name){
 	return {
-		type: PUBLISHER_APP_NAME_CHANGED,
+		type: ActionTypes.PUBLISHER_APP_NAME_CHANGED,
 		name
 	}
 } 
 
 export function updateAppDescription(description){
 	return {
-		type: PUBLISHER_APP_DESCRIPTION_CHANGED,
+		type: ActionTypes.PUBLISHER_APP_DESCRIPTION_CHANGED,
 		description
 	}
 }
 
 export function updateAppTags(tags){
 	return {
-		type: PUBLISHER_APP_TAGS_CHANGED,
+		type: ActionTypes.PUBLISHER_APP_TAGS_CHANGED,
 		tags
 	}
 }
 
-export function updatePackageDescription(description){
+export function updatePackagePurpose(purpose){
 	return {
-		type: PUBLISHER_PACKAGE_DESCRIPTION_CHANGED,
-		description,
+		type: ActionTypes.PUBLISHER_PACKAGE_PURPOSE_CHANGED,
+		purpose,
 	}
 }
 export function installSelected(install){
 	return {
-		type: PUBLISHER_PACKAGE_INSTALL_CHANGED,
+		type: ActionTypes.PUBLISHER_PACKAGE_INSTALL_CHANGED,
 		install
 	}
 }
 
 export function updatePackageBenefits(benefits){
 	return {
-		type: PUBLISHER_PACKAGE_BENEFITS_CHANGED,
+		type: ActionTypes.PUBLISHER_PACKAGE_BENEFITS_CHANGED,
 		benefits
 	}
 }
@@ -54,16 +55,33 @@ export function updatePackageBenefits(benefits){
 export function toggleGrid(pkga, pkgb){
 	
 	return {
-		type: PUBLISHER_TOGGLE_GRID,
+		type: ActionTypes.PUBLISHER_TOGGLE_GRID,
 		pkga,
 		pkgb,
 	}
 }
 
+export function publishingApp(name){
+	return networkAccess(`publishing app ${name}`);
+}
+
+export function submissionSuccess(data){
+	return function (dispatch, getState) {
+		
+		dispatch(networkSuccess('successfully published app!'));
+		
+		dispatch({
+			type: ActionTypes.PUBLISHER_PUBLISHED_APP,
+			data
+		});
+	}
+}
 
 export function submit(){
 
 	return function (dispatch, getState) {
+		
+		
 		
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
 			return Object.assign({}, convertNode(node, getState().ports.links));
@@ -75,12 +93,7 @@ export function submit(){
   					...tabs,
   					...jsonnodes
   		]
-  		
-  		
-  		
-  		console.log("flows are");
-  		console.log(flows);
-  		
+  			
   		//https://raw.githubusercontent.com/tlodge/databox.threepackages/02c299dd4b8f03eda5b83f710fc026b572a59837/flows.json
   		
   		//have to ensure that the latest commit is saved before can publish! (or do this automatically at server end!)
@@ -97,13 +110,14 @@ export function submit(){
   		    },
   
   			manifest: {
-  				app: getState().publisher.app,
+  				app: Object.assign({}, getState().publisher.app, {id: getID()}),
   				packages: getState().publisher.packages,
   				'forbidden-combinations': getState().publisher.grid,
   			}
   		};
+  		
+  		dispatch(publishingApp(app.name));
   	
-		/*dispatch(publishingApp());*/
 		
 		 request
   			.post(`http://${config.root}/github/publish`)
@@ -112,12 +126,12 @@ export function submit(){
   			.type('json')
   			.end(function(err, res){
   				if (err){
+  					console.log("seen an arrroor");
   					console.log(err);
-  					//dispatch(submissionError(err));
+  					dispatch(networkError(err.message));
   				}else{
-          			console.log("got");
-          			console.log(res.body);
-          			//dispatch(submissionResponse(res.body));
+  					console.log("seen a succcess!");
+          			dispatch(submissionSuccess(res.body));
   	 			}
   	 		});	
 		

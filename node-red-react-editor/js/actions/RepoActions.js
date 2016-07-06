@@ -122,7 +122,8 @@ export function savePressed(){
   				}else{
           			console.log("got");
           			console.log(res.body);
-          			dispatch(submissionResponse(res.body));
+          			//dispatch(submissionResponse(res.body));
+          			dispatch(receivedCommit(res.body.commit))
   	 			}
   	 		});		
 	}

@@ -1,9 +1,14 @@
 import express from 'express';
 import request from 'superagent';
 import config from '../config.js';
+import zlib from 'zlib';
+import fs from 'fs';
+import tar from 'tar-stream';
+import Docker from 'dockerode';
 
 const router = express.Router();
-
+const gzip   = zlib.createGzip();
+const docker = new Docker({socketPath: '/var/run/docker.sock'});
 
 
 const _createRepo = function(name, description, isprivate, accessToken){
@@ -26,15 +31,13 @@ const _createRepo = function(name, description, isprivate, accessToken){
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
      			if (err) {
-       				console.log('error creating repo!');
-       				console.log(err);
+       				console.log('am here error creating repo!');
        				reject(err);
      			} 
      			else {
      			 	
      			 	const result = data.body;
      			 	
-     			 	console.log("successfully created repo");
      			 	console.log({
        						name: result.name, 
        						updated: result.updated_at, 
@@ -108,6 +111,7 @@ const _saveToAppStore = function(manifest){
 
 const _generateManifest = function(user, reponame, app, packages, forbidden){
 	return  {
+				id: app.id,
 				'manifest-version': 1,
 				name: app.name,
 				version: "0.1.0",
@@ -124,7 +128,7 @@ const _generateManifest = function(user, reponame, app, packages, forbidden){
 					return {
 						id: pkg.id,
 						name: pkg.name,
-						description: pkg.description,
+						purpose: pkg.purpose,
 						required: pkg.install === "compulsory",
 						'driver-permissions': Array.from(new Set([...pkg.datastores.map((d)=>{return d.type}), ...pkg.outputs.map((o)=>{return o.type})])),
 						risks: pkg.risk,
@@ -134,6 +138,54 @@ const _generateManifest = function(user, reponame, app, packages, forbidden){
 				
 				'forbidden-combinations' : forbidden,
 			}	
+}
+
+const _createTarFile = function(dockerfile, path){
+		
+	return new Promise((resolve, reject)=>{
+		
+		var tarball = fs.createWriteStream(path);
+		
+		console.log("creating dockerfile and adding to registry!");
+		const pack   = tar.pack();
+		
+		pack.entry({name: 'Dockerfile'}, dockerfile, function(err){
+        	if (err){
+        	   reject(err);
+        	}
+        	pack.finalize();
+        	const stream = pack.pipe(gzip).pipe(tarball);
+		
+			stream.on('finish', function (err) {
+				resolve(path);
+			});	
+		});
+	});
+		
+}
+
+const _createDockerImage = function(tarfile, name){
+	return new Promise((resolve, reject)=>{
+		docker.buildImage(tarfile, {t: `localhost:5000/${name}`}, function (err, output){
+			if (err){
+				console.warn(err);
+				reject(err);
+			}
+			output.pipe(process.stdout);
+			output.on('end', function() {
+				var image = docker.getImage(`localhost:5000/${name}`);
+				image.push({
+					registry : 'localhost:5000'
+				}, function(err, data) {
+					data.pipe(process.stdout);
+					if (err){
+						reject(err)
+					}
+					resolve();
+				});
+			});
+		});
+	});
 }
 
 //list all apps owned by this user
@@ -178,6 +230,7 @@ router.get('/flow', function(req,res){
 			.set('Authorization', `token ${req.user.accessToken}`)
 			.end((err, data)=>{
 				if (err || !data.ok) {
+					res.send({result:'error', error:err});
 					reject(err);
 				} else {
 					const commits = data.body;
@@ -195,10 +248,11 @@ router.get('/flow', function(req,res){
 				if (err || !data.ok) {
 					console.log('error');
 					console.log(err);
-					res.send({success:false});
+					res.send({result:'error', error:err});
 				} else {
 					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
 					res.send({
+								result: 'success',
 								flows: JSON.parse(jsonstr),
 								commit: {
 											sha: commit,
@@ -235,9 +289,19 @@ router.post('/repo/new', function(req,res){
    							content: new Buffer(JSON.stringify(content)).toString('base64'),
    							accessToken: req.user.accessToken,
    						})
-   	}).then((commit)=>{
-   		console.log("committed!!");
-  		console.log(commit) 		
+   	},(err)=>{
+   		res.send({result:'error', error:'could not create the repo'});
+  	}).then((commit)=>{
+   		
+   		res.send({
+   			result: 'success',
+   			commit: {
+   				sha: commit.commit.sha,
+   				name: name,
+   			}
+   		});	
+   	}, (err)=>{
+   		res.send({result:'error', error:'could not perform a first commit on the repo'});
    	});   
 });
 
@@ -265,7 +329,7 @@ router.post('/repo/update', function(req, res){
    			.end((err, data)=>{
      			if (err || !res.ok) {
        				console.log('error');
-       				console.log(err);
+       				res.status(500).send({error:'could not update the repo'});
      			} else {
        				res.send(data.content.sha);
      			}
@@ -283,35 +347,22 @@ router.post('/publish', function(req,res){
 	const forbidden = manifest['forbidden-combinations'];
 	const description = manifest.app.description;
 	
-	const REPONAME = `dbapp.${app.name}`;
+	const REPONAME = app.name;
 	
 	const user = req.user;
 	//need to create a new docker file
 	const dcommands = [
 							"FROM databox/red", 
 							`ADD ${config.github.RAW_URL}/${user.username}/${repo.name}/${repo.sha}/flows.json /root/.node-red/flows.json`,
-							"EXPOSE 1880", 
-							"CMD ['node', '/root/node-red/red.js']"
+							'LABEL databox.type="app"',
+							`LABEL databox.manifestURL="${config.appstore.URL}/${REPONAME}/manifest.json"`,
+							"EXPOSE 8080",
+							`CMD ["node", "/root/node-red/red.js"]`
 					   ]	
 	
 	
 	const dockerfile = dcommands.join("\n");
 	
-	
-	const data = {
-						manifest: _generateManifest(req.user, REPONAME, app, packages, forbidden),
-										
-						poster: {
-								username: req.user.username,
-						},
-										
-						postDate:  (new Date()).toISOString(),
-										
-						queries: 0,
-					  } 
-		
-	console.log({manifest: JSON.stringify(data)});
-						
 
 	return _createRepo(REPONAME, description, false, req.user.accessToken).then( (repo)=>{
 		return _addFile({
@@ -324,26 +375,38 @@ router.post('/publish', function(req,res){
    							accessToken: req.user.accessToken,
    						})
 	
-	}).then(function(commit){
-		//user, repo, app, packages, forbidden
+	},(err)=>{
+   		res.status(500).send({error:'could not create the repo'});
+  	}).then(function(commit){
 		const data = {
-						manifest: _generateManifest(req.user, REPONAME, app, packages, forbidden),
+						manifest: JSON.stringify(_generateManifest(req.user, REPONAME, app, packages, forbidden)),
 										
-						poster: {
+						poster: JSON.stringify({
 								username: req.user.username,
-						},
+						}),
 										
-						postDate:  (new Date()).toISOString(),
+						postDate:  JSON.stringify((new Date()).toISOString()),
 										
-						queries: 0,
+						queries: JSON.stringify(0),
 					  } 
 		
-		console.log({manifest: JSON.stringify(data)});
-						
-		return _saveToAppStore({manifest: JSON.stringify(data)}); 	
 		
-	}).then(function(result){
-		console.log(result);
+						
+		return _saveToAppStore(data); 	
+		
+	},(err)=>{
+   		res.status(500).send({error:'could not save to app store'});
+  	}).then(function(result){
+		var path = "tmp.tar.gz";
+		return _createTarFile(dockerfile, path);
+	},(err)=>{
+   		res.status(500).send({error: 'could not create tar file'});
+  	}).then(function(tarfile){
+		return _createDockerImage(tarfile, REPONAME);
+	},(err)=>{
+   		res.status(500).send({error: 'could not create docker file'});
+  	}).then(function(){
+		res.send({success:true});
 	});
 });
 

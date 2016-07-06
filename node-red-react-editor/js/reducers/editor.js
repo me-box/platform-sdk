@@ -45,6 +45,9 @@ export default function editor(state = {deploymenuexpanded:false, appmanager:fal
 	    										nodedetails: !state.publisher ? false : state.nodedetails,
 	    										testdeploy: !state.publisher ? false : state.testdeploy,
 	    									});
+	    									
+	
+		
     	default:
     		return state;
     }

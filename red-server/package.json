@@ -6,13 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --exec babel-node server.js",
-    "dev" :  "nodemon --exec babel-node server.js 9000"
+    "dev": "nodemon --exec babel-node server.js 9000"
   },
   "author": "Tom Lodge",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.15.0",
     "connect-redis": "^3.0.2",
+    "dockerode": "^2.2.10",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
@@ -20,7 +21,8 @@
     "mongoose": "^4.5.0",
     "passport": "^0.3.2",
     "passport-github": "^1.1.0",
-    "superagent": "^2.0.0"
+    "superagent": "^2.0.0",
+    "tar-stream": "^1.5.2"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

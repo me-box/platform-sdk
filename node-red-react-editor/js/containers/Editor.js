@@ -11,6 +11,8 @@ import Sidebar from './Sidebar';
 import Toolbar from '../components/Toolbar';
 import DragDropContainer from './DragDropContainer';
 import Publisher from './Publisher';
+import NetworkStatus from '../components/NetworkStatus';
+
 
 import {PALETTE_WIDTH, SIDEBAR_WIDTH, TOOLBAR_HEIGHT} from '../constants/ViewConstants';
 import '../../style/font-awesome/css/font-awesome.min.css';
@@ -50,7 +52,7 @@ class Editor extends Component {
 
   	
   	const {store} = this.context;
-   	const { types, tabs, currentTab,sidebarExpanded, showPublisher, categories, dimensions, dispatch } = this.props;
+   	const { types, tabs, currentTab,sidebarExpanded, showPublisher, categories, dimensions, status, dispatch } = this.props;
 
    	const paletteprops =  {
   		types,
@@ -68,6 +70,12 @@ class Editor extends Component {
       selectTab: this.selectTab,
       updateTab: this.updateTab,
     }
+    
+    const networkstatusprops = {
+      w: dimensions.w - PALETTE_WIDTH,
+      h: dimensions.h - TOOLBAR_HEIGHT,
+      status,
+    }
 
 	let publisher;
 	
@@ -79,12 +87,15 @@ class Editor extends Component {
 				<Toolbar />
 	    		<div id="main-container" className="sidebar-closed">
 	    			<DragDropContainer>
+	    				
 	    				<Palette {...paletteprops}/>
+	    				
 	    				<Workspace {...workspaceprops}/>
+	    				
 	    				{publisher}
 	    			</DragDropContainer>
             		<Sidebar />
-            		
+            		<NetworkStatus {...networkstatusprops}/>
 	    		</div>
 	    	</div>);
     }
@@ -119,6 +130,7 @@ function select(state) {
     currentTab: state.tabs.current,
     sidebarExpanded: state.editor.sidebarExpanded,
     showPublisher: state.editor.publisher,
+    status: state.network,
   };
 }
 

@@ -14,17 +14,16 @@ html{
     height: inherit;
     display: -webkit-flex;
     display: flex;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     -webkit-flex-direction: column;
     flex-direction: column;
     
 }
 
-
-
 .flexcolumn > div {
+ 	display: -webkit-flex;
     display: flex;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     border-bottom: 1px solid #b6b6b6;
  	min-height: 40px;  
 }
@@ -50,10 +49,20 @@ html{
     margin: auto;
     text-align: center;
 }
+
+
 .flexcolumn > .headerstyle {
     display: flex;
     flex: 0 0 auto;
     height: 40px;
+}
+
+.flexcolumn > .statusstyle {
+    display: flex;
+    flex: 0 0 auto;
+    height: 40px;
+    color: white;
+    background: #d45500;
 }
 
 .flexcolumn > .footerstyle {

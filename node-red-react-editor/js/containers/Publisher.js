@@ -39,7 +39,7 @@ class Publisher extends React.Component {
 		const packagesprops = {
 			packageSelected: this.packageSelected,
 			installSelected: this.installSelected,
-			updatePackageDescription: this.updatePackageDescription,
+			updatePackagePurpose: this.updatePackagePurpose,
 			updatePackageBenefits: this.updatePackageBenefits,
 			packages: this.props.packages,
 			selected: this.props.pkg || {},
@@ -54,6 +54,18 @@ class Publisher extends React.Component {
 		const submitprops = {
 			submit: this.submit,
 			cancel: this.cancel,	
+		}
+		
+		let installstatus;
+		
+		if (status){
+			const statusprops = {
+				status: status,
+				left: PALETTE_WIDTH, 
+				width: `calc(100vw - ${PALETTE_WIDTH}px)`,
+				height: `calc(100vh - ${TOOLBAR_HEIGHT+WORKSPACE_FOOTER}px)`,
+			}
+			installstatus = <Status {...statusprops}/>	
 		}
 		
 		return( <div id="publisher" style={style}>
@@ -187,19 +199,19 @@ class Packages extends React.Component {
 			return <Node key={i} {...datastore}/>
 		});
 		
-		const descriptionprops = {	
-									value: 	this.props.selected.description,
-				 					id: "description",
+		const purposeprops = {	
+									value: 	this.props.selected.purpose,
+				 					id: "purpose",
 									onChange:(property, event)=>{
-                  						this.props.updatePackageDescription(event.target.value);
+                  						this.props.updatePackagePurpose(event.target.value);
               						}
 								 }
 												
-		const descriptioninput = <Textarea {...descriptionprops}/>	
+		const purposeinput = <Textarea {...purposeprops}/>	
 		
 		const benefitsprops = {	
 									value: 	this.props.selected.benefits,
-				 					id: "description",
+				 					id: "benefits",
 									onChange:(property, event)=>{
                   						this.props.updatePackageBenefits(event.target.value);
               						}
@@ -230,10 +242,10 @@ class Packages extends React.Component {
 						<div className="flexrow">
 							<div className="title">
 								<div className="centered">
-									description
+									purpose
 								</div>
 							</div>
-							{descriptioninput}
+							{purposeinput}
 						</div>
 					</div>	
 					<div>	

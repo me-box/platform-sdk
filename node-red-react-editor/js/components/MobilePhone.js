@@ -10,8 +10,10 @@ class MobilePhone extends Component {
 
 	render() {
 		const style={
-			color: 'black'
+			color: 'black',
+			overflowY:'auto'
 		}
+	
 		const {content} = this.props;
 		return <div className="marvel-device iphone6 silver">
 					<div className="top-bar"></div>
