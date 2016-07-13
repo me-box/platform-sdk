@@ -1,4 +1,4 @@
-import { APP_MESSAGE } from '../constants/ActionTypes';
+import { APP_MESSAGE, RECEIVE_FLOWS } from '../constants/ActionTypes';
 
 
 const addIfNew = (state, action) =>{
@@ -42,6 +42,9 @@ const app = (state, action) =>{
 export default function apps(state = [], action) {
   	switch (action.type) {
 	  
+	  case RECEIVE_FLOWS:
+	  	return [];
+	  	
 	  case APP_MESSAGE:
 	  
 	  	return addIfNew(state, action).map(a=>{

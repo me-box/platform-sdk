@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import cx from 'classnames';
 import MobilePhone from '../components/MobilePhone';
 import List from '../components/List';
-import init from '../comms/websocket';
+import {init} from '../comms/websocket';
 
 class TestManager extends Component {
 	

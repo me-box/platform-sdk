@@ -7,6 +7,7 @@ import {receivedSHA} from '../actions/RepoActions';
 import {receivedManifest} from  '../actions/PublisherActions';
 import {scopeify} from '../utils/scopeify';
 import config from '../config';
+import {leave} from '../comms/websocket';
 
 function _lookup(nodeTypes, nodetype){
 	const indx = nodeTypes.map(item=>item.name).indexOf(nodetype);
@@ -224,6 +225,7 @@ function extractPorts(data){
 export function fetchFlow(store, repo){
 	
 	return function (dispatch, getState) {
+		leave("testApp");
 		dispatch(requestFlows());
 		request
   			.get(`http://${config.root}/github/flow`)

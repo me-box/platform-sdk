@@ -40,8 +40,7 @@ export function convertNode(n, links, exportCreds) {
     node.z = n.z;
     
     //add node properties
-    console.log("node defaults are");
-    console.log(n._def.defaults);
+   
     
     if (node.type == "unknown") {
     	console.log("nde type is unklnown!");
@@ -52,11 +51,7 @@ export function convertNode(n, links, exportCreds) {
         }
     } else {
         for (var d in n._def.defaults) {
-        	console.log("checking if defaults")
-        	console.log(n._def.defaults)
         	
-        	console.log("has own proeprty");
-        	console.log(d);
         	
             if (n._def.defaults.hasOwnProperty(d)) {
             	console.log("yes!");
@@ -87,8 +82,6 @@ export function convertNode(n, links, exportCreds) {
             }
         }
     }
-    console.log("converted node is");
-    console.log(node);
-    
+   
     return node;
 }
