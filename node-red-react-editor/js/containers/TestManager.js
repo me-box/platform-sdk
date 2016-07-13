@@ -10,13 +10,11 @@ class TestManager extends Component {
 	
 	constructor(props){
 		super(props);
-		//Object.assign(this, ...bindActionCreators(RepoActions, props.dispatch));
 	} 
 	
 	componentDidMount(){
 		const {dispatch} = this.props;
 		init("databox","testApp", dispatch);
-		//init websocket here!
 	}
 
 	render() {
@@ -26,13 +24,29 @@ class TestManager extends Component {
 		const applist = apps.map((app,i)=>{
 	    	
 	    	let dataview;
-
-	    	switch (app.view){	    		
+			const data = app.data;
+			
+	    	switch (app.view){	
+	    	
+	    		case 'text':
+	    			dataview = data || "";
+	    			break;
+	    			    		
 	    		case 'list':
 	    			
-	    			const data = app.data[app.data.length-1];
-	    			const props = {title: app.name, keys: data.keys, rows: data.rows};
-					dataview = <List {...props}/>
+	    			if (data === Object(data)){ //if this is a valid javascript object
+					
+						data.keys = data.keys || [];
+						data.rows = data.rows || [];
+					
+						const props = {title: app.name, keys: data.keys, rows: data.rows.map((row)=>{
+							if (row.time){
+								row.time = new Date(row.time).toLocaleString();
+							}
+							return row;
+						})};
+						dataview = <List {...props}/>
+					}
 	    			break;
 	    	
 	    	}
@@ -43,7 +57,7 @@ class TestManager extends Component {
 	    		[view]:true,
 	    	})	
 
-	    	return <div>	
+	    	return <div key={i}>	
 						<div>
 							<div key={i} className={classname}>
 								{dataview}

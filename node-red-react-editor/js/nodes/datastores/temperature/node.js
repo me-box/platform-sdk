@@ -5,7 +5,7 @@ import Textarea from '../../../components/form/Textarea';
 import Select from '../../../components/form/Select';
 import Cell from '../../../components/Cell';
 import Cells from '../../../components/Cells';
-
+import '../../../../style/sass/code.scss';
 
 class Node extends React.Component {
 
@@ -24,7 +24,7 @@ class Node extends React.Component {
 						  </div>
 
 		  	const descriptionprops = {	
-									value: 	this.props.values.description || this.props.selected.name || "",
+									value: 	this.props.values.description || this.props.selected.description || "",
 				 					id: "description",
 									onChange:(property, event)=>{
                   						 this.props.updateNode(property, event.target.value);

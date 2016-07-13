@@ -72,8 +72,6 @@ class Editor extends Component {
     }
     
     const networkstatusprops = {
-      w: dimensions.w - PALETTE_WIDTH,
-      h: dimensions.h - TOOLBAR_HEIGHT,
       status,
     }
 
@@ -101,11 +99,12 @@ class Editor extends Component {
     }
 
     _handleKeyDown(e) {
-       var rx = /INPUT|SELECT|TEXTAREA/i;
+       var rx = /INPUT|SELECT|TEXTAREA|DIV/i;
        if( e.which == 8 ){ // 8 == backspace
-       		console.log("seen delete pressed!!!");
+       	
+       		
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
-            	console.log("ok am here  - lets do it");
+            //	console.log("ok am here  - lets do it");
                 this.deletePressed();
                 e.preventDefault();
             }

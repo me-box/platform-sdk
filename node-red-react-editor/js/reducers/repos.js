@@ -1,11 +1,11 @@
-import {REPO_NAME_CHANGED, REPO_COMMIT_CHANGED,  REPO_DESCRIPTION_CHANGED, REPO_SAVE_PRESSED, REPO_LIST_RETRIEVED, REPO_COMMIT_RETRIEVED} from '../constants/ActionTypes';
+import {REPO_NAME_CHANGED, REPO_COMMIT_CHANGED,  REPO_DESCRIPTION_CHANGED, REPO_SAVE_PRESSED, REPO_LIST_RETRIEVED, REPO_SHA_RETRIEVED} from '../constants/ActionTypes';
 
-export default function repos(state = { loaded: {name:"", sha:""}, tosave : {name: "", commit: "", description: ""}, repos:[]}, action) {
+export default function repos(state = { loaded: {name:"", sha:{}}, tosave : {name: "", commit: "", description: ""}, repos:[]}, action) {
   	switch (action.type) {
 	  
-	  case REPO_COMMIT_RETRIEVED:
+	  case REPO_SHA_RETRIEVED:
 	  	return Object.assign({}, state, {
-	  					loaded: Object.assign({}, state.loaded, {...action.commit})
+	  					loaded: Object.assign({}, state.loaded, {name:action.repo, sha: action.sha})
 	  				}
 	  	);
 	  

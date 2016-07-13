@@ -3,7 +3,8 @@ import { REQUEST_FLOWS, RECEIVE_FLOWS, RECEIVE_FLOWS_ERROR, TABS_LOAD} from '../
 import { NODE_HEIGHT, NODE_WIDTH, GRID_SIZE} from '../constants/ViewConstants';
 import {getID, addViewProperties} from '../utils/nodeUtils';
 import {register} from '../store/configureStore';
-import {receivedCommit} from '../actions/RepoActions';
+import {receivedSHA} from '../actions/RepoActions';
+import {receivedManifest} from  '../actions/PublisherActions';
 import {scopeify} from '../utils/scopeify';
 import config from '../config';
 
@@ -235,18 +236,27 @@ export function fetchFlow(store, repo){
   					dispatch(receiveFlowsError(err));
   				}else{
   				
-  
+  					const flows 	= res.body.flows.content;
+  					const manifest 	= res.body.manifest.content;
+  					
   					//create all of the tabs
-  					dispatch(receiveTabs(res.body.flows.filter((node)=>{
+  					dispatch(receiveTabs(flows.filter((node)=>{
   						return node.type === "tab"
   					})));
   					
   					//update the sha of this repo
-  					dispatch(receivedCommit(res.body.commit))
+  					dispatch(receivedSHA(repo,
+  										 {
+  												flows: res.body.flows.sha,
+  												manifest: res.body.manifest.sha
+  										 }))
   					
   					
   					//create all of the flows
-          			dispatch(receiveFlows(res.body.flows, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types
+          			dispatch(receiveFlows(flows, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types
+  	 			
+  	 				//create the manifest
+  	 				dispatch(receivedManifest(manifest));
   	 			}
   	 		});		
 

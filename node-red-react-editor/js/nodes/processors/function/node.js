@@ -1,23 +1,106 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
+import Textfield from '../../../components/form/Textfield';
+import Textarea from '../../../components/form/Textarea';
+import Select from '../../../components/form/Select';
+import Cell from '../../../components/Cell';
+import Cells from '../../../components/Cells';
+var Codemirror = require('react-codemirror');
+require('codemirror/mode/javascript/javascript');
+require('codemirror/mode/xml/xml');
+require('codemirror/mode/markdown/markdown');
 
 class Node extends React.Component {
 
        render() {
-          const {selected} = this.props;
-          return  <h1> It is me ${selected.id} </h1>
+          
+        	const {selected} = this.props;
+          
+       		
+			const nameprops = {	
+									value: 	this.props.values.name || this.props.selected.name || "",
+									id: "name",
+									onChange:(property, event)=>{
+										 this.props.updateNode(property, event.target.value);
+									}
+								}
+							
+			const nameinput = <div className="centered">
+									<Textfield {...nameprops}/>												
+								  </div>
+
+			const funcprops = {	
+										value: 	this.props.values.func || this.props.selected.func || "",
+									
+										id: "func",
+									
+										onChange:(property, event)=>{
+											 this.props.updateNode(property, event.target.value);
+										}
+								   }
+				
+		  	const funcinput 	= <Textarea {...funcprops}/>		
+		
+			const outputprops = {
+				options: [
+					                {name: '1', value: 1},
+					                {name: '2', value: 2},
+					                {name: '3', value: 3},
+					                {name: '4', value: 4},
+					                {name: '5', value: 5},
+					     ],
+					     
+				onSelect: (event)=>{
+					this.props.updateNode("outputs", event.target.value);
+				},
+				style: {width: '100%'},
+				value: this.props.values.outputs || this.props.selected.outputs || "",
+			}
+			
+			const outputselect = <div className="centered">
+									<Select {...outputprops}/>												
+						  		 </div>
+
+			var codeprops = {
+            	
+        		onChange: (value)=>{
+        			 this.props.updateNode("func", value);
+        		},
+        		
+        		value: this.props.values.func || this.props.selected.func || "",
+        		
+        		options: {
+        			lineNumbers: true,
+        			mode: 'javascript',
+        		}
+        	};
+        	
+        	const codeinput =  <Codemirror  {...codeprops} />
+									
+          	return <div>
+          			<Cells>									
+						<Cell title={"name"} content={nameinput}/>
+						<Cell title={"function"} content={codeinput}/>
+						<Cell title={"outputs"} content={outputselect}/>
+          			</Cells>
+          		 </div>
           
        }
+        
 }
 
 export default composeNode(Node, 'function', 
                             {
                                 category: 'processors',    
                                 color: '#002255',
+                                
                                 defaults: {             
-                                    name: {value:""},   
-                                    topic: {value:"", required:true}
+                                    name: {value:""},
+									func: {value:"return msg;"},
+									outputs: {value:1},
+									noerr: {value:0,required:true,validate:function(v){ return ((!v) || (v === 0)) ? true : false; }}
                                 },
+                                
                                 inputs:1,               
                                 outputs:1,             
                                

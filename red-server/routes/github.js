@@ -7,7 +7,7 @@ import tar from 'tar-stream';
 import Docker from 'dockerode';
 
 const router = express.Router();
-const gzip   = zlib.createGzip();
+
 const docker = new Docker({socketPath: '/var/run/docker.sock'});
 
 
@@ -67,7 +67,10 @@ const _addFile = function(options){
 	
 	const {username, repo, filename, message, email, content, accessToken} = options;
 	
-	return new Promise((resolve, reject)=>{
+	console.log("adding new file");
+	console.log(options);
+	
+	return new Promise((resolve, reject)=>{ 
 	  request
 			.put(`${config.github.API}/repos/${username}/${repo}/contents/${filename}`)
 			.send({
@@ -85,10 +88,29 @@ const _addFile = function(options){
 					console.log("---error creating first commit!----");
 					reject(err);
 				} else {
-					resolve(res.body);
+					console.log(res.body);
+					resolve(Object.assign({},res.body, {repo:repo}));
 				}
 			})    					
    	})	
+}
+
+const _fetchFile = function(user, repo, filename){
+	return new Promise((resolve,reject)=>{
+		request
+			.get(`${config.github.API}/repos/${user.username}/${repo}/contents/${filename}`)
+			.set('Accept', 'application/json')
+			.set('Authorization', `token ${user.accessToken}`)
+			.end((err, data)=>{
+				if (err || !data.ok) {
+					reject(err);
+				} 
+				else {	
+					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
+					resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
+				}
+			});		
+	});
 }
 
 const _saveToAppStore = function(manifest){
@@ -145,7 +167,7 @@ const _createTarFile = function(dockerfile, path){
 	return new Promise((resolve, reject)=>{
 		
 		var tarball = fs.createWriteStream(path);
-		
+		const gzip   = zlib.createGzip();
 		console.log("creating dockerfile and adding to registry!");
 		const pack   = tar.pack();
 		
@@ -154,6 +176,7 @@ const _createTarFile = function(dockerfile, path){
         	   reject(err);
         	}
         	pack.finalize();
+        	
         	const stream = pack.pipe(gzip).pipe(tarball);
 		
 			stream.on('finish', function (err) {
@@ -210,7 +233,7 @@ router.get('/repos', function(req,res){
        							url:repo.url
        				} 
        			}).filter(function(repo){
-       				return repo.name.startsWith("databox");
+       				return repo.name.startsWith("databox.");
        			}));
        		}
    		})
@@ -222,87 +245,79 @@ router.get('/flow', function(req,res){
 	const repo = req.query.repo;
 	const user = req.user;
 	
-	return new Promise((resolve,reject)=>{
-		
-		request
-			.get(`${config.github.API}/repos/${user.username}/${repo}/commits`)
-			.set('Accept', 'application/json')
-			.set('Authorization', `token ${req.user.accessToken}`)
-			.end((err, data)=>{
-				if (err || !data.ok) {
-					res.send({result:'error', error:err});
-					reject(err);
-				} else {
-					const commits = data.body;
-					resolve(commits[0].sha);
-				}
-			});	
-	
-	}).then((commit)=>{
-	
-		request
-			.get(`${config.github.API}/repos/${user.username}/${repo}/contents/flows.json`)
-			.set('Accept', 'application/json')
-			.set('Authorization', `token ${req.user.accessToken}`)
-			.end((err, data)=>{
-				if (err || !data.ok) {
-					console.log('error');
-					console.log(err);
-					res.send({result:'error', error:err});
-				} else {
-					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
-					res.send({
-								result: 'success',
-								flows: JSON.parse(jsonstr),
-								commit: {
-											sha: commit,
-											name: repo,	
-										}	
-							 });
-				}
-			});			
-	});
-	//first retrieve the latest sha of this commit
-	
+	return Promise.all([_fetchFile(user, repo, 'flows.json'), _fetchFile(user, repo, 'manifest.json')]).then(function(values) {
+		console.log(values);
+        res.send({
+        	result: 'success',
+        	flows: values[0],
+        	manifest: values[1],
+        });
+    }, (err)=>{
+    	console.log(err);
+    	res.status(500).send({error:'could not retrieve flows and manifest file'});
+    });
 });
 
-//create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new empty flows.json file.
-//returns repo : {repodetails}, flow: {flowdetails}
+//create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new  flows.json / manifest.json file.
 
-//perhaps this should also automatically create the docker file.  Or should we create a published branch or
-// published repo for all PUBLISHED repos?
 router.post('/repo/new', function(req,res){
 	var user 		= req.user;
 	var name 		= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
 	var description = req.body.description || "";
 	var isprivate   = false;
-	var content     = req.body.flows || [];
+	var flows       = req.body.flows 	|| [];
+	var manifest    = req.body.manifest || {};
 	var message 	= req.body.message || "first commit";
 	
-	return _createRepo(name, description, isprivate, req.user.accessToken).then( repo => {    
-   		return _addFile({
-   							username: user.username,
-   							repo: repo.name, 
-   							filename: 'flows.json',
-   							email: req.user.email || `${req.user.username}@me-box.com`,
-   							message: message,
-   							content: new Buffer(JSON.stringify(content)).toString('base64'),
-   							accessToken: req.user.accessToken,
-   						})
-   	},(err)=>{
-   		res.send({result:'error', error:'could not create the repo'});
-  	}).then((commit)=>{
-   		
-   		res.send({
-   			result: 'success',
-   			commit: {
-   				sha: commit.commit.sha,
-   				name: name,
-   			}
-   		});	
-   	}, (err)=>{
-   		res.send({result:'error', error:'could not perform a first commit on the repo'});
-   	});   
+	console.log("creating new repo!");
+	
+	return _createRepo(name, description, isprivate, req.user.accessToken).then(repo=>{
+		 return Promise.all([
+		 						Promise.resolve(repo),
+		 						
+		 						_addFile({	username: user.username,
+   											repo: repo.name, 
+   											filename: 'flows.json',
+   											email: req.user.email || `${req.user.username}@me-box.com`,
+   											message: message,
+   											content: new Buffer(JSON.stringify(flows)).toString('base64'),
+   											accessToken: req.user.accessToken,
+   								})
+   							]);
+	}, (err)=>{
+		console.log(err);
+		res.status(500).send({error:'could not create repo'});
+	}).then( (values)=>{
+		
+		const repo = values[0];
+		
+		return Promise.all([
+								Promise.resolve(repo.name),
+								Promise.resolve(values[1]),  
+								_addFile({
+										username: user.username,
+										repo: repo.name, 
+										filename: 'manifest.json',
+										email: req.user.email || `${req.user.username}@me-box.com`,
+										message: message,
+										content: new Buffer(JSON.stringify(manifest)).toString('base64'),
+										accessToken: req.user.accessToken,
+								})
+   							]);
+		
+	}).then((values)=>{
+		res.send({
+					result:'success', 
+					repo: values[0], 
+					sha:{
+						flows:    values[1].content.sha,
+						manifest: values[2].content.sha,
+					}
+				});
+	}, (err)=>{
+		console.log(err);
+		res.status(500).send({error:'could not create files'});
+	});
 });
 
 router.post('/repo/update', function(req, res){
@@ -346,16 +361,14 @@ router.post('/publish', function(req,res){
 	const packages = manifest.packages;
 	const forbidden = manifest['forbidden-combinations'];
 	const description = manifest.app.description;
-	
-	const REPONAME = app.name;
-	
+		
 	const user = req.user;
 	//need to create a new docker file
 	const dcommands = [
 							"FROM databox/red", 
-							`ADD ${config.github.RAW_URL}/${user.username}/${repo.name}/${repo.sha}/flows.json /root/.node-red/flows.json`,
+							`ADD ${config.github.RAW_URL}/${user.username}/${repo.name}/master/flows.json /root/.node-red/flows.json`,
 							'LABEL databox.type="app"',
-							`LABEL databox.manifestURL="${config.appstore.URL}/${REPONAME}/manifest.json"`,
+							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
 							"EXPOSE 8080",
 							`CMD ["node", "/root/node-red/red.js"]`
 					   ]	
@@ -364,7 +377,7 @@ router.post('/publish', function(req,res){
 	const dockerfile = dcommands.join("\n");
 	
 
-	return _createRepo(REPONAME, description, false, req.user.accessToken).then( (repo)=>{
+	/*return _createRepo(REPONAME, description, false, req.user.accessToken).then( (repo)=>{
 		return _addFile({
    							username: user.username,
    							repo: repo.name, 
@@ -377,37 +390,36 @@ router.post('/publish', function(req,res){
 	
 	},(err)=>{
    		res.status(500).send({error:'could not create the repo'});
-  	}).then(function(commit){
-		const data = {
-						manifest: JSON.stringify(_generateManifest(req.user, REPONAME, app, packages, forbidden)),
+  	}).then(function(commit){*/
+  	
+	const data = {
+					manifest: JSON.stringify(_generateManifest(req.user, app.name, app, packages, forbidden)),
 										
-						poster: JSON.stringify({
-								username: req.user.username,
-						}),
+					poster: JSON.stringify({
+						username: req.user.username,
+					}),
 										
-						postDate:  JSON.stringify((new Date()).toISOString()),
+					postDate:  JSON.stringify((new Date()).toISOString()),
 										
-						queries: JSON.stringify(0),
-					  } 
+					queries: JSON.stringify(0),
+	}; 
 		
 		
 						
-		return _saveToAppStore(data); 	
-		
-	},(err)=>{
-   		res.status(500).send({error:'could not save to app store'});
-  	}).then(function(result){
+	return _saveToAppStore(data).then(function(result){
 		var path = "tmp.tar.gz";
 		return _createTarFile(dockerfile, path);
 	},(err)=>{
-   		res.status(500).send({error: 'could not create tar file'});
+   		res.status(500).send({error: 'could not save to app store'});
   	}).then(function(tarfile){
-		return _createDockerImage(tarfile, REPONAME);
+		return _createDockerImage(tarfile, app.name);
 	},(err)=>{
-   		res.status(500).send({error: 'could not create docker file'});
+   		res.status(500).send({error: 'could not create tar file'});
   	}).then(function(){
 		res.send({success:true});
-	});
+	},(err)=>{
+   		res.status(500).send({error: 'could not create docker image'});
+  	});
 });
 
 module.exports = router;

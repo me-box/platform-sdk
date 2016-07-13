@@ -21,8 +21,8 @@ export default composeNode(Node, 'listify',
                                 inputs:1,               
                                 outputs:1,             
                                
-                                icon: "fa-code",    
-                                unicode: '\uf121',    
+                                icon: "fa-list",    
+                                unicode: '\uf03a',    
                                 label: function() {     
                                     return this.name||this.topic||"listify";
                                 },

@@ -62,7 +62,7 @@ const application = (state = {name:"", description:"", tags:""},action)=>{
 	 	return Object.assign({}, state, {description:action.description});
 	 
 	 case ActionTypes.PUBLISHER_APP_NAME_CHANGED:
-	 	return Object.assign({}, state, {name:action.name});
+	 	return Object.assign({}, state, {name:_gitify(action.name)});
 	 	
 	 case ActionTypes.PUBLISHER_APP_TAGS_CHANGED:
 	 	return Object.assign({}, state, {tags:action.tags});
@@ -78,6 +78,10 @@ const _indexOf = (arr, x, y)=>{
 	};
 	return -1;
 } 
+
+const _gitify = (name)=>{
+	return name.replace(/\s/g, "-");
+}
 
 export default function publisher(state = {app:{},  currentpkg:0, packages:[], grid:[]}, action) {
   	switch (action.type) {
@@ -98,6 +102,9 @@ export default function publisher(state = {app:{},  currentpkg:0, packages:[], g
 	  case ActionTypes.TABS_LOAD:
 	  	 return Object.assign({}, state, {packages: action.tabs.map((t)=>pkg(undefined, {type: ActionTypes.TAB_ADD, tab: t}))});
 	  
+	  case ActionTypes.RECEIVE_MANIFEST:
+	  	 return Object.assign({}, state, {app: action.manifest.app, packages: action.manifest.packages, grid:action.manifest['forbidden-combinations']});
+	  	 
 	  case ActionTypes.RECEIVE_FLOWS:
 	  	 return Object.assign({}, state, {packages: state.packages.map((p)=>{
 	  	 	return Object.assign({}, p, { 

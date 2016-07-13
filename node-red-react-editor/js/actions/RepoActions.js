@@ -1,7 +1,8 @@
 import request  from 'superagent';
 import * as ActionType from '../constants/ActionTypes';
 import config from '../config';
-import {convertNode} from '../utils/nodeUtils';
+import {convertNode, getID} from '../utils/nodeUtils';
+import {networkAccess, networkError, networkSuccess} from './NetworkActions';
 
 export function nameChanged(name){
 	return {
@@ -24,11 +25,11 @@ export function descriptionChanged(description){
 	}
 }
 
-export function savingSubmission(){
+/*export function savingSubmission(){
 	return {
 		type: ActionType.REPO_SAVING,
 	}
-}
+}*/
 
 export function submissionError(err){
 	return {
@@ -44,13 +45,6 @@ export function submissionResponse(data){
 	}
 }
 
-
-export function requestingRepos(){
-	return {
-		type: ActionType.REPO_REQUESTING_LIST
-	}
-}
-
 export function receivedRepos(repos){
 	return {
 		type: ActionType.REPO_LIST_RETRIEVED,
@@ -58,26 +52,28 @@ export function receivedRepos(repos){
 	}
 }
 
-export function receivedCommit(commit){
+export function receivedSHA(repo, sha){
 	return {
-		type: ActionType.REPO_COMMIT_RETRIEVED,
-		commit
+		type: ActionType.REPO_SHA_RETRIEVED,
+		repo,
+		sha
 	}
 }
 
 export function requestRepos(){
 	return function (dispatch, getState) {
 		
-		dispatch(requestingRepos());
-		
+		dispatch(networkAccess(`requesting repo list`));
 		request
 		  .get(`http://${config.root}/github/repos`)
 		  .set('Accept', 'application/json')
 		  .end(function(err, res){
 			if (err){
 			  console.log(err);
+			  dispatch(networkError(`failed to fetch repo list`));
 			}else{
 			  console.log(res.body);
+			  dispatch(networkSuccess(`successfully received repos`));
 			  dispatch(receivedRepos(res.body));
 			}
 		 });
@@ -89,7 +85,8 @@ export function savePressed(){
 	
 	return function (dispatch, getState) {
 		
-		dispatch(savingSubmission())
+		dispatch(networkAccess(`saving submission`));
+		//dispatch(savingSubmission())
 
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
 			return Object.assign({}, convertNode(node, getState().ports.links));
@@ -99,6 +96,8 @@ export function savePressed(){
 		
 		const {name, description, commit} = getState().repos.tosave;
 		
+		
+  			
 		const submission = {
 		
 			name,
@@ -107,7 +106,12 @@ export function savePressed(){
 			flows: [
   					...tabs,
   					...jsonnodes
-  			]
+  			],
+  			manifest: {
+  				app: Object.assign({}, getState().publisher.app, {id: getID()}),
+  				packages: getState().publisher.packages,
+  				'forbidden-combinations': getState().publisher.grid,
+  			}
 		}
 		
 	    request
@@ -118,17 +122,16 @@ export function savePressed(){
   			.end(function(err, res){
   				if (err){
   					console.log(err);
-  					dispatch(submissionError(err));
+  					//dispatch(submissionError(err));
+  					dispatch(networkError('error saving app'));
   				}else{
           			console.log("got");
           			console.log(res.body);
+          			dispatch(networkSuccess('successfully saved app'));
+          			dispatch(receivedSHA(res.body.repo, res.body.sha));
           			//dispatch(submissionResponse(res.body));
-          			dispatch(receivedCommit(res.body.commit))
+          			//dispatch(receivedCommit(res.body.commit))
   	 			}
-  	 		});		
-	}
-
-	return {
-		type: ActionType.REPO_SAVE_PRESSED,
-	}
+  	 		});
+  	 }		
 }

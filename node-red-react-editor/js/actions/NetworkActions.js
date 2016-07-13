@@ -22,7 +22,7 @@ export function networkError(err){
 			dispatch({
 				type: ActionTypes.NETWORK_COMPLETE
 			});
-		}, 3000);
+		}, 1000);
 	}
 	
 }
@@ -40,7 +40,7 @@ export function networkSuccess(message){
 			dispatch({
 				type: ActionTypes.NETWORK_COMPLETE
 			});
-		}, 3000);
+		}, 500);
 		
 	}
 }

@@ -61,20 +61,19 @@ export function toggleGrid(pkga, pkgb){
 	}
 }
 
-export function publishingApp(name){
-	return networkAccess(`publishing app ${name}`);
+export function submissionSuccess(data){
+	return {
+		type: ActionTypes.PUBLISHER_PUBLISHED_APP,
+		data
+	}
 }
 
-export function submissionSuccess(data){
-	return function (dispatch, getState) {
-		
-		dispatch(networkSuccess('successfully published app!'));
-		
-		dispatch({
-			type: ActionTypes.PUBLISHER_PUBLISHED_APP,
-			data
-		});
-	}
+
+export function receivedManifest(manifest){
+	return {
+    	type: ActionTypes.RECEIVE_MANIFEST,
+    	manifest,
+  	}
 }
 
 export function submit(){
@@ -94,9 +93,9 @@ export function submit(){
   					...jsonnodes
   		]
   			
-  		//https://raw.githubusercontent.com/tlodge/databox.threepackages/02c299dd4b8f03eda5b83f710fc026b572a59837/flows.json
+
   		
-  		//have to ensure that the latest commit is saved before can publish! (or do this automatically at server end!)
+  		//TODO: ensure that the latest commit is saved before publish.
   		
   		const app = getState().publisher.app;
   		const packages = getState().publisher.packages;
@@ -116,9 +115,8 @@ export function submit(){
   			}
   		};
   		
-  		dispatch(publishingApp(app.name));
-  	
-		
+  		dispatch(networkAccess(`publishing app ${name}`));
+  		
 		 request
   			.post(`http://${config.root}/github/publish`)
   			.send(data)
@@ -126,11 +124,10 @@ export function submit(){
   			.type('json')
   			.end(function(err, res){
   				if (err){
-  					console.log("seen an arrroor");
   					console.log(err);
   					dispatch(networkError(err.message));
   				}else{
-  					console.log("seen a succcess!");
+  					dispatch(networkSuccess('successfully published app!'));
           			dispatch(submissionSuccess(res.body));
   	 			}
   	 		});	

@@ -47,7 +47,7 @@ class NetworkStatus extends React.Component {
 								<div className="centered">
 										<div style={noborder}>
 											<i className={icon}></i>
-											<div style={messagestyle}>{this.props.status.message || 'test of a much longer message'}</div>
+											<div style={messagestyle}>{this.props.status.message}</div>
 										</div>
 								</div>
 							</div>

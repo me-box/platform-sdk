@@ -7,6 +7,7 @@ class List extends Component {
 		super(props);
 	} 
 
+
 	render() {
 		
 		const mobilecontainer = {
@@ -31,18 +32,18 @@ class List extends Component {
 				title: i==0,
 			});
 			
-			return <div className={className}><div className="centered">{item}</div></div>
+			return <div key={i} className={className}><div className="centered">{item}</div></div>
 		});
 		
 		
 		const rows = this.props.rows.map((item, i)=>{
-			var items = this.props.keys.map((key,i)=>{
+			var items = this.props.keys.map((key,j)=>{
 				const className = cx({
-					title: i==0,
+					title: j==0,
 				});
-				return <div className={className}><div className="centered">{item[key]}</div></div>
+				return <div key={j} className={className}><div className="centered">{item[key]}</div></div>
 			});
-			return <div>
+			return <div key={i}>
 				<div className="flexrow">
 					{items}
 				</div>
@@ -62,4 +63,9 @@ class List extends Component {
 	}
 };
 
+List.defaultProps = {
+	rows : [],
+    keys : [],	
+};
+ 
 export default List;

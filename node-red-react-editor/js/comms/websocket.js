@@ -10,8 +10,6 @@ export default function init(namespace, appId, dispatch) {
   });
 
   socket.on("message", function(data){
-    console.log("ok got");
-    console.log(data);
     dispatch(newMessage(data));
   });
 
