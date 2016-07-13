@@ -38,8 +38,7 @@ class TestManager extends Component {
 					
 						data.keys = data.keys || [];
 						data.rows = data.rows || [];
-					    console.log("rows are");
-					    console.log(rows);
+					   
 						const props = {title: app.name, keys: data.keys, rows: data.rows}
 						dataview = <List {...props}/>
 					}
