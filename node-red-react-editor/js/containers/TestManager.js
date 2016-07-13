@@ -39,12 +39,7 @@ class TestManager extends Component {
 						data.keys = data.keys || [];
 						data.rows = data.rows || [];
 					
-						const props = {title: app.name, keys: data.keys, rows: data.rows.map((row)=>{
-							if (row.time){
-								row.time = new Date(row.time).toLocaleString();
-							}
-							return row;
-						})};
+						const props = {title: app.name, keys: data.keys, rows: data.rows}
 						dataview = <List {...props}/>
 					}
 	    			break;
