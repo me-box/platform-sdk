@@ -19,6 +19,11 @@ module.exports = {
             '/github/*': {
                 target: 'http://localhost:9000',
             },
+ 	     '/nodered/*': {
+                target: 'http://localhost:9000',
+            },
+        
+
     	}
     },
 

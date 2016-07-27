@@ -4,11 +4,11 @@ import config from '../config.js';
 import zlib from 'zlib';
 import fs from 'fs';
 import tar from 'tar-stream';
-import Docker from 'dockerode';
+import docker from '../utils/docker';
 
 const router = express.Router();
 
-const docker = new Docker({socketPath: '/var/run/docker.sock'});
+
 
 
 const _createRepo = function(name, description, isprivate, accessToken){

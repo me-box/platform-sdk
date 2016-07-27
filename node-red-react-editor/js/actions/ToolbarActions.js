@@ -63,7 +63,6 @@ export function togglePublisher(){
 	}	
 }
 
-//this will change the multiplier for the 'repeat' value 
 export function deploy(){
 	
 	return function (dispatch, getState) {
@@ -75,9 +74,9 @@ export function deploy(){
 		});
 		
 		const tabs = getState().tabs.tabs;
-		
+		console.log(`DEPLOYING TO http://${config.root}/nodered/flows`);
 	    request
-  			.post(`http://${config.redurl}/flows`)
+  			.post(`http://${config.root}/nodered/flows`)
   			.send([
   					...tabs,
   					...jsonnodes
@@ -89,8 +88,6 @@ export function deploy(){
   					console.log(err);
   					dispatch(submissionError(err));
   				}else{
-          			console.log("got");
-          			console.log(res.body);
           			dispatch(submissionResponse(res.body));
   	 			}
   	 		});		

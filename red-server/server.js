@@ -55,17 +55,14 @@ const ensureAuthenticated = (req, res, next) => {
   res.redirect("/auth/github");
 };
 
-
-
 app.use('/', express.static("static"));
 app.use('/auth', require('./routes/auth'));
 app.use('/github', ensureAuthenticated, require('./routes/github'));
-
+app.use('/nodered', ensureAuthenticated, require('./routes/nodered'));
 
 app.get('/', ensureAuthenticated, function(req,res){
   	res.render('index');
 });
-
 
 console.log(`listening on port ${PORT}`)
 server.listen(PORT);
