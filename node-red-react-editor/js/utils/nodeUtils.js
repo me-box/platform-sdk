@@ -49,8 +49,6 @@ export function convertNode(n, links, exportCreds) {
             }
         }
     } else {
-    	console.log("defaults are");
-    	console.log(n._def.defaults);
     	
         for (var d in n._def.defaults) {
         	
@@ -80,8 +78,6 @@ export function convertNode(n, links, exportCreds) {
             }
         }
     }
-   	console.log("node is now");
-   	console.log(node);
-   	
+ 
     return node;
 }

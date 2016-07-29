@@ -69,9 +69,17 @@ export function deploy(){
 		
 		dispatch(postFlows())
 
+		const channelId = getState().publisher.app.id;
+		
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
-			return Object.assign({}, convertNode(node, getState().ports.links));
+			
+			const modifier = node.type === "app" ? {appId: getState().publisher.app.id} : {};
+			const n = Object.assign({}, convertNode(node, getState().ports.links), modifier);
+			console.log("n is ");
+			console.log(n);
+			return n;
 		});
+		
 		
 		const tabs = getState().tabs.tabs;
 		console.log(`DEPLOYING TO http://${config.root}/nodered/flows`);
