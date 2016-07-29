@@ -42,7 +42,8 @@ export function dropNode(store, reducer, nt, def, x, y){
 			x: x + MOUSE_X_OFFSET,
 			y: y + MOUSE_Y_OFFSET,
 		}
-
+		
+		//so old nodes that are loaded won't necessarily have the new defaults!
 		for (var d in node._def.defaults) {
 		  if (node._def.defaults.hasOwnProperty(d)) {
 			node[d] = node._def.defaults[d].value;

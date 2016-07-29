@@ -13,8 +13,8 @@ class TestManager extends Component {
 	} 
 	
 	componentDidMount(){
-		const {dispatch} = this.props;
-		init("databox","testApp", dispatch);
+		const {dispatch, id} = this.props;
+		init("databox",id, dispatch);
 	}
 
 	render() {
@@ -70,6 +70,7 @@ class TestManager extends Component {
 function select(state) {
   return {
      apps: state.apps,
+     id: state.publisher.app.id,
   }
 }
 

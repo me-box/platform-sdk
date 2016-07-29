@@ -1,6 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import request from 'superagent';
-import {convertNode, getID} from '../utils/nodeUtils';
+import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 import {networkAccess, networkError, networkSuccess} from './NetworkActions';
 
@@ -107,9 +107,10 @@ export function submit(){
   		    		name: getState().repos.loaded.name, 
   		    		sha: getState().repos.loaded.sha
   		    },
-  
-  			manifest: {
-  				app: Object.assign({}, getState().publisher.app, {id: getID()}),
+  		    
+  		    //assign id at start  as this will be the channel identifier
+  		  manifest: {
+  				app: Object.assign({}, getState().publisher.app),
   				packages: getState().publisher.packages,
   				'forbidden-combinations': getState().publisher.grid,
   			}

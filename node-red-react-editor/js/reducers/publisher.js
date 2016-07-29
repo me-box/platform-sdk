@@ -55,9 +55,12 @@ const pkg = (state = {id:"", name:"", purpose:"", install:"optional", datastores
 	}
 }
 
-const application = (state = {name:"", description:"", tags:""},action)=>{
+const application = (state = {id:"", name:"", description:"", tags:""},action)=>{
 	switch (action.type) {
 	
+	 case ActionTypes.EDITOR_INIT:
+		return Object.assign({}, state, {id:action.id});
+		
 	 case ActionTypes.PUBLISHER_APP_DESCRIPTION_CHANGED:
 	 	return Object.assign({}, state, {description:action.description});
 	 
@@ -86,7 +89,9 @@ const _gitify = (name)=>{
 export default function publisher(state = {app:{},  currentpkg:0, packages:[], grid:[]}, action) {
   	switch (action.type) {
 	  	
-		
+	  case ActionTypes.EDITOR_INIT:
+	  	return Object.assign({}, state, {app: application(state.app, action)});
+	  	
 	  case ActionTypes.TAB_SELECT:
 	  	return Object.assign({}, state, {currentpkg: Math.max(0,state.packages.map((p)=>p.id).indexOf(action.tab.id))});
 	  

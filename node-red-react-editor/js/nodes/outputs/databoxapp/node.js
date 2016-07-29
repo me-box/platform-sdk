@@ -33,7 +33,8 @@ export default composeNode(Node, 'app',
                                 category: 'outputs',      
                                 color: '#d45500',
                                 defaults: {             
-                                    name: {value:""}
+                                    name: {value:""},
+                                    appId: {value:"webapp"},
                                 },
                                 inputs:1,               
                                 outputs:0,             

@@ -28,18 +28,7 @@ class Node extends React.Component {
 			const nameinput = <div className="centered">
 									<Textfield {...nameprops}/>												
 								  </div>
-
-			const funcprops = {	
-										value: 	this.props.values.func || this.props.selected.func || "",
-									
-										id: "func",
-									
-										onChange:(property, event)=>{
-											 this.props.updateNode(property, event.target.value);
-										}
-								   }
-				
-		  	const funcinput 	= <Textarea {...funcprops}/>		
+	
 		
 			const outputprops = {
 				options: [

@@ -16,7 +16,6 @@ export default composeNode(Node, 'listify',
                                 color: '#002255',
                                 defaults: {             
                                     name: {value:""},   
-                                    topic: {value:"", required:true}
                                 },
                                 inputs:1,               
                                 outputs:1,             

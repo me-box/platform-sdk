@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {fetchNodes, dropNode}  from '../actions/NodeActions';
 import {deletePressed} from '../actions/KeyboardActions';
 import {windowResize} from '../actions/WindowActions';
+import {init} from '../actions/EditorActions'; 
 import {addTab, selectTab, updateTab} from '../actions/TabActions';
 import Palette from '../components/Palette';
 import Workspace from '../components/Workspace';
@@ -40,6 +41,9 @@ class Editor extends Component {
   	bindActionCreators(fetchNodes.bind(this,store), this.props.dispatch)()
     window.addEventListener('keydown', this._handleKeyDown);
   	window.addEventListener('resize', this._handleResize);
+  	
+  	//send action to tell reducers that editor has just loaded (publisher reducer will use this to create a new appID)
+  	this.props.dispatch(init());
   	this.addTab();
   }
 

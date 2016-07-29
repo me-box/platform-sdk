@@ -43,21 +43,19 @@ export function convertNode(n, links, exportCreds) {
    
     
     if (node.type == "unknown") {
-    	console.log("nde type is unklnown!");
         for (var p in n._orig) {
             if (n._orig.hasOwnProperty(p)) {
                 node[p] = n._orig[p];
             }
         }
     } else {
+    	console.log("defaults are");
+    	console.log(n._def.defaults);
+    	
         for (var d in n._def.defaults) {
         	
-        	
             if (n._def.defaults.hasOwnProperty(d)) {
-            	console.log("yes!");
-                node[d] = n[d];
-            }else{
-            	console.log("nope!");
+                node[d] = n[d] || n._def.defaults[d].value;
             }
         }
     }
@@ -82,6 +80,8 @@ export function convertNode(n, links, exportCreds) {
             }
         }
     }
-   
+   	console.log("node is now");
+   	console.log(node);
+   	
     return node;
 }

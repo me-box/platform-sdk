@@ -39,6 +39,7 @@ const app = (state, action) =>{
 	}
 }
 
+//used by test manager - apps are all the mock apps running on node red.
 export default function apps(state = [], action) {
   	switch (action.type) {
 	  

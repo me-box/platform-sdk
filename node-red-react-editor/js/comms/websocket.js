@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import {newMessage} from '../actions/AppActions';
 let socket;
 
+//appId is used to create the websocket room
 export function init(namespace, appId, dispatch) {
   console.log("initing websokcet!"); 
   socket = io('/'+namespace, {path: '/app/socket.io'});
