@@ -2,7 +2,7 @@
 
 The databox editor is a reimplementation of the node-red frontend and is currently the main tool for building databox apps.  The code is written in Javascript.  To get running, you'll need a number of components, which are detailed in this guide.  The following is a high-level overview of the components and how they currently fit together:
 
-[diagram to be added]
+[!alt-text](https://raw.githubusercontent.com/me-box/iot.red/master/docs/images/demoarch.png "databox demo overview")
 
 The databox editor requires the following:
 
