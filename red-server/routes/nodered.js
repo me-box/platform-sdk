@@ -7,6 +7,8 @@ const router = express.Router();
 
 const _postFlows = function(port, data, res){
 	console.log(`connecting to localhost:${port}/flows`);
+	console.log("posting");
+	console.log(data);
 	
 	request
    			.post(`localhost:${port}/flows`)
@@ -69,7 +71,7 @@ router.post('/flows', function(req, res){
 					console.log(err);
 				}else{
 					//{"PortBindings": { "1880/tcp": [{ "HostPort": "11022" }]}}
-					container.start({"PublishAllPorts":true}, function (err, data) {
+					container.start({"PublishAllPorts":true, "Links": ["mosquitto:mosquitto"]}, function (err, data) {
 						if (err){
 							console.log("error!");
 							console.log(err);
