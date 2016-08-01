@@ -1,6 +1,3 @@
-//perhaps better to create a couple of files, rather than doing different stuff dependent
-//on whether dev or prod!
-
 var path = require("path");
 var webpack = require("webpack");
 
