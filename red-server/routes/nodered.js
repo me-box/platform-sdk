@@ -44,6 +44,7 @@ const _startContainer = function(container, flows, res){
 	_waitForStart(container).then(function(){
 		container.inspect(function (err, cdata) {
 			console.log("starting container!");
+			console.log(cdata);
 			let port = cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort'];
 			_postFlows(port, flows, res);
 		});

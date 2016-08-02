@@ -139,5 +139,7 @@ export function submit(){
 }
 
 export function cancel(){
-
+	return {
+		type: ActionTypes.PUBLISHER_CANCEL,
+	}
 }
