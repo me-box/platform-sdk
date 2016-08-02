@@ -225,7 +225,8 @@ function extractPorts(data){
 export function fetchFlow(store, repo){
 	
 	return function (dispatch, getState) {
-		leave("testApp");
+		leave(getState().publisher.app.id);
+		
 		dispatch(requestFlows());
 		request
   			.get(`http://${config.root}/github/flow`)
