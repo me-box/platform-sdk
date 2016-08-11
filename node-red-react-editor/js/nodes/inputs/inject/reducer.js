@@ -6,9 +6,6 @@ const multiplier = { 's': 1, 'm': 60, 'h': 60*60};
 
 
 function translateToLocalState(node){
-	console.log("translating ");
-	console.log(node);
-	console.log("to local state!");
 
 	let local = {};
 

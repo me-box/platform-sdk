@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import '../../style/sass/cells.scss';
-import '../../style/css/devices.min.css';
+import '../../../style/sass/cells.scss';
+import '../../../style/css/devices.min.css';
 
 class MobilePhone extends Component {
 	

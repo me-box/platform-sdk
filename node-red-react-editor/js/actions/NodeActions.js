@@ -89,7 +89,6 @@ export function initNodeKeys(keys){
 }
 
 export function updateNode(property, value){
-
   return {
     type: NODE_UPDATE_VALUE,
     property,

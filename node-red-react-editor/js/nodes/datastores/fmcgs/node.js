@@ -24,6 +24,12 @@ export default composeNode(Node, 'fmcgs',
                                 icon: "fa-barcode",   
                                 unicode: '\uf02a',     
                                 
+                                schema: {
+                                	id:    {type:'string'},
+                                	timestamp: {type: 'time'},
+                                	values: {type: "array", elements: {type: 'object', schema: {id: 'string', product: 'string'}}}
+                                },
+                                
                                 label: function() {     
                                     return this.name||this.topic||"fmcgs";
                                 },

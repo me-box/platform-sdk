@@ -1,0 +1,10 @@
+export const MAXREADINGS = 10;
+export const TOPPADDING = 70;
+export const LEFTPADDING = 60;
+export const RIGHTPADDING = 40;
+export const CHARTXPADDING = 20;
+export const CHARTYPADDING = 5;
+export const TICKCOUNT = 5;
+export const BARSPACING = 5;
+export const AXISLABELSIZE = 16;
+export const YAXISVALUESIZE = 14;

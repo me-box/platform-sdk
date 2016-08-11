@@ -4,7 +4,12 @@ import {calculateTextWidth, toggleItem} from '../utils/utils';
 import {ports} from './ports';
 
 function updateNode(current, changes){
-
+  console.log("in the update node finction with ");
+  console.log("current:");
+  console.log(current);
+  console.log("changes");
+  console.log(changes);
+  
   let _n = Object.assign(current, changes);
 
   try {
@@ -104,14 +109,18 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
     
     //set the values in current node to values in editingbuffer
     case ActionType.DIALOGUE_OK:
+    	console.log("ok the editing buffer is");
+    	console.log(state.editingbuffer);
+    	
       return Object.assign({}, state, {
          configuring: null,
          editingbuffer: {},
          nodes: state.nodes.map((node)=>{
-          if (node.id === state.configuring.id){
-            return updateNode(node, state.editingbuffer);
-          }
-          return node;
+          	console.log(`checking ${node.id} against ${state.configuring.id}`); 
+          	if (node.id === state.configuring.id){
+            	return updateNode(node, state.editingbuffer);
+          	}
+          	return node;
         })
     })
 

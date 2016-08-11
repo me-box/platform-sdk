@@ -9,3 +9,5 @@ export const TOOLBAR_HEIGHT = 40;
 export const WORKSPACE_FOOTER = 25;
 export const MOUSE_X_OFFSET = -180;
 export const MOUSE_Y_OFFSET = -35 - TOOLBAR_HEIGHT;
+export const MOBILE_TEST_SCREEN_HEIGHT = 667;
+export const MOBILE_TEST_SCREEN_WIDTH  = 375;

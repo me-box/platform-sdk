@@ -7,19 +7,21 @@ class Node extends React.Component {
       
       render() {
          
+         const {selected, inputs, values, updateNode} = this.props;
+           
          const nameprops = {
 
               name: "name",
              
-              value: this.props.values['name'] || this.props.selected['name'] || "",
+              value: values.name || selected.name || "",
               
               icon: "fa fa-tasks",
              
               onChange: (property, event)=>{
-                  this.props.updateNode(property, event.target.value);
+                  updateNode(property, event.target.value);
               },
              
-              selected: this.props.selected,
+              selected: selected,
           }
 
           return <div className="form-row">

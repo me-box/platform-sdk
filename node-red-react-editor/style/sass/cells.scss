@@ -38,15 +38,16 @@ html{
      -webkit-flex: 1 1 auto;
     -webkit-flex-direction: row;
     flex-direction: row;
+    
+ 
 }
 
 .flexrow > div {
     display: -webkit-flex;
     display: flex;
-    flex: 1 1 0;
-     -webkit-flex: 1 1 0;
-    height: inherit;
-    
+    flex: 1 1 auto;
+     -webkit-flex: 1 1 auto;
+    height: inherit; 
 }
 
 

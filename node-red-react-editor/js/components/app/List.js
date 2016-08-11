@@ -8,6 +8,10 @@ class List extends Component {
 	} 
 
 
+	componentDidMount(){
+		console.log("new list component mounted!");
+	}
+	
 	render() {
 		
 		const mobilecontainer = {

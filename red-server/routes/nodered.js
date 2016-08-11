@@ -10,6 +10,9 @@ const _postFlows = function(port, data, res){
 	console.log("posting");
 	console.log(data);
 	
+	//REMOVE THIS TO -- PUT IN TO TEST!
+	port = 1880;
+	
 	request
    			.post(`localhost:${port}/flows`)
    			.send(data)

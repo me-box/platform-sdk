@@ -30,9 +30,11 @@ const app = (state, action) =>{
 				return state;
 			}
 
-			
-			return Object.assign({}, state, {data: action.data, view:action.view})
-		
+			if (action.policy === "replace"){
+				return Object.assign({}, state, {data: action.data, view:action.view})
+			}else{
+				return Object.assign({}, state, {data: [...state.data, action.data], view:action.view})
+			}
 			
 		default:
 			return state;
@@ -50,9 +52,8 @@ export default function apps(state = [], action) {
 	  
 	  	return addIfNew(state, action).map(a=>{
 	  		return app(a, action);
-	  	})
-
-	  	return newstate;
+	  	});
+	  	
 
 	  default:
 	    return state;

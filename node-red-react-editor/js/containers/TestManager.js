@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import cx from 'classnames';
-import MobilePhone from '../components/MobilePhone';
-import List from '../components/List';
+import MobilePhone from '../components/app/MobilePhone';
+import List from '../components/app/List';
+import Chart from '../components/app/Chart';
 import {init} from '../comms/websocket';
+import {MOBILE_TEST_SCREEN_WIDTH, MOBILE_TEST_SCREEN_HEIGHT} from '../constants/ViewConstants';
+import {MAXREADINGS} from '../constants/ChartConstants';
 
 class TestManager extends Component {
 	
@@ -28,6 +31,13 @@ class TestManager extends Component {
 			
 	    	switch (app.view){	
 	    	
+	    		case 'chart':
+	    			
+	    			let [config, ...values] = data;
+	    			
+	    			dataview = <Chart {...{title: app.name, w: MOBILE_TEST_SCREEN_WIDTH, h:MOBILE_TEST_SCREEN_HEIGHT, config: config, data: values.slice(-MAXREADINGS)}} />
+	    			break;
+	    			
 	    		case 'text':
 	    			dataview = data || "";
 	    			break;
@@ -38,9 +48,7 @@ class TestManager extends Component {
 					
 						data.keys = data.keys || [];
 						data.rows = data.rows || [];
-					   
-						const props = {title: app.name, keys: data.keys, rows: data.rows}
-						dataview = <List {...props}/>
+						dataview = <List key={i} {...{title: app.name, keys: data.keys, rows: data.rows}}/>
 					}
 	    			break;
 	    	

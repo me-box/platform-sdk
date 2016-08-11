@@ -75,6 +75,14 @@ export default composeNode(Node, 'temperature',
            							description: {value:""},
             						tag: {value:"TA"},
                                 },
+                                
+                                schema: {
+                                	value: {type:'numeric'},
+                                	unit:  {type:'string'},
+                                	id:    {type:'string'},
+                                	time:  {type:'time'},
+                                },
+                                
                                 inputs:0,               
                                 outputs:1,             
                                

@@ -57,6 +57,8 @@ export default function composeNode(Component, nt, config, reducer=null){
 	}
 
 	function select(state) {
+		
+	
 		let stateobj = {
 			selected: state.nodes.selected,
 			configuring: state.nodes.configuring,
@@ -64,6 +66,14 @@ export default function composeNode(Component, nt, config, reducer=null){
 		}
       	if (reducer){
       		stateobj.local = state.nodes.selected ? state[state.nodes.selected.id] : null;
+      	}
+      	
+      	if (state.nodes.selected){
+      		stateobj.inputs =  state.ports.links.filter((link)=>{ 
+        		return link.target.id === state.nodes.selected.id;
+        	}).map((link)=>{
+        		return link.source;
+        	})
       	}
         return stateobj;
     }

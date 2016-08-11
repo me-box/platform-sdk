@@ -32,7 +32,13 @@ export default composeNode(Node, 'bulbs',
                                 },
                                 inputs:0,               
                                 outputs:1,             
-                               
+                                
+                                schema: {
+                                	value: {type:'numeric'},
+                                	name:  {type:'string'},
+                                	id:    {type:'string'},
+                                },
+                                
                                 icon: "fa-lightbulb-o",
                                 unicode: '\uf0eb',     
                                 label: function() {     

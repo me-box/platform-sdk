@@ -9,6 +9,11 @@ class NodeInfo extends Component {
 
 	render() {
 	
+		const {node} = this.props;
+		
+		if (!node)
+			return null;
+			
 		let contentstyle = {
 			display: '-webkit-flex',
             display: 'flex',   
@@ -24,7 +29,7 @@ class NodeInfo extends Component {
             width: '7em',
             color:'white',
             fontWeight: 'regular',
-            background: this.props.node._def.color || '#ca2525',
+            background: node._def.color || '#ca2525',
             border: '2px solid white', 
             lineHeight: '10em',
             textAlign: 'center',
@@ -50,11 +55,11 @@ class NodeInfo extends Component {
         }
         
 		return 	<div style={contentstyle}>
-					<div style={iconstyle}><i className={`fa ${this.props.node._def.icon} fa-5x fa-fw`}></i></div>
+					<div style={iconstyle}><i className={`fa ${node._def.icon} fa-5x fa-fw`}></i></div>
         			<hr/>
         			<div style={descriptionstyle}>
-        				<h4 style={titleStyle}> {this.props.node.type} </h4>
-        				<div dangerouslySetInnerHTML={{__html: this.props.node._def.description}}></div>
+        				<h4 style={titleStyle}> {node.type} </h4>
+        				<div dangerouslySetInnerHTML={{__html: node._def.description}}></div>
         			</div>
         		</div>
 	}

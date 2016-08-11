@@ -12,7 +12,7 @@ class Dialogue extends Component {
 		const dialoguestyle = {
 			position: 'absolute',
 			height: 'auto',
-			width: '500px',
+			width: '700px',
 			top: '238px', 
 			left: '476px', 
 			display: 'block',
