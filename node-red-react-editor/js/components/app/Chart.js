@@ -65,6 +65,10 @@ class BarChart extends Component {
 		}
 		
 		console.log(data.length);
+		console.log("data is");
+		console.log(data);
+		console.log("config is");
+		console.log(config);
 		
 		const BARWIDTH = (w-LEFTPADDING-RIGHTPADDING-CHARTXPADDING)/data.length;
 		const XAXISVALUESIZE = Math.min(16,BARWIDTH/2);
@@ -101,11 +105,13 @@ class BarChart extends Component {
 		const RANGEMIN = MIN <= 0 ? MIN : MIN - TICKDELTA;
 		const CLOSESTPOINTTOORIGIN = MAX - (Math.round(MAX/TICKDELTA) * TICKDELTA);
 
+		console.log(`ORIGIN ${ORIGIN} CPTO: ${CLOSESTPOINTTOORIGIN} RANGEMIN:${RANGEMIN} TICKDELTA:${TICKDELTA} MAX:${MAX} MIN:${MIN}`);
 		
 		const yPos = (value)=>{
 			const divisor = MAX-RANGEMIN;
-		
-			return CHARTHEIGHT - ((value - RANGEMIN)  * (CHARTHEIGHT/divisor));
+			const yp = CHARTHEIGHT - ((value - RANGEMIN)  * (CHARTHEIGHT/divisor));
+			console.log(`ypos for ${value} is ${yp}`);
+			return yp;
 		};
 
 		const yPosAxis = (value)=>{ 
@@ -256,7 +262,7 @@ class BarChart extends Component {
 
 							}
 		  
-		  return <rect key={i} className="animated" style={style} {...rectprops} />
+		  return <rect key={`${item.id}${item.x}`} className="animated" style={style} {...rectprops} />
   
   
 

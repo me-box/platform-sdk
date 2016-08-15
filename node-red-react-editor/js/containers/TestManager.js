@@ -77,7 +77,7 @@ class TestManager extends Component {
 
 function select(state) {
   return {
-     apps: state.apps,
+     apps: state.apps.data,
      id: state.publisher.app.id,
   }
 }

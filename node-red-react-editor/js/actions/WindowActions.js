@@ -1,8 +1,8 @@
-import { WINDOW_RESIZE } from '../constants/ActionTypes';
+import { WINDOW_RESIZED } from '../constants/ActionTypes';
 
 export function windowResize(w,h) {
   return {
-    type: WINDOW_RESIZE,
+    type: WINDOW_RESIZED,
     w,
     h
   };

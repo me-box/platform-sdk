@@ -8,23 +8,23 @@ module.exports = {
             'webpack/hot/only-dev-server'
         ]
     },
-    
+
     output: {
         publicPath: 'http://databox.upintheclouds.org/',
         filename: '[name].js'
     },
 
     devServer:{
-   	 proxy: {
+         proxy: {
             '/github/*': {
                 target: 'http://localhost:9000',
             },
- 	     '/nodered/*': {
+             '/nodered/*': {
                 target: 'http://localhost:9000',
             },
-        
 
-    	}
+
+        }
     },
 
     module: {
@@ -34,9 +34,8 @@ module.exports = {
                 { test: /\.css$/, loaders: ['style', 'css'] },
                 { test: /\.(png|jpg|gif)$/, loader: 'url-loader?limit=8192'},
                 { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff/[name].[ext]" },
-                { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader?limit=8192" }, 
+                { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader?limit=8192" },
         ],
     },
 
 };
-

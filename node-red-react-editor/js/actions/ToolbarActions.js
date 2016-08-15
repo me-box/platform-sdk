@@ -2,7 +2,7 @@ import request  from 'superagent';
 import * as ActionType from '../constants/ActionTypes';
 import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
-
+import {leave} from '../comms/websocket';
 
 
 export function toggleAppManager(){
@@ -17,22 +17,25 @@ export function toggleDeployMenu(){
     }
 }
 
-export function postFlows(){
-	return {
-		type: ActionType.SUBMITTING_FLOWS
+export function deployFlows(){
+	return function (dispatch, getState) {
+		leave(getState().publisher.app.id);
+		dispatch({
+			type: ActionType.DEPLOYING_FLOWS
+		});
 	}
 }
 
-export function submissionError(err){
+export function deployError(err){
 	return {
-		type: ActionType.SUBMISSION_ERROR,
+		type: ActionType.DEPLOY_ERROR,
 		err,
 	}
 }
 
-export function submissionResponse(data){
+export function deployResponse(data){
 	return {
-		type: ActionType.SUBMISSION_RESPONSE,
+		type: ActionType.DEPLOY_SUCCESS,
 		data,
 	}
 }
@@ -67,16 +70,14 @@ export function deploy(){
 	
 	return function (dispatch, getState) {
 		
-		dispatch(postFlows())
+		dispatch(deployFlows())
 
 		const channelId = getState().publisher.app.id;
-		
+	
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
 			
-			const modifier = node.type === "app" ? {appId: getState().publisher.app.id} : {};
+			const modifier = node.type === "app" ? {appId: channelId} : {}; //inject the appID
 			const n = Object.assign({}, convertNode(node, getState().ports.links), modifier);
-			console.log("n is ");
-			console.log(n);
 			return n;
 		});
 		
@@ -94,9 +95,9 @@ export function deploy(){
   			.end(function(err, res){
   				if (err){
   					console.log(err);
-  					dispatch(submissionError(err));
+  					dispatch(deployError(err));
   				}else{
-          			dispatch(submissionResponse(res.body));
+          			dispatch(deployResponse(res.body));
   	 			}
   	 		});		
 	}
