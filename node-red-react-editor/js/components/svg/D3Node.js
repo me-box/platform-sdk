@@ -10,19 +10,6 @@ import Label from './Label';
 import Status from './Status'; 
 
 
-/*
-return <g {...gprops}>
-                    <Button d={d}/>
-                    {mainrect}
-                    <Label d={d}/>
-                    <Badge d={d}/>
-
-                    <Icon d={d}/>
-                    <Inputs d={d}/>
-                    <Outputs d={d}/>
-                    <Status d={d}/>
-                </g> */
-
 class D3Node extends Component {
 	
 	constructor(props){
@@ -36,9 +23,6 @@ class D3Node extends Component {
 		this._nodeMouseLeave = this.props.nodeMouseLeave.bind(this);
 	}
 
-    //shouldComponentUpdate(nextProps, nextState){
-    //    return true;//this.props.x != nextProps.x && this.props.y != nextProps.y;
-   //}
 
     render(){
     
@@ -56,11 +40,11 @@ class D3Node extends Component {
         const mainrectprops = {
             fill:  d._def.color,
             width: d.w,
-            height: d.h,
-           onMouseDown: this._nodeMouseDown.bind(this,d),
-
+        	height: d.h,
+           	onMouseDown: this._nodeMouseDown.bind(this,d),
         };
 
+		
         const mainrect =  <rect className={mainrectclass} {...mainrectprops}></rect>
         let gprops = {
             id: this.props.id,
@@ -78,13 +62,24 @@ class D3Node extends Component {
                 textAnchor: 'middle',
         }
         
+        let noselect = {
+		  WebkitTouchCallout: 'none',
+		  WebkitUserSelect: 'none',   
+		  KhtmlUserSelect: 'none',   
+		  MozUserSelect: 'none',   
+		  MsUserSelect: 'none',       
+		  userSelect: 'none',                  
+		}
+        
         let icontxt = d._def.unicode || '\uf040'
         
+        //explictly put outputs in props so react knows to re-render if num outputs changes
+        
         return <g {...gprops}>
-                  {mainrect}
-                    <text {...textprops}>{icontxt}</text>
+                  	{mainrect}
+                    <text style={noselect} {...textprops}>{icontxt}</text>
                     <Inputs d={d}/>
-                    <Outputs d={d}/>
+                    {d._def.outputs && <Outputs d={d} outputs={d.outputs}/>}
                 </g>
         
     }

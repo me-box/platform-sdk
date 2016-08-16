@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {NODE_WIDTH, NODE_HEIGHT, LINE_CURVE_SCALE} from '../../constants/ViewConstants';
+import {NODE_WIDTH, NODE_HEIGHT, LINE_CURVE_SCALE, OUTPUT_GAP} from '../../constants/ViewConstants';
 
 
 export default class Wire extends Component {
@@ -12,7 +12,7 @@ export default class Wire extends Component {
     _path(){
         const numOutputs = 0;
         const sourcePort = 0;
-        const portY = -((numOutputs-1)/2)*13 +13*sourcePort;
+        const portY = -((numOutputs-1)/2)*OUTPUT_GAP +OUTPUT_GAP*sourcePort;
         const sc = 1;
         const dy = this.props.target.y - (this.props.source.y + portY);
         const dx = this.props.target.x - (this.props.source.x + sc * NODE_WIDTH/2);

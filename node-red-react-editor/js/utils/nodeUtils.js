@@ -78,6 +78,8 @@ export function convertNode(n, links, exportCreds) {
             }
         }
     }
- 
+   	console.log("node is now");
+   	console.log(node);
+   	
     return node;
 }

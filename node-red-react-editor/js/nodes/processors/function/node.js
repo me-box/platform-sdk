@@ -40,7 +40,7 @@ class Node extends React.Component {
 					     ],
 					     
 				onSelect: (event)=>{
-					this.props.updateNode("outputs", event.target.value);
+					this.props.updateNode("outputs", parseInt(event.target.value));
 				},
 				style: {width: '100%'},
 				value: this.props.values.outputs || this.props.selected.outputs || "",

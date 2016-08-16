@@ -19,21 +19,14 @@ class Outputs extends Component {
 
   render() {
               
-    const {drawingPort, activeLink, d} = this.props;
+    const {output, activeLink, d, outputs} = this.props;
 
-    if (!d._def.outputs){
-      return null;
-    }
-    
-    const numOutputs = d.outputs || 1;
+   
+    const numOutputs = outputs || 1;
     const y = (d.h/2)-((numOutputs-1)/2)*13;
     const x = d.w;
-    let wire;
-
-    if (drawingPort && drawingPort.id === d.id){
-      wire =  <Wire {...activeLink}/>
-    }
-    const outputs = range(numOutputs).map((port, i)=>{
+    
+    const ports = range(numOutputs).map((port, i)=>{
       const gprops = {
         key: `${d.id}${i}`,
         transform: `translate(${x}, ${(y+13*i)})`,
@@ -53,22 +46,29 @@ class Outputs extends Component {
         onMouseOut: this.portMouseOut.bind(this,d, 0, i),
       }
 
-
+	  const selected = (output && output.node.id === d.id && output.sourcePort == i);
+	console.log(output);
+	  console.log("selected is ");
+	  console.log(selected);
+	  
+	  //console.log(`checking drawing port id ${output.node.id} against d.id ${d.id} and portIndex ${output.portIndex} against ${i} : ${selected}`); 
+      	
+      
       return  <g className="port_output" {...gprops}>
                 <circle className="port" {...portprops}></circle>
-               {wire}
+                {selected && <Wire {...activeLink}/>}
               </g>
     })
 
 
-    return <g>{outputs}</g>
+    return <g>{ports}</g>
   }
 }
 
 function select(state) {
   return {
     activeLink: state.ports.activeLink,
-    drawingPort: state.ports.drawingPort,
+    output: state.ports.output,
     dirty: state.nodes.selected,  //force this to redraw when an output dialogue has been ok'd
   };
 }

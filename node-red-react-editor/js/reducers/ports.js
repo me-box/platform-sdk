@@ -1,7 +1,7 @@
 import { RECEIVE_FLOWS, DELETE_NODE, DELETE_LINK, MOUSE_UP, PORT_MOUSE_DOWN, PORT_MOUSE_OVER, PORT_MOUSE_OUT, MOUSE_MOVE, LINK_SELECTED, LINK_DESELECTED } from '../constants/ActionTypes';
 import {NODE_WIDTH, NODE_HEIGHT, OUTPUT_WIDTH} from '../constants/ViewConstants';
 
-export default function ports(state = {drawingPort:null, selected: null, activeLink:{source:{x:0,y:0}, target:{x:0,y:0}}, links:[], offset:{x:0, y:0}}, action) {
+export default function ports(state = {output:null, selected: null, activeLink:{source:{x:0,y:0}, target:{x:0,y:0}}, links:[], offset:{x:0, y:0}}, action) {
 
 	switch (action.type) {
 
@@ -43,35 +43,40 @@ export default function ports(state = {drawingPort:null, selected: null, activeL
 
 		case PORT_MOUSE_OVER:
 			
-			if (state.drawingPort && (state.drawingPort.id != action.node.id) && action.portIndex == 0){
+			if (state.output && (state.output.node.id != action.node.id) && action.portIndex == 0){
 				return Object.assign({}, state, {
             		links: [  
             					...state.links,
                             	{
-                            		sourcePort: action.portIndex,
-                            		source: state.drawingPort,
+                            		//portIndex: state.output.portIndex,
+                            		sourcePort: state.output.sourcePort,
+                            		source: state.output.node,
                             	 	target: action.node,
                             	},
                            ],
-                    drawingPort: null,
+                    output: null,
         		})
 			}
 			return state;
 
 		case PORT_MOUSE_DOWN:
 	    	return Object.assign({}, state, {
-	    		drawingPort: action.node,
+	    		output: {
+	    				node: action.node,
+	    				sourcePort: action.portIndex,
+	    				portType: action.portType,
+	    		},
 	    		offset: {x: action.node.x+(action.node.w/2), y: action.node.y},
 	    		
 	    	})
 
 	    case MOUSE_UP:
 	    	return Object.assign({}, state, {
-	    		drawingPort: null
+	    		output: null
 	    	})
 
 	    case MOUSE_MOVE:
-	    	if (state.drawingPort){
+	    	if (state.output){
 		    	return Object.assign({}, state, {
 		    		activeLink: {
 		    						//need a soruce port!

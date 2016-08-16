@@ -65,6 +65,7 @@ class Chart extends Component {
     		target: link.target,
     		onClick: this.linkSelected.bind(this, link),
     		selected: selected,
+    		sourcePort: link.sourcePort,
     	}
     	return <Link{...linkprops} />
     })

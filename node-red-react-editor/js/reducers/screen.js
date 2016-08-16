@@ -13,7 +13,7 @@ export default function screen(state = {dimensions:_initialDimensions()}, action
 
   	case  WINDOW_RESIZED:
 	    return Object.assign({}, state, {
-        	dimensions: {w:action.w, height: action.h}
+        	dimensions: {w:action.w, h: action.h}
       })
       
 	  default:

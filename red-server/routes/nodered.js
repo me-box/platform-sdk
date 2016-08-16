@@ -5,17 +5,25 @@ import docker from '../utils/docker.js';
 
 const router = express.Router();
 
-const _postFlows = function(port, data, res){
+const _postFlows = function(port, data, req, res){
 	console.log(`connecting to localhost:${port}/flows`);
 	console.log("posting");
 	console.log(data);
 	
+	//add in channelIDs here
+	const flows = data.map((node)=>{		
+			const modifier = node.type === "app" ? {appId: req.user.username} : {}; //inject the appID
+			return Object.assign({}, node, modifier);
+	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	port = 1880;
 	
+	console.log("and modified flows is");
+	console.log(flows);
+	
 	request
    			.post(`localhost:${port}/flows`)
-   			.send(data)
+   			.send(flows)
    			.set('Accept', 'application/json')
    			.type('json')
    			.end((err, result)=>{
@@ -43,13 +51,13 @@ const _waitForStart = function(container){
 }
 
 
-const _startContainer = function(container, flows, res){
+const _startContainer = function(container, flows, req, res){
 	_waitForStart(container).then(function(){
 		container.inspect(function (err, cdata) {
 			console.log("starting container!");
 			console.log(cdata);
 			let port = cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort'];
-			_postFlows(port, flows, res);
+			_postFlows(port, flows, req, res);
 		});
 	});
 }
@@ -80,7 +88,7 @@ router.post('/flows', function(req, res){
 							console.log("error!");
 							console.log(err);
 						}else{
-							_startContainer(container, flows, res);
+							_startContainer(container, flows, req, res);
 						}
 					});
 				}
@@ -95,13 +103,13 @@ router.post('/flows', function(req, res){
 					if (err){
 						console.log(err);
 					}else{
-						_startContainer(container, flows, res);
+						_startContainer(container, flows, req, res);
 					}		
 				});
 			}else{
 				//post flows to already running container
 				let port = c.Ports[0]['PublicPort'];
-				_postFlows(port, flows, res);
+				_postFlows(port, flows, req, res);
 			}
 		}
 	});
