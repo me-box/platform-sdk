@@ -24,6 +24,7 @@ export function dropNode(store, reducer, nt, def, x, y){
   	
   return function(dispatch, getState){
   	
+  	
   	if ((x + MOUSE_X_OFFSET) > 0){
 		let _def = Object.assign({},def);
 	
@@ -43,6 +44,8 @@ export function dropNode(store, reducer, nt, def, x, y){
 			y: y + MOUSE_Y_OFFSET,
 		}
 		
+		console.log("node is");
+		console.log(node);
 		//so old nodes that are loaded won't necessarily have the new defaults!
 		for (var d in node._def.defaults) {
 		  if (node._def.defaults.hasOwnProperty(d)) {
@@ -55,7 +58,6 @@ export function dropNode(store, reducer, nt, def, x, y){
 		//register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
 		//this means that instances of the same node can trasparently make use of the same action constants without a clash!.
 		if (reducer){
-	
 			register(store, node.id, scopeify(node.id, reducer));
 		}
 		dispatch(

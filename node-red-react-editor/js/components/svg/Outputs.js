@@ -18,11 +18,14 @@ class Outputs extends Component {
   }
 
   render() {
-              
+	              
     const {output, activeLink, d, outputs} = this.props;
-
-   
-    const numOutputs = outputs || 1;
+	
+	if (!outputs){
+		return null;
+	}
+	
+    const numOutputs = outputs || 0;
     const y = (d.h/2)-((numOutputs-1)/2)*13;
     const x = d.w;
     
@@ -47,10 +50,7 @@ class Outputs extends Component {
       }
 
 	  const selected = (output && output.node.id === d.id && output.sourcePort == i);
-	console.log(output);
-	  console.log("selected is ");
-	  console.log(selected);
-	  
+	
 	  //console.log(`checking drawing port id ${output.node.id} against d.id ${d.id} and portIndex ${output.portIndex} against ${i} : ${selected}`); 
       	
       

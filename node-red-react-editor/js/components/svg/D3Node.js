@@ -29,7 +29,7 @@ class D3Node extends Component {
 
         const {d,selected} = this.props;
         
-        
+       
         const mainrectclass= className({
             node: true,
             unknown: d.type == "unknown",
@@ -79,7 +79,7 @@ class D3Node extends Component {
                   	{mainrect}
                     <text style={noselect} {...textprops}>{icontxt}</text>
                     <Inputs d={d}/>
-                    {d._def.outputs && <Outputs d={d} outputs={d.outputs}/>}
+                    <Outputs d={d} outputs={d.outputs}/>
                 </g>
         
     }
