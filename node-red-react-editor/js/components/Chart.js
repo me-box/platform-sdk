@@ -28,8 +28,10 @@ class Chart extends Component {
   constructor(props){
   	super(props);
   	this._onMouseMove = this._onMouseMove.bind(this);
+  	this._onScroll = this._onScroll.bind(this);
   	this.mouseMove = bindActionCreators(MouseActions.mouseMove, this.props.dispatch);
   	this.mouseUp = bindActionCreators(MouseActions.mouseUp, this.props.dispatch);
+  	this.scroll = bindActionCreators(MouseActions.scroll, this.props.dispatch);
   	this.linkSelected = bindActionCreators(linkSelected, this.props.dispatch);
   }
 
@@ -75,7 +77,7 @@ class Chart extends Component {
     	onMouseUp: this.mouseUp,
     }
 
-    return <div id="chart"  style={chartstyle}>
+    return <div id="chart"  style={chartstyle} onScroll={this._onScroll}>
     			<div {...chartprops} width={w} height={h}>
     			<svg id="svgchart" width={w} height={h}>
     				{connectors}
@@ -85,6 +87,11 @@ class Chart extends Component {
     	   </div>
     
   }
+  
+  _onScroll(e){
+  	this.scroll(e.target.scrollTop);
+  }
+  
 
   _onMouseMove(e){
     const {clientX, clientY} = e;

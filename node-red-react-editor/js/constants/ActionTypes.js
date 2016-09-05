@@ -11,6 +11,7 @@ export const WINDOW_RESIZED = 'WINDOW_RESIZED';
 export const TEST_ACTION = 'TEST_ACTION';
 export const MOUSE_MOVE = 'MOUSE_MOVE';
 export const MOUSE_UP = 'MOUSE_UP';
+export const MOUSE_SCROLL = 'MOUSE_SCROLL';
 
 export const DELETE_NODE = 'DELETE_NODE';
 export const DELETE_LINK = 'DELETE_LINK';
