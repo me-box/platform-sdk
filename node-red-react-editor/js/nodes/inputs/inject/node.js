@@ -252,14 +252,14 @@ class Node extends React.Component {
        }
 }
 
-export default composeNode(Node, 'timer',{
+export default composeNode(Node, 'inject',{
 
         category: 'input',
 
         color:"#d40000",
 
         defaults: {
-            name: {value:"timer"},
+            name: {value:"inject"},
             topic: {value:""},
             payload: {value:"", validate:function(v) {
                 return true

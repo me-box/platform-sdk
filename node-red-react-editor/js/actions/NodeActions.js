@@ -44,8 +44,7 @@ export function dropNode(store, reducer, nt, def, x, y){
 			y: y + MOUSE_Y_OFFSET,
 		}
 		
-		console.log("node is");
-		console.log(node);
+		
 		//so old nodes that are loaded won't necessarily have the new defaults!
 		for (var d in node._def.defaults) {
 		  if (node._def.defaults.hasOwnProperty(d)) {
