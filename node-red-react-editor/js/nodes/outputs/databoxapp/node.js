@@ -1,33 +1,104 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
 import Textfield from '../../../components/form/Textfield';
+import LayoutManager from './LayoutManager';
+import {reducer} from './reducer';
+import { bindActionCreators } from 'redux';
+import * as LayoutActions from './actions';
+import { bindNodeIds } from '../../../utils/utils';
 
 class Node extends React.Component {
-
+		
+	  constructor(props){
+	  	 super(props);
+	  	 const id = props.selected.id; 
+	  	 Object.assign(  this, 
+              ...bindActionCreators(bindNodeIds(LayoutActions, id), props.dispatch), 
+         );
+	  	 this._onMouseMove = this._onMouseMove.bind(this);
+	  }
+	  
+	  componentDidMount(){
+			this.initLayout(this.props.inputs);
+	  }
       
       render() {
+		const NAMEROWHEIGHT = 40;
+		const WIDTH = 692;
+		const HEIGHT = 500;
          
-         const {selected, inputs, values, updateNode} = this.props;
-           
-         const nameprops = {
+        //local is the stuff in this node's reducer
+		const {local, selected, inputs, values, updateNode} = this.props;
+    
+        const nameprops = {
 
-              name: "name",
+              id: "name",
              
               value: values.name || selected.name || "",
-              
-              icon: "fa fa-tasks",
              
               onChange: (property, event)=>{
                   updateNode(property, event.target.value);
               },
              
               selected: selected,
-          }
+        }
+          
+        const fixedheight = {
+          	height: HEIGHT - NAMEROWHEIGHT,
+          	//overflow: 'hidden',
+        }
+          
+        const layoutprops = {
+          	w: WIDTH,
+          	h: HEIGHT-NAMEROWHEIGHT,
+          	mouseDown: this.mouseDown,
+          	local: local, 
+        }
+          
+        const mouseprops = {
+       		onMouseMove: this._onMouseMove,
+       		onMouseUp: this.mouseUp,
+       		onDragEnd: this.onDragEnd,
+    	}
 
-          return <div className="form-row">
-                    <Textfield {...nameprops}/>
-                </div>  
+    	const mousestyle = {
+    		position: 'absolute',
+    		top: NAMEROWHEIGHT,
+       		width: WIDTH,
+       		height: HEIGHT - NAMEROWHEIGHT,
+       		overflow: 'hidden',
+    	}
+        
+        return 	<div className="flexcolumn">
+          				<div>
+          					<div className="flexrow">
+								<div className="title">	
+									<div className="centered">app name</div>
+								</div>
+					
+								<div>
+									<div className="centered">
+										<Textfield {...nameprops}/>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div className="flexrow" style={fixedheight}>
+								<div>
+									<div {...mouseprops} style={mousestyle}>
+										<LayoutManager {...layoutprops}/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>						 
        }
+       
+		_onMouseMove(e){
+    		const {clientX, clientY} = e;
+    		this.mouseMove(clientX,clientY);
+  		}
 }
 
 export default composeNode(Node, 'app', 
@@ -37,6 +108,7 @@ export default composeNode(Node, 'app',
                                 defaults: {             
                                     name: {value:""},
                                     appId: {value:"webapp"},
+                                    layout: {value: [[]]},
                                 },
                                 inputs:1,               
                                 outputs:0,             
@@ -52,5 +124,5 @@ export default composeNode(Node, 'app',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 }
-                            }
+                            }, reducer
                           );

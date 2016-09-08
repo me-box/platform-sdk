@@ -78,12 +78,18 @@ export function deploy(){
 			
 			const modifier = node.type === "app" ? {appId: channelId} : {}; //inject the appID
 			const n = Object.assign({}, convertNode(node, getState().ports.links), modifier);
+			if (n.type==="app"){
+				console.log("app to deploy is");
+				console.log(n);
+			}
 			return n;
 		});
 		
 		
 		const tabs = getState().tabs.tabs;
 		console.log(`DEPLOYING TO http://${config.root}/nodered/flows`);
+		
+		
 	    request
   			.post(`http://${config.root}/nodered/flows`)
   			.send([
