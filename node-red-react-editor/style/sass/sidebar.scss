@@ -19,7 +19,7 @@
     top: 0px;
     right: 0px;
     bottom: 0px;
-    width: 423px;
+    width: 300px;
     background: #fff;
     box-sizing: border-box;
     @include component-border;
@@ -43,7 +43,7 @@
 #sidebar-separator {
     position: absolute;
     top: 5px;
-    right: 423px;
+    right: 300px;
     bottom:10px;
     width: 7px;
     background: url(../images/grip.png) no-repeat 50% 50%;

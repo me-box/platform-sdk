@@ -1,9 +1,10 @@
 import { MOUSE_UP, MOUSE_DOWN, MOUSE_MOVE, INIT} from './ActionTypes';
+import {LAYOUT_HEIGHT} from './ViewConstants';
 
 function _initialDimensions(){
   return {
     w : 700,
-    h : 500, 
+    h : LAYOUT_HEIGHT, 
   }
 }
 

@@ -89,7 +89,7 @@ class RepoManager extends Component {
 						
 						<div> 
 							<div className="centered">
-								{repo.name}
+								{repo.name.replace("databox.", "")}
 							</div>
 						</div>
 						<div className="submit">

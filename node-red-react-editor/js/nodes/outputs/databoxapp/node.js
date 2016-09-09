@@ -6,7 +6,34 @@ import {reducer} from './reducer';
 import { bindActionCreators } from 'redux';
 import * as LayoutActions from './actions';
 import { bindNodeIds } from '../../../utils/utils';
+import {LAYOUT_HEIGHT} from './ViewConstants';
 
+function _haveinput(id, inputs){
+	for (let i = 0; i < inputs.length; i++){
+		if (inputs[i].id === id){
+			return true;
+		}
+	}
+	return false;
+}
+
+function _havelayout(id, layout){
+	for (let i = 0; i < layout.length; i++){
+		for (let j = 0; j < layout[i].length; j++){
+			if (layout[i][j] === id)
+				return true;
+		}
+	}
+	return false;
+}
+
+function _findnewinputs(inputs, layout){
+	return inputs.filter((input)=>{
+		return !_havelayout(input.id, layout);
+	}).map((input)=>{
+		return input.id;
+	});
+}
 
 function _findnameforbox(id, inputs){
 	
@@ -21,11 +48,39 @@ function _findnameforbox(id, inputs){
 	return id;
 }
 
+/* 
+ * pull in current layout and add any new inputs / remove old inputs.
+ */
+ 
 function _convertlayout(layout, inputs){
 	if (!layout){
 		return null;
 	}
-	return layout.map((row)=>{
+	//remove any items in the layout that are not inputs!
+	
+	const removed = layout.reduce((acc, row)=>{
+		const newrow = row.reduce((acc, box)=>{
+			if (_haveinput(box, inputs)){
+				acc.push(box);
+			}
+			return acc;
+		},[]);	
+		if (newrow.length > 0){
+			acc.push(newrow);
+		}
+		return acc;
+	},[]);
+	
+	const newinputs = _findnewinputs(inputs, removed);
+
+	
+	//just add them to a new row.
+	if (newinputs.length > 0){
+		removed.push(newinputs);
+	}
+	
+	
+	return removed.map((row)=>{
 	  	return row.map((box)=>{
 	  		return {name: _findnameforbox(box, inputs), id: box}
 	  	});
@@ -55,7 +110,7 @@ class Node extends React.Component {
       render() {
 		const NAMEROWHEIGHT = 40;
 		const WIDTH = 692;
-		const HEIGHT = 500;
+		const HEIGHT = LAYOUT_HEIGHT;
          
         //local is the stuff in this node's reducer
 		const {local, selected, inputs, values, updateNode} = this.props;
