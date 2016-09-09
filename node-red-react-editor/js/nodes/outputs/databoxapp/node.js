@@ -7,6 +7,35 @@ import { bindActionCreators } from 'redux';
 import * as LayoutActions from './actions';
 import { bindNodeIds } from '../../../utils/utils';
 
+
+function _findnameforbox(id, inputs){
+	
+	if (!inputs)
+		return id;
+	
+	for (let i = 0; i < inputs.length; i++){
+		if (inputs[i].id === id){
+			return inputs[i].name && inputs[i].name.trim() != "" ? inputs[i].name : id; 		
+		}
+	}
+	return id;
+}
+
+function _convertlayout(layout, inputs){
+	if (!layout){
+		return null;
+	}
+	return layout.map((row)=>{
+	  	return row.map((box)=>{
+	  		return {name: _findnameforbox(box, inputs), id: box}
+	  	});
+	});
+}
+
+function _convertinputs(inputs){
+	 return [inputs.map((input)=>{return {id: input.id, name: input.name && input.name.trim() != "" ? input.name: input.id}})];
+}
+
 class Node extends React.Component {
 		
 	  constructor(props){
@@ -19,7 +48,8 @@ class Node extends React.Component {
 	  }
 	  
 	  componentDidMount(){
-			this.initLayout(this.props.inputs);
+	  	const boxes = _convertlayout(this.props.selected.layout, this.props.inputs) || _convertinputs(this.props.inputs);
+		this.initLayout(boxes);
 	  }
       
       render() {

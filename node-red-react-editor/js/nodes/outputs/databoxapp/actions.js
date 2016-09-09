@@ -12,12 +12,12 @@ export function updateLayoutProperty(dispatch, getState, id){
     	dispatch(updateNode("layout", layout));
 }
  
-export function initLayout(id, inputs){
+export function initLayout(id, boxes){
 	 return function (dispatch, getState) {
 		 dispatch({
 			type: INIT,
 			id,
-			inputs: inputs.map((input)=>{return {id: input.id, name: input.name && input.name.trim() != "" ? input.name: input.id}}),
+			boxes,
 		})
 		
 		updateLayoutProperty(dispatch, getState, id);

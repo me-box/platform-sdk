@@ -120,7 +120,7 @@ export function reducer(state = {
 	switch (action.type) {
 		
 		case INIT:
-			return Object.assign({}, state, {boxes: [action.inputs||[]]});
+			return Object.assign({}, state, {boxes: action.boxes||[[]]});
 			
         case MOUSE_DOWN:
 
