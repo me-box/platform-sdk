@@ -15,6 +15,7 @@ class Textfield extends React.Component {
 		const props = {
             value: value,
             onChange: onChange.bind(this, id),
+            placeholder: this.props.placeholder || "",
         }
         
         if (name && icon){

@@ -2,13 +2,15 @@ import React from 'react';
 import composeNode from '../../../utils/composeNode';
 import {reducer} from './reducer';
 import cx from 'classnames';
-
+import Textfield from '../../../components/form/Textfield';
 class Node extends React.Component {
 
 	   
        render() {
         
           const {selected, inputs, values, updateNode} = this.props;
+        
+          const chart = values.chart || selected.chart || "bar";
           
           const leftborder = {
           	borderLeft: "1px solid #b6b6b6",
@@ -40,7 +42,7 @@ class Node extends React.Component {
           			selected: xtype ? xtype.source === name && xtype.type===key : false,
           		});
           		
-          		return 	<div key={key} className="centered">
+          		return 	<div key={key}>
           					<div onClick={()=>{updateNode("xtype", {source:input.type, type:key})}} className={className}>{key}</div>
           				</div>
           	})
@@ -52,7 +54,7 @@ class Node extends React.Component {
           			button: true,
           			selected: ytype ? ytype.source === name && ytype.type===key : false,
           		});
-          		return 	<div key={key} className="centered">
+          		return 	<div key={key}>
           					<div  onClick={()=>{updateNode("ytype", {source:input.type, type:key})}} className={className}>{key}</div>
           				</div>	
           	})
@@ -65,24 +67,25 @@ class Node extends React.Component {
 									{name}
 								</div>
 							</div>
-							<div >
+							<div>
 								<div className="flexrow" style={wrap}>
 									{xoptions}
 								</div>
 							</div>
-							<div style={leftborder}>
+							{chart === "bar" && <div style={leftborder}>
 								<div className="flexrow" style={wrap}>
 									{yoptions}
 								</div>
-							</div>
+							</div>}
 						 </div>
 					</div>
 					
           });   
           
+         
           
-          const charts = ["line", "bar", "gauge"].map((type)=>{
-          	const chart = values.chart || selected.chart || "";
+          const charts = ["bar", "gauge"].map((type)=>{
+          	
           	
           	const className = cx({
           		button: true,
@@ -94,13 +97,215 @@ class Node extends React.Component {
           			 	</div>
           			</div>
           });
+          
+          const xlabelprops = {	
+								value: 	this.props.values.xlabel || this.props.selected.xlabel || "",
+				 				id: "xlabel",
+				 				placeholder: "y label",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}	
+		
+		  const ylabelprops = {	
+								value: 	this.props.values.ylabel || this.props.selected.ylabel || "",
+				 				id: "ylabel",
+				 				placeholder: "y label",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}	
+							
+		  const yaxismin = {	
+								value: 	this.props.values.yaxismin || this.props.selected.yaxismin || "",
+				 				id: "yaxismin",
+				 				placeholder: "(leave blank for auto)",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}	
+		  
+		  const yaxismax = {	
+								value: 	this.props.values.yaxismax || this.props.selected.yaxismax || "",
+				 				id: "yaxismax",
+				 				placeholder: "(leave blank for auto)",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}	
+		   const maxreadings = {	
+								value: 	this.props.values.maxreadings || this.props.selected.maxreadings || 10,
+				 				id: "maxreadings",
+				 				
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}
+			
+			 const ticks = {	
+								value: 	this.props.values.ticks || this.props.selected.ticks || 5,
+				 				id: "ticks",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}
+																						
+          const chartoptions =  <div className="flexcolumn">
+          							
+          							<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													xaxis label
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+													<Textfield {...xlabelprops}/>	 
+												</div>
+											</div>
+											<div className="title">
+												<div className="centered">
+													yaxis label
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+													<Textfield {...ylabelprops}/>	 
+												</div>
+											</div>
+										</div>
+									</div>
+									<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													y axis min
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												<Textfield {...yaxismin}/>	 
+												</div>
+											</div>
+											<div className="title">
+												<div className="centered">
+													y axis max
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												<Textfield {...yaxismax}/>	 
+												</div>
+											</div>
+										</div>
+									</div>
+									<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													maxreadings
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												<Textfield {...maxreadings}/>	
+												</div>
+											</div>
+											<div className="title">
+												<div className="centered">
+													ticks
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												 <Textfield {...ticks}/>	
+												</div>
+											</div>
+										</div>
+									</div>
+          					    </div>
+          
+          
+          
+          const nameprops = {	
+								value: 	this.props.values.name || this.props.selected.name || "",
+				 				id: "name",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}
+		
+		  const titleprops = {	
+								value: 	this.props.values.title || this.props.selected.title || "",
+				 				id: "title",
+								onChange:(property, event)=>{
+                  					 this.props.updateNode(property, event.target.value);
+              					}
+							}				
+						  
           return  <div className="flexcolumn">
           			<div>
           				<div className="flexrow">
-							{charts}
-						</div>
+          					<div className="title">
+          						<div className="centered">
+          							name
+          						</div>
+          					</div>
+          					<div>
+          						<div className="centered">
+          							<Textfield {...nameprops}/>	 
+          						</div>
+          					</div>
+          				</div>
+          			</div>
+          			
+          			<div>
+          				<div className="centered">
+          					<h4> chart options </h4>
+          				</div>
+          			</div>
+          			
+          			
+          			<div>
+          				<div className="flexrow">
+          					<div className="title">
+          						<div className="centered">
+          							chart title
+          						</div>
+          					</div>
+          					<div>
+          						<div className="centered">
+          							<Textfield {...titleprops}/>	 
+          						</div>
+          					</div>
+          				</div>
           			</div>
           			<div>
+          				<div className="flexrow">
+          					<div className="title">
+          						<div className="centered">
+          							type
+          						</div>
+          					</div>
+          					<div>
+          						
+								{charts}
+								
+							</div>
+						</div>
+          			</div>
+          			
+          		  	{chart==="bar" && chartoptions}
+          		  	
+          		  	
+          		  	<div>
+          				<div className="centered">
+          					<h4> chart sources </h4>
+          				</div>
+          			</div>
+          			
+          		  	<div>
           				<div className="flexrow">
           					<div className="title">
           						<div className="centered">
@@ -112,14 +317,15 @@ class Node extends React.Component {
           						x values
           						</div>
           					</div>
-          					<div className="header">
+          					{ chart === "bar" && <div className="header">
           						<div className="centered">
           						y values
           						</div>
-          					</div>
+          					</div>}
           				</div>
           			</div>
           		  	{grid}
+          		  	
           		  </div>
           
        }
@@ -134,7 +340,7 @@ export default composeNode(Node, 'chartify',
                                     name: {value:""}, 
                                     xtype: {},
                                     ytype: {}, 
-                                    chart: "bar", 
+                                    chart: {value:"bar"}, 
                                 },
                                 inputs:1,               
                                 outputs:1,             
