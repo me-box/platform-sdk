@@ -46,9 +46,11 @@ class Sidebar extends React.Component {
 		}
 		
 		return( 
-			 <div id="sidebar" style={{display:'block'}}>
+			 <div id="sidebar" style={{display:'block', height: this.props.h}}>
 			 	<div onClick={this.closeSideBar} style={close}> <i className="fa fa-times fa-fw"></i> </div>
-        		{content}
+				<div id="sidebar-content">
+					{content}
+				</div>
         		<div id="sidebar-footer"></div>
     		</div>
 		);

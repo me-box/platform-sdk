@@ -85,6 +85,7 @@ class Editor extends Component {
 	  publisher = <Publisher />
 	}
 	
+	
    	return (<div onKeyDown={this._keyPress}> 
 				<Toolbar />
 	    		<div id="main-container" className="sidebar-closed">
@@ -96,7 +97,7 @@ class Editor extends Component {
 	    				
 	    				{publisher}
 	    			</DragDropContainer>
-            		<Sidebar />
+            		<Sidebar h={dimensions.h-TOOLBAR_HEIGHT}/>
             		<NetworkStatus {...networkstatusprops}/>
 	    		</div>
 	    	</div>);

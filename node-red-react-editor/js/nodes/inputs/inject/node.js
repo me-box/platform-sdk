@@ -16,6 +16,35 @@ import {REPEAT_OPTIONS, INTERVAL_OPTIONS,TIMEINTERVAL_OPTIONS, TIMEUNIT_OPTIONS,
 import './style.css';
 
 
+
+  /*<div>
+                      <div className="form-row">
+                          <label>
+                              <i className="fa fa-envelope"></i> <span data-i18n="node-red:common.label.payload">Payload</span>
+                          </label>
+                          <Payload {...payloadprops}/>
+                      </div>
+                  
+                      <div className="form-row">
+                          <Textfield {...topicprops}/>
+                      </div>
+
+                      <div className="form-row">
+                          <label><i className="fa fa-repeat"></i> <span data-i18n="inject.label.repeat">repeat</span></label>
+                          <Select {...repeatprops}/>
+                      </div>
+
+                      {options}
+
+                      <div className="form-row">
+                        <Textfield {...nameprops}/>
+                      </div>
+
+                      <div className="form-tips" data-i18n="[html]inject.tip">
+                          <strong>Note:</strong> "interval between times" and "at a specific time" will use cron. See info box for details.
+                      </div>
+                  </div>*/
+                  
 class Node extends React.Component {
 
        constructor(props){
@@ -36,9 +65,9 @@ class Node extends React.Component {
         
 
           const nameprops = {
-              name: "name",
+              id: "name",
               value: this.props.values['name'] || this.props.selected['name'] || "",
-              icon: "fa fa-tag",
+              //icon: "fa fa-tag",
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
               },
@@ -46,9 +75,9 @@ class Node extends React.Component {
           }
 
           const topicprops = {
-              name: "topic",
+              id: "topic",
               value: this.props.values['topic'] || this.props.selected['topic'] || "",
-              icon: "fa fa-tasks",
+              //icon: "fa fa-tasks",
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
               },
@@ -145,53 +174,127 @@ class Node extends React.Component {
 
             case "none":
               
-              options = <div className="form-row" id="node-once">
-                          <label>&nbsp;</label>
-                          <input type="checkbox" checked={local.once || false} onChange={this.updateOnce.bind(this)} style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
-                          <label style={{width: '70%'}}>inject once at start?</label>
-                        </div>
+              options = <div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered"></div>
+								</div>
+								<div>
+									<div className="flexcolumn">
+										<div className="flexrow">
+											<div>
+												<div className="centered">
+													inject once at start?
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												 	<input type="checkbox" checked={local.once || false} onChange={this.updateOnce.bind(this)} style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+          					</div>          					
+          				</div>
+              
+
               break;
 
             case "interval":
               
-              options = <div>
-                          <div className="form-row inject-time-row" style={{display:'block'}}>
-                            <span data-i18n="inject.every">every</span>
-                            <Spinner {...intervalspinnerprops} />
-                            <Select  {...unitprops}/>
-                            <br/>
-                          </div> 
-                          <div className="form-row" id="node-once">
-                            <label>&nbsp;</label>
-                            <input type="checkbox" checked={local.once || false} onChange={this.updateOnce.bind(this)} id="node-input-once" style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
-                            <label style={{width: '70%'}}>inject once at start?</label>
-                          </div>
-                        </div>
+              options = <div className="flexrow">
+          					<div className="title">	
+								<div className="centered">options</div>
+							</div>
+							<div>
+								<div className="flexcolumn">	
+									
+									<div>
+          								<div className="centered">
+          									<span>every</span>
+          									<Spinner {...intervalspinnerprops} />
+          									<Select  {...unitprops}/>
+          								</div>
+									</div>
+									
+									<div>
+										<div className="flexrow">
+											<div>
+												<div className="centered">
+													inject once at start?
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												 	<input type="checkbox" checked={local.once || false} onChange={this.updateOnce.bind(this)} style={{display: 'inline-block', width: 'auto', verticalAlign: 'top'}}/>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+          					</div>   
+          					       					
+          				</div>
+              
+              
+              
+              			
                 break;
 
             case "interval-time":
 
-               options =  <div className="form-row inject-time-row">
-                    <span data-i18n="inject.every"></span>
-                    <Select {...timeintervalfrequencyprops} />
-                    <span data-i18n="inject.minutes">minutes</span>
-                    <br/>
-                    <span data-i18n="inject.between">between</span> 
-                    <Select {...timeintervalstartprops} />
-                    <span data-i18n="inject.and">and</span>
-                    <Select {...timeintervalendprops} />
-                    <br/>
-                    <DayGrid {...timeintervaldayprops}/>
-                </div>
+               options =  <div className="flexrow">
+               					<div className="title">	
+									<div className="centered">options</div>
+								</div>
+								<div>
+									<div className="flexcolumn">
+										<div>
+											<div className="centered">
+												<span>every</span>
+												<Select {...timeintervalfrequencyprops} />
+												<span>mins between</span> 
+												<Select {...timeintervalstartprops} />
+												<span>and</span>
+												<Select {...timeintervalendprops} />
+											</div>
+										</div>
+										<div>
+											<div className="form-row inject-time-row" >
+												<DayGrid {...timeintervaldayprops}/>
+											</div>
+										</div>
+									</div>
+								</div>
+               			  </div>
                 break;
 
             case "time":
-                options = <div className="form-row inject-time-row" id="inject-time-row-time">
-                          <span>at</span>
-                          <Spinner {...timespinnerprops} />
-                          <br/>
-                          <DayGrid {...timedayprops}/>
-                      </div>
+                options =   <div>
+								<div className="flexrow">
+									<div className="title">	
+										<div className="centered">at</div>
+									</div>
+									<div>
+										<div className="centered">
+											<Spinner {...timespinnerprops} />
+										</div>
+									</div>
+								</div>
+								<div className="flexrow">
+									<div className="title">	
+										<div className="centered">on</div>
+									</div>
+									<div>									
+										<div className="form-row inject-time-row" >
+											<DayGrid{...timedayprops}/>
+										</div>
+									</div>
+								</div>
+							</div>	
+                				
                   break;
 
               default:
@@ -200,33 +303,87 @@ class Node extends React.Component {
           }
 
 
-          return  <div>
-                      <div className="form-row">
-                          <label>
-                              <i className="fa fa-envelope"></i> <span data-i18n="node-red:common.label.payload">Payload</span>
-                          </label>
-                          <Payload {...payloadprops}/>
-                      </div>
-                  
-                      <div className="form-row">
-                          <Textfield {...topicprops}/>
-                      </div>
-
-                      <div className="form-row">
-                          <label><i className="fa fa-repeat"></i> <span data-i18n="inject.label.repeat">repeat</span></label>
-                          <Select {...repeatprops}/>
-                      </div>
-
-                      {options}
-
-                      <div className="form-row">
-                        <Textfield {...nameprops}/>
-                      </div>
-
-                      <div className="form-tips" data-i18n="[html]inject.tip">
-                          <strong>Note:</strong> "interval between times" and "at a specific time" will use cron. See info box for details.
-                      </div>
-                  </div>
+          return  	<div className="flexcolumn">
+						<div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered">name</div>
+								</div>
+					
+								<div>
+									<div className="centered">
+										<Textfield {...nameprops}/>
+									</div>
+								</div>
+          					</div>
+          				</div>
+          				<div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered">payload</div>
+								</div>
+								<div>
+									<div className="centered">
+										<div>
+											<div className="form-row">
+												<Payload {...payloadprops}/>
+											</div>
+										</div>
+									</div>
+								</div>
+          					</div>
+          				</div>
+          				
+          				<div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered">topic</div>
+								</div>
+					
+								<div>
+									<div className="centered">
+										 <Textfield {...topicprops}/>
+									</div>
+								</div>
+          					</div>
+          				</div>
+          				
+          				<div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered">repeat</div>
+								</div>
+					
+								<div>
+									<div className="centered">
+										<Select {...repeatprops}/>
+									</div>
+								</div>
+          					</div>
+          				</div>
+          				
+          				{options}
+          				
+          				<div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered">note</div>
+								</div>
+								<div>          							
+									<div className="form-tips centered">
+										"interval between times" and "at a specific time" will use cron. See info box for details.
+									</div>
+                      			</div>
+                      		</div>
+          				</div>
+          				
+          			</div>
+          	
+          
+          
+          
+          
+        
        }
 
        _intervalChecked(value){

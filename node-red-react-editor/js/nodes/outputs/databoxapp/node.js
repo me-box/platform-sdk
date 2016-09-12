@@ -94,6 +94,7 @@ function _convertinputs(inputs){
 class Node extends React.Component {
 		
 	  constructor(props){
+	    	
 	  	 super(props);
 	  	 const id = props.selected.id; 
 	  	 Object.assign(  this, 
@@ -193,7 +194,7 @@ export default composeNode(Node, 'app',
                                 defaults: {             
                                     name: {value:""},
                                     appId: {value:"webapp"},
-                                    layout: {value: [[]]},
+                                    layout: {value: null},
                                 },
                                 inputs:1,               
                                 outputs:0,             

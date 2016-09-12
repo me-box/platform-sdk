@@ -27,11 +27,6 @@ class LayoutManager extends Component {
 
   render() {
 	  
-	  //const boxes =  [[{name: "one"}, {name: "two"}, {name: "three"}]];
-	  //const moving = null;
-	  //const {w,h} = this.props;
-	  
-      //const {boxes,moving, w,h} = this.props;
       const {local, w, h} = this.props;
       const {boxes, moving} = local;
       

@@ -12,7 +12,6 @@ class Sidebar extends React.Component {
 		let sidebarstyle = {
 			display: '-webkit-flex',
             display: 'flex',
-            
             WebkitFlexFlow: 'column',
             flexFlow: 'column',
             textAlign: 'center',
@@ -47,12 +46,10 @@ class Sidebar extends React.Component {
         	textAlign: 'center',
         	marginTop: 0,
         	marginBottom: '1.5em',
-
-        }
-       
+		}
 
 		return( 
-			 <div id="sidebar" style={{display:'block'}}>
+			 <div id="sidebar" style={{display:'block', height: this.props.h}}>
         		<ul id="sidebar-tabs"></ul>
         		<div id="sidebar-content" style={sidebarstyle}>
         			<div style={iconstyle}><i className={`fa ${node._def.icon} fa-5x fa-fw`}></i></div>
