@@ -1,23 +1,31 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
 import Textfield from '../../../components/form/Textfield';
+import Cell from '../../../components/Cell';
+import Cells from '../../../components/Cells';
 
 class Node extends React.Component {
 
        render() {
+       
+       	  console.log("RENDEREING");
          const nameprops = {
-              name: "name",
-              values: this.props.values,
-              icon: this.props.icon,
+              id: "name",
+              value: 	this.props.values.name || "",
+			  
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
               },
-              selected: this.props.selected,
           }
 
-          return <div className="form-row">
-             <Textfield {...nameprops}/>
-          </div>
+		  const nameinput = <div className="centered">
+								<Textfield {...nameprops}/>												
+						  	</div>
+          return  <div>
+          			<Cells>	
+          				<Cell title={"name"} content={nameinput}/>
+          			</Cells>
+            	  </div>
           
        }
 }
@@ -28,7 +36,6 @@ export default composeNode(Node, 'bulbs',
                                 color: '#ffcc00',
                                 defaults: {             
                                     name: {value:""},   
-                                    topic: {value:"", required:true}
                                 },
                                 inputs:0,               
                                 outputs:1,             
@@ -42,7 +49,7 @@ export default composeNode(Node, 'bulbs',
                                 icon: "fa-lightbulb-o",
                                 unicode: '\uf0eb',     
                                 label: function() {     
-                                    return this.name||this.topic||"bulbs";
+                                    return this.name||"bulbs";
                                 },
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

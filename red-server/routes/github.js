@@ -66,9 +66,7 @@ const _createRepo = function(name, description, isprivate, accessToken){
 const _addFile = function(options){
 	
 	const {username, repo, filename, message, email, content, accessToken} = options;
-	
-	console.log("adding new file");
-	console.log(options);
+
 	
 	return new Promise((resolve, reject)=>{ 
 	  request
@@ -95,12 +93,12 @@ const _addFile = function(options){
    	})	
 }
 
-const _fetchFile = function(user, repo, filename){
+const _fetchFile = function(username, accessToken, repo, filename){
 	return new Promise((resolve,reject)=>{
 		request
-			.get(`${config.github.API}/repos/${user.username}/${repo}/contents/${filename}`)
+			.get(`${config.github.API}/repos/${username}/${repo}/contents/${filename}`)
 			.set('Accept', 'application/json')
-			.set('Authorization', `token ${user.accessToken}`)
+			.set('Authorization', `token ${accessToken}`)
 			.end((err, data)=>{
 				if (err || !data.ok) {
 					reject(err);
@@ -211,19 +209,21 @@ const _createDockerImage = function(tarfile, name){
 	});
 }
 
+
 //list all apps owned by this user
-router.get('/repos', function(req,res){
-	
+router.get('/repos/:user', function(req,res){
+	console.log("am in here!!");
 	const user = req.user;
+	const username = req.params.user;
 	
 	request
-   		.get(`${config.github.API}/users/${user.username}/repos`)
+   		.get(`${config.github.API}/users/${username}/repos`)
    		.set('Accept', 'application/json')
    		.set('Authorization', `token ${req.user.accessToken}`)
    		.end((err, data)=>{
      		if (err){
      			console.log(err);
-     			res.err(err);
+     			res.status(500).send({error:'could not retrieve repos'});
      		}else{
      			res.send(data.body.map(function(repo){
        				return {
@@ -239,13 +239,45 @@ router.get('/repos', function(req,res){
    		})
 });
 
+//list all apps owned by this user
+router.get('/repos', function(req,res){
+	
+	const user = req.user;
+	
+	request
+   		.get(`${config.github.API}/users/${user.username}/repos`)
+   		.set('Accept', 'application/json')
+   		.set('Authorization', `token ${req.user.accessToken}`)
+   		.end((err, data)=>{
+     		if (err){
+     			console.log(err);
+     			res.status(500).send({error:'could not retrieve repos'});
+     		}else{
+     			res.send(data.body.map(function(repo){
+       				return {
+       							name: repo.name, 
+       							updated: repo.updated_at, 
+       							icon:repo.owner.avatar_url, 
+       							url:repo.url
+       				} 
+       			}).filter(function(repo){
+       				return repo.name.startsWith("databox.");
+       			}));
+       		}
+   		})
+});
+
+
 //load up an app from a repo
 router.get('/flow', function(req,res){
 	
-	const repo = req.query.repo;
 	const user = req.user;
+	const repo = req.query.repo;
+	const username = req.query.username || user.username;
 	
-	return Promise.all([_fetchFile(user, repo, 'flows.json'), _fetchFile(user, repo, 'manifest.json')]).then(function(values) {
+	console.log("fetching for userne " + username);
+	
+	return Promise.all([_fetchFile(username, user.accessToken, repo, 'flows.json'), _fetchFile(username, user.accessToken, repo, 'manifest.json')]).then(function(values) {
 		console.log(values);
         res.send({
         	result: 'success',

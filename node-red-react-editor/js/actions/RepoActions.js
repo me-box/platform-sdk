@@ -4,6 +4,45 @@ import config from '../config';
 import {convertNode, getID} from '../utils/nodeUtils';
 import {networkAccess, networkError, networkSuccess} from './NetworkActions';
 
+
+export function browseNewUser(){
+	return function (dispatch, getState) {
+		
+		const githubuser = getState().repos.browsingname;
+		
+		dispatch(networkAccess(`requesting repo list for user ${githubuser}`));
+		
+		request
+		  .get(`http://${config.root}/github/repos/${githubuser}`)
+		  .set('Accept', 'application/json')
+		  .end(function(err, res){
+			if (err){
+			  console.log(err);
+			  dispatch(networkError(`failed to fetch repo list`));
+			}else{
+			  console.log(res.body);
+			  dispatch(networkSuccess(`successfully received repos`));
+			  dispatch(receivedRepos(res.body));
+			  dispatch(setCurrentUser(githubuser));
+			}
+		 });
+	}		 
+}
+
+export function setCurrentUser(name){
+	return {
+		type: ActionType.REPO_CURRENTUSER_CHANGED,
+		name,
+	}
+}
+
+export function  browsingNameChanged(name){
+	return {
+		type: ActionType.REPO_BROWSINGNAME_CHANGED,
+		name,
+	}
+}
+
 export function nameChanged(name){
 	return {
 		type: ActionType.REPO_NAME_CHANGED,

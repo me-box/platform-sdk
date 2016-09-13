@@ -13,8 +13,8 @@
 			 	{"name":"chartify", "file":"processors/chartify/node"},
 			 	
 			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
-			 	{"name":"datastore", "file":"outputs/datastore/node"},
-			 	{"name":"bulbs", "file":"outputs/bulbs/node"}
+			 	{"name":"datastore", "file":"outputs/datastore/node"}
+			 
 			 	
 			 ]
 }

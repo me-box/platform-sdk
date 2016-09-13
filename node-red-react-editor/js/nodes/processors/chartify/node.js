@@ -4,13 +4,15 @@ import {reducer} from './reducer';
 import cx from 'classnames';
 import Textfield from '../../../components/form/Textfield';
 class Node extends React.Component {
-
 	   
        render() {
         
           const {selected, inputs, values, updateNode} = this.props;
         
-          const chart = values.chart || selected.chart || "bar";
+         console.log("INPUTS ARE");
+         console.log(inputs);
+         
+          const chart = values.chart || "bar";
           
           const leftborder = {
           	borderLeft: "1px solid #b6b6b6",
@@ -35,7 +37,7 @@ class Node extends React.Component {
           	const name = input.type; 
           	
           	const xoptions = Object.keys(input._def.schema).map((key)=>{
-          		const xtype =  values.xtype || selected.xtype;
+          		const xtype =  values.xtype;
           		
           		const className = cx({
           			button: true,
@@ -49,7 +51,7 @@ class Node extends React.Component {
           	
           	const yoptions = Object.keys(input._def.schema).map((key)=>{
           		
-          		const ytype =  values.ytype || selected.ytype;
+          		const ytype =  values.ytype;
           		const className = cx({
           			button: true,
           			selected: ytype ? ytype.source === name && ytype.type===key : false,
@@ -99,7 +101,7 @@ class Node extends React.Component {
           });
           
           const xlabelprops = {	
-								value: 	this.props.values.xlabel || this.props.selected.xlabel || "",
+								value: 	this.props.values.xlabel || "",
 				 				id: "xlabel",
 				 				placeholder: "y label",
 								onChange:(property, event)=>{
@@ -108,7 +110,7 @@ class Node extends React.Component {
 							}	
 		
 		  const ylabelprops = {	
-								value: 	this.props.values.ylabel || this.props.selected.ylabel || "",
+								value: 	this.props.values.ylabel || "",
 				 				id: "ylabel",
 				 				placeholder: "y label",
 								onChange:(property, event)=>{
@@ -117,7 +119,7 @@ class Node extends React.Component {
 							}	
 							
 		  const yaxismin = {	
-								value: 	this.props.values.yaxismin || this.props.selected.yaxismin || "",
+								value: 	this.props.values.yaxismin || "",
 				 				id: "yaxismin",
 				 				placeholder: "(leave blank for auto)",
 								onChange:(property, event)=>{
@@ -126,7 +128,7 @@ class Node extends React.Component {
 							}	
 		  
 		  const yaxismax = {	
-								value: 	this.props.values.yaxismax || this.props.selected.yaxismax || "",
+								value: 	this.props.values.yaxismax || "",
 				 				id: "yaxismax",
 				 				placeholder: "(leave blank for auto)",
 								onChange:(property, event)=>{
@@ -134,7 +136,7 @@ class Node extends React.Component {
               					}
 							}	
 		   const maxreadings = {	
-								value: 	this.props.values.maxreadings || this.props.selected.maxreadings || 10,
+								value: 	this.props.values.maxreadings,
 				 				id: "maxreadings",
 				 				
 								onChange:(property, event)=>{
@@ -143,14 +145,14 @@ class Node extends React.Component {
 							}
 			
 			 const ticks = {	
-								value: 	this.props.values.ticks || this.props.selected.ticks || 5,
+								value: 	this.props.values.ticks,
 				 				id: "ticks",
 								onChange:(property, event)=>{
                   					 this.props.updateNode(property, event.target.value);
               					}
 							}
 																						
-          const chartoptions =  <div className="flexcolumn">
+          const barchartoptions =  <div className="flexcolumn">
           							
           							<div>
 										<div className="flexrow">
@@ -226,10 +228,25 @@ class Node extends React.Component {
 									</div>
           					    </div>
           
-          
+           const gaugeoptions =  <div className="flexcolumn">
+									<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													ticks
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+												 <Textfield {...ticks}/>	
+												</div>
+											</div>
+										</div>
+									</div>
+          					    </div>
           
           const nameprops = {	
-								value: 	this.props.values.name || this.props.selected.name || "",
+								value: 	this.props.values.name || "",
 				 				id: "name",
 								onChange:(property, event)=>{
                   					 this.props.updateNode(property, event.target.value);
@@ -237,7 +254,7 @@ class Node extends React.Component {
 							}
 		
 		  const titleprops = {	
-								value: 	this.props.values.title || this.props.selected.title || "",
+								value: 	this.props.values.title || "",
 				 				id: "title",
 								onChange:(property, event)=>{
                   					 this.props.updateNode(property, event.target.value);
@@ -296,8 +313,8 @@ class Node extends React.Component {
 						</div>
           			</div>
           			
-          		  	{chart==="bar" && chartoptions}
-          		  	
+          		  	{chart==="bar" && barchartoptions}
+          		  	{chart==="gauge" && gaugeoptions}
           		  	
           		  	<div>
           				<div className="centered">
@@ -328,8 +345,7 @@ class Node extends React.Component {
           		  	
           		  </div>
           
-       }
-     
+       }    
 }
 
 export default composeNode(Node, 'chartify', 
@@ -337,11 +353,19 @@ export default composeNode(Node, 'chartify',
                                 category: 'processors',    
                                 color: '#002255',
                                 defaults: {             
-                                    name: {value:""}, 
-                                    xtype: {},
-                                    ytype: {}, 
-                                    chart: {value:"bar"}, 
+                                    name: {value:""},
+                                    title: {value:""},
+                                    chart: {value:"bar"},
+                                    xlabel: {value:""},
+                                    ylabel: {value:""},
+                                    yaxismin: {value:""},
+                                    yaxismax: {value:""},
+                                    maxreadings: {value: ""},
+                                    ticks : {value:""},
+                                    xtype: {value:{}},
+                                    ytype: {value:{}},
                                 },
+                                
                                 inputs:1,               
                                 outputs:1,             
                                

@@ -120,7 +120,7 @@ class Node extends React.Component {
 
               id: "name",
              
-              value: values.name || selected.name || "",
+              value: values.name || "",
              
               onChange: (property, event)=>{
                   updateNode(property, event.target.value);

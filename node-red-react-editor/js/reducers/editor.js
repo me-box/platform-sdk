@@ -17,7 +17,7 @@ export default function editor(state = {deploymenuexpanded:false, appmanager:fal
 	    										deploymenuexpanded:false,
 	    										appmanager: false,
 	    										nodedetails: false,
-	    										testdeploy: true,
+	    										testdeploy: false,//true,
 	    									 });
 	    	
 	    case  NODE_MOUSE_DOWN:

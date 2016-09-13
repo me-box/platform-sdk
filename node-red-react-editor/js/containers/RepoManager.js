@@ -32,7 +32,7 @@ class RepoManager extends Component {
 
 	render() {
 	
-		const {cansave, showappmanager, tosave, repos, dispatch} = this.props;
+		const {cansave, browsingname, showappmanager, tosave, repos, dispatch} = this.props;
 		const {name, description, commit} = tosave;
 		
 		
@@ -45,6 +45,17 @@ class RepoManager extends Component {
 				 				id: "name",
 								onChange:(property, event)=>{
                   					this.nameChanged(event.target.value);
+              					}
+						}
+		
+		
+		const browsingnameprops =  {	
+								value: 	browsingname,
+				 				id: "browsingname",
+				 				placeholder: "user repo",
+								onChange:(property, event)=>{
+									console.log(event.target.value);
+                  					this.browsingNameChanged(event.target.value);
               					}
 							}
 							
@@ -68,6 +79,10 @@ class RepoManager extends Component {
 							<Textfield {...nameprops}/>												
 						  </div>
 		
+		const usertobrowse = <div className="centered">
+							<Textfield {...browsingnameprops}/>												
+						  </div>
+						  
 		const descriptioninput 	= <Textarea {...descriptionprops}/>												
 		const commitinput 		= <Textarea {...commitprops}/>				  
 			
@@ -122,8 +137,17 @@ class RepoManager extends Component {
 										 </div>
 									</div>
 									<div>
-										<div className="centered">
-											saved repos
+										<div className="flexrow">
+											<div>
+												{usertobrowse}
+											</div>
+											<div className="submit">
+						
+												<div className="centered">
+													<div onClick={this.browseNewUser} className="button selected">browse</div>
+												</div>
+						
+											</div>
 										</div>
 									</div>
 									
@@ -154,6 +178,7 @@ function select(state) {
     tosave: state.repos.tosave,
     cansave: cansave(state.repos.tosave),
     repos: state.repos.repos,
+    browsingname: state.repos.browsingname,
   };
 }
 

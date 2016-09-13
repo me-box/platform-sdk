@@ -71,17 +71,6 @@ export function dropNode(store, reducer, nt, def, x, y){
   }
 }
 
-
-
-/*export function initNodeValue(property, value){
-
-  return {
-    type: NODE_INIT_VALUES,
-    property,
-    value,
-  }
-}*/
-
 export function initNodeKeys(keys){
   return {
     type: NODE_INIT_VALUES,

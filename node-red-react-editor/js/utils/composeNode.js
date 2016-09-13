@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
-import {updateNode, updateNodeValueKey, incrementNodeValueKey} from '../actions/NodeActions';
+import {updateNode, updateNodeValueKey, incrementNodeValueKey, initNodeKeys} from '../actions/NodeActions';
 
 export default function composeNode(Component, nt, config, reducer=null){
 
@@ -20,6 +20,7 @@ export default function composeNode(Component, nt, config, reducer=null){
               ...bindActionCreators(RegisterActions, props.dispatch), 
               ...bindActionCreators(DialogueActions, props.dispatch),
            	);	
+            this.initNodeKeys = bindActionCreators(initNodeKeys, this.props.dispatch);
 		}
 
 		/*
@@ -27,6 +28,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 		*/
 	
 		componentDidMount(){
+			
           //this.registerType(nt, config, reducer);
        	}
 		

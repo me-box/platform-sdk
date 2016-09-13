@@ -5,14 +5,15 @@ import Textfield from '../../../components/form/Textfield';
 class Node extends React.Component {
 
        render() {
+       
+          console.log("in here ereneding!");
          const nameprops = {
-              name: "name",
-              values: this.props.values,
-              icon: this.props.icon,
+              id: "name",
+              value: this.props.values,
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
               },
-              selected: this.props.selected,
+              
           }
 
           return <div className="form-row">

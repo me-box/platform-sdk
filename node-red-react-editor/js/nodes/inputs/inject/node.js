@@ -56,7 +56,7 @@ class Node extends React.Component {
             this._intervalChecked = this._intervalChecked.bind(this);
             this._specificTimeChecked = this._specificTimeChecked.bind(this);
        }
-
+       
 
        render() {
           //local is all of the stuff in its reducer
@@ -66,7 +66,7 @@ class Node extends React.Component {
 
           const nameprops = {
               id: "name",
-              value: this.props.values['name'] || this.props.selected['name'] || "",
+              value: this.props.values.name || "",
               //icon: "fa fa-tag",
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
@@ -76,7 +76,7 @@ class Node extends React.Component {
 
           const topicprops = {
               id: "topic",
-              value: this.props.values['topic'] || this.props.selected['topic'] || "",
+              value: this.props.values.topic || "",
               //icon: "fa fa-tasks",
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);

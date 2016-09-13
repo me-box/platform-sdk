@@ -12,7 +12,7 @@ class Node extends React.Component {
        render() {
        		
          	const nameprops = {	
-								value: 	this.props.values.name || this.props.selected.name || "",
+								value: 	this.props.values.name || "",
 				 				id: "name",
 								onChange:(property, event)=>{
                   					 this.props.updateNode(property, event.target.value);
@@ -24,7 +24,7 @@ class Node extends React.Component {
 						  </div>
 
 		  	const descriptionprops = {	
-									value: 	this.props.values.description || this.props.selected.description || "",
+									value: 	this.props.values.description || "",
 				 					id: "description",
 									onChange:(property, event)=>{
                   						 this.props.updateNode(property, event.target.value);
@@ -45,7 +45,7 @@ class Node extends React.Component {
 					this.props.updateNode("tag", event.target.value);
 				},
 				style: {width: '100%'},
-				value: this.props.values.tag || this.props.selected.tag || "",
+				value: this.props.values.tag || "",
 			}
 			
 			const taginput = <div className="centered">
@@ -74,6 +74,7 @@ export default composeNode(Node, 'temperature',
                                     name: {value:""},   //  along with default values.
            							description: {value:""},
             						tag: {value:"TA"},
+            						type: {value:"temperature"},
                                 },
                                 
                                 schema: {
@@ -89,7 +90,7 @@ export default composeNode(Node, 'temperature',
                                 icon: "fa-sun-o",
                                 unicode: '\uf185',     
                                 label: function() {     
-                                    return this.name||this.topic||"temperature";
+                                    return this.name||"temperature";
                                 },
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

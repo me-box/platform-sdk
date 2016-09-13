@@ -117,7 +117,18 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
         })
     })
 
-    case ActionType.NODE_INIT_VALUES:
+	//set up the editing buffer by copying all saved properties from defaults into it.
+	case ActionType.NODE_LOAD:
+		const defaults = action.node._def.defaults || {};
+		const values = Object.keys(defaults).reduce((acc, key)=>{
+			acc[key] = state.selected[key];
+			return acc;
+		},{});
+		
+		
+		return Object.assign({}, state, {editingbuffer: values});
+		
+    case	 ActionType.NODE_INIT_VALUES:
      
       return Object.assign({}, state, {
         editingbuffer : Object.assign({}, state.editingbuffer, action.keys)

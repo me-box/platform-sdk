@@ -16,7 +16,7 @@ const _postFlows = function(port, data, req, res){
 			return Object.assign({}, node, modifier);
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
-	port = 1880;
+	//port = 1880;
 	
 	console.log("and modified flows is");
 	console.log(flows);

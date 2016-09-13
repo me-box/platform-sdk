@@ -228,9 +228,12 @@ export function fetchFlow(store, repo){
 		leave(getState().publisher.app.id);
 		
 		dispatch(requestFlows());
+		
+		const username = getState().repos.currentuser;
+		
 		request
-  			.get(`http://${config.root}/github/flow`)
-  			.query({repo:repo})
+  			.get(`http://${config.root}/github/flow/`)
+  			.query({repo:repo, username:username})
   			.set('Accept', 'application/json')
   			.type('json')
   			.end(function(err, res){
