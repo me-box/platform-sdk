@@ -36,12 +36,18 @@ class Toolbar extends Component {
 
     }
 
+	const toolbarstyle={
+		paddingTop: 4,
+	}
     return (
 				<div id="header">
 					<span className="logo" style={logoStyle}>
 						<a href="#"><span>databox app SDK</span></a>
 					</span>
-					<ul className="header-toolbar">
+					<ul className="header-toolbar" style={toolbarstyle}>
+					  <li>
+						 <a style={buttonstyle} href="/auth/logout">logout</a>
+					  </li>
 					  <li>
 						 <a style={buttonstyle} onClick={this.togglePublisher}>publish</a>
 					  </li>
@@ -94,11 +100,7 @@ class Toolbar extends Component {
 						  </ul>
 						</span>
 						</li>
-						<li>
-						  <a id="btn-sidemenu" className="button" data-toggle="dropdown" href="#">
-							<i className="fa fa-bars"></i>
-						  </a>
-						</li>
+						
 					</ul>
 				</div>
         
@@ -106,6 +108,7 @@ class Toolbar extends Component {
     
   }
 }
+
 
 function select(state) {
   return {

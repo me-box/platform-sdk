@@ -22,8 +22,12 @@ module.exports = {
              '/nodered/*': {
                 target: 'http://localhost:9000',
             },
-
-
+ 	    '/auth/*': {
+                target: 'http://localhost:9000',
+            },
+	    '/login': {
+                target: 'http://localhost:9000',
+            }
         }
     },
 

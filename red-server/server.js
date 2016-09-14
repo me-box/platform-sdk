@@ -48,17 +48,22 @@ app.engine('html', require('ejs').renderFile);
 var server = http.createServer(app);
 
 const ensureAuthenticated = (req, res, next) => {
+
   if (req.isAuthenticated()){
     return  next(null);
   }
-  console.log("not authenticated - so redirecting!");
-  res.redirect("/auth/github");
+  res.redirect("/login");
 };
 
 app.use('/', express.static("static"));
 app.use('/auth', require('./routes/auth'));
 app.use('/github', ensureAuthenticated, require('./routes/github'));
 app.use('/nodered', ensureAuthenticated, require('./routes/nodered'));
+
+
+app.get('/login', function(req,res){
+	res.render('login');	
+});
 
 app.get('/', ensureAuthenticated, function(req,res){
   	res.render('index');

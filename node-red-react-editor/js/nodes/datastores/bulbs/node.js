@@ -8,7 +8,7 @@ class Node extends React.Component {
 
        render() {
        
-       	  console.log("RENDEREING");
+       	  
          const nameprops = {
               id: "name",
               value: 	this.props.values.name || "",

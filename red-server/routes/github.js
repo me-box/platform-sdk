@@ -251,6 +251,7 @@ router.get('/repos', function(req,res){
    		.end((err, data)=>{
      		if (err){
      			console.log(err);
+     			req.logout();
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
      			res.send(data.body.map(function(repo){

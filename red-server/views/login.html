@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   
+    <title>databox sdk - login </title>
+    
+    <style>
+		
+		html{
+		  -webkit-font-smoothing: antialiased;  
+		  font-family: Helvetica Neue, Open Sans, sans-serif;
+		}
+
+		html, body {
+						height: 100%;
+						padding: 0px;
+						margin: 0px;
+					}
+			
+		 *, *:before, *:after {
+			 -moz-box-sizing: border-box;
+			 -webkit-box-sizing: border-box;
+			 box-sizing: border-box;
+		}
+ 
+		.container {
+			height: 100%;
+			margin: 0px;
+		}
+
+		.flexcolumn {
+			width: inherit;
+			height: inherit;
+			display: -webkit-flex;
+			display: flex;
+			flex: 1 1 auto;
+			-webkit-flex: 1 1 auto;
+			-webkit-flex-direction: column;
+			flex-direction: column;
+			height: 100%;
+		}
+
+		.flexcolumn > div {
+			display: -webkit-flex;
+			display: flex;
+			flex: 1 1 auto;
+			 -webkit-flex: 1 1 auto;
+			min-height: 40px;  
+			height: inherit;
+		}
+
+		.flexrow {
+   
+			display: -webkit-flex;
+			display: flex;
+			flex: 1 1 auto;
+			 -webkit-flex: 1 1 auto;
+			-webkit-flex-direction: row;
+			flex-direction: row;
+	
+ 
+		}
+
+		.flexrow > div {
+			display: -webkit-flex;
+			display: flex;
+			flex: 1 1 auto;
+			 -webkit-flex: 1 1 auto;
+			height: inherit; 
+		}
+
+
+		.centered{
+		  text-align: center;
+		  margin:auto;
+		  width: 100%;
+		}
+    </style>
+  </head>
+  <body>
+  		<div class="container">
+			<div class="flexcolumn">
+				<div style="height:60px; line-height:60px ;background:#4d4d4d;color:white;">
+					<div class="centered">
+						 databox editor 
+					</div>
+				</div>
+			
+				<div>
+				
+					<div class="centered" style="padding-bottom:30px;height: calc(100% - 120px)">
+						<img src="img/editor.svg" height="100%"/>
+					</div>
+			
+				</div>
+				<div style="height:60px; line-height:60px ;background:#4d4d4d;color:white;">
+					<div class="centered">
+						<a href="/auth/github" style="text-decoration:none; color: white">login with github</a> 
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+</html>
