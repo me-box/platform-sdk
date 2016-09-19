@@ -4,13 +4,16 @@
 			 	
 			 	{"name":"bulbs", "file":"datastores/bulbs/node"},
 			 	{"name":"temperature", "file":"datastores/temperature/node"},
+			 	{"name":"fmcgs", "file":"datastores/fmcgs/node"},
+			 	{"name":"utensils", "file":"datastores/utensils/node"},
+			 	{"name":"mediaplayer", "file":"datastores/mediaplayer/node"},
 
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},
 			 	{"name":"chartify", "file":"processors/chartify/node"},
-
-				{"name":"databoxapp", "file":"outputs/databoxapp/node"}
 			 	
+			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
+			 	{"name":"datastore", "file":"outputs/datastore/node"}
 			 
 			 	
 			 ]
