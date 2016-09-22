@@ -9,7 +9,7 @@ module.exports = {
     output: {
         
         path: __dirname + "/static",
-        publicPath: 'http://databox.upintheclouds.org',
+        publicPath: 'http://127.0.0.1:8080',
         filename: '[name].js'
     },
 

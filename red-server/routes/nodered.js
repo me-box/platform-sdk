@@ -65,7 +65,9 @@ const _startContainer = function(container, flows, req, res){
 router.post('/flows', function(req, res){
 	
 	const flows = req.body;
-	
+
+	//remove this and re-instate commented code for prod
+	//_postFlows(1880, flows, req, res);
 	const opts = {
 		filters : {
 						label: [`user=${req.user.username}`],

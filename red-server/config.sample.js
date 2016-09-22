@@ -11,6 +11,10 @@ module.exports = {
     appstore: {
                 URL: 'http://store.upintheclouds.org'
     },
+    
+    registry: {
+                URL: 'registry.upintheclouds.org'
+    },
 
     red: {
         URL : 'http://127.0.0.1:1880',

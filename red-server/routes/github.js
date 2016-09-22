@@ -185,18 +185,19 @@ const _createTarFile = function(dockerfile, path){
 		
 }
 
+
 const _createDockerImage = function(tarfile, name){
 	return new Promise((resolve, reject)=>{
-		docker.buildImage(tarfile, {t: `localhost:5000/${name}`}, function (err, output){
+		docker.buildImage(tarfile, {t: `${config.registry.URL}/${name}`}, function (err, output){
 			if (err){
 				console.warn(err);
 				reject(err);
 			}
 			output.pipe(process.stdout);
 			output.on('end', function() {
-				var image = docker.getImage(`localhost:5000/${name}`);
+				var image = docker.getImage(`${config.registry.URL}/${name}`);
 				image.push({
-					registry : 'localhost:5000'
+					registry : `${config.registry.URL}`
 				}, function(err, data) {
 					data.pipe(process.stdout);
 					if (err){
@@ -208,6 +209,31 @@ const _createDockerImage = function(tarfile, name){
 		});
 	});
 }
+
+/*
+const _createDockerImage = function(tarfile, name){
+	return new Promise((resolve, reject)=>{
+		docker.buildImage(tarfile, {t: `databox/${name}`}, function (err, output){
+			if (err){
+				console.warn(err);
+				reject(err);
+			}
+			output.pipe(process.stdout);
+			output.on('end', function() {
+				var image = docker.getImage(`databox/${name}`);
+				image.push({
+					registry : `${config.registry.URL}`
+				}, function(err, data) {
+					data.pipe(process.stdout);
+					if (err){
+						reject(err)
+					}
+					resolve();
+				});
+			});
+		});
+	});
+}*/
 
 
 //list all apps owned by this user
@@ -294,6 +320,9 @@ router.get('/flow', function(req,res){
 //create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new  flows.json / manifest.json file.
 
 router.post('/repo/new', function(req,res){
+	
+	console.log("seen creat enew repo!");
+
 	var user 		= req.user;
 	var name 		= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
 	var description = req.body.description || "";
@@ -302,7 +331,7 @@ router.post('/repo/new', function(req,res){
 	var manifest    = req.body.manifest || {};
 	var message 	= req.body.message || "first commit";
 	
-	console.log("creating new repo!");
+	console.log("---> creating new repo!");
 	
 	return _createRepo(name, description, isprivate, req.user.accessToken).then(repo=>{
 		 return Promise.all([
@@ -403,7 +432,7 @@ router.post('/publish', function(req,res){
 							'LABEL databox.type="app"',
 							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
 							"EXPOSE 8080",
-							`CMD ["node", "/root/node-red/red.js"]`
+							"CMD /root/start.sh"
 					   ]	
 	
 	

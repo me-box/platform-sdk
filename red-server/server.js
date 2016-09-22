@@ -48,6 +48,8 @@ app.engine('html', require('ejs').renderFile);
 var server = http.createServer(app);
 
 const ensureAuthenticated = (req, res, next) => {
+  console.log("checking if authenticated");
+  console.log(req);
 
   if (req.isAuthenticated()){
     return  next(null);
@@ -66,7 +68,7 @@ app.get('/login', function(req,res){
 });
 
 app.get('/', ensureAuthenticated, function(req,res){
-  	res.render('index');
+  res.render('index');
 });
 
 console.log(`listening on port ${PORT}`)
