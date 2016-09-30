@@ -77,11 +77,13 @@ export default composeNode(Node, 'temperature',
             						type: {value:"temperature"},
                                 },
                                 
-                                schema: {
-                                	value: {type:'numeric'},
-                                	unit:  {type:'string'},
-                                	id:    {type:'string'},
-                                	time:  {type:'time'},
+                                schema: ()=>{
+                                	return	{
+                                		value: {type:'numeric'},
+                                		unit:  {type:'string'},
+                                		id:    {type:'string'},
+                                		time:  {type:'time'},
+                                	}
                                 },
                                 
                                 inputs:0,               

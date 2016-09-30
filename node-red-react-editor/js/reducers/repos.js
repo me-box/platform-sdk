@@ -1,11 +1,20 @@
 import {REPO_NAME_CHANGED, REPO_BROWSINGNAME_CHANGED, REPO_CURRENTUSER_CHANGED, REPO_COMMIT_CHANGED,  REPO_DESCRIPTION_CHANGED, REPO_SAVE_PRESSED, REPO_LIST_RETRIEVED, REPO_SHA_RETRIEVED} from '../constants/ActionTypes';
 
+
+
+export function sha(state={}, action){
+	console.log("in here and state is ");
+	console.log(state);
+	
+	return Object.assign({}, state, {...action.sha});
+}
+ 
 export default function repos(state = { loaded: {name:"", sha:{}}, browsingname:"", currentuser:"", tosave : {name: "", commit: "", description: ""}, repos:[]}, action) {
   	switch (action.type) {
 	  
 	  case REPO_SHA_RETRIEVED:
 	  	return Object.assign({}, state, {
-	  					loaded: Object.assign({}, state.loaded, {name:action.repo, sha: action.sha})
+	  					loaded: Object.assign({}, state.loaded, {name:action.repo, sha: sha(state.loaded.sha, action)})
 	  				}
 	  	);
 	  

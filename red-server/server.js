@@ -9,7 +9,7 @@ import initPassport from './strategies';
 const RedisStore 	 = connectredis(expressSession);
 mongoose.connect(config.mongo.url);
 
-let PORT = 8080
+let PORT = 8086
 
 if (process.argv.length > 2){
 	PORT = parseInt(process.argv[2]);
@@ -48,9 +48,7 @@ app.engine('html', require('ejs').renderFile);
 var server = http.createServer(app);
 
 const ensureAuthenticated = (req, res, next) => {
-  console.log("checking if authenticated");
-  console.log(req);
-
+ 
   if (req.isAuthenticated()){
     return  next(null);
   }

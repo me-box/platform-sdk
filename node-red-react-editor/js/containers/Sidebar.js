@@ -24,16 +24,15 @@ class Sidebar extends React.Component {
 		
 		let content;
 		
-		if (showappmanager){
-			content = <RepoManager />
-		}
-		else if (shownodedetails){
+		//if (showappmanager){
+			//content = <RepoManager />
+		//}
+	    if (shownodedetails){
 			content = <NodeInfo node={node}/>
 		}
-		else if (showtest){
-			content = <TestManager />
-		
-		}
+		//else if (showtest){
+		//	content = <TestManager />
+		//}
 
 		const close = {
 			display: 'flex',

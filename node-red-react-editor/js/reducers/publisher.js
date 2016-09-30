@@ -1,6 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
-const pkg = (state = {id:"", name:"", purpose:"", install:"optional", datastores:[], outputs:[], risk:"", benefits:"", }, action)=>{
+const pkg = (state = {id:"", name:"", purpose:"", install:"optional", datastores:[], risk:"", benefits:"", }, action)=>{
 	switch (action.type) {
 		
 		case ActionTypes.TAB_UPDATE:
@@ -17,27 +17,18 @@ const pkg = (state = {id:"", name:"", purpose:"", install:"optional", datastores
 		
 		case ActionTypes.NODE_DROPPED:
 				
-				if (action.node._def.category === "datastores"){
-					//if (state.datastores.map((d)=>d.type).indexOf(action.node.type) < 0){
+				if (action.node._def.category === "datastores" || action.node._def.category === "outputs"){
+					
 						return Object.assign({}, state, {datastores: [...state.datastores, {
 																								id: action.node.id,
+																								name: action.node.name || action.node.type,
 																								type: action.node.type, 
 																								color: action.node._def.color, 
 																								icon: action.node._def.icon,												
 												}]})
-					//}
+					
 				} 
 			
-				if (action.node._def.category === "outputs"){
-					//if (state.outputs.map((d)=>d.type).indexOf(action.node.type) < 0){
-						return Object.assign({}, state, {outputs: [...state.outputs, {
-																								id: action.node.id,
-																								type: action.node.type, 
-																								color: action.node._def.color, 
-																								icon: action.node._def.icon,												
-												}]})
-					//}
-				} 
 			
 			return state;
 			
@@ -108,28 +99,20 @@ export default function publisher(state = {app:{},  currentpkg:0, packages:[], g
 	  	 return Object.assign({}, state, {packages: action.tabs.map((t)=>pkg(undefined, {type: ActionTypes.TAB_ADD, tab: t}))});
 	  
 	  case ActionTypes.RECEIVE_MANIFEST:
-	  	 return Object.assign({}, state, {app: action.manifest.app, packages: action.manifest.packages, grid:action.manifest['forbidden-combinations']});
+	  	 return Object.assign({}, state, {app: action.manifest.app, packages: action.manifest.packages, grid:action.manifest['allowed-combinations']});
 	  	 
 	  case ActionTypes.RECEIVE_FLOWS:
 	  	 return Object.assign({}, state, {packages: state.packages.map((p)=>{
 	  	 	return Object.assign({}, p, { 
-	  	 									datastores : action.nodes.filter((n) => (n.z===p.id && n._def.category ==="datastores")).map((n)=>{
+	  	 									datastores : action.nodes.filter((n) => (n.z===p.id && (n._def.category ==="datastores" || n._def.category==="outputs"))).map((n)=>{
 	  	 											return {
 	  	 													id: n.id,
-	  	 													type: n.type, 
+															name: n.name || n.type,
+															type: n.type, 
 															color: n._def.color, 
 															icon: n._def.icon
 													}			
-	  	 									}),
-	  	 									
-	  	 									outputs: action.nodes.filter((n) => (n.z===p.id && n._def.category ==="outputs")).map((n)=>{
-	  	 											return {
-	  	 												id: n.id,
-	  	 												type: n.type, 
-														color: n._def.color, 
-														icon: n._def.icon,
-													}			
-	  	 									}),
+	  	 									})	
 	  	 								}
 	  	 		);
 	  	 	})
@@ -153,9 +136,6 @@ export default function publisher(state = {app:{},  currentpkg:0, packages:[], g
 	 			return Object.assign({}, p, {
 	 											datastores:p.datastores.filter((d)=>{
 	 													return d.id !== action.node.id
-	 											}), 
-	 											outputs:p.outputs.filter((o)=>{
-	 													return o.id !== action.node.id
 	 											})
 	 										});
 	 		}

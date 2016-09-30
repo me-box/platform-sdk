@@ -7,8 +7,7 @@ const router = express.Router();
 
 const _postFlows = function(port, data, req, res){
 	console.log(`connecting to localhost:${port}/flows`);
-	console.log("posting");
-	console.log(data);
+
 	
 	//add in channelIDs here
 	const flows = data.map((node)=>{		
@@ -17,9 +16,6 @@ const _postFlows = function(port, data, req, res){
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
-	
-	console.log("and modified flows is");
-	console.log(flows);
 	
 	request
    			.post(`localhost:${port}/flows`)
@@ -80,12 +76,12 @@ router.post('/flows', function(req, res){
 		
 		//create a new container and start it, if it doesn't exist
 		if (containers.length <= 0){
-			docker.createContainer({Image: 'docker_red', Labels: {'user':`${req.user.username}`}, Cmd: ['node', '/root/node-red/red.js'], name: `${req.user.username}-red`}, function (err, container) {
+			docker.createContainer({Image: 'databox/testred', Labels: {'user':`${req.user.username}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['node', '/root/node-red/red.js'], name: `${req.user.username}-red`}, function (err, container) {
 				if (err){
 					console.log(err);
 				}else{
 					//{"PortBindings": { "1880/tcp": [{ "HostPort": "11022" }]}}
-					container.start({"PublishAllPorts":true, "Links": ["mosquitto:mosquitto"]}, function (err, data) {
+					container.start({"PublishAllPorts":true, "Binds": ["/tmp/app.webserver:/tmp/app.webserver"], "Links": ["mosquitto:mosquitto", "arbiter:arbiter", "mock-datasource:databox-driver-mobile.store"]}, function (err, data) {
 						if (err){
 							console.log("error!");
 							console.log(err);
@@ -109,6 +105,10 @@ router.post('/flows', function(req, res){
 					}		
 				});
 			}else{
+				console.log("container already ruinning...");
+				console.log(c);
+				console.log("ports are");
+				console.log(c.Ports);
 				//post flows to already running container
 				let port = c.Ports[0]['PublicPort'];
 				_postFlows(port, flows, req, res);

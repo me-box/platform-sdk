@@ -4,13 +4,13 @@ module.exports = {
     entry: {
         editor: [
             './js/app.js',
-            'webpack-dev-server/client?http://localhost:8080',
+            'webpack-dev-server/client?http://databox.upintheclouds.org',
             'webpack/hot/only-dev-server'
         ]
     },
 
     output: {
-        publicPath: 'http://localhost:8080/',
+        publicPath: 'http://databox.upintheclouds.org/',
         filename: '[name].js'
     },
 

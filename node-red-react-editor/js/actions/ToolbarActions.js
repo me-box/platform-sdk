@@ -4,6 +4,8 @@ import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 import {leave} from '../comms/websocket';
 
+
+
 export function toggleAppManager(){
 	return {
 		type: ActionType.TOGGLE_APPMANAGER,
@@ -64,6 +66,7 @@ export function togglePublisher(){
 		type: ActionType.TOGGLE_PUBLISHER,
 	}	
 }
+
 
 export function logout(){
 	return function (dispatch, getState) {	

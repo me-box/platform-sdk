@@ -13,6 +13,7 @@ import Toolbar from '../components/Toolbar';
 import DragDropContainer from './DragDropContainer';
 import Publisher from './Publisher';
 import NetworkStatus from '../components/NetworkStatus';
+import RepoManager from './RepoManager';
 
 
 import {PALETTE_WIDTH, SIDEBAR_WIDTH, TOOLBAR_HEIGHT} from '../constants/ViewConstants';
@@ -85,7 +86,7 @@ class Editor extends Component {
 	  publisher = <Publisher />
 	}
 	
-	
+					
    	return (<div onKeyDown={this._keyPress}> 
 				<Toolbar />
 	    		<div id="main-container" className="sidebar-closed">
@@ -99,6 +100,7 @@ class Editor extends Component {
 	    			</DragDropContainer>
             		<Sidebar h={dimensions.h-TOOLBAR_HEIGHT}/>
             		<NetworkStatus {...networkstatusprops}/>
+            		<RepoManager h={dimensions.h-TOOLBAR_HEIGHT}/>
 	    		</div>
 	    	</div>);
     }

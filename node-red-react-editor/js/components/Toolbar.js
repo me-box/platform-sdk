@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import * as ToolbarActions from '../actions/ToolbarActions';
+import {toggleSaveDialogue} from '../actions/RepoActions';
 import { bindActionCreators } from 'redux';
 
 
@@ -9,10 +10,11 @@ class Toolbar extends Component {
   constructor(props){
   	super(props);
     Object.assign(this, ...bindActionCreators(ToolbarActions, props.dispatch));
+    this.toggleSaveDialogue  = bindActionCreators(toggleSaveDialogue, props.dispatch);
   } 
 
   render() {
-    const { dispatch, expanded } = this.props;
+    const { dispatch, expanded, showSaveDialogue} = this.props;
     
     const style={
       display: expanded ? 'block' : 'none',
@@ -39,7 +41,11 @@ class Toolbar extends Component {
 	const toolbarstyle={
 		paddingTop: 4,
 	}
-    return (
+	    
+   
+        
+    return (	
+    		<div>
 				<div id="header">
 					<span className="logo" style={logoStyle}>
 						<a href="#"><span>databox app SDK</span></a>
@@ -47,6 +53,9 @@ class Toolbar extends Component {
 					<ul className="header-toolbar" style={toolbarstyle}>
 					  <li>
 						 <a style={buttonstyle} href="/auth/logout">logout</a>
+					  </li>
+					   <li>
+						 <a style={buttonstyle} onClick={this.toggleSaveDialogue}>save</a>
 					  </li>
 					  <li>
 						 <a style={buttonstyle} onClick={this.togglePublisher}>publish</a>
@@ -103,6 +112,7 @@ class Toolbar extends Component {
 						
 					</ul>
 				</div>
+			</div>
         
         );
     

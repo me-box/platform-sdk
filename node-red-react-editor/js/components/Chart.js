@@ -72,12 +72,15 @@ class Chart extends Component {
     	return <Link{...linkprops} />
     })
 
-    let chartprops = {
+    const chartprops = {
     	onMouseMove: this._onMouseMove,
     	onMouseUp: this.mouseUp,
     }
 
+	
+    
     return <div id="chart"  style={chartstyle} onScroll={this._onScroll}>
+   				
     			<div {...chartprops} width={w} height={h}>
     			<svg id="svgchart" width={w} height={h}>
     				{connectors}

@@ -10,6 +10,14 @@ const router = express.Router();
 
 
 
+const _flatten = (arr)=>{
+	return arr.reduce((acc, row)=>{
+			return row.reduce((acc, src)=>{
+					acc.push(src);
+					return acc;
+			}, acc);
+	}, [])
+}
 
 const _createRepo = function(name, description, isprivate, accessToken){
  	
@@ -129,13 +137,13 @@ const _saveToAppStore = function(manifest){
   	});
 }
 
-const _generateManifest = function(user, reponame, app, packages, forbidden){
+const _generateManifest = function(user, reponame, app, packages, allowed){
 	return  {
-				id: app.id,
 				'manifest-version': 1,
 				name: app.name,
 				version: "0.1.0",
 				description: app.description,
+				author: user.username,
 				licence: "MIT",
 				tags: app.tags.split(","),
 				homepage: `${config.github.URL}/${user.username}/${reponame}`,
@@ -143,20 +151,32 @@ const _generateManifest = function(user, reponame, app, packages, forbidden){
 					type: 'git',
 					url: `git+${config.github.URL}/${user.username}/${reponame}.git`
 				},
-			
 				packages: packages.map((pkg)=>{
 					return {
 						id: pkg.id,
 						name: pkg.name,
 						purpose: pkg.purpose,
 						required: pkg.install === "compulsory",
-						'driver-permissions': Array.from(new Set([...pkg.datastores.map((d)=>{return d.type}), ...pkg.outputs.map((o)=>{return o.type})])),
+						datasources: Array.from(new Set([...pkg.datastores.map((d)=>{return d.id})])),
+						//'driver-permissions': Array.from(new Set([...pkg.datastores.map((d)=>{return d.type}), ...pkg.outputs.map((o)=>{return o.type})])),
 						risks: pkg.risk,
 						benefits: pkg.benefits,
 					}
 				}),
 				
-				'forbidden-combinations' : forbidden,
+				'allowed-combinations' : allowed,
+				
+				datasources: _flatten(packages.map((pkg)=>{
+					return pkg.datastores.map((d)=>{
+						return {
+							type: d.type,
+							required: true,
+							name: d.name || d.type,
+							clientid: d.id,
+							granularities: [],
+						}
+					});
+				})),
 			}	
 }
 
@@ -387,7 +407,7 @@ router.post('/repo/update', function(req, res){
 	var user = req.user;
 	var repo = req.body.repo;
 	var content = new Buffer(JSON.stringify(req.body.flow)).toString('base64');
-	var sha = rep.body.sha;
+	var sha = req.body.sha;
 	var message = req.body.message || "checkpoint commit";
 	
 	request
@@ -404,11 +424,20 @@ router.post('/repo/update', function(req, res){
    			.set('Authorization', 'token ' + req.user.accessToken)
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
-     			if (err || !res.ok) {
-       				console.log('error');
+     			if (err ) {
+       				console.log(err);
        				res.status(500).send({error:'could not update the repo'});
      			} else {
-       				res.send(data.content.sha);
+       				console.log("got data ");
+       				console.log(data);
+       				
+       				res.send({
+       					result: 'success',
+       					repo: req.body.repo,
+       					sha:{
+       						flows: data.body.content.sha
+       					}
+       				});
      			}
    			});
 	
@@ -421,13 +450,13 @@ router.post('/publish', function(req,res){
 	const manifest = req.body.manifest;
 	const app = manifest.app;
 	const packages = manifest.packages;
-	const forbidden = manifest['forbidden-combinations'];
+	const allowed = manifest['allowed-combinations'];
 	const description = manifest.app.description;
 		
 	const user = req.user;
 	//need to create a new docker file
 	const dcommands = [
-							"FROM databox/red", 
+							`FROM ${config.registry.URL}/databox/red`, 
 							`ADD ${config.github.RAW_URL}/${user.username}/${repo.name}/master/flows.json /root/.node-red/flows.json`,
 							'LABEL databox.type="app"',
 							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
@@ -454,8 +483,11 @@ router.post('/publish', function(req,res){
    		res.status(500).send({error:'could not create the repo'});
   	}).then(function(commit){*/
   	
+  	console.log("generated manifest");
+  	console.log(_generateManifest(req.user, app.name, app, packages, allowed));
+  	
 	const data = {
-					manifest: JSON.stringify(_generateManifest(req.user, app.name, app, packages, forbidden)),
+					manifest: JSON.stringify(_generateManifest(req.user, app.name, app, packages, allowed)),
 										
 					poster: JSON.stringify({
 						username: req.user.username,
@@ -465,8 +497,8 @@ router.post('/publish', function(req,res){
 										
 					queries: JSON.stringify(0),
 	}; 
-		
-		
+	
+	
 						
 	return _saveToAppStore(data).then(function(result){
 		var path = "tmp.tar.gz";

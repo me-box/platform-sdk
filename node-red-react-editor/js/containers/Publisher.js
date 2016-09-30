@@ -191,10 +191,6 @@ class Packages extends React.Component {
 					</div>
 		});
 		
-		const outputs = (this.props.selected.outputs || []).map((output,i)=>{		
-			return <Node key={i} {...output}/>
-		});
-		
 		const datastores = (this.props.selected.datastores || []).map((datastore,i)=>{		
 			return <Node key={i} {...datastore}/>
 		});
@@ -270,16 +266,6 @@ class Packages extends React.Component {
 								</div>
 							</div>
 							{datastores}
-						</div>
-					</div>	
-					<div>	
-						<div className="flexrow">
-							<div className="title">
-								<div className="centered">
-									outputs
-								</div>
-							</div>
-							{outputs}
 						</div>
 					</div>	
 					<div>	

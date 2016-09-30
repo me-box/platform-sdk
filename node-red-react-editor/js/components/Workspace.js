@@ -1,5 +1,7 @@
 import React from 'react';
 import Chart from './Chart';
+
+
 import {TOOLBAR_HEIGHT, PALETTE_WIDTH, SIDEBAR_WIDTH} from '../constants/ViewConstants';
 import cx from 'classnames';
 
@@ -71,6 +73,8 @@ class Workspace extends React.Component {
 					});
 		
 		
+		 
+          
 		return( <div style={workspace}>
 					<ul id="workspace-tabs" className="red-ui-tabs">
 						{tabs}
@@ -82,6 +86,9 @@ class Workspace extends React.Component {
 		    		</div>
 		    		
 		    		<Chart {...this.props}/>
+		    		
+		    		
+					
 		    		<div id="workspace-toolbar"></div>
 		    		<div id="workspace-footer">
 			            <a className="workspace-footer-button" id="btn-zoom-out" href="#">

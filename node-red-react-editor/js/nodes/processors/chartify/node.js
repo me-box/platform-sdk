@@ -5,13 +5,23 @@ import cx from 'classnames';
 import Textfield from '../../../components/form/Textfield';
 class Node extends React.Component {
 	   
+	   
+	   constructor(props){
+			super(props);
+            this._handleValueSelected = this._handleValueSelected.bind(this);
+	   }
+	   
+	   
+	   componentDidMount(){
+	   		//reset these as inputs may have changed. Could only do this if the inputs have changed, but then would need to keep track
+	   		//of previous version in reducer
+	   		this.props.updateNode("xtype", []);
+	   		this.props.updateNode("ytype", []);
+	   }
+		
        render() {
         
           const {selected, inputs, values, updateNode} = this.props;
-        
-         console.log("INPUTS ARE");
-         console.log(inputs);
-         
           const chart = values.chart || "bar";
           
           const leftborder = {
@@ -32,32 +42,38 @@ class Node extends React.Component {
              	return seen.hasOwnProperty(input.type) ? false : (seen[input.type] = true);
              }
              return false;
-          }).map(function(input,i){
+          }).map((input,i)=>{
           	
           	const name = input.type; 
+          	const schema = input._def.schema(input.subtype);
           	
-          	const xoptions = Object.keys(input._def.schema).map((key)=>{
-          		const xtype =  values.xtype;
+          	const xoptions = Object.keys(schema).map((key)=>{
+          		const xtype =  values.xtype || [];
           		
           		const className = cx({
           			button: true,
-          			selected: xtype ? xtype.source === name && xtype.type===key : false,
+          			selected: xtype.filter((item)=>{
+          				return (item.source === name && item.name === key)
+          			}).length > 0,
           		});
           		
           		return 	<div key={key}>
-          					<div onClick={()=>{updateNode("xtype", {source:input.type, type:key})}} className={className}>{key}</div>
+          					<div onClick={()=>{this._handleValueSelected("xtype", {source:input.type, name:key, type: schema[key].type})}} className={className}>{key}</div>
           				</div>
           	})
           	
-          	const yoptions = Object.keys(input._def.schema).map((key)=>{
+          	const yoptions = Object.keys(schema).map((key)=>{
           		
-          		const ytype =  values.ytype;
+          		const ytype =  values.ytype || [];
           		const className = cx({
           			button: true,
-          			selected: ytype ? ytype.source === name && ytype.type===key : false,
+          			selected: ytype.filter((item)=>{
+          				return (item.source === name && item.name === key)
+          			}).length > 0,
+          			
           		});
           		return 	<div key={key}>
-          					<div  onClick={()=>{updateNode("ytype", {source:input.type, type:key})}} className={className}>{key}</div>
+          					<div  onClick={()=>{this._handleValueSelected("ytype", {source:input.type, name:key, type: schema[key].type})}} className={className}>{key}</div>
           				</div>	
           	})
           	
@@ -346,6 +362,29 @@ class Node extends React.Component {
           		  </div>
           
        }    
+       
+       _handleValueSelected(property, value){
+       		//type == unique name!
+       		const values = this.props.values[property] || [];
+       		
+       		const type = values.length > 0 ? values[0].type : null;
+       		
+       		//if new type is not the same as the current types, empty the array
+       		if (value.type != type){
+       			this.props.updateNode(property, [value]);
+       			return;
+       		}
+       		
+       		const index = values.map((source)=>{
+       			return source.name;
+       		}).indexOf(value.name);
+       		
+       		if (index == -1){
+       			this.props.updateNode(property, [...values, value]);
+       		}else{
+       			this.props.updateNode(property, [...values.slice(0,index), ...values.slice(index+1)]);
+       		}	
+       }
 }
 
 export default composeNode(Node, 'chartify', 
@@ -362,8 +401,8 @@ export default composeNode(Node, 'chartify',
                                     yaxismax: {value:""},
                                     maxreadings: {value: ""},
                                     ticks : {value:""},
-                                    xtype: {value:{}},
-                                    ytype: {value:{}},
+                                    xtype: {value:[]},
+                                    ytype: {value:[]},
                                 },
                                 
                                 inputs:1,               

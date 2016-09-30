@@ -1,5 +1,6 @@
 import React from 'react';
 
+//TODO: IS THIS USED??
 class Sidebar extends React.Component {
 	render() {
 		

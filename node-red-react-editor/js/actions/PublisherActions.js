@@ -112,7 +112,7 @@ export function submit(){
   		  manifest: {
   				app: Object.assign({}, getState().publisher.app),
   				packages: getState().publisher.packages,
-  				'forbidden-combinations': getState().publisher.grid,
+  				'allowed-combinations': getState().publisher.grid,
   			}
   		};
   		

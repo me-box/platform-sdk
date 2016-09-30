@@ -1,7 +1,7 @@
 #!/bin/sh
 mkdir -p /tmp/databoxpids
-ROOTDIR="/Users/tomlodge/iot"
-
+#ROOTDIR="/Users/tomlodge/iot"
+ROOTDIR="/home/databox"
 echo "starting dev server..."
 cd $ROOTDIR/iot.red/red-server && npm run dev &
 echo $! > /tmp/databoxpids/red-server.pid

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "http-server -p 3000 .",
     "build": "NODE_ENV=production webpack --config webpack.prod.config -p",
-    "watch": "webpack-dev-server  -d --hot --progress --colors"
+    "watch": "webpack-dev-server --port 8086  -d --hot --progress --colors"
   },
   "repository": {
     "type": "git",

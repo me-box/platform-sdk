@@ -7,6 +7,7 @@ import Textfield from '../components/form/Textfield';
 import Textarea from '../components/form/Textarea';
 import Cell from '../components/Cell';
 import Cells from '../components/Cells';
+import Dialogue from '../components/Dialogue';
 
 import * as RepoActions from '../actions/RepoActions';
 import {fetchFlow} from '../actions/FlowActions';
@@ -32,11 +33,11 @@ class RepoManager extends Component {
 
 	render() {
 	
-		const {cansave, browsingname, showappmanager, tosave, repos, dispatch} = this.props;
+		const {cansave, browsingname, tosave,showappmanager,showsavedialogue, repos, current, dispatch} = this.props;
 		const {name, description, commit} = tosave;
 		
 		
-		let content;
+		let loader;
 		
 		
 														
@@ -118,52 +119,104 @@ class RepoManager extends Component {
 				</div>
 				
 		});
-			//{saved}  			
-		if (showappmanager)
-		 	content = 	<div>
-							<div className="repocontainer">									
-								<Cells>
-									<div>
-										<div className="centered">
-											save as new repo
-										</div>
-									</div>
-									<Cell title={"name"} content={nameinput}/>
-									<Cell title={"description"} content={descriptioninput}/>
-									<Cell title={"commit message"} content={commitinput}/>
-									<div>
-										<div className="centered">
-										 	<div onClick={this.savePressed} className={buttoncname}>Save</div>
-										 </div>
-									</div>
-									<div>
-										<div className="flexrow">
-											<div>
-												{usertobrowse}
-											</div>
-											<div className="submit">
-						
-												<div className="centered">
-													<div onClick={this.browseNewUser} className="button selected">browse</div>
-												</div>
-						
-											</div>
-										</div>
-									</div>
-									
-									{saved}
-								</Cells>
-							</div>
-						</div>	
-						
 		
-		return <div>
-					{content}
-			   </div>
+		const close = {
+			display: 'flex',
+			flexDirection: 'row',
+			margin: '5px 10px 20px 0px',
+			WebkitFlexDirection: 'row',
+   			flexDirection: 'row',
+   			WebkitJustifyContent:  'flex-end',
+ 		 	justifyContent: 'flex-end',
+		}
+			//{saved}  			
+		if (showappmanager){
+		 	loader = 	<div>
+							<div id="sidebar" style={{display:'block', height: this.props.h}}>
+								<div style={close}> <i className="fa fa-times fa-fw"></i> </div>
+								<div id="sidebar-content">
+									<div>
+										<div className="repocontainer">									
+											<Cells>
+												<div>
+													<div className="flexrow">
+														<div>
+															{usertobrowse}
+														</div>
+														<div className="submit">
+						
+															<div className="centered">
+																<div onClick={this.browseNewUser} className="button selected">browse</div>
+															</div>
+						
+														</div>
+													</div>
+												</div>
+									
+												{saved}
+											</Cells>
+										</div>
+									</div>	
+								</div>
+								<div id="sidebar-footer"></div>
+							</div>
+						</div>
+		 }			
+						
+		let dialogue, dialoguecontent, dialogueprops;
+    
+    	if (showsavedialogue){
+    		
+    	
+			if (!current || (!current.sha.flows && !current.sha.manifest)){
+				
+			    dialogueprops = {
+					cancel: this.toggleSaveDialogue,
+					ok: ()=>{this.savePressed(); this.toggleSaveDialogue()},
+					title: "create new repo",
+    			}
+    	
+				dialoguecontent = <Cells>
+										<div>
+											<div className="centered">
+												save as new repo
+											</div>
+										</div>
+										<Cell title={"name"} content={nameinput}/>
+										<Cell title={"description"} content={descriptioninput}/>
+										<Cell title={"commit message"} content={commitinput}/>
+								  </Cells>
+			}else{
+			
+				dialogueprops = {
+					cancel: this.toggleSaveDialogue,
+					ok: ()=>{this.commitPressed(); this.toggleSaveDialogue()},
+					title: "save update",
+    			}
+    			
+				dialoguecontent = <Cells>
+										<div>
+											<div className="centered">
+												save
+											</div>
+										</div>
+										<Cell title={"commit message"} content={commitinput}/>
+									</Cells>
+			}	
+		
+	
+			dialogue = <Dialogue {...dialogueprops}>
+						 {dialoguecontent}
+						</Dialogue>
+    	}
+    
+		return 	<div>
+					{dialogue}
+					{loader}
+				</div>
 	}
 	
 	_load(repo){
-		console.log("loading " + repo);
 		this.fetchFlow(repo);
 	}
 };
@@ -178,7 +231,9 @@ function select(state) {
     tosave: state.repos.tosave,
     cansave: cansave(state.repos.tosave),
     repos: state.repos.repos,
+    current: state.repos.loaded,
     browsingname: state.repos.browsingname,
+    showsavedialogue: state.editor.savedialogue,
   };
 }
 

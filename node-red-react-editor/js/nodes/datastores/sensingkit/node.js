@@ -23,27 +23,38 @@ class Node extends React.Component {
 							<Textfield {...nameprops}/>												
 						  </div>
 
-		  	const descriptionprops = {	
-									value: 	this.props.values.description || "",
-				 					id: "description",
-									onChange:(property, event)=>{
-                  						 this.props.updateNode(property, event.target.value);
-              						}
-								 }
+			const subtypeprops = {
+				options: [
+					                {name: 'bluetooth', value: 'bluetooth'},
+					                {name: 'audio-level', value: 'audio-level'},
+					                {name: 'accelerometer', value: 'accelerometer'},
+					                {name: 'linear-acceleration', value: 'linear-acceleration'},
+					                {name: 'magnetometer', value: 'magnetometer'},
+					                {name: 'light', value: 'light'},
+									{name: 'rotation', value: 'rotation'},
+									{name: 'gravity', value: 'gravity'},
+									{name: 'gyroscope', value: 'gyroscope'},
+									{name: 'battery', value: 'battery'},
+					     ],
+					     
+				onSelect: (event)=>{
+					this.props.updateNode("subtype", event.target.value);
+				},
+				style: {width: '100%'},
+				value: this.props.values.subtype || "",
+			}
 			
-			
-		  	const descriptioninput 	= <Textarea {...descriptionprops}/>		
-		
-			
-			
+			const subtypeinput = <div className="centered">
+							<Select {...subtypeprops}/>												
+						  </div>
+
 			
           
-          return <div>
-          			<Cells>									
-						        <Cell title={"name"} content={nameinput}/>
-						        <Cell title={"description"} content={descriptioninput}/>
+        	return <Cells>									
+						<Cell title={"name"} content={nameinput}/>
+						<Cell title={"subtype"} content={subtypeinput}/>
           			</Cells>
-          		 </div>
+          		
           
        }
 }
@@ -51,16 +62,73 @@ class Node extends React.Component {
 export default composeNode(Node, 'sensingkit', 
                             {
                                 category: 'datastores',      
+                                
                                 color: '#ffcc00',
+                                
                                 defaults: {             
-                                    name: {value:""},   //  along with default values.
-           							            description: {value:""},
-            						            type: {value:"sensingkit"},
+                                    name: {value:""}, 
+            						type: {value:"sensingkit"},
+            						subtype: {value: "light"},
                                 },
                                 
-                                schema: {
-                                	value: {type:'numeric'},
-                                	ts:  {type:'time'},
+                                schema: (subtype)=>{
+                                	
+                                	
+                                	switch (subtype){
+                                	
+                                		case "bluetooth":
+                                			return {
+                                						ts: {type:'time'},
+                                						name:  {type:'string'},
+                                						address: {type:'string'},
+                                						rssi: {type:'numeric'},	
+                                			};
+                                			
+                                		
+                                		case "accelerometer":
+                                		case "linear-acceleration":
+                                		case "magnetometer":
+                                		case "gravity":
+                                		case "gyroscope":
+                                			return {
+                                						ts: {type:'time'},
+                                						x:  {type:'numeric'},
+                                						y:  {type:'numeric'},
+                                						z:  {type:'numeric'},	
+                                			};
+                                		
+                                		case "rotation":
+                                			return {
+                                						ts: {type:'time'},
+                                						x:  {type:'numeric'},
+                                						y:  {type:'numeric'},
+                                						z:  {type:'numeric'},	
+                                						cos:  {type:'numeric'},	
+                                						headingAccuracy:  {type:'numeric'},	
+                                			};
+                                			
+                                		
+                                		case "battery":
+                                			return {
+                                						ts: {type:'time'},
+                                						charge:  {type:'numeric'},
+                                						temperature:  {type:'numeric'},
+                                						voltage:  {type:'numeric'},	
+                                						plugged:  {type:'string'},	
+                                						status:  {type:'string'},
+                                						health: {type:'string'},	
+                                			};
+                                			
+                                		case "audio-level":
+                                		case "light":
+                                			return {
+                                						ts:  {type:'time'},
+                                						value: {type:'numeric'},
+                                						
+                                					};
+                                		default:
+                                			return {};
+                                	}
                                 },
                                 
                                 inputs:0,               
