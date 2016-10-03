@@ -510,8 +510,9 @@ router.post('/publish', function(req,res){
 	}else{ //create a new repo!
 		return _createRepo(user, app.name, app.description, flows, manifest, commitmessage, req.user.accessToken)
 		
-		.then((values)=>{				
-			return Promise.all([Promise.resolve(values), _publish(user, app.name, app, packages, allowed)]);
+		.then((values)=>{	
+			const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;			
+			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, allowed)]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
