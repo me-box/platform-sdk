@@ -3,6 +3,8 @@ import request from 'superagent';
 import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 import {networkAccess, networkError, networkSuccess} from './NetworkActions';
+import {receivedSHA} from './RepoActions';
+
 
 export function packageSelected(id){
 	return {
@@ -93,23 +95,20 @@ export function submit(){
   					...jsonnodes
   		]
   			
-
-  		
   		//TODO: ensure that the latest commit is saved before publish.
   		
   		const app = getState().publisher.app;
   		const packages = getState().publisher.packages;
-  		
+  		const repo = getState().repos.loaded;
   		
   		const data = {
   		    
-  		    repo: {
-  		    		name: getState().repos.loaded.name, 
-  		    		sha: getState().repos.loaded.sha
-  		    },
+  		    repo : repo,
+  		    
+  		    flows: flows,
   		    
   		    //assign id at start  as this will be the channel identifier
-  		  manifest: {
+  		  	manifest: {
   				app: Object.assign({}, getState().publisher.app),
   				packages: getState().publisher.packages,
   				'allowed-combinations': getState().publisher.grid,
@@ -129,7 +128,8 @@ export function submit(){
   					dispatch(networkError(err.message));
   				}else{
   					dispatch(networkSuccess('successfully published app!'));
-          			dispatch(submissionSuccess(res.body));
+          			//dispatch(submissionSuccess(res.body));
+  	 				dispatch(receivedSHA(res.body.repo, res.body.sha));
   	 			}
   	 		});	
 		

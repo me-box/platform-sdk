@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as ToolbarActions from '../actions/ToolbarActions';
 import {toggleSaveDialogue} from '../actions/RepoActions';
 import { bindActionCreators } from 'redux';
-
+import config from '../config';
 
 class Toolbar extends Component {
 
@@ -65,7 +65,7 @@ class Toolbar extends Component {
 					  </li>
 					  <li>
 						<span className="deploy-button-group button-group">
-						  <a id="btn-deploy" className="deploy-button" onClick={this.deploy}>
+						  <a href={config.testurl} target="_blank" id="btn-deploy" className="deploy-button" onClick={this.deploy}>
 						  <img id="btn-deploy-icon" src="images/deploy-full-o.png"/> 
 						  <span>Test</span>
 						  </a>

@@ -19,10 +19,40 @@ const _flatten = (arr)=>{
 	}, [])
 }
 
-const _createRepo = function(name, description, isprivate, accessToken){
+const _createCommit = function(user, repo, sha, content, message, accessToken){
+
+	return new Promise((resolve, reject)=>{
+		request
+   			.put(`${config.github.API}/repos/${user.username}/${repo}/contents/flows.json`)
+   			.send({
+  					"message": message,
+ 					"committer": {
+    					"name": user.username,
+    					"email": user.email || `${user.username}@me-box.com`
+  					},
+  					"content": content,
+  					"sha":sha,
+			})
+   			.set('Authorization', 'token ' + accessToken)
+   			.set('Accept', 'application/json')
+   			.end((err, data)=>{
+     			if (err ) {
+       				console.log(err);
+       				reject(err);
+       				
+     			} else {
+       				console.log("got data ");
+       				console.log(data);
+       				resolve(data);
+     			}
+   			});
+	
+	});
+}
+
+const _createRepo = function(user, name, description, flows, manifest, commitmessage, accessToken){
  	
- 	console.log("creating repo..." + name);
- 	
+
 	return new Promise((resolve,reject)=>{
 		
 		request
@@ -30,7 +60,7 @@ const _createRepo = function(name, description, isprivate, accessToken){
    			.send({
   				"name": name,
   				"description": description,
-  				"private": isprivate,
+  				"private": false,
   				"has_issues": false,
   				"has_wiki": false,
   				"has_downloads": false
@@ -57,6 +87,7 @@ const _createRepo = function(name, description, isprivate, accessToken){
      			 	
      			 	setTimeout(
      			 		function(){
+     			 			console.log("am now clling resolve!");
 							resolve({
 								name: result.name, 
 								updated: result.updated_at, 
@@ -67,6 +98,42 @@ const _createRepo = function(name, description, isprivate, accessToken){
        				);
      			}
    			})
+   	}).then((repo)=>{
+   
+   	 	return Promise.all([
+		 						Promise.resolve(repo),
+		 						
+		 						_addFile({	username: user.username,
+   											repo: repo.name, 
+   											filename: 'flows.json',
+   											email: user.email || `${user.username}@me-box.com`,
+   											message: commitmessage,
+   											content: new Buffer(JSON.stringify(flows)).toString('base64'),
+   											accessToken: accessToken,
+   								})
+   							]);
+	}, (err)=>{
+		console.log(err);
+		res.status(500).send({error:'could not create repo'});
+	}).then( (values)=>{
+		
+		const repo = values[0];
+		
+		return Promise.all([
+								Promise.resolve(repo.name),
+								Promise.resolve(values[1]),  
+								_addFile({
+										username: user.username,
+										repo: repo.name, 
+										filename: 'manifest.json',
+										email: user.email || `${user.username}@me-box.com`,
+										message: commitmessage,
+										content: new Buffer(JSON.stringify(manifest)).toString('base64'),
+										accessToken: accessToken,
+								})
+   							]);
+		
+   		
    	});
 } 
 
@@ -75,7 +142,6 @@ const _addFile = function(options){
 	
 	const {username, repo, filename, message, email, content, accessToken} = options;
 
-	
 	return new Promise((resolve, reject)=>{ 
 	  request
 			.put(`${config.github.API}/repos/${username}/${repo}/contents/${filename}`)
@@ -91,7 +157,7 @@ const _addFile = function(options){
 			.set('Accept', 'application/json')
 			.end((err, res)=>{
 				if (err) {
-					console.log("---error creating first commit!----");
+					console.log(err);
 					reject(err);
 				} else {
 					console.log(res.body);
@@ -230,30 +296,48 @@ const _createDockerImage = function(tarfile, name){
 	});
 }
 
-/*
-const _createDockerImage = function(tarfile, name){
+const _publish = function(user, reponame, app, packages, allowed){
 	return new Promise((resolve, reject)=>{
-		docker.buildImage(tarfile, {t: `databox/${name}`}, function (err, output){
-			if (err){
-				console.warn(err);
-				reject(err);
-			}
-			output.pipe(process.stdout);
-			output.on('end', function() {
-				var image = docker.getImage(`databox/${name}`);
-				image.push({
-					registry : `${config.registry.URL}`
-				}, function(err, data) {
-					data.pipe(process.stdout);
-					if (err){
-						reject(err)
-					}
-					resolve();
-				});
-			});
+		//create a new docker file
+		const dcommands = [
+							`FROM ${config.registry.URL}/databox/red`, 
+							`ADD ${config.github.RAW_URL}/${user.username}/${reponame}/master/flows.json /root/.node-red/flows.json`,
+							'LABEL databox.type="app"',
+							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
+							"EXPOSE 8080",
+							"CMD /root/start.sh"
+					   ]	
+	
+		const dockerfile = dcommands.join("\n");
+	
+		const data = {
+						manifest: JSON.stringify(_generateManifest(user, app.name, app, packages, allowed)),
+										
+						poster: JSON.stringify({
+							username: user.username,
+						}),
+										
+						postDate:  JSON.stringify((new Date()).toISOString()),
+										
+						queries: JSON.stringify(0),
+		}; 
+				
+		return _saveToAppStore(data).then(function(result){
+			var path = "tmp.tar.gz";
+			return _createTarFile(dockerfile, path);
+		},(err)=>{
+			reject("could not save to app store!");
+		}).then(function(tarfile){
+			return _createDockerImage(tarfile, app.name);
+		},(err)=>{
+			reject("could not create tar file");
+		}).then(function(){
+			resolve()
+		},(err)=>{
+			reject('could not create docker image');
 		});
 	});
-}*/
+};
 
 
 //list all apps owned by this user
@@ -322,8 +406,6 @@ router.get('/flow', function(req,res){
 	const repo = req.query.repo;
 	const username = req.query.username || user.username;
 	
-	console.log("fetching for userne " + username);
-	
 	return Promise.all([_fetchFile(username, user.accessToken, repo, 'flows.json'), _fetchFile(username, user.accessToken, repo, 'manifest.json')]).then(function(values) {
 		console.log(values);
         res.send({
@@ -340,53 +422,16 @@ router.get('/flow', function(req,res){
 //create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new  flows.json / manifest.json file.
 
 router.post('/repo/new', function(req,res){
-	
-	console.log("seen creat enew repo!");
 
-	var user 		= req.user;
-	var name 		= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
-	var description = req.body.description || "";
-	var isprivate   = false;
-	var flows       = req.body.flows 	|| [];
-	var manifest    = req.body.manifest || {};
-	var message 	= req.body.message || "first commit";
+	var user 			= req.user;
+	var name 			= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
+	var description 	= req.body.description || "";
+	var flows       	= req.body.flows 	|| [];
+	var manifest    	= req.body.manifest || {};
+	var commitmessage 	= req.body.message || "first commit";
 	
-	console.log("---> creating new repo!");
-	
-	return _createRepo(name, description, isprivate, req.user.accessToken).then(repo=>{
-		 return Promise.all([
-		 						Promise.resolve(repo),
-		 						
-		 						_addFile({	username: user.username,
-   											repo: repo.name, 
-   											filename: 'flows.json',
-   											email: req.user.email || `${req.user.username}@me-box.com`,
-   											message: message,
-   											content: new Buffer(JSON.stringify(flows)).toString('base64'),
-   											accessToken: req.user.accessToken,
-   								})
-   							]);
-	}, (err)=>{
-		console.log(err);
-		res.status(500).send({error:'could not create repo'});
-	}).then( (values)=>{
-		
-		const repo = values[0];
-		
-		return Promise.all([
-								Promise.resolve(repo.name),
-								Promise.resolve(values[1]),  
-								_addFile({
-										username: user.username,
-										repo: repo.name, 
-										filename: 'manifest.json',
-										email: req.user.email || `${req.user.username}@me-box.com`,
-										message: message,
-										content: new Buffer(JSON.stringify(manifest)).toString('base64'),
-										accessToken: req.user.accessToken,
-								})
-   							]);
-		
+	return _createRepo(user, name, description, flows, manifest, commitmessage, req.user.accessToken).then(repo=>{
+		return values;
 	}).then((values)=>{
 		res.send({
 					result:'success', 
@@ -404,116 +449,83 @@ router.post('/repo/new', function(req,res){
 
 router.post('/repo/update', function(req, res){
 	
+	console.log("am in repo update!");
+	console.log(req);
+	
 	var user = req.user;
 	var repo = req.body.repo;
 	var content = new Buffer(JSON.stringify(req.body.flow)).toString('base64');
 	var sha = req.body.sha;
 	var message = req.body.message || "checkpoint commit";
 	
-	request
-   			.put(`${config.github.API}/repos/${user.username}/${repo}/contents/flows.json`)
-   			.send({
-  					"message": message,
- 					"committer": {
-    					"name": req.user.username,
-    					"email": req.user.email || `${req.user.username}@me-box.com`
-  					},
-  					"content": content,
-  					"sha":sha,
-			})
-   			.set('Authorization', 'token ' + req.user.accessToken)
-   			.set('Accept', 'application/json')
-   			.end((err, data)=>{
-     			if (err ) {
-       				console.log(err);
-       				res.status(500).send({error:'could not update the repo'});
-     			} else {
-       				console.log("got data ");
-       				console.log(data);
-       				
-       				res.send({
-       					result: 'success',
-       					repo: req.body.repo,
-       					sha:{
-       						flows: data.body.content.sha
-       					}
-       				});
-     			}
-   			});
+	return _createCommit(user, repo, sha, content, message, user.accessToken).then((data)=>{
+		res.send({
+       		result: 'success',
+       		repo: repo,
+       		sha:{
+       			flows: data.body.content.sha
+       		}
+       	});
+	},(err)=>{
+		console.log(err);
+		res.status(500).send({error:'could not update the repo'});
+	});
 	
 });
 
+
 router.post('/publish', function(req,res){
 	
-	console.log(req.body);
-	const repo = req.body.repo;
-	const manifest = req.body.manifest;
+	const user = req.user;
+	const repo 		= req.body.repo;
+	const manifest  = req.body.manifest;
+	const flows 	= req.body.flows;
+	
 	const app = manifest.app;
 	const packages = manifest.packages;
 	const allowed = manifest['allowed-combinations'];
 	const description = manifest.app.description;
-		
-	const user = req.user;
-	//need to create a new docker file
-	const dcommands = [
-							`FROM ${config.registry.URL}/databox/red`, 
-							`ADD ${config.github.RAW_URL}/${user.username}/${repo.name}/master/flows.json /root/.node-red/flows.json`,
-							'LABEL databox.type="app"',
-							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
-							"EXPOSE 8080",
-							"CMD /root/start.sh"
-					   ]	
-	
-	
-	const dockerfile = dcommands.join("\n");
-	
 
-	/*return _createRepo(REPONAME, description, false, req.user.accessToken).then( (repo)=>{
-		return _addFile({
-   							username: user.username,
-   							repo: repo.name, 
-   							filename: 'Dockerfile',
-   							email: req.user.email || `${req.user.username}@me-box.com`,
-   							message: 'first commit',
-   							content: new Buffer(dockerfile).toString('base64'),
-   							accessToken: req.user.accessToken,
-   						})
+	const commitmessage = 'publish commit';
 	
-	},(err)=>{
-   		res.status(500).send({error:'could not create the repo'});
-  	}).then(function(commit){*/
-  	
-  	console.log("generated manifest");
-  	console.log(_generateManifest(req.user, app.name, app, packages, allowed));
-  	
-	const data = {
-					manifest: JSON.stringify(_generateManifest(req.user, app.name, app, packages, allowed)),
-										
-					poster: JSON.stringify({
-						username: req.user.username,
-					}),
-										
-					postDate:  JSON.stringify((new Date()).toISOString()),
-										
-					queries: JSON.stringify(0),
-	}; 
-	
-	
-						
-	return _saveToAppStore(data).then(function(result){
-		var path = "tmp.tar.gz";
-		return _createTarFile(dockerfile, path);
-	},(err)=>{
-   		res.status(500).send({error: 'could not save to app store'});
-  	}).then(function(tarfile){
-		return _createDockerImage(tarfile, app.name);
-	},(err)=>{
-   		res.status(500).send({error: 'could not create tar file'});
-  	}).then(function(){
-		res.send({success:true});
-	},(err)=>{
-   		res.status(500).send({error: 'could not create docker image'});
-  	});
+	//first save the manifest and flows file - either create new repo or commit changes
+	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
+		
+		const flowcontent 		= new Buffer(JSON.stringify(flow)).toString('base64');
+		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
+		const message = commitmessage;
+		
+		return _createCommit(user, repo, repo.sha.flows, flowcontent, message, req.user.accessToken)
+		.then((data)=>{
+			return _createCommit(user, repo, sha.manifest, manifestcontent, message, req.user.accessToken)
+		}, (err)=>{
+			res.status(500).send({error: err});
+		}).then((data)=>{
+			return _publish(user, repo.name, app, packages, allowed);
+		},(err)=>{
+			res.status(500).send({error: err});
+		}).then(()=>{
+			res.send({success:true});
+		});
+	}else{ //create a new repo!
+		return _createRepo(user, app.name, app.description, flows, manifest, commitmessage, req.user.accessToken)
+		
+		.then((values)=>{				
+			return Promise.all([Promise.resolve(values), _publish(user, app.name, app, packages, allowed)]);
+		},(err)=>{
+			res.status(500).send({error: err});
+		}).then((values)=>{
+			const repodetails = values[0];
+			res.send({
+				result:'success', 
+				repo: repodetails[0], 
+				sha:{
+					flows:    repodetails[1].content.sha,
+					manifest: repodetails[2].content.sha,
+				}
+			});
+		})
+	}
 });
 
 module.exports = router;

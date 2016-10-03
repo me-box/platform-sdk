@@ -129,11 +129,10 @@ export function requestRepos(){
 export function commitPressed(){
 
 	return function (dispatch, getState) {	
-		console.log("commit poressed!");
-		console.log(getState().repos.loaded);
+		
 		
 		const message = getState().repos.tosave.commit;
-		console.log(message);
+		
 		
 		const repo = getState().repos.loaded;
 		
