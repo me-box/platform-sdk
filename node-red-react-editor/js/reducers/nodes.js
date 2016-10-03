@@ -73,6 +73,11 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
     	return Object.assign({}, state, {
     		selected: null,
     	});
+    	
+    case ActionType.TAB_DELETE:
+        return Object.assign({}, state, {
+            nodes: state.nodes.filter(item => action.id !== item.z),
+      	});
 
     case ActionType.DELETE_NODE:
 

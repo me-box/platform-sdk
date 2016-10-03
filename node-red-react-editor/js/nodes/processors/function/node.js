@@ -5,10 +5,11 @@ import Textarea from '../../../components/form/Textarea';
 import Select from '../../../components/form/Select';
 import Cell from '../../../components/Cell';
 import Cells from '../../../components/Cells';
-var Codemirror = require('react-codemirror');
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/xml/xml');
-require('codemirror/mode/markdown/markdown');
+
+import brace from 'brace';
+import AceEditor from 'react-ace';
+import 'brace/mode/java';
+import 'brace/theme/github';
 
 class Node extends React.Component {
 
@@ -49,22 +50,19 @@ class Node extends React.Component {
 			const outputselect = <div className="centered">
 									<Select {...outputprops}/>												
 						  		 </div>
-
-			var codeprops = {
-            	
+        	
+        	var aceprops = {
         		onChange: (value)=>{
         			 this.props.updateNode("func", value);
         		},
-        		
         		value: this.props.values.func || this.props.selected.func || "",
-        		
-        		options: {
-        			lineNumbers: true,
-        			mode: 'javascript',
-        		}
-        	};
+        		mode: "javascript",
+        		theme: "github",
+        		name: selected.id,
+        		editorProps:{$blockScrolling: true},
+        	}
         	
-        	const codeinput =  <Codemirror  {...codeprops} />
+        	const codeinput = <AceEditor {...aceprops}/> 
 									
           	return <div>
           			<Cells>									

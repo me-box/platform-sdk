@@ -49,13 +49,14 @@
     "webpack-dev-server": "^1.8.2"
   },
   "dependencies": {
+    "brace": "^0.8.0",
     "classnames": "^2.2.5",
     "d3": "^3.5.16",
     "file-loader": "^0.8.5",
     "isomorphic-fetch": "^2.2.1",
     "moment": "^2.13.0",
     "react": "^0.14.8",
-    "react-codemirror": "^0.2.6",
+    "react-ace": "^3.6.0",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^0.14.6",

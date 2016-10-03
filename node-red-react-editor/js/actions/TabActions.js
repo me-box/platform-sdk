@@ -1,4 +1,4 @@
-import {TAB_ADD, TAB_SELECT, TAB_UPDATE} from '../constants/ActionTypes';
+import {TAB_ADD, TAB_SELECT, TAB_UPDATE, TAB_DELETE} from '../constants/ActionTypes';
 import {getID} from '../utils/nodeUtils';
 
 const _createNewTab = function(){
@@ -17,8 +17,6 @@ export function addTab(){
 }
 
 export function updateTab(id, label){
-	console.log("updating tab!! " + id);
-	console.log(label);
 	return {
 		type: TAB_UPDATE,
 		id,
@@ -31,4 +29,11 @@ export function selectTab(tab){
       type: TAB_SELECT,
       tab
     }
+}
+
+export function deleteTab(id){
+	return {
+		type: TAB_DELETE,
+		id,
+	}
 }

@@ -10,6 +10,7 @@ class Workspace extends React.Component {
 	constructor(props){
         super(props);
         this._updateTab = this._updateTab.bind(this);
+        this._deleteTab = this._deleteTab.bind(this);
     }
 	
 	render() {
@@ -56,7 +57,14 @@ class Workspace extends React.Component {
 								onChange: this._updateTab.bind(this,item.id),
 							}
 							
-							tabcontent = <input type="text" {...inputprops} style={tabtextstyle}></input>
+							tabcontent =  <div>
+											<div>
+												<input type="text" {...inputprops} style={tabtextstyle}></input>
+										  	</div>
+										  	<div style={{position: 'absolute', top: 0, right: 5}}>
+										  		<i className="fa fa-times fa-fw" onClick={this._deleteTab.bind(this,item.id)} />
+										  	</div>
+										  </div>
 							
 						}
 						else{
@@ -103,6 +111,11 @@ class Workspace extends React.Component {
 			        </div>
 			    </div>
 		);
+	}
+	
+	
+	_deleteTab(id, event){
+		this.props.deleteTab(id, event.target.value);
 	}
 	
 	_updateTab(id, event){

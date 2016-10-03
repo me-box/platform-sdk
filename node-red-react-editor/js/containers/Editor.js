@@ -5,7 +5,7 @@ import {fetchNodes, dropNode}  from '../actions/NodeActions';
 import {deletePressed} from '../actions/KeyboardActions';
 import {windowResize} from '../actions/WindowActions';
 import {init} from '../actions/EditorActions'; 
-import {addTab, selectTab, updateTab} from '../actions/TabActions';
+import * as TabActions from '../actions/TabActions';
 import Palette from '../components/Palette';
 import Workspace from '../components/Workspace';
 import Sidebar from './Sidebar';
@@ -29,9 +29,8 @@ class Editor extends Component {
     this._handleKeyDown = this._handleKeyDown.bind(this);
     this.deletePressed = bindActionCreators(deletePressed, props.dispatch);
     this.windowResize  = bindActionCreators(windowResize, props.dispatch);
-  	this.addTab = bindActionCreators(addTab, props.dispatch);
-  	this.selectTab = bindActionCreators(selectTab, props.dispatch);
-  	this.updateTab = bindActionCreators(updateTab, props.dispatch);
+    
+  	Object.assign(this, ...bindActionCreators(TabActions, props.dispatch));
   } 
 
   componentDidMount(){
@@ -74,6 +73,7 @@ class Editor extends Component {
       addTab: this.addTab,
       selectTab: this.selectTab,
       updateTab: this.updateTab,
+      deleteTab: this.deleteTab,
     }
     
     const networkstatusprops = {

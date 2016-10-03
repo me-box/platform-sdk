@@ -31,9 +31,17 @@ export default function tabs(state = {current:null, tabs:[]}, action) {
 	  	});
 	  	
 	  case TAB_DELETE:
-	  	return Object.assign({}, state, {
-	  				tabs: state.tabs.filter((item)=>{return item.id !== action.id})
-	  			});
+	  	if (state.tabs.length > 1){
+	  		return Object.assign({}, state, {
+	  				tabs: state.tabs.filter((item)=>{return item.id !== action.id}),
+	  				current: state.tabs.reduce((acc,tab)=>{
+	  					if (tab.id != action.id)
+	  						return tab;
+	  					return acc;
+	  				},{})
+	  		});
+	  	}
+	  	return state;
 	  	
 	  case TABS_LOAD:
 	    
