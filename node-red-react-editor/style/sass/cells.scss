@@ -21,6 +21,17 @@ html{
     
 }
 
+
+.flexcolumn > div.noborder{
+	border: none;
+} 
+
+#nodeeditor .flexcolumn > div{
+ 	flex: 0 0 auto;
+    -webkit-flex: 0 0 auto;
+}
+
+
 .flexcolumn > div {
  	display: -webkit-flex;
     display: flex;
@@ -96,8 +107,7 @@ html{
 	display: flex;
 	 -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
-    width: 100px;
-   
+    width: 118px;
    	border-right:  1px solid #b6b6b6;
    	border-left:  1px solid #b6b6b6;
    	background: #f2f2f2;
@@ -165,22 +175,15 @@ html{
   margin:auto;
 }
 
+
 #repomanager input{
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
 
-#publisher input[type="text"], 
-.ui-dialog input[type="text"], 
-.ui-dialog select{
-	width: 100%;
-	height: inherit;
-	border-radius: 0;
-	padding: 0px;
-	margin: 0px;
-}
-
 #sidebar input[type="text"], 
+#publisher input[type="text"], 
+#nodeeditor input[type="text"], 
 .ui-dialog input[type="text"], 
 .ui-dialog select{
 	width: 100%;
@@ -190,7 +193,8 @@ html{
 	margin: 0px;
 }
 
-#publisher .flexcontainer textarea,,
+#publisher .flexcontainer textarea,
+#nodeeditor .flexcontainer textarea,
 .ui-dialog textarea{
 	width: 100%;
 	border-radius: 0;

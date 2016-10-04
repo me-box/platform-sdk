@@ -1,10 +1,11 @@
 import React, {PropTypes} from 'react';
-import Dialogue from '../components/Dialogue';
+import NodeEditor from '../components/NodeEditor';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
 import {updateNode, updateNodeValueKey, incrementNodeValueKey, initNodeKeys} from '../actions/NodeActions';
+import {PALETTE_WIDTH, TOOLBAR_HEIGHT, TAB_HEIGHT, WORKSPACE_FOOTER} from '../constants/ViewConstants';
 
 export default function composeNode(Component, nt, config, reducer=null){
 
@@ -35,7 +36,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 		render(){
 
-		   const {configuring, dispatch} = this.props;
+		   const {configuring, selected, dimensions, dispatch} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
     	   		updateNode: bindActionCreators(updateNode, this.props.dispatch),
@@ -43,16 +44,21 @@ export default function composeNode(Component, nt, config, reducer=null){
     	   		incrementNodeValueKey: bindActionCreators(incrementNodeValueKey, this.props.dispatch),
     	   })
 
-           const dialogueprops = {
+           const nodeeditorprops = {
               cancel: this.cancel,
               ok: this.ok,
               title: configuring ? configuring.id : "",
+              width: dimensions.w - PALETTE_WIDTH,
+              height: dimensions.h - TOOLBAR_HEIGHT - WORKSPACE_FOOTER,
+              top:  TOOLBAR_HEIGHT,
+              left: PALETTE_WIDTH,
+              node: selected,
            }
           
            if (configuring && configuring.type === nt){
-				return <Dialogue {...dialogueprops}>
+				return <NodeEditor {...nodeeditorprops}>
 							<Component {...props} />
-						</Dialogue>
+						</NodeEditor>
 			}
 			return null;
 		}
@@ -65,6 +71,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 			selected: state.nodes.selected,
 			configuring: state.nodes.configuring,
         	values: state.nodes.editingbuffer,
+        	dimensions: state.screen.dimensions,
 		}
       	if (reducer){
       		stateobj.local = state.nodes.selected ? state[state.nodes.selected.id] : null;

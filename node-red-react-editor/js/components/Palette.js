@@ -53,7 +53,7 @@ class Palette extends React.Component {
 
         let palettecontainerstyle={
             display: this.props.types.length > 0 ? 'block':'none',
-            background: '#4d4d4d',
+            background: '#333',
             color: 'white',
             letterSpacing: 1,
             WebkitFontSmoothing: 'antialiased',
