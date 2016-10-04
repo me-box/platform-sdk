@@ -19,11 +19,11 @@ const _flatten = (arr)=>{
 	}, [])
 }
 
-const _createCommit = function(user, repo, sha, content, message, accessToken){
+const _createCommit = function(user, repo, sha, filename, content, message, accessToken){
 
 	return new Promise((resolve, reject)=>{
 		request
-   			.put(`${config.github.API}/repos/${user.username}/${repo}/contents/flows.json`)
+   			.put(`${config.github.API}/repos/${user.username}/${repo}/contents/${filename}`)
    			.send({
   					"message": message,
  					"committer": {
@@ -37,12 +37,11 @@ const _createCommit = function(user, repo, sha, content, message, accessToken){
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
      			if (err ) {
+       				console.log("******** ERROR ********");
        				console.log(err);
        				reject(err);
        				
      			} else {
-       				console.log("got data ");
-       				console.log(data);
        				resolve(data);
      			}
    			});
@@ -87,7 +86,6 @@ const _createRepo = function(user, name, description, flows, manifest, commitmes
      			 	
      			 	setTimeout(
      			 		function(){
-     			 			console.log("am now clling resolve!");
 							resolve({
 								name: result.name, 
 								updated: result.updated_at, 
@@ -342,7 +340,6 @@ const _publish = function(user, reponame, app, packages, allowed){
 
 //list all apps owned by this user
 router.get('/repos/:user', function(req,res){
-	console.log("am in here!!");
 	const user = req.user;
 	const username = req.params.user;
 	
@@ -449,21 +446,25 @@ router.post('/repo/new', function(req,res){
 
 router.post('/repo/update', function(req, res){
 	
-	console.log("am in repo update!");
-	console.log(req);
+	const user = req.user;
+	const repo = req.body.repo;
+	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows)).toString('base64');
+	const manifestcontent 	= new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
+	const sha = req.body.sha;
+	const message = req.body.message || "checkpoint commit";
 	
-	var user = req.user;
-	var repo = req.body.repo;
-	var content = new Buffer(JSON.stringify(req.body.flow)).toString('base64');
-	var sha = req.body.sha;
-	var message = req.body.message || "checkpoint commit";
+	return _createCommit(user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then((data)=>{
+			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(user, repo, sha.manifest,  'manifest.json', manifestcontent, message, user.accessToken)])
+	}, (err)=>{
+			res.status(500).send({error: err});
+	}).then((values)=>{
 	
-	return _createCommit(user, repo, sha, content, message, user.accessToken).then((data)=>{
 		res.send({
        		result: 'success',
        		repo: repo,
        		sha:{
-       			flows: data.body.content.sha
+       			flows: values[0],
+       			manifest: values[1].body.content.sha,
        		}
        	});
 	},(err)=>{
@@ -491,32 +492,44 @@ router.post('/publish', function(req,res){
 	//first save the manifest and flows file - either create new repo or commit changes
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
 		
-		const flowcontent 		= new Buffer(JSON.stringify(flow)).toString('base64');
+		console.log("committing changes before publishing");
+		
+		const flowcontent 		= new Buffer(JSON.stringify(flows)).toString('base64');
 		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
 		const message = commitmessage;
 		
-		return _createCommit(user, repo, repo.sha.flows, flowcontent, message, req.user.accessToken)
+		return _createCommit(user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken)
 		.then((data)=>{
-			return _createCommit(user, repo, sha.manifest, manifestcontent, message, req.user.accessToken)
+			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(user, repo.name, repo.sha.manifest,  'manifest.json', manifestcontent, message, req.user.accessToken)])
 		}, (err)=>{
 			res.status(500).send({error: err});
-		}).then((data)=>{
-			return _publish(user, repo.name, app, packages, allowed);
+		}).then((values)=>{
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(user, repo.name, app, packages, allowed)]);
 		},(err)=>{
 			res.status(500).send({error: err});
-		}).then(()=>{
-			res.send({success:true});
+		}).then((values)=>{
+			res.send({
+				result:'success', 
+				repo: repo.name, 
+				sha:{
+					flows:    values[0],
+					manifest: values[1],
+				}
+			});
 		});
 	}else{ //create a new repo!
-		return _createRepo(user, app.name, app.description, flows, manifest, commitmessage, req.user.accessToken)
+	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
+		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken)
 		
 		.then((values)=>{	
-			const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;			
+			console.log(`publishing...${reponame}`);
 			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, allowed)]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			const repodetails = values[0];
+			
+			
 			res.send({
 				result:'success', 
 				repo: repodetails[0], 

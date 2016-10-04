@@ -3,8 +3,7 @@ import request from 'superagent';
 import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 import {networkAccess, networkError, networkSuccess} from './NetworkActions';
-import {receivedSHA} from './RepoActions';
-
+import {receivedSHA, requestRepos} from './RepoActions';
 
 export function packageSelected(id){
 	return {
@@ -130,6 +129,7 @@ export function submit(){
   					dispatch(networkSuccess('successfully published app!'));
           			//dispatch(submissionSuccess(res.body));
   	 				dispatch(receivedSHA(res.body.repo, res.body.sha));
+  	 				dispatch(requestRepos());
   	 			}
   	 		});	
 		

@@ -132,20 +132,34 @@ export function commitPressed(){
 		
 		
 		const message = getState().repos.tosave.commit;
-		
-		
-		const repo = getState().repos.loaded;
+		const repo 	= getState().repos.loaded;
+		const tabs = getState().tabs.tabs; 
+		const packages = getState().publisher.packages;
+		const grid = getState().publisher.grid;
+		const app = getState().publisher.app;
 		
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
 			return Object.assign({}, convertNode(node, getState().ports.links));
 		});
 		
-		const tabs = getState().tabs.tabs;
+		
 		 
 		const data = { 
 			repo: repo.name, 
-			flow: [...tabs,...jsonnodes],
-			sha: repo.sha.flows,
+			
+			flows: [...tabs,...jsonnodes],
+			
+			manifest: {
+  				app: Object.assign({}, app, {id: getID()}),
+  				packages: packages,
+  				'allowed-combinations': grid,
+  			},
+			
+			sha: {
+					flows:repo.sha.flows, 
+					manifest: repo.sha.manifest,
+			},
+				
 			message: message || 'cp commit',
 		}
 		
@@ -162,7 +176,7 @@ export function commitPressed(){
   					dispatch(networkError(err.message));
   				}else{
   					dispatch(networkSuccess('successfully saved changes!'));
-  					dispatch(receivedSHA(repo.name, {flows:res.body.sha}));
+  					dispatch(receivedSHA(repo.name, res.body.sha));
   	 			}
   	 		});	
 	}	 
@@ -217,6 +231,7 @@ export function savePressed(){
           			console.log(res.body);
           			dispatch(networkSuccess('successfully saved app'));
           			dispatch(receivedSHA(res.body.repo, res.body.sha));
+          			dispatch(requestRepos());
           			//dispatch(submissionResponse(res.body));
           			//dispatch(receivedCommit(res.body.commit))
   	 			}
