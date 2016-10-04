@@ -60,6 +60,7 @@ class Node extends React.Component {
         		theme: "github",
         		name: selected.id,
         		editorProps:{$blockScrolling: true},
+        		height: 300,
         	}
         	
         	const codeinput = <AceEditor {...aceprops}/> 
@@ -70,7 +71,7 @@ class Node extends React.Component {
 						<Cell title={"function"} content={codeinput}/>
 						<Cell title={"outputs"} content={outputselect}/>
           			</Cells>
-          		 </div>
+          		   </div>
           
        }
         

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {TOOLBAR_HEIGHT, INFO_HEIGHT} from '../constants/ViewConstants';
+import {TOOLBAR_HEIGHT, INFO_HEIGHT, NODE_EDITOR_PADDING} from '../constants/ViewConstants';
 import {fitText} from '../utils/utils';
 
 class NodeEditor extends Component {
@@ -14,10 +14,10 @@ class NodeEditor extends Component {
 	  	
 		const editorstyle = {
 			position: 'absolute',
-			//height: this.props.height,
-			width: this.props.width - 20,
-			top: this.props.top + 10, 
-			left:  this.props.left + 10, 
+			maxHeight: this.props.height - (2 * NODE_EDITOR_PADDING),
+			width: this.props.width - (2* NODE_EDITOR_PADDING),
+			top: this.props.top + NODE_EDITOR_PADDING, 
+			left:  this.props.left + NODE_EDITOR_PADDING, 
 			background: 'white',
 			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
