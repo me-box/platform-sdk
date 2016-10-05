@@ -46,7 +46,7 @@ export default function repos(state = { loaded: {name:"", sha:{}}, browsingname:
 
 	  case REPO_LIST_RETRIEVED:
 	  	return Object.assign({}, state, {
-	  		repos: action.repos,
+	  		repos: action.repos || [],
 	  	});
 	  	
 	  default:

@@ -21,6 +21,7 @@ class NodeEditor extends Component {
 			background: 'white',
 			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+			border: '1px solid #d3d3d3',
 		}
 		
 		const infostyle = {
@@ -53,7 +54,7 @@ class NodeEditor extends Component {
         }
         
         const descriptionstyle = {
-        	color: 'black',
+        	color: '#4d4d4d',
         	background: 'white',
         	textAlign: 'left',
         	WebkitFontSmoothing: 'antialiased',
@@ -83,12 +84,12 @@ class NodeEditor extends Component {
 								<div style={{WebkitFlex: '0 0 auto'}}>
 									<div className="flexcolumn">
 										<div className="noborder">
-											<div className="centered" style={{paddingTop:8}}>
+											<div className="centered" style={{padding: '8px 10px 0px 10px'}}>
 												<div style={iconstyle}><i className={`fa ${node._def.icon} fa-5x fa-fw`}></i></div>
 											</div>
 										</div>
 										<div className="noborder">
-											<div className="centered">
+											<div className="centered" style={{padding: '0px 10px 0px 10px'}}>
 												<div style={namestyle}> {node.type} </div>
 											</div>
 										</div>

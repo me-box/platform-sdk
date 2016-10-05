@@ -14,36 +14,6 @@ import * as Actions from './actions';
 import {REPEAT_OPTIONS, INTERVAL_OPTIONS,TIMEINTERVAL_OPTIONS, TIMEUNIT_OPTIONS, REPEAT_DEFAULT_OBJECTS} from './constants';
 
 import './style.css';
-
-
-
-  /*<div>
-                      <div className="form-row">
-                          <label>
-                              <i className="fa fa-envelope"></i> <span data-i18n="node-red:common.label.payload">Payload</span>
-                          </label>
-                          <Payload {...payloadprops}/>
-                      </div>
-                  
-                      <div className="form-row">
-                          <Textfield {...topicprops}/>
-                      </div>
-
-                      <div className="form-row">
-                          <label><i className="fa fa-repeat"></i> <span data-i18n="inject.label.repeat">repeat</span></label>
-                          <Select {...repeatprops}/>
-                      </div>
-
-                      {options}
-
-                      <div className="form-row">
-                        <Textfield {...nameprops}/>
-                      </div>
-
-                      <div className="form-tips" data-i18n="[html]inject.tip">
-                          <strong>Note:</strong> "interval between times" and "at a specific time" will use cron. See info box for details.
-                      </div>
-                  </div>*/
                   
 class Node extends React.Component {
 
@@ -106,7 +76,6 @@ class Node extends React.Component {
             },
             
             value: local.repeatOption || 'none',
-            style: {width:'73%'},
           }
        
           /******** props for 'interval' components ************/
@@ -315,11 +284,7 @@ class Node extends React.Component {
 										<Textfield {...nameprops}/>
 									</div>
 								</div>
-          					</div>
-          				</div>
-          				<div>
-          					<div className="flexrow">
-          						<div className="title">	
+								<div className="title">	
 									<div className="centered">payload</div>
 								</div>
 								<div>
@@ -334,19 +299,6 @@ class Node extends React.Component {
           					</div>
           				</div>
           				
-          				<div>
-          					<div className="flexrow">
-          						<div className="title">	
-									<div className="centered">topic</div>
-								</div>
-					
-								<div>
-									<div className="centered">
-										 <Textfield {...topicprops}/>
-									</div>
-								</div>
-          					</div>
-          				</div>
           				
           				<div>
           					<div className="flexrow">
@@ -364,18 +316,7 @@ class Node extends React.Component {
           				
           				{options}
           				
-          				<div>
-          					<div className="flexrow">
-          						<div className="title">	
-									<div className="centered">note</div>
-								</div>
-								<div>          							
-									<div className="form-tips centered">
-										"interval between times" and "at a specific time" will use cron. See info box for details.
-									</div>
-                      			</div>
-                      		</div>
-          				</div>
+          				
           				
           			</div>
           	
