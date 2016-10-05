@@ -294,7 +294,7 @@ class Node extends React.Component {
           			</div>
           			
           			<div>
-          				<div className="centered">
+          				<div className="centered" style={{color:'white', background:'#445662'}}>
           					<h4> chart options </h4>
           				</div>
           			</div>
@@ -333,7 +333,7 @@ class Node extends React.Component {
           		  	{chart==="gauge" && gaugeoptions}
           		  	
           		  	<div>
-          				<div className="centered">
+          				<div className="centered" style={{color:'white', background:'#445662'}}>
           					<h4> chart sources </h4>
           				</div>
           			</div>
@@ -414,7 +414,7 @@ export default composeNode(Node, 'chartify',
                                     return this.name || "chartify";
                                 },
                                 
-                                description: "<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to data for a chart </p>",
+                                description: ()=>"<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to data for a chart </p>",
                                  
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

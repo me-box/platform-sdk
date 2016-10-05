@@ -55,13 +55,13 @@ class Toolbar extends Component {
 						 <a style={buttonstyle} href="/auth/logout">logout</a>
 					  </li>
 					   <li>
+						 <a style={buttonstyle} onClick={this.toggleAppManager}>load</a>
+					  </li>
+					   <li>
 						 <a style={buttonstyle} onClick={this.toggleSaveDialogue}>save</a>
 					  </li>
 					  <li>
 						 <a style={buttonstyle} onClick={this.togglePublisher}>publish</a>
-					  </li>
-					  <li>
-						 <a style={buttonstyle} onClick={this.toggleAppManager}>app manager</a>
 					  </li>
 					  <li>
 						<span className="deploy-button-group button-group">

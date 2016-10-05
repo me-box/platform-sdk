@@ -79,7 +79,9 @@ export function toggleItem(anarray, item){
 //eg fontprop = "bold 13px Verdana";
 
 export function fitText(text, style, requiredHeight, requiredWidth){
-	let fontsize = requiredWidth;
+	let fontsize = requiredHeight-8; //adjust for padding
+	
+	let count = 0;
 	
 	const longestWord = text.split(" ").reduce((acc, txt)=>{
 		if (acc.length < txt.length)

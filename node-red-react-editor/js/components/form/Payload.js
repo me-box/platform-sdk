@@ -14,9 +14,6 @@ class Payload extends React.Component {
 	render() {  
       
 	
-	 console.log("payload menu is " + this.props.payloadMenu);
-	  console.log("bool menu is " + this.props.boolMenu);
-	  
      let props = {
           containerstyle: {marginTop: 10, textAlign:'left', marginRight: '0px', marginLeft: '0px'},
           selectstyle: {width: 'auto'},

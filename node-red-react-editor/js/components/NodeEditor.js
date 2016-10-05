@@ -10,7 +10,7 @@ class NodeEditor extends Component {
 
 	render(){
 
-	  	const {node} = this.props;
+	  	const {node, description} = this.props;
 	  	
 		const editorstyle = {
 			position: 'absolute',
@@ -65,7 +65,7 @@ class NodeEditor extends Component {
             paddingBottom: 20,
             paddingTop: 15,
             fontSize: '1em',
-            maxHeight: 150,
+            height: 140,
         }
 
 		
@@ -74,7 +74,6 @@ class NodeEditor extends Component {
         const namestyle = {
         	fontSize: fitText(node.type || "", {width: "118px", padding: '16px', textAlign:'center'}, 40, 118)
         }
-        
 
 		return <div id="nodeeditor" style={editorstyle}>
 				 <div style={infostyle}>
@@ -96,9 +95,16 @@ class NodeEditor extends Component {
 									</div>
 								</div>
 								<div>
-									<div style={descriptionstyle}>	
-        								<div dangerouslySetInnerHTML={{__html: node._def.description}}></div>
-        							</div>
+									<div className="flexcolumn">
+										<div className="noborder">
+											<div style={descriptionstyle}>	
+												<div dangerouslySetInnerHTML={{__html: description}}></div>
+											</div>
+										</div>
+										<div className="noborder" style={{minHeight:10}}>
+												<div style={{background:'white', width:'100%'}}></div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -113,12 +119,12 @@ class NodeEditor extends Component {
 				 			<div className="flexrow">
 				 				<div>
 				 					<div className="centered">
-				 						<a className="button selected" onClick={this.props.ok}>ok</a>
+				 						<button className="button selected" onClick={this.props.ok}>ok</button>
 				 					</div>
 				 				</div>
 				 				<div>
 				 					<div className="centered">
-				 						<a className="button selected" onClick={this.props.cancel}>cancel</a>
+				 						<button className="button selected" onClick={this.props.cancel}>cancel</button>
 				 					</div>
 				 				</div>
 				 			</div>

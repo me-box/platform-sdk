@@ -1,4 +1,3 @@
-import counter from './counter';
 import nodes from  './nodes';
 import types from  './nodetypes';
 import mouse from './mouse';
@@ -10,11 +9,10 @@ import tabs from './tabs';
 import publisher from './publisher';
 import apps from './apps';
 import network from './network';
-
+import help from './help';
 import {routerReducer} from 'react-router-redux';
 
 const rootReducers = {
-  counter, 
   nodes,
   tabs,
   types,
@@ -26,6 +24,7 @@ const rootReducers = {
   publisher,
   apps,
   network,
+  help,
   routing: routerReducer,
 };
 

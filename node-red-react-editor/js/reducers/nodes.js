@@ -133,7 +133,7 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
 		
 		return Object.assign({}, state, {editingbuffer: values});
 		
-    case	 ActionType.NODE_INIT_VALUES:
+    case ActionType.NODE_INIT_VALUES:
      
       return Object.assign({}, state, {
         editingbuffer : Object.assign({}, state.editingbuffer, action.keys)

@@ -38,6 +38,8 @@ class Node extends React.Component {
 					     ],
 					     
 				onSelect: (event)=>{
+					console.log(event.target.value);
+					this.props.updateDescription(event.target.value);
 					this.props.updateNode("subtype", event.target.value);
 				},
 				style: {width: '100%'},
@@ -142,7 +144,9 @@ export default composeNode(Node, 'sensingkit',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                description: "<p>Android mobile sensingkit<code>{}</code></p>",
+                                description: (subtype)=>{
+                                	return "<p>Android mobile sensingkit<code>{}</code></p>";
+                                }
 
 
                             }

@@ -97,7 +97,7 @@ export default composeNode(Node, 'temperature',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                description: "<p>Wireless things temperatures.  Data is of the form <code>{'value':21.8,'node':'XG','timestamp':'2016-06-27T13:16:52.954Z','unit':'degrees celcius','stream':'temperature'} </code></p>",
+                                description: ()=>"<p>Wireless things temperatures.  Data is of the form <code>{'value':21.8,'node':'XG','timestamp':'2016-06-27T13:16:52.954Z','unit':'degrees celcius','stream':'temperature'} </code></p>",
 
 
                             }

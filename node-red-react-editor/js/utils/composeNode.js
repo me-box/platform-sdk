@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
+import * as HelpActions from '../actions/HelpActions';
+
 import {updateNode, updateNodeValueKey, incrementNodeValueKey, initNodeKeys} from '../actions/NodeActions';
 import {PALETTE_WIDTH, TOOLBAR_HEIGHT, TAB_HEIGHT, WORKSPACE_FOOTER} from '../constants/ViewConstants';
 
@@ -20,6 +22,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 			Object.assign(  this, 
               ...bindActionCreators(RegisterActions, props.dispatch), 
               ...bindActionCreators(DialogueActions, props.dispatch),
+              ...bindActionCreators(HelpActions, props.dispatch), 
            	);	
             this.initNodeKeys = bindActionCreators(initNodeKeys, this.props.dispatch);
 		}
@@ -36,12 +39,18 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 		render(){
 
-		   const {configuring, selected, dimensions, dispatch} = this.props;
+		   const {configuring, selected, description, dimensions, dispatch} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
     	   		updateNode: bindActionCreators(updateNode, this.props.dispatch),
     	   		updateNodeValueKey: bindActionCreators(updateNodeValueKey, this.props.dispatch),
     	   		incrementNodeValueKey: bindActionCreators(incrementNodeValueKey, this.props.dispatch),
+    	   		updateDescription: (type)=>{
+    	   			if (selected && selected._def){
+    	   				this.updateDescription(selected._def.description(type));
+    	   			}
+    	   		},
+    	   		
     	   })
 
            const nodeeditorprops = {
@@ -53,8 +62,10 @@ export default function composeNode(Component, nt, config, reducer=null){
               top:  TOOLBAR_HEIGHT,
               left: PALETTE_WIDTH,
               node: selected,
+              description: description ? description : selected ? selected._def.description() : "",
            }
           
+           
            if (configuring && configuring.type === nt){
 				return <NodeEditor {...nodeeditorprops}>
 							<Component {...props} />
@@ -68,6 +79,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 		
 	
 		let stateobj = {
+			description: state.help.description,
 			selected: state.nodes.selected,
 			configuring: state.nodes.configuring,
         	values: state.nodes.editingbuffer,
