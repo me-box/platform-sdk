@@ -1,4 +1,4 @@
-import { MOUSE_UP, MOUSE_DOWN, MOUSE_MOVE, INIT} from './ActionTypes';
+import { MOUSE_UP, MOUSE_DOWN, MOUSE_MOVE, INIT, WINDOW_RESIZED} from './ActionTypes';
 import {LAYOUT_HEIGHT} from './ViewConstants';
 
 function _initialDimensions(){
@@ -77,7 +77,7 @@ function boxes (state, action){
             	const tocol = Math.round((action.x + state.ox) / (state.w/3));
 				const torow = Math.round((action.y + state.oy) / (state.h/state.boxes.length));
 
-				console.log(`rc: ${rc}, moving to row: ${torow}, col: ${tocol}`);
+				//console.log(`rc: ${rc}, moving to row: ${torow}, col: ${tocol}`);
 
                 return { 
                 		moving: Object.assign(	{}, 
@@ -124,7 +124,7 @@ export function reducer(state = {
 			return Object.assign({}, state, {boxes: action.boxes||[[]]});
 			
         case MOUSE_DOWN:
-
+			const {w,h} = action;
             const {row, col} = _getboxbyid(action.box.id, state.boxes);
             const box = state.boxes[row][col];
             const left = (state.w / state.boxes[row].length) * col;
@@ -132,7 +132,7 @@ export function reducer(state = {
             const ox = left-state.x;
             const oy = top-state.y;
 
-            console.log(`selected ${box.name} and left = ${left} top = ${top}`);
+            //console.log(`selected ${box.name} and left = ${left} top = ${top}`);
             return Object.assign({}, state, {
                                                 moving: {
                                                 	id: action.box.id,
@@ -144,7 +144,8 @@ export function reducer(state = {
                                                 	top: state.y + oy,
                                                 	left: state.x + ox,
                                                 },
-                                              
+                                                w: w,
+                                                h: h,
                                                 ox: ox, //box.left - state.x, 
                                                 oy: oy, //box.top - state.y,
                                             });

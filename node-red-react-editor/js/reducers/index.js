@@ -10,7 +10,6 @@ import publisher from './publisher';
 import apps from './apps';
 import network from './network';
 import help from './help';
-import {routerReducer} from 'react-router-redux';
 
 const rootReducers = {
   nodes,
@@ -25,7 +24,6 @@ const rootReducers = {
   apps,
   network,
   help,
-  routing: routerReducer,
 };
 
 export default rootReducers;

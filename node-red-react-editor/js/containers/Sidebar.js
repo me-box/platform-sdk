@@ -27,9 +27,9 @@ class Sidebar extends React.Component {
 		//if (showappmanager){
 			//content = <RepoManager />
 		//}
-	    if (shownodedetails){
-			content = <NodeInfo node={node}/>
-		}
+	    //if (shownodedetails){
+		//	content = <NodeInfo node={node}/>
+		//}
 		//else if (showtest){
 		//	content = <TestManager />
 		//}

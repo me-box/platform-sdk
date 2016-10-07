@@ -15,8 +15,8 @@ class Node extends React.Component {
 
        render() {
           
-        	const {selected} = this.props;
-          
+        	const {selected, inputs, help} = this.props;
+            
        		
 			const nameprops = {	
 									value: 	this.props.values.name || this.props.selected.name || "",
@@ -64,9 +64,119 @@ class Node extends React.Component {
         	}
         	
         	const codeinput = <AceEditor {...aceprops}/> 
-									
+			
+			
+			
+			const inputdescription = inputs.map((input, i)=>{
+				const schema = help.outputschema[input.id] ?  help.outputschema[input.id] : input._def.schema ? input._def.schema() : {};
+				
+				const iconcontainer ={
+					color:'white',
+					background: input._def.color || '#ca2525',
+					border: '2px solid white', 
+					textAlign: 'center',
+					boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+					color: 'white',
+					height: '100%',
+					justifyContent: 'center',
+					display: 'flex'
+				}
+				
+				const icon = {
+					alignSelf: 'center',
+				}
+				
+				const payload = Object.keys(schema).map((key)=>{
+					const item = schema[key];
+					return <div>
+								<div className="flexrow">
+								 	<div className="title">
+								 		<div className="centered">
+								 			<strong>{key}</strong>
+								 		</div>
+								 	</div>
+								 	<div className="fixed" style={{width:100}}>
+								 		<div className="centered">
+								 		{item.type} 
+								 		</div>
+								 	</div>
+								 	<div>
+								 		<div className="centered">
+								 		{item.description}
+								 		</div>
+								 	</div>
+								</div>
+						   </div>
+				});
+		
+				return <div key={i} className="flexrow">
+							
+							<div className="fixed">
+								<div style={iconcontainer}>
+									<div style={icon}>
+										<i className={`fa ${input._def.icon} fa-2x fa-fw`}></i>
+									</div>
+								</div>
+							</div>
+							<div>
+								<div className="flexcolumn">
+									<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													attribute name
+												</div>
+											</div>
+											<div className="header fixed" style={{width:100}}>
+												<div className="centered">
+												attribute type
+												</div>
+											</div>
+											<div className="header">
+												<div className="centered">
+													description
+												</div>
+											</div>
+										</div>
+									</div>
+									{payload}
+								</div>
+							</div>
+					   </div>
+			});
+			
+			const inputsoutputs = <div className="flexrow" style={{maxHeight:300, overflow:'auto'}}>	
+										<div>
+											<div className="flexcolumn">
+												<div className="noborder" style={{background:'#445662', color: 'white'}}>
+													<div className="centered" >
+														there are {inputs.length} inputs to this function
+													</div>
+												</div>
+												<div className="flexcolumn">
+													<div className="noborder">
+													{inputdescription}
+													</div>
+												</div>
+											</div>
+										</div>
+										<div>
+											<div className="flexcolumn">
+												<div className="noborder" style={{background:'#445662', color: 'white'}}>
+													<div className="centered" >
+														there are 0 ouputs from this function
+													</div>
+												</div>
+												<div className="flexcolumn">
+													
+												</div>
+											</div>
+										</div>
+									</div>
+								  				
           	return <div>
-          			<Cells>									
+          			<Cells>		
+          				<Cell content = {inputsoutputs} />							
 						<Cell title={"name"} content={nameinput}/>
 						<Cell title={"function"} content={codeinput}/>
 						<Cell title={"outputs"} content={outputselect}/>

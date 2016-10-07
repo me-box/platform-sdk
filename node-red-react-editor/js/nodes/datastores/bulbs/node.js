@@ -42,9 +42,9 @@ export default composeNode(Node, 'bulbs',
                                 
                                 schema: ()=>{
                                 	return	{
-                                		value: {type:'numeric'},
-                                		name:  {type:'string'},
-                                		id:    {type:'string'},
+                                		value: {type:'numeric', description: "a 0 or 1 (on or off)"},
+                                		name:  {type:'string', description: "a name assigned to this bulb"}, 
+                                		id:    {type:'string', description: "a unique id"},
                                 	}
                                 
                                 },

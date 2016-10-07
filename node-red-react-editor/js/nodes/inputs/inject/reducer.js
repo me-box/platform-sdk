@@ -28,11 +28,7 @@ function translateToLocalState(node){
 	}
 
 	if (node.crontab && node.crontab != ""){ //specific time
-		console.log("ok doing thigs with crontab");
-		console.log(node.crontab);
 		const [m,h,,,days] = node.crontab.split(/\s+/);
-		console.log(`${m} ${h} ${days}`);
-
 		local.specificTime = `${h}:${m}`;
 		local.specificTimeOn = days.split(",");
 		return local;

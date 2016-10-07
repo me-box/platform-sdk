@@ -74,7 +74,7 @@ class LayoutManager extends Component {
               fontSize: 30,
             }
 
-            return  <div className={className} onMouseDown={this._onMouseDown.bind(this, {id:box.id, name:box.name})} key={`${i} ${j}`} style={style}>
+            return  <div className={className} onMouseDown={this._onMouseDown.bind(this, {id:box.id, name:box.name}, w, h)} key={`${i} ${j}`} style={style}>
                         <div style={centered}>
                           {box.name}
                         </div>
@@ -85,8 +85,8 @@ class LayoutManager extends Component {
       return <div>{b}</div>
   }
 
-  _onMouseDown(box){
-     this.props.mouseDown(box);
+  _onMouseDown(box,w,h){
+     this.props.mouseDown(box,w,h);
   }
 }
 

@@ -35,6 +35,13 @@ export function nodeDoubleClicked(node, event){
         node,
         id: node.id
     });
+    
+    /*dispatch({
+    	type: HELP_UPDATE_DESCRIPTION,
+    	description: getState().nodes.selected._def.description(),
+    });*/
+    
+
   }
 } 
 

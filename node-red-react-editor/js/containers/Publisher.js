@@ -421,15 +421,15 @@ class Submit extends React.Component {
 	render(){
 			
 		return  <div>
-					<div className="flexrow">
+					<div className="flexrow" style={{background:'#445662'}}>
 						<div>
 							<div className="centered">
-								<div onClick={this.props.cancel} className="button selected">cancel</div>
+								<button onClick={this.props.cancel} className="button selected">cancel</button>
 							</div>
 						</div>
 						<div>
 							<div className="centered">
-								<div onClick={this.props.submit} className="button selected">publish</div>
+								<button onClick={this.props.submit} className="button selected">publish</button>
 							</div>
 						</div>
 					</div>

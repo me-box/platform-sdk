@@ -39,18 +39,23 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 		render(){
 
-		   const {configuring, selected, description, dimensions, dispatch} = this.props;
+		   const {configuring, selected, help, dimensions, dispatch, store} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
+    	   		width: dimensions.w - PALETTE_WIDTH,
     	   		updateNode: bindActionCreators(updateNode, this.props.dispatch),
     	   		updateNodeValueKey: bindActionCreators(updateNodeValueKey, this.props.dispatch),
     	   		incrementNodeValueKey: bindActionCreators(incrementNodeValueKey, this.props.dispatch),
     	   		updateDescription: (type)=>{
     	   			if (selected && selected._def){
-    	   				this.updateDescription(selected._def.description(type));
+    	   				this.updateDescription(selected.id, selected._def.description(type));
     	   			}
     	   		},
-    	   		
+    	   		updateOutputSchema: (type)=>{
+    	   			if (selected && selected._def){
+    	   				this.updateOutputSchema(selected.id, selected._def.schema(type));
+    	   			}
+    	   		},
     	   })
 
            const nodeeditorprops = {
@@ -62,7 +67,8 @@ export default function composeNode(Component, nt, config, reducer=null){
               top:  TOOLBAR_HEIGHT,
               left: PALETTE_WIDTH,
               node: selected,
-              description: description ? description : selected ? selected._def.description() : "",
+              store,
+              help,
            }
           
            
@@ -79,7 +85,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 		
 	
 		let stateobj = {
-			description: state.help.description,
+		    help: state.help,
 			selected: state.nodes.selected,
 			configuring: state.nodes.configuring,
         	values: state.nodes.editingbuffer,

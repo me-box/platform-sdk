@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {TOOLBAR_HEIGHT, INFO_HEIGHT, NODE_EDITOR_PADDING} from '../constants/ViewConstants';
 import {fitText} from '../utils/utils';
+import {connect} from 'react-redux';
 
 class NodeEditor extends Component {
 	
@@ -8,10 +9,17 @@ class NodeEditor extends Component {
 		super(props);
 	}
 
+	
 	render(){
 
-	  	const {node, description} = this.props;
+	  	const {node, help} = this.props;
 	  	
+	  
+	  
+	  	const description = help ? help.description[node.id] ? help.description[node.id] : node._def.description() : node._def.description();
+	  
+		
+	  
 		const editorstyle = {
 			position: 'absolute',
 			maxHeight: this.props.height - (2 * NODE_EDITOR_PADDING),
@@ -67,14 +75,11 @@ class NodeEditor extends Component {
             fontSize: '1em',
             height: 140,
         }
-
-		
-		
 			
         const namestyle = {
         	fontSize: fitText(node.type || "", {width: "118px", padding: '16px', textAlign:'center'}, 40, 118)
         }
-
+		
 		return <div id="nodeeditor" style={editorstyle}>
 				 <div style={infostyle}>
 					<div className="flexcolumn">
@@ -111,7 +116,7 @@ class NodeEditor extends Component {
 					</div>
 				 </div>	 	
 				 <div style={contentstyle}>
-				 	{this.props.children}
+				 	{React.cloneElement(this.props.children, {help})}
 				 </div>
 				 <div style={toolbarstyle}>
 				 	<div className="flexcolumn">

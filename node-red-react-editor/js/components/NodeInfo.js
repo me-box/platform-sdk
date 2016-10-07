@@ -59,7 +59,7 @@ class NodeInfo extends Component {
         			<hr/>
         			<div style={descriptionstyle}>
         				<h4 style={titleStyle}> {node.type} </h4>
-        				<div dangerouslySetInnerHTML={{__html: node._def.description}}></div>
+        				<div dangerouslySetInnerHTML={{__html: node._def.description()}}></div>
         			</div>
         		</div>
 	}

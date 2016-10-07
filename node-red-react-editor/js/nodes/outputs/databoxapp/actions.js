@@ -34,11 +34,13 @@ export function mouseMove(id, x,y){
     }
 }
 
-export function mouseDown(id,box){
+export function mouseDown(id,box,w,h){
 	return {
 		type: MOUSE_DOWN,
 		box,
 		id,
+		w,
+		h
 	}
 }
 

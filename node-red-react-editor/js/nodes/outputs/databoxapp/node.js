@@ -109,8 +109,8 @@ class Node extends React.Component {
 	  }
       
       render() {
-		const NAMEROWHEIGHT = 40;
-		const WIDTH = 692;
+		const NAMEROWHEIGHT = 190;
+		const WIDTH = this.props.width;
 		const HEIGHT = LAYOUT_HEIGHT;
          
         //local is the stuff in this node's reducer
@@ -150,7 +150,7 @@ class Node extends React.Component {
     	const mousestyle = {
     		position: 'absolute',
     		top: NAMEROWHEIGHT,
-       		width: WIDTH,
+       		width: '100%',
        		height: HEIGHT - NAMEROWHEIGHT,
        		overflow: 'hidden',
     	}

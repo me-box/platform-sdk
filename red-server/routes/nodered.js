@@ -76,7 +76,7 @@ router.post('/flows', function(req, res){
 		
 		//create a new container and start it, if it doesn't exist
 		if (containers.length <= 0){
-			docker.createContainer({Image: 'databox/testred', Labels: {'user':`${req.user.username}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['start.sh'], name: `${req.user.username}-red`}, function (err, container) {
+			docker.createContainer({Image: 'databox/testred', Labels: {'user':`${req.user.username}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['node', '/root/node-red/red.js'], name: `${req.user.username}-red`}, function (err, container) {
 				if (err){
 					console.log(err);
 				}else{

@@ -114,7 +114,6 @@ export default function nodes(state = {nodes:[], draggingNode: null, selected: n
          configuring: null,
          editingbuffer: {},
          nodes: state.nodes.map((node)=>{
-          	console.log(`checking ${node.id} against ${state.configuring.id}`); 
           	if (node.id === state.configuring.id){
             	return updateNode(node, state.editingbuffer);
           	}

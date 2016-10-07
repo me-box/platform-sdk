@@ -8,6 +8,9 @@ html{
 	 box-sizing: border-box;
 }
  
+#nodeeditor code{
+	white-space: normal;
+}
 
 .flexcolumn {
     width: inherit;
@@ -61,11 +64,9 @@ html{
     height: inherit; 
 }
 
-
-#publisher .centered{
- 	margin: auto;
-    text-align: center;
-    width: auto;
+.flexrow > div.fixed {
+ 	-webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
 }
 
 .centered{
@@ -75,12 +76,15 @@ html{
 }
 
 
+
 .flexcolumn > .headerstyle {
     display: -webkit-flex;
     display: flex;
      -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
     height: 40px;
+    background: #445662;
+    color: white;
 }
 
 .flexcolumn > .statusstyle {
@@ -159,6 +163,12 @@ html{
   text-transform: uppercase;
 }
 
+#sidebar .button.selected{
+	height: 30px;
+    line-height: 30px;
+    padding: 0;
+}
+
 .button.selected{
   background: #d35a51;
   color: white;
@@ -173,6 +183,12 @@ html{
 	margin-bottom: 5px;
 }
 
+#nodeeditor hr{
+	margin-top:0.4em;
+	margin-bottom: 0.4em;
+	-webkit-margin-before: 0.4em;
+    -webkit-margin-after: 0.4em;
+}
 
 #nodeeditor select,
 #sidebar input[type="text"], 
