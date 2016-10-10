@@ -9,7 +9,7 @@ class Cell extends Component {
 
 	render() {
 		return (<div>
-			<div className="flexrow">
+			<div className="flexrow" style={{flexBasis:0}}>
 				{this.props.title && <div className="title">
 					<div className="centered">
 						{this.props.title}

@@ -11,11 +11,72 @@ import AceEditor from 'react-ace';
 import 'brace/mode/java';
 import 'brace/theme/github';
 
+
+
+const _payload = function(schema, id){
+	return Object.keys(schema).map((key,i)=>{
+		const item = schema[key];
+		if (item.type === "object"){
+			return <div key={i}>
+				   		<div className="flexrow">
+				   			<div className="title">
+								<div className="centered">
+									<strong>{key}</strong>
+								</div>
+							</div>
+						
+							<div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:100}}>
+								<div className="centered">
+									{item.type} 
+								</div>
+							</div>
+							<div>
+								<div className="flexcolumn">
+									{_payload(item.schema, id)}
+								</div>
+				   			</div>
+				   		</div>
+				   </div>
+		}
+		return <div key={i}>
+				<div className="flexrow">
+					<div className="title">
+						<div className="centered">
+							<strong>{key}</strong>
+						</div>
+					</div>
+					<div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:100}}>
+						<div className="centered">
+							{item.type} 
+						</div>
+					</div>
+					<div style={{borderRight: '1px solid #b6b6b6'}}>
+						<div className="centered">
+							{item.description.replace("[id]", id)}
+						</div>
+					</div>
+				</div>
+		   </div>
+	});
+}
+
+const _schema = function(schema, node){
+	
+	const props = {
+			schema, 
+			icon: node._def.icon,
+			color: node._def.color, 
+			id: node.id
+	};
+							  
+	return <Schema {...props}/>  
+}
+
 class Node extends React.Component {
 
        render() {
           
-        	const {selected, inputs, help} = this.props;
+        	const {selected, inputs, outputs, help} = this.props;
             
        		
 			const nameprops = {	
@@ -66,55 +127,78 @@ class Node extends React.Component {
         	const codeinput = <AceEditor {...aceprops}/> 
 			
 			
+			const inputdescription = inputs.map((input)=>{
+				const schema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {};
+				return _schema(schema, input);
+			});
 			
-			const inputdescription = inputs.map((input, i)=>{
-				const schema = help.outputschema[input.id] ?  help.outputschema[input.id] : input._def.schema ? input._def.schema() : {};
-				
-				const iconcontainer ={
-					color:'white',
-					background: input._def.color || '#ca2525',
-					border: '2px solid white', 
-					textAlign: 'center',
-					boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
-					color: 'white',
-					height: '100%',
-					justifyContent: 'center',
-					display: 'flex'
-				}
-				
-				const icon = {
-					alignSelf: 'center',
-				}
-				
-				const payload = Object.keys(schema).map((key)=>{
-					const item = schema[key];
-					return <div>
-								<div className="flexrow">
-								 	<div className="title">
-								 		<div className="centered">
-								 			<strong>{key}</strong>
-								 		</div>
-								 	</div>
-								 	<div className="fixed" style={{width:100}}>
-								 		<div className="centered">
-								 		{item.type} 
-								 		</div>
-								 	</div>
-								 	<div>
-								 		<div className="centered">
-								 		{item.description}
-								 		</div>
-								 	</div>
-								</div>
-						   </div>
-				});
+			const outputdescription = outputs.map((output)=>{
+				const schema =  output._def.schema ? output._def.schema().input : {};
+				return _schema(schema, output);
+			});
+			
+			const inputsoutputs = <div className="flexrow" style={{flexBasis:0, maxHeight:300, overflow:'auto'}}>	
+										{inputs.length > 0 && <div style={{flexBasis:0}}>
+											<div className="flexcolumn">
+												<div className="noborder" style={{background:'#333', color: 'white'}}>
+													<div className="centered" >
+														there are {inputs.length} inputs to this function
+													</div>
+												</div>	
+												{inputdescription}
+											</div>
+										</div>}
+										{outputs.length > 0 && <div style={{flexBasis:0}}>
+											<div className="flexcolumn">
+												<div className="noborder" style={{background:'#445662', color: 'white'}}>
+													<div className="centered" >
+														there are {outputs.length} outputs from this function
+													</div>
+												</div>
+												{outputdescription}
+											</div>
+										</div>}
+									</div>
+								  				
+          	return <div>
+          			<Cells>		
+          				<Cell content = {inputsoutputs} />							
+						<Cell title={"name"} content={nameinput}/>
+						<Cell title={"function"} content={codeinput}/>
+						<Cell title={"outputs"} content={outputselect}/>
+          			</Cells>
+          		   </div>
+          
+       }
+        
+}
+
+
+
+class Schema extends React.Component {
+
+	render(){
+		const iconcontainer ={
+			color:'white',
+			background: this.props.color || '#ca2525',
+			border: '2px solid white', 
+			textAlign: 'center',
+			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+			color: 'white',
+			height: '100%',
+			justifyContent: 'center',
+			display: 'flex'
+		}
+	
+		const payload = _payload(this.props.schema, this.props.id);
 		
-				return <div key={i} className="flexrow">
-							
+		return 	<div key={this.props.id} className="flexcolumn">
+					<div className="noborder">
+						<div className="flexrow">
 							<div className="fixed">
 								<div style={iconcontainer}>
-									<div style={icon}>
-										<i className={`fa ${input._def.icon} fa-2x fa-fw`}></i>
+									<div style={{alignSelf:'center'}}>
+										<i className={`fa ${this.props.icon} fa-2x fa-fw`}></i>
 									</div>
 								</div>
 							</div>
@@ -143,48 +227,11 @@ class Node extends React.Component {
 								</div>
 							</div>
 					   </div>
-			});
-			
-			const inputsoutputs = <div className="flexrow" style={{maxHeight:300, overflow:'auto'}}>	
-										<div>
-											<div className="flexcolumn">
-												<div className="noborder" style={{background:'#445662', color: 'white'}}>
-													<div className="centered" >
-														there are {inputs.length} inputs to this function
-													</div>
-												</div>
-												<div className="flexcolumn">
-													<div className="noborder">
-													{inputdescription}
-													</div>
-												</div>
-											</div>
-										</div>
-										<div>
-											<div className="flexcolumn">
-												<div className="noborder" style={{background:'#445662', color: 'white'}}>
-													<div className="centered" >
-														there are 0 ouputs from this function
-													</div>
-												</div>
-												<div className="flexcolumn">
-													
-												</div>
-											</div>
-										</div>
-									</div>
-								  				
-          	return <div>
-          			<Cells>		
-          				<Cell content = {inputsoutputs} />							
-						<Cell title={"name"} content={nameinput}/>
-						<Cell title={"function"} content={codeinput}/>
-						<Cell title={"outputs"} content={outputselect}/>
-          			</Cells>
-          		   </div>
-          
-       }
-        
+					</div>
+				</div>
+
+	}
+
 }
 
 export default composeNode(Node, 'function', 
@@ -208,7 +255,7 @@ export default composeNode(Node, 'function',
                                     return this.name||this.topic||"function";
                                 },
                                 
-                                description: ()=> "<p>A function block where you can write code to do more interesting things.</p> <p>The message is passed in as a JavaScript object called <code>msg</code>.</p> <p>By convention it will have a <code>msg.payload</code> property containing the body of the message.</p><h4>Logging and Error Handling</h4><p>To log any information, or report an error, the following functions are available:</p><ul><li><code>node.log('Log')</code></li><li><code>node.warn('Warning')</code></li><li><code>node.error('Error')</code></li></ul></p><p>The Catch node can also be used to handle errors. To invoke a Catch node, pass <code>msg</code> as a second argument to <code>node.error</code>:</p><pre>node.error('Error',msg)</pre><h4>Sending messages</h4><p>The function can either return the messages it wants to pass on to the next nodes in the flow, or can call <code>node.send(messages)</code>.</p><p>It can return/send:</p><ul><li>a single message object - passed to nodes connected to the first output</li><li>an array of message objects - passed to nodes connected to the corresponding outputs</li></ul><p>If any element of the array is itself an array of messages, multiple messages are sent to the corresponding output.</p><p>If null is returned, either by itself or as an element of the array, no message is passed on.</p><p>See the <a target='_new' href='http://nodered.org/docs/writing-functions.html'>online documentation</a> for more help.</p>",
+                                description: ()=> "<p>A function block where you can write code to do more interesting things.</p> <p>The message is passed in as a JavaScript object called <code>msg</code>.</p> <p>By convention it will have a <code>msg.payload</code> property containing the body of the message.</p><h4>Sending messages</h4><p>The function can either return the messages it wants to pass on to the next nodes in the flow, or can call <code>node.send(messages)</code>.</p><p>It can return/send:</p><ul><li>a single message object - passed to nodes connected to the first output</li><li>an array of message objects - passed to nodes connected to the corresponding outputs</li></ul><p>If any element of the array is itself an array of messages, multiple messages are sent to the corresponding output.</p><p>If null is returned, either by itself or as an element of the array, no message is passed on.</p>",
                                 
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

@@ -18,7 +18,7 @@ class Sidebar extends React.Component {
 		const { node, shownodedetails, showappmanager, showtest, dispatch } = this.props;
 		
 	
-		if ((!shownodedetails && !showappmanager && !showtest)){
+		if (!showappmanager){
 			return null;
 		}
 		

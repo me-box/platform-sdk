@@ -205,7 +205,26 @@ export default composeNode(Node, 'app',
                                     return this.name||this.topic||"databox app";
                                 },
                                 
-                                description: ()=> "<p>The databox app is the standard messaging endpoint for users in a household.</p>  The <code>msg.payload</code> must be formatted as a json object with values <p> <code>{ contenttype: [numeric, table, html], content: [your content]}</code></p> <p> Where there are multiple companion apps associated with a databox, the message will be sent to the owner or owners of the datastore(s) used in your flow </p>", 
+                                schema: ()=>{
+                                	return {
+                                			input:{
+                                				payload: {
+                                							type: 'object', 
+                                							description: 'the message payload', 
+                                							schema: {
+                                										values: {	
+                                													type:'any', 
+                                									 				description: 'dependent on the \'type\' of incoming msg (msg.type)'
+                                									 			}
+                                									 }, 
+                                				},
+												sourceId: {type:'string',  description: 'a unique identifier for this data source (used to distinguish between multiple sources and to assign layout'},
+												type: {type:'string', description: 'one of either text, gauge, bar or list'}
+                                			}
+                                	}
+                                },
+                                
+                                description: ()=> "<p>This component is used to send a display to the databox UI for this app. It can render text, bar and gauge charts (...more soon...)</p>", 
 
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

@@ -42,11 +42,18 @@ export default composeNode(Node, 'bulbs',
                                 
                                 schema: ()=>{
                                 	return	{
-                                		value: {type:'numeric', description: "a 0 or 1 (on or off)"},
-                                		name:  {type:'string', description: "a name assigned to this bulb"}, 
-                                		id:    {type:'string', description: "a unique id"},
+                                		output:{
+                                			payload: {
+                                				type: 'object', 
+                                				description: 'the payload object', 
+                                				schema: {
+                                					value: {type:'numeric', description: "a 0 or 1 (on or off)"},
+                                					name:  {type:'string', description: "a name assigned to this bulb"}, 
+                                					id:    {type:'string', description: "the node id: [id]"},
+                                				}
+                                			}
+                                		}
                                 	}
-                                
                                 },
                                 
                                 icon: "fa-lightbulb-o",

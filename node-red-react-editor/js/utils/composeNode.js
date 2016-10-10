@@ -67,7 +67,6 @@ export default function composeNode(Component, nt, config, reducer=null){
               top:  TOOLBAR_HEIGHT,
               left: PALETTE_WIDTH,
               node: selected,
-              store,
               help,
            }
           
@@ -96,11 +95,19 @@ export default function composeNode(Component, nt, config, reducer=null){
       	}
       	
       	if (state.nodes.selected){
-      		stateobj.inputs =  state.ports.links.filter((link)=>{ 
+      		
+      		stateobj.inputs = state.ports.links.filter((link)=>{ 
         		return link.target.id === state.nodes.selected.id;
         	}).map((link)=>{
         		return link.source;
-        	})
+        	});
+        	
+        	stateobj.outputs = state.ports.links.filter((link)=>{ 
+        		return link.source.id === state.nodes.selected.id;
+        	}).map((link)=>{
+        		return link.target;
+        	});
+        	
       	}
         return stateobj;
     }

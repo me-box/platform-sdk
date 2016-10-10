@@ -83,7 +83,7 @@ class NodeEditor extends Component {
 		return <div id="nodeeditor" style={editorstyle}>
 				 <div style={infostyle}>
 					<div className="flexcolumn">
-						<div>
+						<div className="noborder">
 							<div className="flexrow" style={{background:'#445662', color: 'white'}}>
 								<div style={{WebkitFlex: '0 0 auto'}}>
 									<div className="flexcolumn">

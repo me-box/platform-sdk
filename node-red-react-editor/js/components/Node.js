@@ -55,10 +55,7 @@ class Node extends Component {
     }
 
     _handleClick(def,nt){
-        console.log("clicked a node");
-        console.log(nt);
-        console.log(def);
-        console.log("--------------");
+       
     }
 
     static propTypes = {

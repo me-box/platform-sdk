@@ -1,11 +1,36 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
+import Textfield from '../../../components/form/Textfield';
 
 class Node extends React.Component {
 
        render() {
-          const {selected} = this.props;
-          return  <h1> It is me ${selected.id} </h1>
+          const {selected,values,updateNode} = this.props;
+          
+          const nameprops = {
+              id: "name",
+              value: values.name || "",
+              onChange: (property, event)=>{
+                  updateNode(property, event.target.value);
+              },
+              selected: selected,
+          }
+          
+          return <div className="flexcolumn">
+          				<div>
+          					<div className="flexrow">
+								<div className="title">	
+									<div className="centered">name</div>
+								</div>
+					
+								<div>
+									<div className="centered">
+										<Textfield {...nameprops}/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>			
           
        }
 }

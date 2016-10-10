@@ -45,7 +45,7 @@ class Node extends React.Component {
           }).map((input,i)=>{
           	
           	const name = input.type; 
-          	const schema = input._def.schema(input.subtype);
+          	const schema = input._def.schema(input.subtype).output.payload.schema;
           	
           	const xoptions = Object.keys(schema).map((key)=>{
           		const xtype =  values.xtype || [];
