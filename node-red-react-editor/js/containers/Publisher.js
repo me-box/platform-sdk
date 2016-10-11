@@ -17,7 +17,7 @@ class Publisher extends React.Component {
 	
 	render() {
 		
-		const {packages, pkg, app, grid, dispatch} = this.props;
+		const {packages, datastores, pkg, app, grid, dispatch} = this.props;
 		
 		const style ={
 			position: 'absolute',
@@ -41,8 +41,9 @@ class Publisher extends React.Component {
 			installSelected: this.installSelected,
 			updatePackagePurpose: this.updatePackagePurpose,
 			updatePackageBenefits: this.updatePackageBenefits,
-			packages: this.props.packages,
-			selected: this.props.pkg || {},
+			packages: packages,
+			datastores: datastores,
+			selected: pkg || {},
 		}
 		
 		const combiprops = {
@@ -191,7 +192,7 @@ class Packages extends React.Component {
 					</div>
 		});
 		
-		const datastores = (this.props.selected.datastores || []).map((datastore,i)=>{		
+		const datastores = (this.props.datastores || []).map((datastore,i)=>{		
 			return <Node key={i} {...datastore}/>
 		});
 		
@@ -404,7 +405,7 @@ class Node extends React.Component {
 		});
 			
 		return  <div>
-					<div className="centered" >
+					<div className="centered" style={{width:'auto'}} >
 						<div style={style} className="publishernode">
 							<i className={className}></i>
 						</div>
@@ -435,16 +436,31 @@ class Submit extends React.Component {
 					</div>
 				</div>
 				
-	}
-	
+	}	
 }
 
-
 function select(state) {
+  const pindex = state.publisher.packages.map(p=>p.id).indexOf(state.publisher.currentpkg);
+  
   return {
       packages: state.publisher.packages,
-      pkg: state.publisher.packages[state.publisher.currentpkg],
+      
+      datastores: state.nodes.nodes.filter((node)=>{
+      	 return (node.z === state.publisher.currentpkg) && (node._def.category === "datastores");// || node._def.category === "outputs");
+      }).map((node)=>{
+      		return {
+      				id: node.id,
+					name: node.name || node.type,
+					type: node.type, 
+					color: node._def.color, 
+					icon: node._def.icon,
+			}
+      }),
+      
+      pkg: state.publisher.packages[pindex],
+      
       app: state.publisher.app,
+      
       grid: state.publisher.grid,
   };
 }

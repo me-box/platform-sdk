@@ -222,7 +222,6 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 						purpose: pkg.purpose,
 						required: pkg.install === "compulsory",
 						datasources: Array.from(new Set([...pkg.datastores.map((d)=>{return d.id})])),
-						//'driver-permissions': Array.from(new Set([...pkg.datastores.map((d)=>{return d.type}), ...pkg.outputs.map((o)=>{return o.type})])),
 						risks: pkg.risk,
 						benefits: pkg.benefits,
 					}

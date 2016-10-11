@@ -5,7 +5,9 @@
 			 	{"name":"bulbs", "file":"datastores/bulbs/node"},
 			 	{"name":"temperature", "file":"datastores/temperature/node"},
 				{"name":"sensingkit", "file":"datastores/sensingkit/node"},
-
+				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
+				{"name":"phidgets", "file":"datastores/phidgets/node"},
+				
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},
 			 	{"name":"chartify", "file":"processors/chartify/node"},

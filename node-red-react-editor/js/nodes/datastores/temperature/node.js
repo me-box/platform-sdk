@@ -70,6 +70,8 @@ export default composeNode(Node, 'temperature',
                             {
                                 category: 'datastores',      
                                 color: '#ffcc00',
+                            
+                                
                                 defaults: {             
                                     name: {value:""},   //  along with default values.
            							description: {value:""},

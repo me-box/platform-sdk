@@ -70,9 +70,9 @@ export default function composeNode(Component, nt, config, reducer=null){
               help,
            }
           
-           
-           if (configuring && configuring.type === nt){
-				return <NodeEditor {...nodeeditorprops}>
+           //TODO: check why cannot do comparison on selected.id against configuring.id
+           if (configuring && configuring._def.nodetype === nt){
+				return <NodeEditor key={configuring.id} {...nodeeditorprops}>
 							<Component {...props} />
 						</NodeEditor>
 			}
@@ -120,7 +120,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 	return {
 		type: 		nt,
-		def: 		Object.assign({_: (id)=>{return id}}, config), //TODO: find out what this '_' identity function is for
+		def: 		Object.assign({_: (id)=>{return id}}, config, {nodetype:nt}), //TODO: find out what this '_' identity function is for
 		reducer: 	reducer,
 		node: 		connect(select)(Node),
 	}

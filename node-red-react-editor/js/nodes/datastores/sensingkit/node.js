@@ -72,8 +72,8 @@ class Node extends React.Component {
 export default composeNode(Node, 'sensingkit', 
                             {
                                 category: 'datastores',      
-                                
                                 color: '#ffcc00',
+                              
                                 
                                 defaults: {             
                                     name: {value:""}, 
@@ -90,11 +90,13 @@ export default composeNode(Node, 'sensingkit',
                                 			return {
                                 					output:{
                                 						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						type:  {type: 'strong', description: '\'sensingkit\''},
+                                						id: {type: 'string', description: 'the unique id of the sending node: [id]'},
+                                						type:  {type: 'string', description: '\'sensingkit\''},
                                 						payload: { 
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
+                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
                                 										ts: {type:'time', description: 'a unix timestamp'},
                                 										name:  {type:'string', description: 'user assigned name of the device, \`none\' if not provided'},
                                 										address: {type:'string', description: 'the mac address of the device in the form aa:bb:cc:dd:ee:ff'},
@@ -113,11 +115,13 @@ export default composeNode(Node, 'sensingkit',
                                 			return {
                                 					output:{
                                 						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						type:  {type: 'strong', description: '\'sensingkit\''},
+                                						type:  {type: 'string', description: '\'sensingkit\''},
+                                						id: {type: 'string', description: 'the unique id of the sending node: [id]'},
                                 						payload: { 
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
+                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
 																		ts: {type:'time',  description: 'a unix timestamp'},
 																		x:  {type:'numeric', description: 'the x axis value'},
 																		y:  {type:'numeric', description: 'the y axis value'},
@@ -131,11 +135,13 @@ export default composeNode(Node, 'sensingkit',
                                 			return {
                                 					output:{
                                 						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						type:  {type: 'strong', description: '\'sensingkit\''},
+                                						type:  {type: 'string', description: '\'sensingkit\''},
+                                						id: {type: 'string', description: 'the unique id of the sending node: [id]'},
                                 						payload: { 
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
+                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
 																		ts: {type:'time',  description: 'a unix timestamp'},
 																		x:  {type:'numeric', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
 																		y:  {type:'numeric', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
@@ -152,11 +158,13 @@ export default composeNode(Node, 'sensingkit',
                                 			return {
                                 					output:{
                                 						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						type:  {type: 'strong', description: '\'sensingkit\''},
+                                						type:  {type: 'string', description: '\'sensingkit\''},
+                                						id: {type: 'string', description: 'the unique id of the sending node: [id]'},
                                 						payload: { 
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
+                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
 																		ts: {type:'time',  description: 'a unix timestamp'},
 																		charge:  {type:'numeric', description: 'is a number from 0 to maximum battery level'}, 
 																		temperature:  {type:'numeric', description: 'is the current battery temperature'},
@@ -173,11 +181,13 @@ export default composeNode(Node, 'sensingkit',
                                 			return {
                                 						output:{
                                 							name: {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                							type:  {type: 'strong', description: '\'sensingkit\''},
+                                							type:  {type: 'string', description: '\'sensingkit\''},
+                                							id: {type: 'string', description: 'the unique id of the sending node: [id]'},
                                 							payload: { 
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
+                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
 																		ts:  {type:'time',  description: 'a unix timestamp'},
 																		value: {type:'numeric', description: 'the audio level captured by the phone microphone'},
 																	}
@@ -189,11 +199,13 @@ export default composeNode(Node, 'sensingkit',
                                 			return  {
                                 						output:{
                                 							name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                							type:  {type: 'strong', description: '\'sensingkit\''},
+                                							type:  {type: 'string', description: '\'sensingkit\''},
+                                							id: {type: 'strong', description: 'the unique id of the sending node: [id]'},
                                 							payload: { 
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
+                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
 																		ts:  {type:'time',  description: 'a unix timestamp'},
 																		value: {type:'numeric', description: 'ambient light in lux captured by a phone camera'},
                                 									}

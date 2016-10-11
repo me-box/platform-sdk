@@ -30,12 +30,14 @@ class Node extends React.Component {
        }
 }
 
-export default composeNode(Node, 'bulbs', 
+export default composeNode(Node, 'bulb', 
                             {
                                 category: 'datastores',      
                                 color: '#ffcc00',
+                                
                                 defaults: {             
                                     name: {value:""},   
+                                    type: {value:"bulb"},
                                 },
                                 inputs:0,               
                                 outputs:1,             
@@ -59,7 +61,7 @@ export default composeNode(Node, 'bulbs',
                                 icon: "fa-lightbulb-o",
                                 unicode: '\uf0eb',     
                                 label: function() {     
-                                    return this.name||"bulbs";
+                                    return this.name||"bulb";
                                 },
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

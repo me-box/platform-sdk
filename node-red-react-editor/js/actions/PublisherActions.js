@@ -82,8 +82,9 @@ export function submit(){
 	return function (dispatch, getState) {
 		
 		
+		const nodes = getState().nodes.nodes;
 		
-		const jsonnodes = getState().nodes.nodes.map((node)=>{
+		const jsonnodes = nodes.map((node)=>{
 			return Object.assign({}, convertNode(node, getState().ports.links));
 		});
 		
@@ -97,7 +98,19 @@ export function submit(){
   		//TODO: ensure that the latest commit is saved before publish.
   		
   		const app = getState().publisher.app;
-  		const packages = getState().publisher.packages;
+  		
+  		const packages = getState().publisher.packages.map((pkg)=>{ //add in datastores (outputs)
+  			return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
+  				return (node.z === pkg.id) && (node._def.category === "datastores")// || node._def.category === "outputs");
+      		}).map((node)=>{
+      			return {
+      				id: node.id,
+					name: node.name || node.type,
+					type: node.type, 
+				}
+      		})})
+  		});
+  		
   		const repo = getState().repos.loaded;
   		
   		const data = {
@@ -106,10 +119,9 @@ export function submit(){
   		    
   		    flows: flows,
   		    
-  		    //assign id at start  as this will be the channel identifier
   		  	manifest: {
   				app: Object.assign({}, getState().publisher.app),
-  				packages: getState().publisher.packages,
+  				packages,
   				'allowed-combinations': getState().publisher.grid,
   			}
   		};
