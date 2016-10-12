@@ -488,7 +488,10 @@ router.post('/publish', function(req,res){
 
 	const commitmessage = 'publish commit';
 	
+	
 	//first save the manifest and flows file - either create new repo or commit changes
+	
+	
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
 		
 		console.log("committing changes before publishing");

@@ -38,6 +38,7 @@ export default composeNode(Node, 'bulb',
                                 defaults: {             
                                     name: {value:""},   
                                     type: {value:"bulb"},
+                                    subtype: {value:"bulb"},
                                 },
                                 inputs:0,               
                                 outputs:1,             

@@ -451,7 +451,7 @@ function select(state) {
       		return {
       				id: node.id,
 					name: node.name || node.type,
-					type: node.type, 
+					type: node.subtype || node.type, 
 					color: node._def.color, 
 					icon: node._def.icon,
 			}

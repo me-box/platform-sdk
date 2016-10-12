@@ -11,9 +11,9 @@ class Node extends React.Component {
 	
 		componentDidMount(){
 		
-	   		if (this.props.values.subtype){
-	   			this.props.updateDescription(this.props.values.subtype);
-	   			this.props.updateOutputSchema(this.props.values.subtype);
+	   		if (this.props.values.sensor){
+	   			this.props.updateDescription(this.props.values.sensor);
+	   			this.props.updateOutputSchema(this.props.values.sensor);
 	   		}
 	   	}
 	   	
@@ -31,7 +31,7 @@ class Node extends React.Component {
 							<Textfield {...nameprops}/>												
 						  </div>
 
-			const subtypeprops = {
+			const sensorprops = {
 				options: [
 					                {name: 'bluetooth', value: 'bluetooth'},
 					                {name: 'audio-level', value: 'audio-level'},
@@ -48,21 +48,21 @@ class Node extends React.Component {
 				onSelect: (event)=>{
 					this.props.updateDescription(event.target.value);
 					this.props.updateOutputSchema(event.target.value);
-					this.props.updateNode("subtype", event.target.value);
+					this.props.updateNode("sensor", event.target.value);
 				},
 				style: {width: '100%'},
-				value: this.props.values.subtype || "",
+				value: this.props.values.sensor || "",
 			}
 			
-			const subtypeinput = <div className="centered">
-							<Select {...subtypeprops}/>												
+			const sensorinput = <div className="centered">
+							<Select {...sensorprops}/>												
 						  </div>
 
 			
           
         	return <Cells>									
 						<Cell title={"name"} content={nameinput}/>
-						<Cell title={"subtype"} content={subtypeinput}/>
+						<Cell title={"sensor"} content={sensorinput}/>
           			</Cells>
           		
           
@@ -78,13 +78,14 @@ export default composeNode(Node, 'sensingkit',
                                 defaults: {             
                                     name: {value:""}, 
             						type: {value:"sensingkit"},
-            						subtype: {value: "light"},
+            						subtype: {value: "sensingkit"},
+            						sensor: {value: "light"},
                                 },
                                 
-                                schema: (subtype)=>{
+                                schema: (sensor)=>{
                                 	
                                 	
-                                	switch (subtype){
+                                	switch (sensor){
                                 	
                                 		case "bluetooth":
                                 			return {
@@ -96,7 +97,7 @@ export default composeNode(Node, 'sensingkit',
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
-                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
+                                										sensor: {type:'string', description: `the sensor type: \'${sensor}\'`},
                                 										ts: {type:'time', description: 'a unix timestamp'},
                                 										name:  {type:'string', description: 'user assigned name of the device, \`none\' if not provided'},
                                 										address: {type:'string', description: 'the mac address of the device in the form aa:bb:cc:dd:ee:ff'},
@@ -121,7 +122,7 @@ export default composeNode(Node, 'sensingkit',
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
-                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
+                                										sensor: {type:'string', description: `the sensor type: \'${sensor}\'`},
 																		ts: {type:'time',  description: 'a unix timestamp'},
 																		x:  {type:'numeric', description: 'the x axis value'},
 																		y:  {type:'numeric', description: 'the y axis value'},
@@ -141,7 +142,7 @@ export default composeNode(Node, 'sensingkit',
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
-                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
+                                										sensor: {type:'string', description: `the sensor type: \'${sensor}\'`},
 																		ts: {type:'time',  description: 'a unix timestamp'},
 																		x:  {type:'numeric', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
 																		y:  {type:'numeric', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
@@ -164,7 +165,7 @@ export default composeNode(Node, 'sensingkit',
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
-                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
+                                										sensor: {type:'string', description: `the sensor type: \'${sensor}\'`},
 																		ts: {type:'time',  description: 'a unix timestamp'},
 																		charge:  {type:'numeric', description: 'is a number from 0 to maximum battery level'}, 
 																		temperature:  {type:'numeric', description: 'is the current battery temperature'},
@@ -187,7 +188,7 @@ export default composeNode(Node, 'sensingkit',
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
-                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
+                                										sensor: {type:'string', description: `the sensor type: \'${sensor}\'`},
 																		ts:  {type:'time',  description: 'a unix timestamp'},
 																		value: {type:'numeric', description: 'the audio level captured by the phone microphone'},
 																	}
@@ -205,7 +206,7 @@ export default composeNode(Node, 'sensingkit',
                                 									type:'object', 
                                 									description: 'the message payload', 
                                 									schema: {
-                                										subtype: {type:'string', description: `the sensor type: \'${subtype}\'`},
+                                										sensor: {type:'string', description: `the sensor type: \'${sensor}\'`},
 																		ts:  {type:'time',  description: 'a unix timestamp'},
 																		value: {type:'numeric', description: 'ambient light in lux captured by a phone camera'},
                                 									}
@@ -226,13 +227,13 @@ export default composeNode(Node, 'sensingkit',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                description: (subtype)=>{
+                                description: (sensor)=>{
                                 	
                                 	const core = "<strong>android mobile sensingkit</strong><hr/>";
                                 	
-                                	if (subtype){
-                                		const chosen = `<p> the current chosen sensor is <strong>${subtype}</strong>.</p>`
-                                		switch (subtype){
+                                	if (sensor){
+                                		const chosen = `<p> the current chosen sensor is <strong>${sensor}</strong>.</p>`
+                                		switch (sensor){
                                 
                                 			case 'light':
                                 				return `${core} ${chosen} <p> This will return the ambient light in lux captured by a phone camera.</p>`;
@@ -247,7 +248,7 @@ export default composeNode(Node, 'sensingkit',
                                 			case 'rotation':
                                 			case 'battery':
                                 			case 'audio-level':
-                                				return `${core} ${chosen} <p>This will return the device ${subtype} data</p>`;
+                                				return `${core} ${chosen} <p>This will return the device ${sensor} data</p>`;
                     					                   			 
                                 			default:
                                 				return `${core} ${chosen}`

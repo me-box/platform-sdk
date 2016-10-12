@@ -21,7 +21,7 @@ class Node extends React.Component {
 		
        render() {
         
-          const {selected, inputs, values, updateNode} = this.props;
+          const {selected, inputs, values, updateNode, help} = this.props;
           const chart = values.chart || "bar";
           
           const leftborder = {
@@ -45,7 +45,13 @@ class Node extends React.Component {
           }).map((input,i)=>{
           	
           	const name = input.type; 
-          	const schema = input._def.schema(input.subtype).output.payload.schema;
+          	const fullschema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {};
+          	const schema = fullschema.payload ? fullschema.payload.schema : fullschema;
+          	
+          	
+          	console.log(schema);
+          	//const schema = 
+          	//const schema = help//input._def.schema(input.subtype).output.payload.schema;
           	
           	const xoptions = Object.keys(schema).map((key)=>{
           		const xtype =  values.xtype || [];
@@ -61,6 +67,7 @@ class Node extends React.Component {
           					<div onClick={()=>{this._handleValueSelected("xtype", {source:input.type, name:key, type: schema[key].type})}} className={className}>{key}</div>
           				</div>
           	})
+          	
           	
           	const yoptions = Object.keys(schema).map((key)=>{
           		
@@ -364,6 +371,9 @@ class Node extends React.Component {
        }    
        
        _handleValueSelected(property, value){
+       
+       		console.log("in handle value selceted " + property);
+       		console.log(value);
        		//type == unique name!
        		const values = this.props.values[property] || [];
        		
@@ -380,6 +390,8 @@ class Node extends React.Component {
        		}).indexOf(value.name);
        		
        		if (index == -1){
+       			console.log("updating " + property + " so that it is");
+       			console.log( [...values, value]);
        			this.props.updateNode(property, [...values, value]);
        		}else{
        			this.props.updateNode(property, [...values.slice(0,index), ...values.slice(index+1)]);

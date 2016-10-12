@@ -99,6 +99,9 @@ export function deploy(){
 		
 		
 		const tabs = getState().tabs.tabs;
+		
+		
+		console.log([...tabs, ...jsonnodes]);
 		console.log(`DEPLOYING TO http://${config.root}/nodered/flows`);
 		
 		

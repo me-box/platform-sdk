@@ -8,8 +8,8 @@ import Cells from '../../../components/Cells';
 class Node extends React.Component {
 
 	   componentDidMount(){
-	  	 	if (this.props.values.type){
-	   			this.props.updateOutputSchema(this.props.values.type);
+	  	 	if (this.props.values.subtype){
+	   			this.props.updateOutputSchema(this.props.values.subtype);
 	   		}
 	   }
 	   	
@@ -34,12 +34,12 @@ class Node extends React.Component {
 					     ],
 					     
 				onSelect: (event)=>{
-					this.props.updateNode("type", event.target.value);
+					this.props.updateNode("subtype", event.target.value);
 					this.props.updateOutputSchema(event.target.value);
 				},
 				
 				style: {width: '100%'},
-				value: this.props.values.type || "",
+				value: this.props.values.subtype || "",
 			}
 			
 			const typeinput = <div className="centered">
@@ -66,14 +66,15 @@ export default composeNode(Node, 'osmonitor',
                                 
                                 defaults: {             
                                     name: {value:""},   
-                                    type: {value:"loadavg1"},
+                                    type: {value:"osmonitor"},
+                                    subtype: {value:"loadavg1"},
                                 },
                                 inputs:0,               
                                 outputs:1,             
                                 
-                                schema: (type)=>{
+                                schema: (subtype)=>{
                         			
-                        			type = type || "loadavg1";
+                        			const type = subtype || "loadavg1";
                         			
                         			const _descriptions = {
                         				loadavg1: "a % value for the last minute system load",

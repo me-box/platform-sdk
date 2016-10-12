@@ -88,6 +88,7 @@ export function submit(){
 			return Object.assign({}, convertNode(node, getState().ports.links));
 		});
 		
+		
 		const tabs = getState().tabs.tabs;
 	
 		const flows = [
@@ -106,7 +107,7 @@ export function submit(){
       			return {
       				id: node.id,
 					name: node.name || node.type,
-					type: node.type, 
+					type: node.subtype || node.type, 
 				}
       		})})
   		});

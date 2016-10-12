@@ -8,8 +8,8 @@ import Cells from '../../../components/Cells';
 class Node extends React.Component {
 
 	  componentDidMount(){
-	  	 	if (this.props.values.type){
-	   			this.props.updateOutputSchema(this.props.values.type);
+	  	 	if (this.props.values.subtype){
+	   			this.props.updateOutputSchema(this.props.values.subtype);
 	   		}
 	   }
 	   
@@ -34,12 +34,12 @@ class Node extends React.Component {
 					     ],
 					     
 				onSelect: (event)=>{
-					this.props.updateNode("type", event.target.value);
+					this.props.updateNode("subtype", event.target.value);
 					this.props.updateOutputSchema(event.target.value);
 				},
 				
 				style: {width: '100%'},
-				value: this.props.values.type || "",
+				value: this.props.values.subtype || "",
 			}
 			
 		  const typeinput = <div className="centered">
@@ -66,14 +66,14 @@ export default composeNode(Node, 'phidget',
                                 
                                 defaults: {             
                                     name: {value:""},   
-                                    type: {value:"temp"},
+                                    subtype: {value:"temp"},
                                 },
                                 inputs:0,               
                                 outputs:1,             
                                 
-                                schema: (type)=>{
+                                schema: (subtype)=>{
                         			
-                        			type = type || "temp";
+                        			const type = subtype || "temp";
                         			
                         			const _descriptions = {
                         				temp:  "temperature value (degrees centigrade)",

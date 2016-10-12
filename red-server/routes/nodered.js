@@ -76,12 +76,19 @@ router.post('/flows', function(req, res){
 		
 		//create a new container and start it, if it doesn't exist
 		if (containers.length <= 0){
-			docker.createContainer({Image: 'databox/testred', Labels: {'user':`${req.user.username}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['node', '/root/node-red/red.js'], name: `${req.user.username}-red`}, function (err, container) {
+			docker.createContainer({Image: 'databox/testred', Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  Labels: {'user':`${req.user.username}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['node', '/root/node-red/red.js'], name: `${req.user.username}-red`}, function (err, container) {
 				if (err){
 					console.log(err);
 				}else{
-					//{"PortBindings": { "1880/tcp": [{ "HostPort": "11022" }]}}
-					container.start({"PublishAllPorts":true, "Binds": ["/tmp/app.webserver:/tmp/app.webserver"], "Links": ["mosquitto:mosquitto", "arbiter:arbiter", "mock-datasource:databox-driver-mobile.store"]}, function (err, data) {
+					
+					const options = {
+						"PublishAllPorts":true, 
+						"Binds": ["/tmp/app.webserver:/tmp/app.webserver"], 
+						"Links": ["mosquitto:mosquitto", "arbiter:arbiter", "mock-datasource:mock-datasource"]
+					}
+					
+					
+					container.start(options, function (err, data) {
 						if (err){
 							console.log("error!");
 							console.log(err);
