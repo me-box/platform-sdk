@@ -206,20 +206,34 @@ export default composeNode(Node, 'app',
                                 },
                                 
                                 schema: ()=>{
+                                
+                                	const _descriptions = [
+                                								{type: "gauge", schema: {options:{title:'atitle', ticks: 'number of ticks'}, values: {id:'auniqueid', type:'data', dataid:'auniqueid', x:'avalue'}}}, 
+                                						   		{type: "bar",   schema: {options:{title:'atitle', ticks: 'number of ticks'}, values: {id:'auniqueid', type:'data', dataid:'auniqueid', x:'xvalue', y:'yvalue'}}}, 
+                                						   		{type: "text",  schema: {values: 'sometext'}}, 
+                                						   		{type: "list",  schema: {values: {timestamp: 'a timestamp', keys:['key1','key2', '..'], values:{key1:'key1value', key2:'key2value'}}}},
+                                	];
+                                	 
+                                	 
+                                	const subschema = _descriptions.map((item)=>{
+                                		return `<div><div class=\"flexrow\"><div class=\"title\"><div class=\"centered\">${item.type}</div></div><div><div class=\"centered\">${JSON.stringify(item.schema)}</div></div></div></div>`
+                                	}).join("");
+                                	
                                 	return {
                                 			input:{
+                                				sourceId: {type:'string',  description: '<i>[selectedid]</i>'},
+												type: {type:'string', description: "one of either \'text\', \'gauge\', \'bar\' or \'list\'"},
                                 				payload: {
                                 							type: 'object', 
                                 							description: 'the message payload', 
                                 							schema: {
                                 										values: {	
                                 													type:'any', 
-                                									 				description: 'dependent on the \'type\' of incoming msg (msg.type)'
+                                									 				description: `<div class=\"flexcolumn\"><div><div class=\"centered\">dependent on the type of msg (msg.type)</div></div>${subschema}</div>`
                                 									 			}
                                 									 }, 
                                 				},
-												sourceId: {type:'string',  description: 'a unique identifier for this data source (used to distinguish between multiple sources and to assign layout'},
-												type: {type:'string', description: 'one of either text, gauge, bar or list'}
+												
                                 			}
                                 	}
                                 },

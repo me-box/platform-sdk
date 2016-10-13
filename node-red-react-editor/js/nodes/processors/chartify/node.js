@@ -372,8 +372,7 @@ class Node extends React.Component {
        
        _handleValueSelected(property, value){
        
-       		console.log("in handle value selceted " + property);
-       		console.log(value);
+       		
        		//type == unique name!
        		const values = this.props.values[property] || [];
        		

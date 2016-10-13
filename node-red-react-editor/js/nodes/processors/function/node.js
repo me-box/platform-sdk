@@ -13,7 +13,7 @@ import 'brace/theme/github';
 
 
 
-const _payload = function(schema, id){
+const _payload = function(schema, id, selectedid){
 	return Object.keys(schema).map((key,i)=>{
 		const item = schema[key];
 		if (item.type === "object"){
@@ -32,7 +32,7 @@ const _payload = function(schema, id){
 							</div>
 							<div>
 								<div className="flexcolumn">
-									{_payload(item.schema, id)}
+									{_payload(item.schema, id, selectedid)}
 								</div>
 				   			</div>
 				   		</div>
@@ -52,7 +52,7 @@ const _payload = function(schema, id){
 					</div>
 					<div style={{borderRight: '1px solid #b6b6b6'}}>
 						<div className="centered">
-							{item.description.replace("[id]", id)}
+							<div dangerouslySetInnerHTML={{__html: item.description.replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
 						</div>
 					</div>
 				</div>
@@ -60,13 +60,14 @@ const _payload = function(schema, id){
 	});
 }
 
-const _schema = function(schema, node){
+const _schema = function(schema, node, selectedid){
 	
 	const props = {
 			schema, 
 			icon: node._def.icon,
 			color: node._def.color, 
-			id: node.id
+			id: node.id,
+			selectedid,
 	};
 							  
 	return <Schema {...props}/>  
@@ -129,15 +130,15 @@ class Node extends React.Component {
 			
 			const inputdescription = inputs.map((input)=>{
 				const schema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {};
-				return _schema(schema, input);
+				return _schema(schema, input, selected.id);
 			});
 			
 			const outputdescription = outputs.map((output)=>{
 				const schema =  output._def.schema ? output._def.schema().input : {};
-				return _schema(schema, output);
+				return _schema(schema, output, selected.id);
 			});
 			
-			const inputsoutputs = <div className="flexrow" style={{flexBasis:0, maxHeight:300, overflow:'auto'}}>	
+			const inputsoutputs = <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>	
 										{inputs.length > 0 && <div style={{flexBasis:0}}>
 											<div className="flexcolumn">
 												<div className="noborder" style={{background:'#333', color: 'white'}}>
@@ -152,7 +153,7 @@ class Node extends React.Component {
 											<div className="flexcolumn">
 												<div className="noborder" style={{background:'#445662', color: 'white'}}>
 													<div className="centered" >
-														there are {outputs.length} outputs from this function
+														there are {outputs.length} recipients of data from this function
 													</div>
 												</div>
 												{outputdescription}
@@ -190,7 +191,7 @@ class Schema extends React.Component {
 			display: 'flex'
 		}
 	
-		const payload = _payload(this.props.schema, this.props.id);
+		const payload = _payload(this.props.schema, this.props.id, this.props.selectedid);
 		
 		return 	<div key={this.props.id} className="flexcolumn">
 					<div className="noborder">

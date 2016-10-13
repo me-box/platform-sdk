@@ -87,7 +87,8 @@ export default composeNode(Node, 'osmonitor',
                                 		output:{
                                 			name: {type:'string', description: "a name assigned to this monitor"}, 
                                 			id:  {type:'string', description: "the node id: [id]"},
-                                			type:{type: 'string', description: `reading type:\'${type}\'`},
+                                			type:{type: 'string', description: `the type:\'osmonitor\'`},
+                                			subtype: {type: 'string', description: `reading type:\'${type}\'`},
                                 			payload: {
                                 				type: 'object', 
                                 				description: 'the payload object', 

@@ -6,6 +6,7 @@
 				{"name":"sensingkit", "file":"datastores/sensingkit/node"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
 				{"name":"phidgets", "file":"datastores/phidgets/node"},
+				{"name":"twitter", "file":"datastores/twitter/node"},
 				
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},

@@ -1,13 +1,13 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
 import Textfield from '../../../components/form/Textfield';
-import Select from '../../../components/form/Select';
 import Cell from '../../../components/Cell';
 import Cells from '../../../components/Cells';
+import Select from '../../../components/form/Select';
 
 class Node extends React.Component {
 
-	  componentDidMount(){
+	   componentDidMount(){
 	  	 	if (this.props.values.subtype){
 	   			this.props.updateOutputSchema(this.props.values.subtype);
 	   		}
@@ -24,13 +24,15 @@ class Node extends React.Component {
                   this.props.updateNode(property, event.target.value);
               },
           }
-          
+		
+		  const nameinput = <div className="centered">
+								<Textfield {...nameprops}/>												
+						  	</div>
+						  	
           const typeprops = {
 				options: [
-					                {name: 'temp', value: 'temp'},
-					                {name: 'humidity', value: 'humidity'},
-					                {name: 'luminosity', value: 'luminosity'},
-					                {name: 'movement', value:'movement'},
+					                {name: 'twitter timeline', value: 'twitterUserTimeLine'},
+					                {name: 'twitter stream', value: 'twitterHashTagStream'},
 					     ],
 					     
 				onSelect: (event)=>{
@@ -42,13 +44,10 @@ class Node extends React.Component {
 				value: this.props.values.subtype || "",
 			}
 			
-		  const typeinput = <div className="centered">
+		 const typeinput = <div className="centered">
 							<Select {...typeprops}/>												
 						  </div>
-
-		  const nameinput = <div className="centered">
-								<Textfield {...nameprops}/>												
-						  	</div>
+						  
           return  <div>
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>
@@ -59,56 +58,55 @@ class Node extends React.Component {
        }
 }
 
-export default composeNode(Node, 'phidget', 
+export default composeNode(Node, 'twitter', 
                             {
                                 category: 'datastores',      
                                 color: '#ffcc00',
                                 
                                 defaults: {             
                                     name: {value:""},   
-                                    subtype: {value:"temp"},
+                                    subtype: {value:"twitterHashTagStream"},
                                 },
                                 inputs:0,               
                                 outputs:1,             
                                 
                                 schema: (subtype)=>{
-                        			
-                        			const type = subtype || "temp";
+                                
+                        			const type = subtype || "twitterHashTagStream";
                         			
                         			const _descriptions = {
-                        				temp:  "temperature value (degrees centigrade)",
-                                		humidity: "humidity value (%)",
-                                		luminosity: "luminosity (lumens)",
-                                		movement: "proximity value",
+                        				twitterHashTagStream: "a twitter hash tag stream",
+                        				twitterUserTimeLine: "a twitter user timeline",
                         			}
-                        			
+                        			        			
                         			return	{
                                 		output:{
-                                			name: {type:'string', description: "a name assigned to this phidget"}, 
-                                			id:  {type:'string', description: "the node id: [id]"},
-                                			type:{type: 'string', description: "the type:\'phidget\'"},
-                                			subtype: {type: 'string', description: `reading type:\'${type}\'`},
+                                			name: {type:'string', description: "a name assigned to this twitter node"}, 
+                                			id:  {type:'string', description: "<i>[id]</i>"},
+                                			type:{type: 'string', description: "<i>twitter</i>"},
+                                			subtype: {type: 'string', description: `<i>${type}</i>`},
+                                			
                                 			payload: {
                                 				type: 'object', 
                                 				description: 'the payload object', 
                                 				schema: {
                                 					ts: {type:'time', description: 'a unix timestamp'},
-                                					value: {type:'numeric', description: _descriptions[type] || ""},    					
+                                					value: {type:'object',  description: _descriptions[type] || "", schema: {}},    					
                                 				}
                                 			}
                                 		}
                                 	}
                                 },
                                 
-                                icon: "fa-cogs",
-                                unicode: '\uf085',     
+                                icon: "fa-twitter",
+                                unicode: '\uf099',     
                                 label: function() {     
-                                    return this.name||"phidget";
+                                    return this.name||"twitter";
                                 },
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                description: ()=>"<p>A bunch of  <a href=\"http://www.phidgets.com/\">phidget</a> sensors, recording luminosity, humidity, temperature and movement</p>",
+                                description: ()=>"<p>Latest tweets from a twitter account</p>",
 
                             }
                           );
