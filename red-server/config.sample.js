@@ -5,7 +5,7 @@ module.exports = {
     github:{
 	CLIENT_ID: [yourgithubclientid],
     	CLIENT_SECRET: [yourgithubclientsecret],
-    	CALLBACK: [githubcallbackurl]
+    	CALLBACK: [githubcallbackurl],
  	API: "https://api.github.com",
         RAW_URL: "https://raw.githubusercontent.com",
         URL: "https://github.com",
