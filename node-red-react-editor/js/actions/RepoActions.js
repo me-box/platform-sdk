@@ -13,7 +13,7 @@ export function browseNewUser(){
 		dispatch(networkAccess(`requesting repo list for user ${githubuser}`));
 		
 		request
-		  .get(`http://${config.root}/github/repos/${githubuser}`)
+		  .get(`${config.root}/github/repos/${githubuser}`)
 		  .set('Accept', 'application/json')
 		  .end(function(err, res){
 			if (err){
@@ -111,7 +111,7 @@ export function requestRepos(){
 		
 		dispatch(networkAccess(`requesting repo list`));
 		request
-		  .get(`http://${config.root}/github/repos`)
+		  .get(`${config.root}/github/repos`)
 		  .set('Accept', 'application/json')
 		  .end(function(err, res){
 			if (err){
@@ -166,7 +166,7 @@ export function commitPressed(){
 		dispatch(networkAccess(`saving flows`));
 		
 		request
-			.post(`http://${config.root}/github/repo/update`)
+			.post(`${config.root}/github/repo/update`)
 			.send(data)
   			.set('Accept', 'application/json')
   			.type('json')
@@ -217,7 +217,7 @@ export function savePressed(){
 		}
 		
 	    request
-  			.post(`http://${config.root}/github/repo/new`)
+  			.post(`${config.root}/github/repo/new`)
   			.send(submission)
   			.set('Accept', 'application/json')
   			.type('json')

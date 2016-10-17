@@ -71,7 +71,7 @@ export function togglePublisher(){
 export function logout(){
 	return function (dispatch, getState) {	
 		request
-		  .get(`http://${config.root}/auth/logout`)
+		  .get(`${config.root}/auth/logout`)
 		  .set('Accept', 'application/json')
 		  .end(function(err, res){});
 	}	 
@@ -102,11 +102,11 @@ export function deploy(){
 		
 		
 		console.log([...tabs, ...jsonnodes]);
-		console.log(`DEPLOYING TO http://${config.root}/nodered/flows`);
+		console.log(`DEPLOYING TO ${config.root}/nodered/flows`);
 		
 		
 	    request
-  			.post(`http://${config.root}/nodered/flows`)
+  			.post(`${config.root}/nodered/flows`)
   			.send([
   					...tabs,
   					...jsonnodes

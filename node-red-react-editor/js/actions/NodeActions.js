@@ -157,7 +157,7 @@ export function fetchNodes(store) {
 
     dispatch(requestNodes())
 
-    return fetch(`http://${config.root}/nodes/nodes.json`,{
+    return fetch(`${config.root}/nodes/nodes.json`,{
     	headers: {
         	'Accept': 'application/json',
         	'Content-Type': 'application/json',

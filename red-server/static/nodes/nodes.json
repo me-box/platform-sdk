@@ -2,7 +2,7 @@
 	"nodes":[	
 				{"name":"timer", "file":"inputs/inject/node"}, 
 			 	
-			 
+			 	
 				{"name":"sensingkit", "file":"datastores/sensingkit/node"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
 				{"name":"phidgets", "file":"datastores/phidgets/node"},

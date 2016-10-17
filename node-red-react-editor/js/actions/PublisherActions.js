@@ -130,7 +130,7 @@ export function submit(){
   		dispatch(networkAccess(`publishing app ${name}`));
   		
 		 request
-  			.post(`http://${config.root}/github/publish`)
+  			.post(`${config.root}/github/publish`)
   			.send(data)
   			.set('Accept', 'application/json')
   			.type('json')

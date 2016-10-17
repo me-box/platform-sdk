@@ -232,7 +232,7 @@ export function fetchFlow(store, repo){
 		const username = getState().repos.currentuser;
 		
 		request
-  			.get(`http://${config.root}/github/flow/`)
+  			.get(`${config.root}/github/flow/`)
   			.query({repo:repo, username:username})
   			.set('Accept', 'application/json')
   			.type('json')
