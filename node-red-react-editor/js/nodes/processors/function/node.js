@@ -5,7 +5,7 @@ import Textarea from '../../../components/form/Textarea';
 import Select from '../../../components/form/Select';
 import Cell from '../../../components/Cell';
 import Cells from '../../../components/Cells';
-
+import {matchLibraries} from '../../../utils/utils';
 import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/java';
@@ -79,6 +79,9 @@ class Node extends React.Component {
           
         	const {selected, inputs, outputs, help} = this.props;
             
+            const libraries = <div style={{padding: 8}}>
+            					<strong>{matchLibraries(this.props.values.func || this.props.selected.func || "").join(", ")}</strong>
+            				  </div>
        		
 			const nameprops = {	
 									value: 	this.props.values.name || this.props.selected.name || "",
@@ -123,6 +126,7 @@ class Node extends React.Component {
         		name: selected.id,
         		editorProps:{$blockScrolling: true},
         		height: '300px',
+        		width: '100%',
         	}
         	
         	const codeinput = <AceEditor {...aceprops}/> 
@@ -165,6 +169,7 @@ class Node extends React.Component {
           			<Cells>		
           				<Cell content = {inputsoutputs} />							
 						<Cell title={"name"} content={nameinput}/>
+						<Cell title={"external libraries"} content={libraries}/>
 						<Cell title={"function"} content={codeinput}/>
 						<Cell title={"outputs"} content={outputselect}/>
           			</Cells>

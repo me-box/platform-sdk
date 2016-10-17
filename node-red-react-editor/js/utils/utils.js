@@ -112,3 +112,27 @@ export function textWidth(text, fontoptions) {
     document.body.removeChild(tag);
     return w;
 }
+
+export function matchLibraries(code){
+
+	const REQUIRE_RE = /require\(['"]([^'"]+)['"](?:, ['"]([^'"]+)['"])?\);?/g;
+	const IMPORT_RE  = /\bimport\s+(?:.+\s+from\s+)?[\'"]([^"\']+)["\']/g;
+
+	const requires = code.match(REQUIRE_RE);
+	const imports = code.match(IMPORT_RE);
+	let r1 = [], r2 = [];
+	
+	if (requires && requires.length > 0){
+		r1 = requires.map((pkg)=>{
+			return pkg.replace(/require\w*\(\w*['"]/g, "").replace(/['"]\);*/g,"")
+		});
+	}
+
+	if (imports && imports.length > 0){
+	 	r2 = imports.map((module)=>{
+			return module.replace(/import\s*/g,"").replace(/\s*(\w|\W|\s)*from\s*/g,"").replace(/['"]/g, "");
+		});
+	}
+
+	return [...r1, ...r2];
+}

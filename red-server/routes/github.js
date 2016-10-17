@@ -1,23 +1,15 @@
 import express from 'express';
 import request from 'superagent';
 import config from '../config.js';
-import zlib from 'zlib';
 import fs from 'fs';
-import tar from 'tar-stream';
 import docker from '../utils/docker';
+import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries} from '../utils/utils';
 
 const router = express.Router();
 
 
 
-const _flatten = (arr)=>{
-	return arr.reduce((acc, row)=>{
-			return row.reduce((acc, src)=>{
-					acc.push(src);
-					return acc;
-			}, acc);
-	}, [])
-}
+
 
 const _createCommit = function(user, repo, sha, filename, content, message, accessToken){
 
@@ -229,7 +221,7 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 				
 				'allowed-combinations' : allowed,
 				
-				datasources: _flatten(packages.map((pkg)=>{
+				datasources: flatten(packages.map((pkg)=>{
 					return pkg.datastores.map((d)=>{
 						return {
 							type: d.type,
@@ -243,70 +235,32 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 			}	
 }
 
-const _createTarFile = function(dockerfile, path){
-		
-	return new Promise((resolve, reject)=>{
-		
-		var tarball = fs.createWriteStream(path);
-		const gzip   = zlib.createGzip();
-		console.log("creating dockerfile and adding to registry!");
-		const pack   = tar.pack();
-		
-		pack.entry({name: 'Dockerfile'}, dockerfile, function(err){
-        	if (err){
-        	   reject(err);
-        	}
-        	pack.finalize();
-        	
-        	const stream = pack.pipe(gzip).pipe(tarball);
-		
-			stream.on('finish', function (err) {
-				resolve(path);
-			});	
-		});
-	});
-		
-}
 
-
-const _createDockerImage = function(tarfile, name){
-	return new Promise((resolve, reject)=>{
-		docker.buildImage(tarfile, {t: `${config.registry.URL}/${name}`}, function (err, output){
-			if (err){
-				console.warn(err);
-				reject(err);
-			}
-			output.pipe(process.stdout);
-			output.on('end', function() {
-				var image = docker.getImage(`${config.registry.URL}/${name}`);
-				image.push({
-					registry : `${config.registry.URL}`
-				}, function(err, data) {
-					data.pipe(process.stdout);
-					if (err){
-						reject(err)
-					}
-					resolve();
-				});
-			});
-		});
-	});
-}
-
-const _publish = function(user, reponame, app, packages, allowed){
+const _publish = function(user, reponame, app, packages, libraries, allowed){
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
+		
+		const libcommands = libraries.map((library)=>{
+							return `RUN npm install -g ${library}`
+						});
+		
 		const dcommands = [
 							`FROM ${config.registry.URL}/databox/red`, 
 							`ADD ${config.github.RAW_URL}/${user.username}/${reponame}/master/flows.json /root/.node-red/flows.json`,
 							'LABEL databox.type="app"',
 							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
+					   ];	
+	
+		const startcommands = [
 							"EXPOSE 8080",
 							"CMD /root/start.sh"
-					   ]	
+		];
+		
+		const dockerfile = [...dcommands, ...libcommands, ...startcommands].join("\n");
 	
-		const dockerfile = dcommands.join("\n");
-	
+		console.log("building with dockerfile");
+		console.log(dockerfile);
+		
 		const data = {
 						manifest: JSON.stringify(_generateManifest(user, app.name, app, packages, allowed)),
 										
@@ -320,18 +274,22 @@ const _publish = function(user, reponame, app, packages, allowed){
 		}; 
 				
 		return _saveToAppStore(data).then(function(result){
-			var path = "tmp.tar.gz";
-			return _createTarFile(dockerfile, path);
+			var path = `${user.username}-tmp.tar.gz`;
+			return createTarFile(dockerfile, path);
 		},(err)=>{
 			reject("could not save to app store!");
 		}).then(function(tarfile){
-			return _createDockerImage(tarfile, app.name);
+			return createDockerImage(tarfile, `${config.registry.URL}/${app.name}`);
 		},(err)=>{
 			reject("could not create tar file");
-		}).then(function(){
-			resolve()
+		}).then(function(tag){
+			return uploadImageToRegistry(tag, `${config.registry.URL}`);
 		},(err)=>{
 			reject('could not create docker image');
+		}).then(()=>{
+			resolve();
+		}, (err)=>{
+			reject('could not upload to registry');
 		});
 	});
 };
@@ -485,12 +443,19 @@ router.post('/publish', function(req,res){
 	const packages = manifest.packages;
 	const allowed = manifest['allowed-combinations'];
 	const description = manifest.app.description;
-
 	const commitmessage = 'publish commit';
-	
 	
 	//first save the manifest and flows file - either create new repo or commit changes
 	
+	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
+		if (node.type === "function"){
+			acc = [...acc, matchLibraries(node.func)];
+		}
+		return acc;
+	},[])));
+	
+	console.log("external libs are");
+	console.log(libraries);
 	
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
 		
@@ -506,7 +471,7 @@ router.post('/publish', function(req,res){
 		}, (err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
-			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(user, repo.name, app, packages, allowed)]);
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(user, repo.name, app, packages, libraries, allowed)]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
@@ -525,7 +490,7 @@ router.post('/publish', function(req,res){
 		
 		.then((values)=>{	
 			console.log(`publishing...${reponame}`);
-			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, allowed)]);
+			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, libraries, allowed)]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
