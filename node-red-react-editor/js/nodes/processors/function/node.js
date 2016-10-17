@@ -19,7 +19,7 @@ const _payload = function(schema, id, selectedid){
 		if (item.type === "object"){
 			return <div key={i}>
 				   		<div className="flexrow">
-				   			<div className="title">
+				   			<div className="attributetitle">
 								<div className="centered">
 									<strong>{key}</strong>
 								</div>
@@ -40,7 +40,7 @@ const _payload = function(schema, id, selectedid){
 		}
 		return <div key={i}>
 				<div className="flexrow">
-					<div className="title">
+					<div className="attributetitle">
 						<div className="centered">
 							<strong>{key}</strong>
 						</div>
@@ -60,21 +60,14 @@ const _payload = function(schema, id, selectedid){
 	});
 }
 
-const _schema = function(schema, node, selectedid){
-	
-	const props = {
-			schema, 
-			icon: node._def.icon,
-			color: node._def.color, 
-			id: node.id,
-			selectedid,
-	};
-							  
-	return <Schema {...props}/>  
-}
-
 class Node extends React.Component {
 
+	   constructor(props){
+	   		super(props);
+	   		this._toggleShowOutputs = this._toggleShowOutputs.bind(this);
+	   		this._toggleShowInputs = this._toggleShowInputs.bind(this);
+	   }
+	   
        render() {
           
         	const {selected, inputs, outputs, help} = this.props;
@@ -127,47 +120,69 @@ class Node extends React.Component {
         		editorProps:{$blockScrolling: true},
         		height: '300px',
         		width: '100%',
+        		showPrintMargin: false,
         	}
         	
         	const codeinput = <AceEditor {...aceprops}/> 
 			
 			
-			const inputdescription = inputs.map((input)=>{
-				const schema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {};
-				return _schema(schema, input, selected.id);
+			const inputdescription = inputs.map((input,i)=>{
+				const schema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {}
+				const props = {
+						schema, 
+						icon: input._def.icon,
+						color: input._def.color, 
+						id: input.id,
+						selectedid: selected.id,
+				};
+				return <Schema key={i} {...props}/> 
 			});
 			
-			const outputdescription = outputs.map((output)=>{
+			const outputdescription = outputs.map((output, i)=>{
 				const schema =  output._def.schema ? output._def.schema().input : {};
-				return _schema(schema, output, selected.id);
+				const props = {
+						schema, 
+						icon: output._def.icon,
+						color: output._def.color, 
+						id: output.id,
+						selectedid: selected.id,
+				};
+				return <Schema key={i} {...props}/> 
 			});
 			
-			const inputsoutputs = <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>	
-										{inputs.length > 0 && <div style={{flexBasis:0}}>
-											<div className="flexcolumn">
-												<div className="noborder" style={{background:'#333', color: 'white'}}>
-													<div className="centered" >
-														there are {inputs.length} inputs to this function
-													</div>
-												</div>	
-												{inputdescription}
+			const inputtogglemsg = this.props.values.showinputs ? "click to hide" : "click to view";
+			const outputtogglemsg = this.props.values.showoutputs ? "click to hide" : "click to view";
+			
+			const fninputs = <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>	
+								{inputs.length > 0 && <div style={{flexBasis:0}}>
+									<div className="flexcolumn">
+										<div className="noborder" style={{background:'#333', color: 'white'}} onClick={this._toggleShowInputs}>
+											<div className="centered" >
+												there are {inputs.length} inputs to this function ({inputtogglemsg})
 											</div>
-										</div>}
-										{outputs.length > 0 && <div style={{flexBasis:0}}>
-											<div className="flexcolumn">
-												<div className="noborder" style={{background:'#445662', color: 'white'}}>
-													<div className="centered" >
-														there are {outputs.length} recipients of data from this function
-													</div>
-												</div>
-												{outputdescription}
-											</div>
-										</div>}
+										</div>	
+										{this.props.values.showinputs && inputdescription}
 									</div>
+								</div>}
+							</div>
+								
+			const fnoutputs =<div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>		
+								{outputs.length > 0 && <div style={{flexBasis:0}}>
+									<div className="flexcolumn">
+										<div className="noborder" style={{background:'#445662', color: 'white'}} onClick={this._toggleShowOutputs}>
+											<div className="centered" >
+												there are {outputs.length} recipients of data from this function {outputtogglemsg}
+											</div>
+										</div>
+										{this.props.values.showoutputs && outputdescription}
+									</div>
+								</div>}
+							</div>
 								  				
           	return <div>
           			<Cells>		
-          				<Cell content = {inputsoutputs} />							
+          				<Cell content = {fninputs} />	
+          				<Cell content = {fnoutputs} />						
 						<Cell title={"name"} content={nameinput}/>
 						<Cell title={"external libraries"} content={libraries}/>
 						<Cell title={"function"} content={codeinput}/>
@@ -175,6 +190,14 @@ class Node extends React.Component {
           			</Cells>
           		   </div>
           
+       }
+       
+       _toggleShowInputs(){
+       	    this.props.updateNode("showinputs", !this.props.values.showinputs);
+       }
+       
+       _toggleShowOutputs(){
+     		this.props.updateNode("showoutputs", !this.props.values.showoutputs);
        }
         
 }

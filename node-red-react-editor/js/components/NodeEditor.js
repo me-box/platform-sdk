@@ -40,6 +40,7 @@ class NodeEditor extends Component {
 		
 		const contentstyle={
 			//height: this.props.height - TOOLBAR_HEIGHT - INFO_HEIGHT,
+			overflow: 'auto',
 		}
 		
 		const toolbarstyle = {

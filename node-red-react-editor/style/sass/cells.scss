@@ -105,7 +105,9 @@ html{
     height: 40px;
 }
 
-.flexrow > .title {
+
+.flexrow > .title,
+.flexrow > .attributetitle {
 	display: -webkit-flex;
 	display: flex;
 	 -webkit-flex: 0 0 auto;
@@ -114,8 +116,11 @@ html{
    	border-right:  1px solid #b6b6b6;
    	border-left:  1px solid #b6b6b6;
    	background: #f2f2f2;
-   	text-transform: uppercase;
    	font-size: 0.75em;    
+}
+
+.flexrow > .title {
+   	text-transform: uppercase;  
 }
 
 .flexrow > .header {
