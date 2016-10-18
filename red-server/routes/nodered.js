@@ -41,16 +41,13 @@ const _waitForStart = function(container){
 		container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
     		stream.on('data', function(line) {
     			if (line.toString().indexOf("Started flows") != -1){
-    				console.log("started");
+    				console.log("started container");
     				setTimeout(function(){
-    					console.log("-- pushing forth!");
+    					console.log("sending flows");
     					resolve(true);	
     				},1000);
     			}
     		});
-    		stream.on('finish', function (err) {
-				console.log("********* STREAM HAS FINISHED *********");
-			});	
 		});
 	});
 }
