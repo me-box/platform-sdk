@@ -42,9 +42,15 @@ const _waitForStart = function(container){
     		stream.on('data', function(line) {
     			if (line.toString().indexOf("Started flows") != -1){
     				console.log("started");
-    				resolve(true);	
+    				setTimeout(function(){
+    					console.log("-- pushing forth!");
+    					resolve(true);	
+    				},1000);
     			}
     		});
+    		stream.on('finish', function (err) {
+				console.log("********* STREAM HAS FINISHED *********");
+			});	
 		});
 	});
 }

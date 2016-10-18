@@ -9,6 +9,7 @@ class Node extends React.Component {
 	   constructor(props){
 			super(props);
             this._handleValueSelected = this._handleValueSelected.bind(this);
+            this._validateNumber = this._validateNumber.bind(this);
 	   }
 	   
 	   
@@ -111,7 +112,6 @@ class Node extends React.Component {
           
           const charts = ["bar", "gauge"].map((type)=>{
           	
-          	
           	const className = cx({
           		button: true,
           		selected: type === chart,
@@ -142,39 +142,84 @@ class Node extends React.Component {
 							}	
 							
 		  const yaxismin = {	
-								value: 	this.props.values.yaxismin || "",
-				 				id: "yaxismin",
+								value: 	this.props.values.min || "",
+				 				id: "min",
 				 				placeholder: "(leave blank for auto)",
 								onChange:(property, event)=>{
-                  					 this.props.updateNode(property, event.target.value);
+                  					const n = event.target.value;
+									if (this._validateNumber(n)){
+                  					 	this.props.updateNode(property, event.target.value);
+              						}
               					}
 							}	
 		  
 		  const yaxismax = {	
-								value: 	this.props.values.yaxismax || "",
-				 				id: "yaxismax",
+								value: 	this.props.values.max || "",
+				 				id: "max",
 				 				placeholder: "(leave blank for auto)",
 								onChange:(property, event)=>{
-                  					 this.props.updateNode(property, event.target.value);
+                  					const n = event.target.value;
+									if (this._validateNumber(n)){
+                  					 	this.props.updateNode(property, event.target.value);
+              						}
               					}
 							}	
-		   const maxreadings = {	
+		  const maxreadings = {	
 								value: 	this.props.values.maxreadings,
 				 				id: "maxreadings",
 				 				
 								onChange:(property, event)=>{
-                  					 this.props.updateNode(property, event.target.value);
+									const n = event.target.value;
+									if (this._validateNumber(n)){
+                  					 	this.props.updateNode(property, event.target.value);
+              						}
               					}
 							}
 			
-			 const ticks = {	
+		  const ticks = {	
 								value: 	this.props.values.ticks,
 				 				id: "ticks",
 								onChange:(property, event)=>{
-                  					 this.props.updateNode(property, event.target.value);
+                  					const n = event.target.value;
+									if (this._validateNumber(n)){
+                  					 	this.props.updateNode(property, event.target.value);
+              						}
               					}
 							}
-																						
+		
+		  const gaugemin = {
+				value: 	values.min || "",
+				id: "min",
+				placeholder: "(leave blank for auto)",
+				onChange:(property, event)=>{
+					const n = event.target.value;
+					if (this._validateNumber(n)){
+						this.props.updateNode(property, n);
+					}
+				}	
+		  }		
+		  
+		  const gaugemax = {
+				value: 	values.max || "",
+				id: "max",
+				placeholder: "(leave blank for auto)",
+				onChange:(property, event)=>{
+					const n = event.target.value;
+					if (this._validateNumber(n)){
+						this.props.updateNode(property, n);
+					}
+				}	
+		  }		
+		  
+		   const gaugelabels = {
+				value: 	values.labels || "",
+				id: "labels",
+				placeholder: "low:25,medium:50,high:75,massive:100",
+				onChange:(property, event)=>{
+					this.props.updateNode(property, event.target.value);
+				}	
+		  }			
+		  															
           const barchartoptions =  <div className="flexcolumn">
           							
           							<div>
@@ -262,6 +307,53 @@ class Node extends React.Component {
 											<div>
 												<div className="centered">
 												 <Textfield {...ticks}/>	
+												</div>
+											</div>
+										</div>
+									</div>
+									<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													min
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+													<Textfield {...gaugemin}/>	 
+												</div>
+											</div>
+											<div className="title">
+												<div className="centered">
+													max
+												</div>
+											</div>
+											<div>
+												<div className="centered">
+													<Textfield {...gaugemax}/>	 
+												</div>
+											</div>
+										</div>
+									</div>
+									<div>
+										<div className="flexrow">
+											<div className="title">
+												<div className="centered">
+													labels
+												</div>
+											</div>
+											<div>
+												<div className="flexcolumn description">
+													<div>
+														<div className="centered">
+															<Textfield {...gaugelabels}/>	 	 
+														</div>
+													</div>
+													<div>
+														<div className="centered">
+															use this to add labels along the outer axis of the gauge.  The format required is <i>label:number,label:number</i> where <strong>label</strong> is the word you would like displayed and <strong>number</strong> is the maximum value for which the label applies.  For example on a gauge with values from 0 to 100, to create 4 equal width labels you might write <i>low:25,medium:50,high:75,massive:100</i> Values from 0-25 will be marked 'low', 25-50 will be marked 'medium', 50-75 will be marked 'high' and 75 to 100 will be marked 'massive'.	 	 
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
@@ -370,6 +462,10 @@ class Node extends React.Component {
           
        }    
        
+       _validateNumber(n){
+			return (!isNaN(parseFloat(n)) && isFinite(n)) || n === "";
+       }
+       
        _handleValueSelected(property, value){
        
        		
@@ -389,8 +485,6 @@ class Node extends React.Component {
        		}).indexOf(value.name);
        		
        		if (index == -1){
-       			console.log("updating " + property + " so that it is");
-       			console.log( [...values, value]);
        			this.props.updateNode(property, [...values, value]);
        		}else{
        			this.props.updateNode(property, [...values.slice(0,index), ...values.slice(index+1)]);
@@ -408,8 +502,9 @@ export default composeNode(Node, 'chartify',
                                     chart: {value:"bar"},
                                     xlabel: {value:""},
                                     ylabel: {value:""},
-                                    yaxismin: {value:""},
-                                    yaxismax: {value:""},
+                                    min: {value:""},
+                                    max: {value:""},
+                                    labels: {value:""},
                                     maxreadings: {value: ""},
                                     ticks : {value:""},
                                     xtype: {value:[]},
