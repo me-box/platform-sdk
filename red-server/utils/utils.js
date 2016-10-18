@@ -152,20 +152,13 @@ export function stopAndRemoveContainer(name){
 export function createTestContainer(image, name){
 	console.log(`creating test container ${image}, name: ${name}`);
 	return new Promise((resolve, reject)=>{
-		docker.createContainer({Image: image, Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  Labels: {'user':`${name}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['node', '/root/node-red/red.js'], name: `${name}-red`}, function (err, container) {
+		docker.createContainer({Image: image, PublishAllPorts:true, Binds: ["/tmp/app.webserver:/tmp/app.webserver"], Links: ["mosquitto:mosquitto", "arbiter:arbiter", "mock-datasource:mock-datasource"], Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  Labels: {'user':`${name}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ['node', '/root/node-red/red.js'], name: `${name}-red`}, function (err, container) {
 			if (err){
 				console.log(err);
 				reject(err);
 			}else{
 			
-				const options = {
-					"PublishAllPorts":true, 
-					"Binds": ["/tmp/app.webserver:/tmp/app.webserver"], 
-					"Links": ["mosquitto:mosquitto", "arbiter:arbiter", "mock-datasource:mock-datasource"]
-				}
-			
-			
-				container.start(options, function (err, data) {
+				container.start({}, function (err, data) {
 					if (err){
 						console.log("error!");
 						reject(err);
