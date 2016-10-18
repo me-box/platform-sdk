@@ -1,16 +1,17 @@
 var path = require("path");
+var config = require("./js/config"); 
 
 module.exports = {
     entry: {
         editor: [
             './js/app.js',
-            'webpack-dev-server/client?http://databox.upintheclouds.org',
+            'webpack-dev-server/client?' + config.root,
             'webpack/hot/only-dev-server'
         ]
     },
 
     output: {
-        publicPath: 'http://databox.upintheclouds.org/',
+        publicPath: config.root + '/',
         filename: '[name].js'
     },
 
