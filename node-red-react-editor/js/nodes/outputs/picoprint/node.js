@@ -4,9 +4,7 @@ import Textfield from '../../../components/form/Textfield';
 
 class Node extends React.Component {
 
-    render() {
-       
-    
+       render() {
           const {selected,values,updateNode} = this.props;
           
           const nameprops = {
@@ -34,28 +32,29 @@ class Node extends React.Component {
 						</div>
 					</div>			
           
-    }
+       }
 }
 
-export default composeNode(Node, 'bulbs', 
+export default composeNode(Node, 'picoprint', 
                             {
-                                category: 'outputs',      
+                                category: 'outputs',    
                                 color: '#d45500',
                                 defaults: {             
                                     name: {value:""},   
-                                    subtype: {value:"hue_bulb"},
                                 },
                                 inputs:1,               
-                                outputs:0,             
+                                outputs:1,             
                                
-                                icon: "fa-lightbulb-o",
-                                unicode: '\uf0eb',     
+                                icon: "fa-print",    
+                                unicode: '\uf02f',    
                                 label: function() {     
-                                    return this.name||this.topic||"bulbs";
+                                    return this.name||this.topic||"picoprint";
                                 },
+                                
+                                description: ()=>"<p> This will send some text to a pico printer </p>",
+                                 
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
-                                },
-                                 description: ()=>"<p> turn bulbs on or off </p>",
+                                }
                             }
                           );

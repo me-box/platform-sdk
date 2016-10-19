@@ -83,6 +83,9 @@ export default composeNode(Node, 'osmonitor',
                                 		freemem: "free memory (bytes)",
                         			}
                         			
+                        			
+            
+  
                                 	return	{
                                 		output:{
                                 			name: {type:'string', description: "a name assigned to this monitor"}, 

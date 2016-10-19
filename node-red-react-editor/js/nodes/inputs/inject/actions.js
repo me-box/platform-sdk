@@ -190,7 +190,7 @@ export function updatePayload(id, event){
 	    	payload: event.target.value,
 	    	id
 	  	});
-
+		 
 	  	dispatch(updateNode('payload', getState()[id].payload));
 	}
 

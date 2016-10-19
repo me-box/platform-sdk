@@ -157,10 +157,11 @@ const _addFile = function(options){
    	})	
 }
 
-const _fetchFile = function(username, accessToken, repo, filename){
+const _fetchFile = function(username, repoowner, accessToken, repo, filename){
+	
 	return new Promise((resolve,reject)=>{
 		request
-			.get(`${config.github.API}/repos/${username}/${repo}/contents/${filename}`)
+			.get(`${config.github.API}/repos/${repoowner}/${repo}/contents/${filename}`)
 			.set('Accept', 'application/json')
 			.set('Authorization', `token ${accessToken}`)
 			.end((err, data)=>{
@@ -168,8 +169,14 @@ const _fetchFile = function(username, accessToken, repo, filename){
 					reject(err);
 				} 
 				else {	
+				
+					//only send back sha (used for future updates) if user that requested this repo is the owner
 					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
-					resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
+					if (username === repoowner){
+						resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
+					}else{
+						resolve({content: JSON.parse(jsonstr)});
+					}
 				}
 			});		
 	});
@@ -309,16 +316,18 @@ router.get('/repos/:user', function(req,res){
      			console.log(err);
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
-     			res.send(data.body.map(function(repo){
+     			const repos = data.body.map(function(repo){
        				return {
        							name: repo.name, 
        							updated: repo.updated_at, 
        							icon:repo.owner.avatar_url, 
-       							url:repo.url
+       							url:repo.url, 
        				} 
        			}).filter(function(repo){
        				return repo.name.startsWith("databox.");
-       			}));
+       			})
+       			
+     			res.send(repos);
        		}
    		})
 });
@@ -338,16 +347,18 @@ router.get('/repos', function(req,res){
      			req.logout();
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
-     			res.send(data.body.map(function(repo){
+     			const repos = data.body.map(function(repo){
        				return {
        							name: repo.name, 
        							updated: repo.updated_at, 
        							icon:repo.owner.avatar_url, 
-       							url:repo.url
+       							url:repo.url, 
        				} 
        			}).filter(function(repo){
        				return repo.name.startsWith("databox.");
-       			}));
+       			});
+       			
+       			res.send(repos);
        		}
    		})
 });
@@ -358,9 +369,9 @@ router.get('/flow', function(req,res){
 	
 	const user = req.user;
 	const repo = req.query.repo;
-	const username = req.query.username || user.username;
+	const owner = req.query.username || user.username;
 	
-	return Promise.all([_fetchFile(username, user.accessToken, repo, 'flows.json'), _fetchFile(username, user.accessToken, repo, 'manifest.json')]).then(function(values) {
+	return Promise.all([_fetchFile(user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(user.username, owner, user.accessToken, repo, 'manifest.json')]).then(function(values) {
 		console.log(values);
         res.send({
         	result: 'success',

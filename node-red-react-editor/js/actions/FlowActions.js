@@ -251,11 +251,14 @@ export function fetchFlow(store, repo){
   					})));
   					
   					//update the sha of this repo
-  					dispatch(receivedSHA(repo,
+  					
+  					if (res.body.flows.sha && res.body.manifest.sha){
+  						dispatch(receivedSHA(repo,
   										 {
   												flows: res.body.flows.sha,
   												manifest: res.body.manifest.sha
   										 }))
+  					}
   					
   					
   					//create all of the flows

@@ -102,7 +102,7 @@ export function submit(){
   		
   		const packages = getState().publisher.packages.map((pkg)=>{ //add in datastores (outputs)
   			return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
-  				return (node.z === pkg.id) && (node._def.category === "datastores")// || node._def.category === "outputs");
+  				return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && node.type != "app"))
       		}).map((node)=>{
       			return {
       				id: node.id,

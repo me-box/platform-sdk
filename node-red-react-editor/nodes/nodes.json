@@ -12,6 +12,9 @@
 				{"name":"listify", "file":"processors/listify/node"},
 			 	{"name":"chartify", "file":"processors/chartify/node"},
 			 	
-			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"}
+			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
+			 	{"name":"bulbs", "file":"outputs/bulbs/node"},
+			 	{"name":"picoprint", "file":"outputs/picoprint/node"},
+			 	{"name":"notify", "file":"outputs/notify/node"}
 			 ]
 }

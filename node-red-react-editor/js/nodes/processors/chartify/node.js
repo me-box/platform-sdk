@@ -78,7 +78,8 @@ class Node extends React.Component {
           			selected: ytype.filter((item)=>{
           				return (item.source === name && item.name === key)
           			}).length > 0,
-          			
+          			greyed: schema[key].type !== "numeric" && schema[key].type!="time",
+          	
           		});
           		return 	<div key={key}>
           					<div  onClick={()=>{this._handleValueSelected("ytype", {source:input.type, name:key, type: schema[key].type})}} className={className}>{key}</div>
@@ -468,7 +469,11 @@ class Node extends React.Component {
        
        _handleValueSelected(property, value){
        
-       		
+       		 
+       		 
+       		if (property === "ytype" && (value.type !== "numeric" && value.type!=="time"))
+       			return;
+          	
        		//type == unique name!
        		const values = this.props.values[property] || [];
        		

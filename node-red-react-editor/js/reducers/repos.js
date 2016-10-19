@@ -3,9 +3,6 @@ import {REPO_NAME_CHANGED, REPO_BROWSINGNAME_CHANGED, REPO_CURRENTUSER_CHANGED, 
 
 
 export function sha(state={}, action){
-	console.log("in here and state is ");
-	console.log(state);
-	
 	return Object.assign({}, state, {...action.sha});
 }
  
