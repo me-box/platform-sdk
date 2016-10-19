@@ -47,8 +47,46 @@ export default composeNode(Node, 'listify',
                                
                                 icon: "fa-list",    
                                 unicode: '\uf03a',    
+                                
                                 label: function() {     
                                     return this.name||this.topic||"listify";
+                                },
+                                
+                                schema: ()=>{
+                                	
+                                	return{
+                                		output:{
+                                			sourceId: {type:"string", description:"<i>[id]</i>"},
+          									type: { type:"string", description:"<i>list</i>"},
+                                			payload: {
+                                				type: "object",
+												schema:{
+													timestamp: {type:"ts", description:"a unix timestamp"}, 
+													keys: {type:"array", description:"['key1','key2', '..']"}, 
+													rows:{
+														type: "object",
+														schema:{
+															key: {type:"any", description:"key value pair where key matches key in keys array"}
+														}
+													}
+												}
+                                			},
+                                		},
+                                		input : {
+                                			payload: {
+                                				type:"object",
+                                				schema:{
+                                					id: {type:"string", description:"a unique id"}, 
+                                					values : {
+														type: "object",
+														schema: {
+															key: {type:"any", description:"a key:value object where value is a primitive type (string,number)"}
+														},
+													}
+                                				}
+											}
+                                		}
+                                	}
                                 },
                                 
                                 description: ()=>"<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to <code> {keys:Array, rows: Array[]} </code> which is the form expected for the list view of the companion app </p>",

@@ -44,22 +44,19 @@ class Node extends React.Component {
           const nameprops = {
               id: "name",
               value: this.props.values.name || "",
-              //icon: "fa fa-tag",
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
               },
               selected: this.props.selected,
           }
-
-          const topicprops = {
+		  
+		  const topicprops = {
               id: "topic",
               value: this.props.values.topic || "",
-              //icon: "fa fa-tasks",
               onChange: (property, event)=>{
                   this.props.updateNode(property, event.target.value);
               },
               selected: this.props.selected,
-
           }
           
           const payloadprops = {
@@ -306,6 +303,18 @@ class Node extends React.Component {
           					</div>
           				</div>
           				
+          				<div>
+          					<div className="flexrow">
+          						<div className="title">	
+									<div className="centered">topic</div>
+								</div>
+								<div>
+									<div className="centered">
+										<Textfield {...topicprops}/>
+									</div>
+								</div>
+          					</div>
+          				</div>
           				
           				<div>
           					<div className="flexrow">
@@ -422,13 +431,14 @@ export default composeNode(Node, 'inject',{
 				"date":{type:'time', description: 'a unix timestamp'},
 				"json":{type:'object', description: 'an object', schema:{}},
 			}
+
 			return	{
-                                		output:{
-                                			topic: {type:'string', description: "a string assigned to this input"}, 
-                                			_msgid: {type:'string', description: "<i>id<i>"},
-                                			payload: translate[subtype], 
-                                		}
-                                	}
+				output:{
+					topic: {type:'string', description: "a string assigned to this input"}, 
+					_msgid: {type:'string', description: "a unique message id"},
+					payload: translate[subtype], 
+				}
+			}
         },
 
         description: ()=>"<p>This allows you to trigger an event (either once or at intervals)</p><p>The payload defaults to the current time in millisecs since 1970, but can also be set to various other javascript types.</p> <p>The repeat function allows the payload to be sent on the required schedule.</p><p>The <i>Inject once at start</i> option actually waits a short interval before firing to give other nodes a chance to instantiate properly.</p><p>The <i>Flow</i> and <i>Global</i> options allow one to inject a flow or global context value.</p> <p><b>Note: </b>'Interval between times' and 'at a specific time' uses cron. This means that 20 minutes will be at the next hour, 20 minutes past and 40 minutes past - not in 20 minutes time. If you want every 20 minutes from now - use the 'interval' option.</p><p><b>Note: </b>all string input is escaped. To add a carriage return to a string you should use a following function.</p>",

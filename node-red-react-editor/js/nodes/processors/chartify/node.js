@@ -18,6 +18,10 @@ class Node extends React.Component {
 	   		//of previous version in reducer
 	   		this.props.updateNode("xtype", []);
 	   		this.props.updateNode("ytype", []);
+	   		
+	  	 	if (this.props.values.subtype){
+	   			this.props.updateOutputSchema(this.props.values.subtype);
+	   		}
 	   }
 		
        render() {
@@ -49,11 +53,7 @@ class Node extends React.Component {
           	const fullschema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {};
           	const schema = fullschema.payload ? fullschema.payload.schema : fullschema;
           	
-          	
-          	console.log(schema);
-          	//const schema = 
-          	//const schema = help//input._def.schema(input.subtype).output.payload.schema;
-          	
+          
           	const xoptions = Object.keys(schema).map((key)=>{
           		const xtype =  values.xtype || [];
           		
@@ -119,7 +119,7 @@ class Node extends React.Component {
           	});
           	return <div key={type}>
           			 	<div className="centered">
-          			 		<div onClick={ ()=>{updateNode("chart", type)} } className={className}>{type}</div>
+          			 		<div onClick={ ()=>{updateNode("chart", type); this.props.updateOutputSchema(type)} } className={className}>{type}</div>
           			 	</div>
           			</div>
           });
@@ -514,6 +514,7 @@ export default composeNode(Node, 'chartify',
                                     ticks : {value:""},
                                     xtype: {value:[]},
                                     ytype: {value:[]},
+                                    subtype: {value:"bar"},
                                 },
                                 
                                 inputs:1,               
@@ -524,6 +525,91 @@ export default composeNode(Node, 'chartify',
                                 label: function() {     
                                     return this.name || "chartify";
                                 },
+                                
+                                
+                                schema: (chart)=>{
+                                	
+                                	const subtype = chart || "bar";
+                                	
+                                	const _payload = {
+                                		
+                                		"bar": {
+													options: {
+														type:"object",
+														description: "options for rendering the chart",
+														schema: {
+															title : {type:"numeric", optional:true, description:"gauge title"},
+															ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
+															xlabel:  {type:"string", optional:true, description:"x-axis label"},
+															ylabel:  {type:"string", optional:true, description:"y-axis label"},
+															min: 	{type:"numeric", optional:true, description:"minimum axis value"},
+															max: 	{type:"numeric", optional:true, description:"maximum axis value"},
+															maxreadings:  {type:"numeric", optional:true, description:"maximum number of readings shown on chart"},
+														}
+													}, 
+													values: {
+														type:"object",
+														description: "chart values",
+														schema:{
+															id: 	{type:"string",  optional:false, description:"id of the dataset"},
+															type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
+															dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
+															x:		{type:"numeric", optional:false, description:"x value"},
+															y:		{type:"numeric", optional:false, description:"y value"},
+														}
+													}
+                                		},
+                                		
+                                		"gauge": {
+                                					options: { 
+														type: "object",
+														description: "options for rendering the chart",
+														schema :{
+																title : {type:"numeric", optional:true, description:"gauge title"},
+																ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
+																min: 	{type:"numeric", optional:true, description:"minimum value"},
+																max: 	{type:"numeric", optional:true, description:"maximum value"},
+																labels: {type:"string",  optional:true, description:"labels along the top of the chart in format name:value,name:value"},
+														}
+													},
+													//TODO: get rid of non-essential attributes 
+													values: {
+														type: "object",
+														description: "chart values",
+														schema :{
+															id: 	{type:"string",  optional:false, description:"id of the dataset"},
+															type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
+															dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
+															x:		{type:"numeric", optional:false, description:"value being measured"},
+														}
+													}
+										}
+                                	}
+                                                                	            				
+                                	return {
+                                		output: {
+                                			type: {type:"string", description:`<i>${subtype}</i>`},
+                                			sourceId:{type:"string", description:`<i>[id]</i>`},
+                                			payload: {type:"object", description:"message payload", schema:_payload[subtype]}
+                                		},
+                                		input: {
+                                			name: {type:"string", description:"name of the input source"},
+                                			type: {type:"string", description:"type of the input source"},
+                                			subtype:{type:"string", description:"some sources (eg osmonitor) will have a subtype"},
+                                			sensor:{type:"string", description: "sensingkit will send a sensor type"},
+                                			_msgid: {type:"string", description:"a unique message id"},
+                                			payload:{
+                                				type:"object",
+                                				description: "message payload",
+                                				schema:{
+                                					ts: {type:"ts", description:"unix timestamp"},
+                                					value: {type:"any", description:"the value to be charted"}, 
+                                				},
+                                			}
+                                		},
+                                	}
+                                },
+                                
                                 
                                 description: ()=>"<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to data for a chart </p>",
                                  

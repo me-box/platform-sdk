@@ -181,8 +181,8 @@ class Node extends React.Component {
 								  				
           	return <div>
           			<Cells>		
-          				<Cell content = {fninputs} />	
-          				<Cell content = {fnoutputs} />						
+          				{inputs.length > 0 && <Cell content = {fninputs} />}	
+          				{outputs.length > 0 && <Cell content = {fnoutputs} />}						
 						<Cell title={"name"} content={nameinput}/>
 						<Cell title={"external libraries"} content={libraries}/>
 						<Cell title={"function"} content={codeinput}/>

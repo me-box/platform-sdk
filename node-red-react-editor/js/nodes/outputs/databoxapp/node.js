@@ -8,6 +8,51 @@ import * as LayoutActions from './actions';
 import { bindNodeIds } from '../../../utils/utils';
 import {LAYOUT_HEIGHT} from './ViewConstants';
 
+
+
+const _formatschema = function(schema){
+	return Object.keys(schema).map((key,i)=>{
+		const item = schema[key];
+		if (item.type === "object"){
+			return `<div><div class="flexrow">
+				   			<div class="attributetitle">
+								<div class="centered">
+									<strong>${key}</strong>
+								</div>
+							</div>
+						
+							<div class="fixed" style="border-bottom:1px solid #b6b6b6; border-right: 1px solid #b6b6b6; width:100px">
+								<div class="centered">
+									${item.type} 
+								</div>
+							</div>
+							<div>
+								<div class="flexcolumn">
+									${_formatschema(item.schema)}
+								</div>
+				   			</div>
+				   </div></div>`
+		}
+		return `<div><div class="flexrow">
+					<div class="attributetitle">
+						<div class="centered">
+							<strong>${key}</strong>
+						</div>
+					</div>
+					<div class="fixed" style="border-right: 1px solid #b6b6b6; width:100px;">
+						<div class="centered">
+							${item.type} 
+						</div>
+					</div>
+					<div style="border-right: 1px solid #b6b6b6;">
+						<div class="centered">
+							<div>${item.description}</div>
+						</div>
+					</div>
+				</div></div>`
+	}).join("");
+}
+
 function _haveinput(id, inputs){
 	for (let i = 0; i < inputs.length; i++){
 		if (inputs[i].id === id){
@@ -208,15 +253,104 @@ export default composeNode(Node, 'app',
                                 schema: ()=>{
                                 
                                 	const _descriptions = [
-                                								{type: "gauge", schema: {options:{title:'atitle', ticks: 'number of ticks'}, values: {id:'auniqueid', type:'data', dataid:'auniqueid', x:'avalue'}}}, 
-                                						   		{type: "bar",   schema: {options:{title:'atitle', ticks: 'number of ticks'}, values: {id:'auniqueid', type:'data', dataid:'auniqueid', x:'xvalue', y:'yvalue'}}}, 
-                                						   		{type: "text",  schema: {values: 'sometext'}}, 
-                                						   		{type: "list",  schema: {values: {timestamp: 'a timestamp', keys:['key1','key2', '..'], values:{key1:'key1value', key2:'key2value'}}}},
+                                								{
+                                									type: "gauge", 
+                                									schema: {
+                                										options: { 
+                                													type: "object",
+                                													schema :{
+                                														title : {type:"numeric", optional:true, description:"gauge title"},
+                                														ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
+                                														min: 	{type:"numeric", optional:true, description:"minimum value"},
+                                														max: 	{type:"numeric", optional:true, description:"maximum value"},
+                                														labels: {type:"string",  optional:true, description:"labels along the top of the chart in format name:value,name:value"},
+                                													}
+                                										},
+                                										//TODO: get rid of non-essential attributes 
+                                										values: {
+                                													type: "object",
+                                													schema :{
+                                														id: 	{type:"string",  optional:false, description:"id of the dataset"},
+                                														type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
+                                														dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
+                                														x:		{type:"numeric", optional:false, description:"value being measured"},
+                                													}
+                                												}
+                                										}
+                                								}, 
+                                						   		{
+                                						   				type: "bar",   
+                                						   				schema:{
+                                						   							options: {
+                                						   								type:"object",
+                                						   								schema: {
+                                						   									title : {type:"numeric", optional:true, description:"gauge title"},
+                                															ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
+                                															xlabel:  {type:"string", optional:true, description:"x-axis label"},
+                                															ylabel:  {type:"string", optional:true, description:"y-axis label"},
+                                															min: 	{type:"numeric", optional:true, description:"minimum axis value"},
+                                															max: 	{type:"numeric", optional:true, description:"maximum axis value"},
+                                															maxreadings:  {type:"numeric", optional:true, description:"maximum number of readings shown on chart"},
+                                						   								}
+                                						   							}, 
+                                						   							values: {
+                                						   								type:"object",
+                                						   								schema:{
+                                						   									id: 	{type:"string",  optional:false, description:"id of the dataset"},
+                                															type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
+                                															dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
+                                															x:		{type:"numeric", optional:false, description:"x value"},
+                                						   									y:		{type:"numeric", optional:false, description:"y value"},
+                                						   								}
+                                						   							}
+                                						   				}
+                                						   		}, 
+                                						   		{
+                                						   					type: "text",  
+                    														schema:{
+                                						   							values:{
+                                						   								type: "string",
+                                						   								description: 'some text'
+                                						   							}
+                                						   					}
+                                						   		}, 
+                                						   		{
+                                						   					type: "list",  
+                                						   					schema: {
+                                						   						values: {
+                                						   							type: "object",
+                                						   							schema:{
+                                						   								timestamp: {type:"ts", description:"a unix timestamp"}, 
+                                						   								keys: {type:"array", description:"['key1','key2', '..']"}, 
+                                						   								rows:{
+                                						   											type: "object",
+                                						   											schema:{
+                                						   												key: {type:"any", description:"key value pair where key matches key in keys array"}
+                                						   											}
+                                						   				
+                                						   								}
+                                						   							}
+                                						   						}
+                                						   					}
+                                						   		},
                                 	];
                                 	 
                                 	 
                                 	const subschema = _descriptions.map((item)=>{
-                                		return `<div><div class=\"flexrow\"><div class=\"title\"><div class=\"centered\">${item.type}</div></div><div><div class=\"centered\">${JSON.stringify(item.schema)}</div></div></div></div>`
+                                		return `<div>
+													<div class="flexrow">
+														<div class="title">
+															<div class="centered">
+																${item.type}
+															</div>
+														</div>
+														<div>
+															<div class="flexcolumn">
+															${_formatschema(item.schema)}
+															</div>
+														</div>
+													</div>
+                                				</div>`
                                 	}).join("");
                                 	
                                 	return {
@@ -229,7 +363,14 @@ export default composeNode(Node, 'app',
                                 							schema: {
                                 										values: {	
                                 													type:'any', 
-                                									 				description: `<div class=\"flexcolumn\"><div><div class=\"centered\">dependent on the type of msg (msg.type)</div></div>${subschema}</div>`
+                                									 				description: `<div class="flexcolumn">
+                                									 									<div>
+                                									 										<div class="centered">dependent on the type of msg (msg.type)</div>
+                                									 									</div>
+                                									 									
+                                									 									${subschema}
+                                									 									
+                                									 								</div>`
                                 									 			}
                                 									 }, 
                                 				},
