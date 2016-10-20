@@ -434,9 +434,15 @@ export default composeNode(Node, 'inject',{
 
 			return	{
 				output:{
-					topic: {type:'string', description: "a string assigned to this input"}, 
-					_msgid: {type:'string', description: "a unique message id"},
-					payload: translate[subtype], 
+					msg: {
+								type: 'object', 
+								description:"container object", 
+								schema:{
+									topic: {type:'string', description: "a string assigned to this input"}, 
+									_msgid: {type:'string', description: "a unique message id"},
+									payload: translate[subtype], 
+								}
+					}
 				}
 			}
         },

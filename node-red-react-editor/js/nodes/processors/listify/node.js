@@ -56,21 +56,27 @@ export default composeNode(Node, 'listify',
                                 	
                                 	return{
                                 		output:{
-                                			sourceId: {type:"string", description:"<i>[id]</i>"},
-          									type: { type:"string", description:"<i>list</i>"},
-                                			payload: {
+                                			msg: { 
                                 				type: "object",
-												schema:{
-													timestamp: {type:"ts", description:"a unix timestamp"}, 
-													keys: {type:"array", description:"['key1','key2', '..']"}, 
-													rows:{
+                                				description: "the container object",
+                                				schema:{
+													sourceId: {type:"string", description:"<i>[id]</i>"},
+													type: { type:"string", description:"<i>list</i>"},
+													payload: {
 														type: "object",
 														schema:{
-															key: {type:"any", description:"key value pair where key matches key in keys array"}
+															timestamp: {type:"ts", description:"a unix timestamp"}, 
+															keys: {type:"array", description:"['key1','key2', '..']"}, 
+															rows:{
+																type: "object",
+																schema:{
+																	key: {type:"any", description:"key value pair where key matches key in keys array"}
+																}
+															}
 														}
 													}
 												}
-                                			},
+											}
                                 		},
                                 		input : {
                                 			payload: {

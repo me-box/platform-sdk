@@ -7,7 +7,7 @@ import screen from './screen';
 import repos from './repos';
 import tabs from './tabs';
 import publisher from './publisher';
-import apps from './apps';
+//import apps from './apps';
 import network from './network';
 import help from './help';
 
@@ -21,7 +21,7 @@ const rootReducers = {
   screen,
   repos,
   publisher,
-  apps,
+  //apps,
   network,
   help,
 };

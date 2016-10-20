@@ -71,7 +71,7 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 							return `RUN npm install -g ${library}`
 						});
 						
-	const dcommands = [...[`FROM databox/testred`], ...libcommands]			
+	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /root/.node-red/flows.json`], ...libcommands]			
 	const dockerfile = dcommands.join("\n");
 	
 	console.log(dockerfile);
@@ -79,7 +79,7 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	const path = `tmp-${username}.tar.gz`;
 	
 	return stopAndRemoveContainer(`${username}-red`).then(()=>{
-		return createTarFile(dockerfile, path)
+		return createTarFile(dockerfile, JSON.stringify(flows), path)
 	}).then((tarfile)=>{
 		console.log(`created tar file ${tarfile}`);
 		return createDockerImage(tarfile, `${username}-testimage`);

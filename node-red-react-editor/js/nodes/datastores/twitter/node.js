@@ -81,19 +81,25 @@ export default composeNode(Node, 'twitter',
                         			        			
                         			return	{
                                 		output:{
-                                			name: {type:'string', description: "a name assigned to this twitter node"}, 
-                                			id:  {type:'string', description: "<i>[id]</i>"},
-                                			type:{type: 'string', description: "<i>twitter</i>"},
-                                			subtype: {type: 'string', description: `<i>${type}</i>`},
-                                			
-                                			payload: {
-                                				type: 'object', 
-                                				description: 'the payload object', 
-                                				schema: {
-                                					ts: {type:'time', description: 'a unix timestamp'},
-                                					value: {type:'object',  description: _descriptions[type] || "", schema: {}},    					
-                                				}
-                                			}
+                                			msg: {
+                                				type: "object",
+                                				description: "the container object",
+                                				schema:{
+													name: {type:'string', description: "a name assigned to this twitter node"}, 
+													id:  {type:'string', description: "<i>[id]</i>"},
+													type:{type: 'string', description: "<i>twitter</i>"},
+													subtype: {type: 'string', description: `<i>${type}</i>`},
+											
+													payload: {
+														type: 'object', 
+														description: 'the payload object', 
+														schema: {
+															ts: {type:'time', description: 'a unix timestamp'},
+															value: {type:'object',  description: _descriptions[type] || "", schema: {}},    					
+														}
+													}
+												}
+											}	
                                 		}
                                 	}
                                 },

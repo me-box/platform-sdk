@@ -88,18 +88,24 @@ export default composeNode(Node, 'osmonitor',
   
                                 	return	{
                                 		output:{
-                                			name: {type:'string', description: "a name assigned to this monitor"}, 
-                                			id:  {type:'string', description: "the node id: [id]"},
-                                			type:{type: 'string', description: `the type:\'osmonitor\'`},
-                                			subtype: {type: 'string', description: `reading type:\'${type}\'`},
-                                			payload: {
-                                				type: 'object', 
-                                				description: 'the payload object', 
-                                				schema: {
-                                					ts: {type:'time', description: 'a unix timestamp'},
-                                					value: {type:'numeric', description: _descriptions[type] || ""},    					
-                                				}
-                                			}
+                                			msg: {
+                                				type: "object",
+                                				description: "the container object",
+                                				schema:{
+													name: {type:'string', description: "a name assigned to this monitor"}, 
+													id:  {type:'string', description: "the node id: [id]"},
+													type:{type: 'string', description: `the type:\'osmonitor\'`},
+													subtype: {type: 'string', description: `reading type:\'${type}\'`},
+													payload: {
+														type: 'object', 
+														description: 'the payload object', 
+														schema: {
+															ts: {type:'time', description: 'a unix timestamp'},
+															value: {type:'numeric', description: _descriptions[type] || ""},    					
+														}
+													}
+												}
+											}
                                 		}
                                 	}
                                 },

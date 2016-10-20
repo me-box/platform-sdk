@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {fetchNodes, dropNode}  from '../actions/NodeActions';
 import {deletePressed} from '../actions/KeyboardActions';
 import {windowResize} from '../actions/WindowActions';
-import {init} from '../actions/EditorActions'; 
+import {initEditor} from '../actions/EditorActions'; 
 import * as TabActions from '../actions/TabActions';
 import Palette from '../components/Palette';
 import Workspace from '../components/Workspace';
@@ -14,7 +14,6 @@ import DragDropContainer from './DragDropContainer';
 import Publisher from './Publisher';
 import NetworkStatus from '../components/NetworkStatus';
 import RepoManager from './RepoManager';
-
 
 import {PALETTE_WIDTH, SIDEBAR_WIDTH, TOOLBAR_HEIGHT} from '../constants/ViewConstants';
 import '../../style/font-awesome/css/font-awesome.min.css';
@@ -43,7 +42,7 @@ class Editor extends Component {
   	window.addEventListener('resize', this._handleResize);
   	
   	//send action to tell reducers that editor has just loaded (publisher reducer will use this to create a new appID)
-  	this.props.dispatch(init());
+  	this.props.dispatch(initEditor());
   	this.addTab();
   }
 

@@ -2,6 +2,7 @@ import zlib from 'zlib';
 import fs from 'fs';
 import tar from 'tar-stream';
 import docker from './docker';
+
 export function matchLibraries(code){
 
 	const REQUIRE_RE = /require\(['"]([^'"]+)['"](?:, ['"]([^'"]+)['"])?\);?/g;
@@ -46,7 +47,75 @@ export function dedup(arr){
 }
 
 
-export function createTarFile(dockerfile, path){
+const _addEntry = function(pack, name, file){
+	return new Promise((resolve, reject)=>{
+		pack.entry({name: name}, file, function(err){
+			if (err){
+				reject(err);
+			}	
+			else{
+				resolve(true);
+			}
+		});
+	});
+}
+
+export function createTarFile(dockerfile, flowfile, path){
+
+	console.log("cerating tar file with flowfile");
+	console.log(flowfile);
+	var tarball = fs.createWriteStream(path);
+	const gzip   = zlib.createGzip();
+	const pack   = tar.pack();
+		
+	return _addEntry(pack, "Dockerfile", dockerfile).then(()=>{
+		return _addEntry(pack, "flows.json", flowfile)
+	})
+	.then(()=>{
+		pack.finalize();
+	
+		const stream = pack.pipe(gzip).pipe(tarball);
+		return new Promise((resolve,reject)=>{
+			stream.on('finish', function (err) {
+				if(err){
+					reject(err);
+				}else{
+					resolve(path);
+				}
+			});	
+		});
+	});
+}
+	/*return new Promise((resolve, reject)=>{
+		var tarball = fs.createWriteStream(path);
+		const gzip   = zlib.createGzip();
+		const pack   = tar.pack();
+		pack.entry({name: 'Dockerfile'}, dockerfile, function(err){
+			if (err){
+				reject(err);
+			}
+			
+			console.log("am herwe");
+			
+			pack.entry({name: "flows.json"}, flowfile, function(err){
+				if (err){
+				
+        	   		reject(err);
+        		}
+        		console.log("finalising");
+        		pack.finalize();
+        	
+        		const stream = pack.pipe(gzip).pipe(tarball);
+		
+				stream.on('finish', function (err) {
+					resolve(path);
+				});	
+			});
+		});
+	})
+}*/
+
+/*export function createTarFile(dockerfile, path){
 		
 	return new Promise((resolve, reject)=>{
 		
@@ -67,14 +136,14 @@ export function createTarFile(dockerfile, path){
 			});	
 		});
 	});
-}
+}*/
 
 export function createDockerImage(tarfile, tag){
 
 	console.log(`creating image for tarfile ${tarfile} with tag ${tag}`);
 
 	return new Promise((resolve, reject)=>{
-		docker.buildImage(tarfile, {t: tag}, function (err, output){
+		docker.buildImage(tarfile, {t: tag, nocache:true}, function (err, output){
 			if (err){
 				console.warn(err);
 				reject(err);
@@ -82,7 +151,6 @@ export function createDockerImage(tarfile, tag){
 			output.pipe(process.stdout);
 			
 			output.on('end', function() {
-				console.log("endewd!!!");
 				resolve(tag);
 			});
 		});
@@ -116,8 +184,6 @@ export function stopAndRemoveContainer(name){
 			}
 			
 			const container = containers.reduce((acc, container)=>{
-				console.log(`checking ${name} against`); 
-				console.log(container.Names);
 				if (container.Names.indexOf(`/${name}`) != -1){
 					return container;
 				}	
@@ -127,6 +193,7 @@ export function stopAndRemoveContainer(name){
 			if (!container){
 				console.log("did not find running container");
 				resolve(true);
+				return;
 			}
 		
 			var containerToStop = docker.getContainer(container.Id);
@@ -167,6 +234,32 @@ export function createTestContainer(image, name){
 					}
 				});
 			}
+		});
+	});
+}
+
+export function writeTempFile(filestr, fileName){
+	
+	
+	return new Promise((resolve, reject)=>{
+		fs.writeFile(fileName, filestr, function(err) {
+			if(err) {
+				reject(err);
+			}
+			
+			resolve(true);
+		}); 
+	});
+}
+
+export function removeTempFile(fileName){
+	return new Promise((resolve,reject)=>{
+		fs.unlink(fileName, function(err){
+			if(err) {
+				console.log(err);
+				reject(err);
+			}
+			resolve(true);
 		});
 	});
 }

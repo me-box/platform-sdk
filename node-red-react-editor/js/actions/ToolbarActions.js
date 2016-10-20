@@ -67,6 +67,12 @@ export function togglePublisher(){
 	}	
 }
 
+export function showDebugger(){
+	return {
+		type: ActionType.SHOW_DEBUGGER,	
+	}
+}
+
 
 export function logout(){
 	return function (dispatch, getState) {	
@@ -119,6 +125,7 @@ export function deploy(){
   					dispatch(deployError(err));
   				}else{
           			dispatch(deployResponse(res.body));
+          			dispatch(showDebugger());
   	 			}
   	 		});		
 	}

@@ -1,7 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import {getID} from '../utils/nodeUtils';
 
-export function init(){
+export function initEditor(){
 	return {
 		type: ActionTypes.EDITOR_INIT,
 		id: getID(),

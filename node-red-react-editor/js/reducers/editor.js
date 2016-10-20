@@ -1,6 +1,6 @@
-import {TOGGLE_DEPLOY_MENU, TOGGLE_APPMANAGER, TOGGLE_PUBLISHER, PUBLISHER_CANCEL, SIDEBAR_CLOSE, NODE_MOUSE_DOWN, DEPLOYING_FLOWS, TOGGLE_SAVE_DIALOGUE} from '../constants/ActionTypes';
+import {TOGGLE_DEPLOY_MENU, TOGGLE_APPMANAGER, TOGGLE_PUBLISHER, PUBLISHER_CANCEL, SIDEBAR_CLOSE, NODE_MOUSE_DOWN, DEPLOYING_FLOWS, TOGGLE_SAVE_DIALOGUE, SHOW_DEBUGGER} from '../constants/ActionTypes';
 
-export default function editor(state = {deploymenuexpanded:false, appmanager:false, nodedetails: false, testdeploy:false, publisher:false, savedialogue:false}, action) {
+export default function editor(state = {deploymenuexpanded:false, appmanager:false, nodedetails: false, dbg:false, publisher:false, savedialogue:false}, action) {
 
 	switch (action.type) {
 
@@ -37,6 +37,11 @@ export default function editor(state = {deploymenuexpanded:false, appmanager:fal
 	    										appmanager:!state.appmanager,
 	    									});
 	
+		case SHOW_DEBUGGER:
+			return Object.assign({}, state, {
+	    										dbg:true,
+	    									});
+	    									
 	    case TOGGLE_PUBLISHER:
 	    	
 	    	return Object.assign({}, state, {

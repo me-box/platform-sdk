@@ -39,7 +39,7 @@ export default function composeNode(Component, nt, config, reducer=null){
 
 		render(){
 
-		   const {configuring, selected, help, dimensions, dispatch, store} = this.props;
+		   const {configuring, selected, help, inputs, outputs, values,dimensions, dispatch, store} = this.props;
     	   
     	   const props = Object.assign({}, this.props,  {
     	   		width: dimensions.w - PALETTE_WIDTH,
@@ -68,6 +68,10 @@ export default function composeNode(Component, nt, config, reducer=null){
               left: PALETTE_WIDTH,
               node: selected,
               help,
+              inputs,
+              outputs,
+              values,
+              updateNode: bindActionCreators(updateNode, this.props.dispatch),
            }
           
            //TODO: check why cannot do comparison on selected.id against configuring.id

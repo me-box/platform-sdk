@@ -83,138 +83,151 @@ export default composeNode(Node, 'sensingkit',
                                 },
                                 
                                 schema: (sensor)=>{
-                                	    	
-                                	switch (sensor){
                                 	
-                                		case "bluetooth":
-                                			return {
-                                					output:{
-                                						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						id: {type: 'string', description: '<i>[id]</i>'},
-                                						type:  {type: 'string', description: '<i>sensingkit</i>'},
-                                						sensor: {type:'string', description: `<i>${sensor}</i>`},
-                                						
-                                						payload: { 
-                                									type:'object', 
-                                									description: 'the message payload', 
-                                									schema: {	
-                                										ts: {type:'time', description: 'a unix timestamp'},
-                                										name:  {type:'string', description: 'user assigned name of the device, \`none\' if not provided'},
-                                										address: {type:'string', description: 'the mac address of the device in the form aa:bb:cc:dd:ee:ff'},
-                                										rssi: {type:'numeric', description: 'received signal strength indicator (a measure of the signal strength measured by the scanning device)'},	
-                                									}
-                                						}
-                                					}
-                                			};
-                                			
-                                		
-                                		case "accelerometer":
-                                		case "linear-acceleration":
-                                		case "magnetometer":
-                                		case "gravity":
-                                		case "gyroscope":
-                                			return {
-                                					output:{
-                                						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						id: {type: 'string', description: '<i>[id]</i>'},
-                                						type:  {type: 'string', description: '<i>sensingkit</i>'},
-                                						sensor: {type:'string', description: `<i>${sensor}</i>`},
-                                						
-                                						payload: { 
-                                									type:'object', 
-                                									description: 'the message payload', 
-                                									schema: {
-																		ts: {type:'time',  description: 'a unix timestamp'},
-																		x:  {type:'numeric', description: 'the x axis value'},
-																		y:  {type:'numeric', description: 'the y axis value'},
-																		z:  {type:'numeric',description: 'the z axis value'},	
+                                	const schema = (sensor)=>{    	
+                                	
+										switch (sensor){
+									
+												case "bluetooth":
+													return {
+															
+																name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
+																id: {type: 'string', description: '<i>[id]</i>'},
+																type:  {type: 'string', description: '<i>sensingkit</i>'},
+																sensor: {type:'string', description: `<i>${sensor}</i>`},
+														
+																payload: { 
+																			type:'object', 
+																			description: 'the message payload', 
+																			schema: {	
+																				ts: {type:'time', description: 'a unix timestamp'},
+																				name:  {type:'string', description: 'user assigned name of the device, \`none\' if not provided'},
+																				address: {type:'string', description: 'the mac address of the device in the form aa:bb:cc:dd:ee:ff'},
+																				rssi: {type:'numeric', description: 'received signal strength indicator (a measure of the signal strength measured by the scanning device)'},	
+																			}
+																}
+															
+													};
+											
+										
+												case "accelerometer":
+												case "linear-acceleration":
+												case "magnetometer":
+												case "gravity":
+												case "gyroscope":
+													return {
+															
+																name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
+																id: {type: 'string', description: '<i>[id]</i>'},
+																type:  {type: 'string', description: '<i>sensingkit</i>'},
+																sensor: {type:'string', description: `<i>${sensor}</i>`},
+														
+																payload: { 
+																			type:'object', 
+																			description: 'the message payload', 
+																			schema: {
+																				ts: {type:'time',  description: 'a unix timestamp'},
+																				x:  {type:'numeric', description: 'the x axis value'},
+																				y:  {type:'numeric', description: 'the y axis value'},
+																				z:  {type:'numeric',description: 'the z axis value'},	
+																			}
+																}
+															
+													};
+										
+												case "rotation":
+													return {
+															
+																name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
+																id: {type: 'string', description: '<i>[id]</i>'},
+																type:  {type: 'string', description: '<i>sensingkit</i>'},
+																sensor: {type:'string', description: `<i>${sensor}</i>`},
+																payload: { 
+																			type:'object', 
+																			description: 'the message payload', 
+																			schema: {
+																				ts: {type:'time',  description: 'a unix timestamp'},
+																				x:  {type:'numeric', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
+																				y:  {type:'numeric', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
+																				z:  {type:'numeric', description: 'rotation axis zcomponent*sin(theta/2) where theta is the angle of rotation'},	
+																				cos:  {type:'numeric', description: 'cosine of the angle of rotation'},	
+																				headingAccuracy:  {type:'numeric', description: 'estimated accuracy in radians'},	
+																			}
+																}
+															
+													};
+											
+										
+												case "battery":
+													return {
+															
+																name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
+																id: {type: 'string', description: '<i>[id]</i>'},
+																type:  {type: 'string', description: '<i>sensingkit</i>'},
+																sensor: {type:'string', description: `<i>${sensor}</i>`},
+																payload: { 
+																			type:'object', 
+																			description: 'the message payload', 
+																			schema: {
+																				ts: {type:'time',  description: 'a unix timestamp'},
+																				charge:  {type:'numeric', description: 'is a number from 0 to maximum battery level'}, 
+																				temperature:  {type:'numeric', description: 'is the current battery temperature'},
+																				voltage:  {type:'numeric', description: 'current battery voltage'},	
+																				plugged:  {type:'string', description: 'possible values: [usb, ac, wireless,unknown]'},	
+																				status:  {type:'string', description: 'possible values: [charging, discharging, full, not charging, unknown,unsupported]'},
+																				health: {type:'string', description: 'possible values: [cold, dead, good, over heat, over voltage, unknown, failure, unsupported]'},
+																			}
+																}	
+															
+													};
+											
+												case "audio-level":
+													return {
+																
+																	name: {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
+																	id: {type: 'string', description: '<i>[id]</i>'},
+																	type:  {type: 'string', description: '<i>sensingkit</i>'},
+																	sensor: {type:'string', description: `<i>${sensor}</i>`},
+																	payload: { 
+																			type:'object', 
+																			description: 'the message payload', 
+																			schema: {
+																				ts:  {type:'time',  description: 'a unix timestamp'},
+																				value: {type:'numeric', description: 'the audio level captured by the phone microphone'},
+																			}
 																	}
-														}
-													}
-                                			};
-                                		
-                                		case "rotation":
-                                			return {
-                                					output:{
-                                						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						id: {type: 'string', description: '<i>[id]</i>'},
-                                						type:  {type: 'string', description: '<i>sensingkit</i>'},
-                                						sensor: {type:'string', description: `<i>${sensor}</i>`},
-                                						payload: { 
-                                									type:'object', 
-                                									description: 'the message payload', 
-                                									schema: {
-																		ts: {type:'time',  description: 'a unix timestamp'},
-																		x:  {type:'numeric', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
-																		y:  {type:'numeric', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
-																		z:  {type:'numeric', description: 'rotation axis zcomponent*sin(theta/2) where theta is the angle of rotation'},	
-																		cos:  {type:'numeric', description: 'cosine of the angle of rotation'},	
-																		headingAccuracy:  {type:'numeric', description: 'estimated accuracy in radians'},	
+																
+															};
+											
+												default:
+													return  {
+																
+																	name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
+																	id: {type: 'string', description: '<i>[id]</i>'},
+																	type:  {type: 'string', description: '<i>sensingkit</i>'},
+																	sensor: {type:'string', description: '<i>light</i>'},
+																	payload: { 
+																			type:'object', 
+																			description: 'the message payload', 
+																			schema: {
+																				ts:  {type:'time',  description: 'a unix timestamp'},
+																				value: {type:'numeric', description: 'ambient light in lux captured by a phone camera'},
+																			}
 																	}
-														}
-                                					}
-                                			};
-                                			
-                                		
-                                		case "battery":
-                                			return {
-                                					output:{
-                                						name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                						id: {type: 'string', description: '<i>[id]</i>'},
-                                						type:  {type: 'string', description: '<i>sensingkit</i>'},
-                                						sensor: {type:'string', description: `<i>${sensor}</i>`},
-                                						payload: { 
-                                									type:'object', 
-                                									description: 'the message payload', 
-                                									schema: {
-																		ts: {type:'time',  description: 'a unix timestamp'},
-																		charge:  {type:'numeric', description: 'is a number from 0 to maximum battery level'}, 
-																		temperature:  {type:'numeric', description: 'is the current battery temperature'},
-																		voltage:  {type:'numeric', description: 'current battery voltage'},	
-																		plugged:  {type:'string', description: 'possible values: [usb, ac, wireless,unknown]'},	
-																		status:  {type:'string', description: 'possible values: [charging, discharging, full, not charging, unknown,unsupported]'},
-																		health: {type:'string', description: 'possible values: [cold, dead, good, over heat, over voltage, unknown, failure, unsupported]'},
-																	}
-														}	
-                                					}
-                                			};
-                                			
-                                		case "audio-level":
-                                			return {
-                                						output:{
-                                							name: {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                							id: {type: 'string', description: '<i>[id]</i>'},
-                                							type:  {type: 'string', description: '<i>sensingkit</i>'},
-                                							sensor: {type:'string', description: `<i>${sensor}</i>`},
-                                							payload: { 
-                                									type:'object', 
-                                									description: 'the message payload', 
-                                									schema: {
-																		ts:  {type:'time',  description: 'a unix timestamp'},
-																		value: {type:'numeric', description: 'the audio level captured by the phone microphone'},
-																	}
-															}
-                                						}
-                                					};
-                                			
-                                		default:
-                                			return  {
-                                						output:{
-                                							name:  {type: 'string', description: 'the name of the node, defaults to \'sensingkit\''},
-                                							id: {type: 'string', description: '<i>[id]</i>'},
-                                							type:  {type: 'string', description: '<i>sensingkit</i>'},
-                                							sensor: {type:'string', description: '<i>light</i>'},
-                                							payload: { 
-                                									type:'object', 
-                                									description: 'the message payload', 
-                                									schema: {
-																		ts:  {type:'time',  description: 'a unix timestamp'},
-																		value: {type:'numeric', description: 'ambient light in lux captured by a phone camera'},
-                                									}
-                                							}
-                                						}
-                                					};
-                                	}
+																
+															};
+										}
+									}	
+									
+									return {
+										output:{
+											msg: {
+												type: "object",
+												description: "the container object",
+												schema: schema(sensor),
+											}
+										}
+									}
                                 },
                                 
                                 inputs:0,               

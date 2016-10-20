@@ -3,13 +3,8 @@ import request from 'superagent';
 import config from '../config.js';
 import fs from 'fs';
 import docker from '../utils/docker';
-import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries} from '../utils/utils';
-
+import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries, writeTempFile, removeTempFile} from '../utils/utils';
 const router = express.Router();
-
-
-
-
 
 const _createCommit = function(user, repo, sha, filename, content, message, accessToken){
 
@@ -34,7 +29,8 @@ const _createCommit = function(user, repo, sha, filename, content, message, acce
        				reject(err);
        				
      			} else {
-       				resolve(data);
+     				//have found that it can still take time before this registers as the latest commit.
+     				resolve(data)
      			}
    			});
 	
@@ -243,7 +239,8 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 }
 
 
-const _publish = function(user, reponame, app, packages, libraries, allowed){
+const _publish = function(user, reponame, app, packages, libraries, allowed, flows){
+	
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		
@@ -251,9 +248,12 @@ const _publish = function(user, reponame, app, packages, libraries, allowed){
 							return `RUN npm install -g ${library}`
 						});
 		
+		
+		//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
 		const dcommands = [
-							`FROM ${config.registry.URL}/databox/red`, 
-							`ADD ${config.github.RAW_URL}/${user.username}/${reponame}/master/flows.json /root/.node-red/flows.json`,
+							`FROM ${config.registry.URL}/databox/red`,
+							`RUN echo ${Date.now()}`,
+							`ADD flows.json /root/.node-red/flows.json`,
 							'LABEL databox.type="app"',
 							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
 					   ];	
@@ -282,7 +282,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed){
 				
 		return _saveToAppStore(data).then(function(result){
 			var path = `${user.username}-tmp.tar.gz`;
-			return createTarFile(dockerfile, path);
+			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
 			reject("could not save to app store!");
 		}).then(function(tarfile){
@@ -465,24 +465,18 @@ router.post('/publish', function(req,res){
 		return acc;
 	},[])));
 	
-	console.log("external libs are");
-	console.log(libraries);
-	
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
-		
-		console.log("committing changes before publishing");
 		
 		const flowcontent 		= new Buffer(JSON.stringify(flows)).toString('base64');
 		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
 		const message = commitmessage;
 		
-		return _createCommit(user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken)
-		.then((data)=>{
+		return _createCommit(user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then((data)=>{
 			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(user, repo.name, repo.sha.manifest,  'manifest.json', manifestcontent, message, req.user.accessToken)])
 		}, (err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
-			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(user, repo.name, app, packages, libraries, allowed)]);
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(user, repo.name, app, packages, libraries, allowed, JSON.stringify(flows))]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
@@ -495,19 +489,21 @@ router.post('/publish', function(req,res){
 				}
 			});
 		});
-	}else{ //create a new repo!
-	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
-		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken)
 		
-		.then((values)=>{	
+	}else{ //create a new repo!
+	  	
+	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
+		
+		return writeTempFile(JSON.stringify(flows), tmpFlowFileName).then(()=>{
+			return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken)
+		}).then((values)=>{	
 			console.log(`publishing...${reponame}`);
-			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, libraries, allowed)]);
+			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			const repodetails = values[0];
-			
-			
+		
 			res.send({
 				result:'success', 
 				repo: repodetails[0], 
@@ -516,7 +512,7 @@ router.post('/publish', function(req,res){
 					manifest: repodetails[2].content.sha,
 				}
 			});
-		})
+		});
 	}
 });
 

@@ -11,6 +11,7 @@
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},
 			 	{"name":"chartify", "file":"processors/chartify/node"},
+			 	{"name":"webify", "file":"processors/webify/node"},
 			 	
 			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
 			 	{"name":"bulbs", "file":"outputs/bulbs/node"},

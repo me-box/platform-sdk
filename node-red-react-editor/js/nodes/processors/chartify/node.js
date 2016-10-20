@@ -588,9 +588,15 @@ export default composeNode(Node, 'chartify',
                                                                 	            				
                                 	return {
                                 		output: {
-                                			type: {type:"string", description:`<i>${subtype}</i>`},
-                                			sourceId:{type:"string", description:`<i>[id]</i>`},
-                                			payload: {type:"object", description:"message payload", schema:_payload[subtype]}
+                                			msg: {
+                                					type: "object",
+                                					description: "the container object",
+                                					schema: {
+                                						type: {type:"string", description:`<i>${subtype}</i>`},
+                                						sourceId:{type:"string", description:`<i>[id]</i>`},
+                                						payload: {type:"object", description:"message payload", schema:_payload[subtype]}
+                                					}
+                                			}
                                 		},
                                 		input: {
                                 			name: {type:"string", description:"name of the input source"},
