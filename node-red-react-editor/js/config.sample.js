@@ -4,4 +4,4 @@ const config = {
  testurl: 'http://databoxtest.upintheclouds.org',	
 }
 
-export default config;
+module.exports = config;
