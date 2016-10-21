@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {init} from '../comms/websocket';
 import config from '../config';
 import {nodesWithTestOutputs} from '../utils/utils';
 
@@ -13,7 +12,6 @@ class TestManager extends Component {
 	
 	componentDidMount(){
 		const {dispatch, id} = this.props;
-		init("databox",id, dispatch);
 	}
 
 	render() {

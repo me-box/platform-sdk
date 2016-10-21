@@ -2,7 +2,6 @@ import request  from 'superagent';
 import * as ActionType from '../constants/ActionTypes';
 import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
-import {leave} from '../comms/websocket';
 import {nodesWithTestOutputs} from '../utils/utils';
 
 
@@ -20,7 +19,6 @@ export function toggleDeployMenu(){
 
 export function deployFlows(){
 	return function (dispatch, getState) {
-		leave(getState().publisher.app.id);
 		dispatch({
 			type: ActionType.DEPLOYING_FLOWS
 		});
