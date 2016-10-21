@@ -136,3 +136,15 @@ export function matchLibraries(code){
 
 	return [...r1, ...r2];
 }
+
+export function  nodesWithTestOutputs(nodes){
+		const typesOfInterest = ["debugger", "app"];
+		const seen = {};
+		return nodes.reduce((acc, node)=>{
+			if (!seen[node.type] && typesOfInterest.indexOf(node.type) != -1){
+				acc.push(node);
+				seen[node.type]=true;
+			}
+			return acc;
+		},[])
+}

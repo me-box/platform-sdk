@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {init} from '../comms/websocket';
 import config from '../config';
+import {nodesWithTestOutputs} from '../utils/utils';
 
 class TestManager extends Component {
 	
@@ -20,7 +21,6 @@ class TestManager extends Component {
 		//eventually we need to do a check on all nodes with _def.category = outputs
 		//but for now we only support debug and app 
 		const {nodes} = this.props;
-		const typesOfInterest = ["debugger", "app"];
 		
 		const iconstyle = {
             alignSelf: 'center',
@@ -37,14 +37,7 @@ class TestManager extends Component {
 		
 		
 		
-		const seen = {};
-		const links = nodes.reduce((acc, node)=>{
-			if (!seen[node.type] && typesOfInterest.indexOf(node.type) != -1){
-				acc.push(node);
-				seen[node.type]=true;
-			}
-			return acc;
-		},[]).map((node)=>{
+		const links = nodesWithTestOutputs(nodes).map((node)=>{
 			return <div>
 						<div className="flexrow">
 							<div>
@@ -72,7 +65,7 @@ class TestManager extends Component {
 		if (links.length == 0){
 			message = "This flow does not have any outputs that can be viewed in test mode, currently the only supported outputs for testing are debug and app";
 		}
-		if (links.length == 1){
+		else if (links.length == 1){
 			message = "This flow has one output that can be viewed in test mode.  Click on it to take a look";
 		}else{
 			message = `This flow has ${links.length} flows with outputs that can be viewed in test mode.  Click on any one to take a look`; 

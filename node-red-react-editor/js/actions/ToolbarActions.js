@@ -3,7 +3,7 @@ import * as ActionType from '../constants/ActionTypes';
 import {convertNode} from '../utils/nodeUtils';
 import config from '../config';
 import {leave} from '../comms/websocket';
-
+import {nodesWithTestOutputs} from '../utils/utils';
 
 
 export function toggleAppManager(){
@@ -67,6 +67,12 @@ export function togglePublisher(){
 	}	
 }
 
+export function showTestSidebar(){
+	return {
+		type: ActionType.SHOW_TEST_SIDEBAR,
+	}	
+}
+
 export function logout(){
 	return function (dispatch, getState) {	
 		request
@@ -81,8 +87,16 @@ export function deploy(){
 	
 	return function (dispatch, getState) {
 		
+		dispatch(showTestSidebar());
+	
+		if (nodesWithTestOutputs(getState().nodes.nodes).length <= 0){
+			console.log("not dispatching a test - no outputs that can be tested");
+			return;
+		}
+		
 		dispatch(deployFlows())
-
+		
+		//don't bother deploying if there are no outputs that can be tested (i.e. node.type == "debugger" or node.type === "app"
 		const channelId = getState().publisher.app.id;
 	
 		const jsonnodes = getState().nodes.nodes.map((node)=>{
