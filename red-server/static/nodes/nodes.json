@@ -1,8 +1,8 @@
 {
 	"nodes":[	
+				
 				{"name":"timer", "file":"inputs/inject/node"}, 
-			 	
-			 	
+			 		 
 				{"name":"sensingkit", "file":"datastores/sensingkit/node"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
 				{"name":"phidgets", "file":"datastores/phidgets/node"},
@@ -14,6 +14,7 @@
 			 	{"name":"webify", "file":"processors/webify/node"},
 			 	
 			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
+			 	{"name":"debugger", "file":"debug/debugger/node"},
 			 	{"name":"bulbs", "file":"outputs/bulbs/node"},
 			 	{"name":"picoprint", "file":"outputs/picoprint/node"},
 			 	{"name":"notify", "file":"outputs/notify/node"}

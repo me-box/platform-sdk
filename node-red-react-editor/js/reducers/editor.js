@@ -1,6 +1,6 @@
-import {TOGGLE_DEPLOY_MENU, TOGGLE_APPMANAGER, TOGGLE_PUBLISHER, PUBLISHER_CANCEL, SIDEBAR_CLOSE, NODE_MOUSE_DOWN, DEPLOYING_FLOWS, TOGGLE_SAVE_DIALOGUE, SHOW_DEBUGGER} from '../constants/ActionTypes';
+import {TOGGLE_DEPLOY_MENU, TOGGLE_APPMANAGER, TOGGLE_PUBLISHER, PUBLISHER_CANCEL, SIDEBAR_CLOSE, NODE_MOUSE_DOWN, NODE_DROPPED, DEPLOYING_FLOWS, TOGGLE_SAVE_DIALOGUE} from '../constants/ActionTypes';
 
-export default function editor(state = {deploymenuexpanded:false, appmanager:false, nodedetails: false, dbg:false, publisher:false, savedialogue:false}, action) {
+export default function editor(state = {deploymenuexpanded:false, appmanager:false, testing: false,publisher:false, savedialogue:false}, action) {
 
 	switch (action.type) {
 
@@ -8,23 +8,22 @@ export default function editor(state = {deploymenuexpanded:false, appmanager:fal
 			return Object.assign({}, state, {
 	    										deploymenuexpanded:false,
 	    										appmanager: false,
-	    										nodedetails: false,
-	    										testdeploy: false,
+	    										testing: false,
 	    									 });
 	    
 	    case DEPLOYING_FLOWS:
 	    	return Object.assign({}, state, {
 	    										deploymenuexpanded:false,
 	    										appmanager: false,
-	    										nodedetails: false,
-	    										testdeploy: false,//true,
+	    										testing: true,
 	    									 });
 	    	
 	    case  NODE_MOUSE_DOWN:
+	    case NODE_DROPPED:
 	    	return Object.assign({}, state, {
 	    										deploymenuexpanded:false,
 	    										appmanager: false,
-	    										nodedetails: true,
+	    										testing: false,
 	    									 });					
 	    									 		 
 		case  TOGGLE_DEPLOY_MENU:
@@ -36,19 +35,13 @@ export default function editor(state = {deploymenuexpanded:false, appmanager:fal
 	    	return Object.assign({}, state, {
 	    										appmanager:!state.appmanager,
 	    									});
-	
-		case SHOW_DEBUGGER:
-			return Object.assign({}, state, {
-	    										dbg:true,
-	    									});
 	    									
 	    case TOGGLE_PUBLISHER:
 	    	
 	    	return Object.assign({}, state, {
 	    										publisher: !state.publisher,
 	    										appmanager: !state.publisher ? false : state.appmanager,
-	    										nodedetails: !state.publisher ? false : state.nodedetails,
-	    										testdeploy: !state.publisher ? false : state.testdeploy,
+	    										testing: !state.publisher ? false: state.testing,
 	    									});
 	    									
 		case PUBLISHER_CANCEL:

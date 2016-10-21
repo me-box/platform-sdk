@@ -67,13 +67,6 @@ export function togglePublisher(){
 	}	
 }
 
-export function showDebugger(){
-	return {
-		type: ActionType.SHOW_DEBUGGER,	
-	}
-}
-
-
 export function logout(){
 	return function (dispatch, getState) {	
 		request
@@ -124,8 +117,10 @@ export function deploy(){
   					console.log(err);
   					dispatch(deployError(err));
   				}else{
+  					//TODO: make sure server responds!
+  					console.log("**** GOT RESPONSE!!*****");
           			dispatch(deployResponse(res.body));
-          			dispatch(showDebugger());
+          			
   	 			}
   	 		});		
 	}

@@ -133,13 +133,13 @@ class Node extends Component {
             portIn = <div className="palette_port palette_port_input"/>
         }
 
-        let labelstyle = {
+        const labelstyle = {
             paddingTop:10,
             paddingBottom: 20,
 
         }
 
-        let container = {
+        const container = {
             display: '-webkit-flex',
             display: 'flex',
             WebkitFlexFlow: 'column',
@@ -148,7 +148,7 @@ class Node extends Component {
             width: 178,
         }
 
-        let iconstyle = {
+        const iconstyle = {
             alignSelf: 'center',
             height: '4em',
             width: '4em',
@@ -163,9 +163,9 @@ class Node extends Component {
         }
 
 
-        let icon = def.icon || 'fa-bug';
+        const icon = def.icon || 'fa-bug';
 
-        let draggable = connectDragSource( <div style={iconstyle}><i className={`fa ${icon} fa-3x fa-fw`}></i></div>);
+        const draggable = connectDragSource( <div style={iconstyle}><i className={`fa ${icon} fa-3x fa-fw`}></i></div>);
 
         return              (<div style={container} onClick={this._handleClick.bind(this,def,nt)}>
                                    {draggable}

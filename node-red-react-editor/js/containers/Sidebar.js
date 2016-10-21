@@ -15,30 +15,24 @@ class Sidebar extends React.Component {
 	
 	render() {
 		
-		const { node, shownodedetails, showappmanager, showdebugger, dispatch } = this.props;
+		const { node, showappmanager, showtesting, dispatch } = this.props;
 		
-	
-	
-		if (!showappmanager){
+		if (!showappmanager && !showtesting){
 			return null;
 		}
+		let content = null;
 		
-		let content;
+		if (showappmanager){
+			content = <RepoManager />
+		}
 		
-		//if (showappmanager){
-			//content = <RepoManager />
-		//}
-	    //if (shownodedetails){
-		//	content = <NodeInfo node={node}/>
-		//}
-		if (showdebugger){
+		if (showtesting){
 			content = <TestManager />
 		}
-
+		
 		const close = {
 			display: 'flex',
 			flexDirection: 'row',
-			margin: '5px 10px 20px 0px',
 			WebkitFlexDirection: 'row',
    			flexDirection: 'row',
    			WebkitJustifyContent:  'flex-end',
@@ -61,9 +55,8 @@ class Sidebar extends React.Component {
 function select(state) {
   return {
     node: state.nodes.selected,
-    shownodedetails: state.editor.nodedetails,
     showappmanager: state.editor.appmanager,
-    showdebugger: state.editor.dbg,
+    showtesting: state.editor.testing,
   };
 }
 

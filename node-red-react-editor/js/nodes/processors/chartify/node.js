@@ -51,7 +51,20 @@ class Node extends React.Component {
           	
           	const name = input.type; 
           	const fullschema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {};
-          	const schema = fullschema.payload ? fullschema.payload.schema : fullschema;
+          	//const schema = fullschema.msg ? fullschema.msg.schema ? fulpayload ? fullschema.msg.payload.schema : fullschema;
+          
+          	let schema = {};
+          	
+          	if (fullschema.msg){
+          		if (fullschema.msg.schema){
+          			if (fullschema.msg.schema.payload){
+          				schema = fullschema.msg.schema.payload.schema;		
+          			}
+          		}
+          	}
+          	 console.log("schema is ");
+          	 
+          	console.log(schema);
           	
           
           	const xoptions = Object.keys(schema).map((key)=>{

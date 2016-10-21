@@ -65,7 +65,7 @@ class Toolbar extends Component {
 					  </li>
 					  <li>
 						<span className="deploy-button-group button-group">
-						  <a href={config.testurl} target="_blank" id="btn-deploy" className="deploy-button" onClick={this.deploy}>
+						  <a id="btn-deploy" className="deploy-button" onClick={this.deploy}>
 						  <img id="btn-deploy-icon" src="images/deploy-full-o.png"/> 
 						  <span>Test</span>
 						  </a>

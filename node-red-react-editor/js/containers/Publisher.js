@@ -446,7 +446,7 @@ function select(state) {
       packages: state.publisher.packages,
       
       datastores: state.nodes.nodes.filter((node)=>{
-      	 return (node.z === state.publisher.currentpkg) && (node._def.category === "datastores" || (node._def.category === "outputs" && node.type != "app"));
+      	 return (node.z === state.publisher.currentpkg) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger")));
       }).map((node)=>{
       		return {
       				id: node.id,
