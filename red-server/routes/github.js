@@ -494,9 +494,7 @@ router.post('/publish', function(req,res){
 	  	
 	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
 		
-		return writeTempFile(JSON.stringify(flows), tmpFlowFileName).then(()=>{
-			return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken)
-		}).then((values)=>{	
+		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
 			console.log(`publishing...${reponame}`);
 			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);
 		},(err)=>{
