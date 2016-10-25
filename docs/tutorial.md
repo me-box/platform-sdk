@@ -15,8 +15,11 @@ Your first app
 
 ### datastores, processors and outputs
 
-### testing
+### free memory chart
 
+![alt-text](https://raw.githubusercontent.com/me-box/iot.red/master/docs/images/firstapp.png "databox demo overview")
+
+### testing
 
 Functions
 ---------
