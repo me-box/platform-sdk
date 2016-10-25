@@ -35,8 +35,8 @@ class TestManager extends Component {
 		
 		
 		
-		const links = nodesWithTestOutputs(nodes).map((node)=>{
-			return <div>
+		const links = nodesWithTestOutputs(nodes).map((node,i)=>{
+			return <div key={i}>
 						<div className="flexrow">
 							<div>
 								<div style={{margin:'auto', padding: 20}}>

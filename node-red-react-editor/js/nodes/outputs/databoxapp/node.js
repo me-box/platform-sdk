@@ -5,53 +5,9 @@ import LayoutManager from './LayoutManager';
 import {reducer} from './reducer';
 import { bindActionCreators } from 'redux';
 import * as LayoutActions from './actions';
-import { bindNodeIds } from '../../../utils/utils';
+import { bindNodeIds, formatSchema } from '../../../utils/utils';
 import {LAYOUT_HEIGHT} from './ViewConstants';
 
-
-
-const _formatschema = function(schema){
-	return Object.keys(schema).map((key,i)=>{
-		const item = schema[key];
-		if (item.type === "object"){
-			return `<div><div class="flexrow">
-				   			<div class="attributetitle">
-								<div class="centered">
-									<strong>${key}</strong>
-								</div>
-							</div>
-						
-							<div class="fixed" style="border-bottom:1px solid #b6b6b6; border-right: 1px solid #b6b6b6; width:100px">
-								<div class="centered">
-									${item.type} 
-								</div>
-							</div>
-							<div>
-								<div class="flexcolumn">
-									${_formatschema(item.schema)}
-								</div>
-				   			</div>
-				   </div></div>`
-		}
-		return `<div><div class="flexrow">
-					<div class="attributetitle">
-						<div class="centered">
-							<strong>${key}</strong>
-						</div>
-					</div>
-					<div class="fixed" style="border-right: 1px solid #b6b6b6; width:100px;">
-						<div class="centered">
-							${item.type} 
-						</div>
-					</div>
-					<div style="border-right: 1px solid #b6b6b6;">
-						<div class="centered">
-							<div>${item.description}</div>
-						</div>
-					</div>
-				</div></div>`
-	}).join("");
-}
 
 function _haveinput(id, inputs){
 	for (let i = 0; i < inputs.length; i++){
@@ -346,7 +302,7 @@ export default composeNode(Node, 'app',
 														</div>
 														<div>
 															<div class="flexcolumn">
-															${_formatschema(item.schema)}
+															${formatSchema(item.schema)}
 															</div>
 														</div>
 													</div>

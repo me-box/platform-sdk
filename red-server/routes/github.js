@@ -339,6 +339,8 @@ router.get('/repos', function(req,res){
 	
 	request
    		.get(`${config.github.API}/users/${user.username}/repos`)
+   		.query({'per_page': 100, sort:'created', direction:'desc'})
+   		
    		.set('Accept', 'application/json')
    		.set('Authorization', `token ${req.user.accessToken}`)
    		.end((err, data)=>{
@@ -348,6 +350,7 @@ router.get('/repos', function(req,res){
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
      			const repos = data.body.map(function(repo){
+       				
        				return {
        							name: repo.name, 
        							updated: repo.updated_at, 
@@ -396,7 +399,7 @@ router.post('/repo/new', function(req,res){
 	var commitmessage 	= req.body.message || "first commit";
 	
 	return _createRepo(user, name, description, flows, manifest, commitmessage, req.user.accessToken).then(repo=>{
-		return values;
+		return repo;
 	}).then((values)=>{
 		res.send({
 					result:'success', 

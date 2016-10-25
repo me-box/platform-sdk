@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import {TOOLBAR_HEIGHT, INFO_HEIGHT, NODE_EDITOR_PADDING} from '../constants/ViewConstants';
-import {fitText} from '../utils/utils';
+import {fitText, isFunction} from '../utils/utils';
 import {connect} from 'react-redux';
 import Cell from '../components/Cell';
 import Cells from '../components/Cells';
 
 const _payload = function(schema, id, selectedid){
+	
+	if (!schema)
+		return null;
+		
 	return Object.keys(schema).map((key,i)=>{
 		const item = schema[key];
 		if (item.type === "object"){
@@ -146,7 +150,11 @@ class NodeEditor extends Component {
 		});
 			
 		const outputdescription = outputs.map((output, i)=>{
-				const schema =  output._def.schema ? output._def.schema().input : {};
+				let schema = {};
+				if (isFunction(output._def.schema)){
+					schema = output._def.schema().input || {};
+				}
+		
 				const props = {
 						schema, 
 						icon: output._def.icon,
@@ -225,8 +233,8 @@ class NodeEditor extends Component {
 					</div>
 				 </div>	 	
 				 <Cells>
-				 		{inputs.length > 0 && <Cell content = {fninputs} />}	
-          				{outputs.length > 0 && <Cell content = {fnoutputs} />}	
+				 		{node.type !== "app" && inputs.length > 0 && <Cell content = {fninputs} />}	
+          				{node.type !== "app" && outputs.length > 0 && <Cell content = {fnoutputs} />}	
           		</Cells>
 				 <div style={contentstyle}> 	
 				 	{React.cloneElement(this.props.children, {help})}

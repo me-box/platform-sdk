@@ -23,9 +23,10 @@ class Node extends React.Component {
           
           const typeprops = {
 				options: [
-									{name: 'on', value: 'bulb-on'},
-					                {name: 'hue', value: 'bulb-hue'},
-					                {name: 'brightness', value: 'bulb-bri'},
+									{name: 'power', value: 'power'},
+					                {name: 'voltage', value: 'voltage'},
+					                {name: 'current', value: 'current'},
+					                {name: 'on/off', value: 'power-state'},
 					     ],
 					     
 				onSelect: (event)=>{
@@ -54,30 +55,31 @@ class Node extends React.Component {
     }
 }
 
-export default composeNode(Node, 'bulbsin', 
+export default composeNode(Node, 'plugin', 
                             {
                                 category: 'datastores',      
                                 color: '#ffcc00',
                                 defaults: {             
                                     name: {value:""},   
-                                    subtype: {value:"bulb-on"},
+                                    subtype: {value:"power"},
                                 },
                                 inputs:0,               
                                 outputs:1,             
                                
-                                icon: "fa-lightbulb-o",
-                                unicode: '\uf0eb',     
+                                icon: "fa-plug",
+                                unicode: '\uf1e6',     
                                 label: function() {     
-                                    return this.name||this.topic||"bulbsin";
+                                    return this.name||this.topic||"plugin";
                                 },
                                 
                                  schema: (subtype)=>{
-                                	const type = subtype || "bulb-on";
+                                	const type = subtype || "power";
                                 	
                                 	const payloads = {
-                                		"bulb-on": {type: "string", description: "<i>on</i> or <i>off</i>"},
-										"bulb-hue": {type: "numeric", description: "a hue value (0-65000)"},
-										"bulb-bri": {type: "numeric",description: "a brightness value (0-255)"}
+                                		"power-state": {type: "string", description: "<i>on</i> or <i>off</i>"},
+										"voltage": {type: "numeric", description: "voltage"},
+										"current": {type: "numeric",description: "current (amps)"},
+										"power": {type: "numeric",description: "power (watts)"}
                                 	}
                                 	
                                 	return {
@@ -86,9 +88,9 @@ export default composeNode(Node, 'bulbsin',
                                 					type: "object",
                                 					description: "the container object",
                                 					schema:{
-														name: {type:'string', description: "a name assigned to this bulb"}, 
+														name: {type:'string', description: "a name assigned to this plug"}, 
 														id:  {type:'string', description: "the node id: [id]"},
-														type:{type: 'string', description: `the type:\'bulbs-in\'`},
+														type:{type: 'string', description: `the type:\'plugin\'`},
 														subtype: {type: 'string', description: `reading type:\'${type}\'`},
 														payload: {
 															type: 'object', 
@@ -107,6 +109,6 @@ export default composeNode(Node, 'bulbsin',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                 description: ()=>"<p> turn bulbs on or off </p>",
+                                 description: ()=>"<p> smart plug readings </p>",
                             }
                           );

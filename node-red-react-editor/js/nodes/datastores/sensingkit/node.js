@@ -1,7 +1,6 @@
 import React from 'react';
 import composeNode from '../../../utils/composeNode';
 import Textfield from '../../../components/form/Textfield';
-import Textarea from '../../../components/form/Textarea';
 import Select from '../../../components/form/Select';
 import Cell from '../../../components/Cell';
 import Cells from '../../../components/Cells';

@@ -148,3 +148,51 @@ export function  nodesWithTestOutputs(nodes){
 			return acc;
 		},[])
 }
+
+export function isFunction(obj){
+	return !!(obj && obj.constructor && obj.call && obj.apply);
+}
+
+
+export function formatSchema(schema){
+	return Object.keys(schema).map((key,i)=>{
+		const item = schema[key];
+		if (item.type === "object"){
+			return `<div><div class="flexrow">
+				   			<div class="attributetitle">
+								<div class="centered">
+									<strong>${key}</strong>
+								</div>
+							</div>
+						
+							<div class="fixed" style="border-bottom:1px solid #b6b6b6; border-right: 1px solid #b6b6b6; width:100px">
+								<div class="centered">
+									${item.type} 
+								</div>
+							</div>
+							<div>
+								<div class="flexcolumn">
+									${formatSchema(item.schema)}
+								</div>
+				   			</div>
+				   </div></div>`
+		}
+		return `<div><div class="flexrow">
+					<div class="attributetitle">
+						<div class="centered">
+							<strong>${key}</strong>
+						</div>
+					</div>
+					<div class="fixed" style="border-right: 1px solid #b6b6b6; width:100px;">
+						<div class="centered">
+							${item.type} 
+						</div>
+					</div>
+					<div style="border-right: 1px solid #b6b6b6;">
+						<div class="centered">
+							<div>${item.description}</div>
+						</div>
+					</div>
+				</div></div>`
+	}).join("");
+}

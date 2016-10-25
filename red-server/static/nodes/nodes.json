@@ -8,6 +8,8 @@
 				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
 				{"name":"phidgets", "file":"datastores/phidgets/node"},
 				{"name":"twitter", "file":"datastores/twitter/node"},
+				{"name":"bulbs-in", "file":"datastores/bulbs/node"},
+				{"name":"plugin", "file":"datastores/plug/node"},
 				
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},
@@ -16,8 +18,9 @@
 			 	
 			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
 			 	{"name":"debugger", "file":"debug/debugger/node"},
-			 	{"name":"bulbs", "file":"outputs/bulbs/node"},
-			 	{"name":"picoprint", "file":"outputs/picoprint/node"},
-			 	{"name":"notify", "file":"outputs/notify/node"}
+			 	{"name":"pipstaprint", "file":"outputs/pipstaprint/node"},
+			 	{"name":"notify", "file":"outputs/notify/node"},
+			 	{"name":"bulbs-out", "file":"outputs/bulbs/node"},
+			 	{"name":"plugout", "file":"outputs/plug/node"}
 			 ]
 }
