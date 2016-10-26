@@ -21,7 +21,7 @@ router.get('/logout',  function(req,res){
 	});
 });
   
-router.get('/github', passport.authenticate('github', { scope: 'repo' }));
+router.get('/github', passport.authenticate('github', { scope: 'public_repo' }));
 
 router.get('/github/callback', 
   	
