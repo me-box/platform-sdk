@@ -84,14 +84,14 @@ export default composeNode(Node, 'wirelessthings',
                                 	
                                 	const payloads = {
                                 		"humidity": {type: "numeric", description: "a humidity reading (%)"},
-					                	"tilt": 	{type: "numeric", description: "a tilt reading (degrees)"},
+					                	"tilt": 	{type: "numeric", description: "a 0 or 1"},
 					                	"button1":  {type: "numeric", description: "button1 on keypad pressed"},
 					                	"button2":  {type: "numeric", description: "button2 on keypad pressed"},
 					                	"button3":  {type: "numeric", description: "button3 on keypad pressed"},
 					                	"button4":  {type: "numeric", description: "button4 on keypad pressed"},
 					                	"button5":	{type: "numeric", description: "button5 on keypad pressed"},
 					                	"temperature": {type: "numeric", description: "a temperature reading (degrees celsius)"},
-					                	"battery": {type: "numeric", description: "a battery reading (%)"},
+					                	"battery": {type: "numeric", description: "a battery reading (voltage)"},
 					                	"light":   {type: "numeric", description: "a light reading (lux)"},
                                 	}
                                 	

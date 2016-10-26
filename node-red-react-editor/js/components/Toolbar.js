@@ -69,9 +69,7 @@ class Toolbar extends Component {
 						  <img id="btn-deploy-icon" src="images/deploy-full-o.png"/> 
 						  <span>Test</span>
 						  </a>
-						  <a id="btn-deploy-options" data-toggle="dropdown" className="deploy-button" onClick={this.toggleDeployMenu}>
-							<i className="fa fa-caret-down"></i>
-						  </a>
+						
 						  <ul id="btn-deploy-options-submenu" className="dropdown-menu pull-right" style={style}>
 							<li>
 							  <a id="deploymenu-item-full" href="#" className="active">
