@@ -10,6 +10,7 @@
 				{"name":"twitter", "file":"datastores/twitter/node"},
 				{"name":"bulbs-in", "file":"datastores/bulbs/node"},
 				{"name":"plugin", "file":"datastores/plug/node"},
+				{"name":"wirelessthings", "file":"datastores/wirelessthings/node"},
 				
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},

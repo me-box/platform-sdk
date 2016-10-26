@@ -114,7 +114,7 @@ export default composeNode(Node, 'bulbsout',
                                 								schema: {
                                 									payload: {
 																		type: "numeric",
-																		description: "a hue value (0-65000)",
+																		description: "a hue value (0-360)",
 																	}
 																}
 															},

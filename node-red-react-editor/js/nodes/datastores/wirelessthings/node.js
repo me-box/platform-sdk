@@ -23,9 +23,17 @@ class Node extends React.Component {
           
           const typeprops = {
 				options: [
-									{name: 'on', value: 'bulb-on'},
-					                {name: 'hue', value: 'bulb-hue'},
-					                {name: 'brightness', value: 'bulb-bri'},
+									{name: 'humidity', value: 'humidity'},
+					                {name: 'tilt', value: 'tilt'},
+					                {name: 'button1', value: 'button1'},
+					                {name: 'button2', value: 'button2'},
+					                {name: 'button3', value: 'button3'},
+					                {name: 'button4', value: 'button4'},
+					                {name: 'button5', value: 'button5'},
+					                {name: 'temperature', value: 'temperature'},
+					                {name: 'battery', value:'battery'},
+					                {name: 'light', value:'light'},
+					                
 					     ],
 					     
 				onSelect: (event)=>{
@@ -54,30 +62,37 @@ class Node extends React.Component {
     }
 }
 
-export default composeNode(Node, 'bulbsin', 
+export default composeNode(Node, 'wirelessthings', 
                             {
                                 category: 'datastores',      
                                 color: '#ffcc00',
                                 defaults: {             
                                     name: {value:""},   
-                                    subtype: {value:"bulb-on"},
+                                    subtype: {value:"humidity"},
                                 },
                                 inputs:0,               
                                 outputs:1,             
                                
-                                icon: "fa-lightbulb-o",
-                                unicode: '\uf0eb',     
+                                icon: "fa-wifi ",
+                                unicode: '\uf1eb',     
                                 label: function() {     
-                                    return this.name||this.topic||"bulbsin";
+                                    return this.name||"wirelessthings";
                                 },
                                 
                                  schema: (subtype)=>{
-                                	const type = subtype || "bulb-on";
+                                	const type = subtype || "humidity";
                                 	
                                 	const payloads = {
-                                		"bulb-on": {type: "string", description: "<i>on</i> or <i>off</i>"},
-										"bulb-hue": {type: "numeric", description: "a hue value (0-360)"},
-										"bulb-bri": {type: "numeric",description: "a brightness value (0-255)"}
+                                		"humidity": {type: "numeric", description: "a humidity reading (%)"},
+					                	"tilt": 	{type: "numeric", description: "a tilt reading (degrees)"},
+					                	"button1":  {type: "numeric", description: "button1 on keypad pressed"},
+					                	"button2":  {type: "numeric", description: "button2 on keypad pressed"},
+					                	"button3":  {type: "numeric", description: "button3 on keypad pressed"},
+					                	"button4":  {type: "numeric", description: "button4 on keypad pressed"},
+					                	"button5":	{type: "numeric", description: "button5 on keypad pressed"},
+					                	"temperature": {type: "numeric", description: "a temperature reading (degrees celsius)"},
+					                	"battery": {type: "numeric", description: "a battery reading (%)"},
+					                	"light":   {type: "numeric", description: "a light reading (lux)"},
                                 	}
                                 	
                                 	return {
@@ -86,9 +101,9 @@ export default composeNode(Node, 'bulbsin',
                                 					type: "object",
                                 					description: "the container object",
                                 					schema:{
-														name: {type:'string', description: "a name assigned to this bulb"}, 
+														name: {type:'string', description: "a name assigned to this sensor"}, 
 														id:  {type:'string', description: "the node id: [id]"},
-														type:{type: 'string', description: `the type:\'bulbs-in\'`},
+														type:{type: 'string', description: `the type:\'wirelessthings\'`},
 														subtype: {type: 'string', description: `reading type:\'${type}\'`},
 														payload: {
 															type: 'object', 
@@ -107,6 +122,6 @@ export default composeNode(Node, 'bulbsin',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                 description: ()=>"<p> turn bulbs on or off </p>",
+                                 description: ()=>"<p> wireless things sensors </p>",
                             }
                           );

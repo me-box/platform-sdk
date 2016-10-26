@@ -179,6 +179,9 @@ const _fetchFile = function(username, repoowner, accessToken, repo, filename){
 }
 
 const _saveToAppStore = function(manifest){
+	console.log("saving to app store now");
+	console.log(`${config.appstore.URL}/app/post`);
+	
 	return new Promise((resolve, reject)=>{
 		request
   			.post(`${config.appstore.URL}/app/post`)
@@ -190,6 +193,8 @@ const _saveToAppStore = function(manifest){
   					console.log(err);
   					reject(err);
   				}else{
+  					console.log("DONE!");
+  					console.log(res.body);
           			resolve(res.body);
   	 			}
   	 		})	
@@ -204,7 +209,7 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 				description: app.description,
 				author: user.username,
 				licence: "MIT",
-				tags: app.tags.split(","),
+				tags: app.tags ? app.tags.split(","): "",
 				homepage: `${config.github.URL}/${user.username}/${reponame}`,
 				repository:{
 					type: 'git',
@@ -279,6 +284,8 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 										
 						queries: JSON.stringify(0),
 		}; 
+		
+		console.log("ok about to save to app store!");
 				
 		return _saveToAppStore(data).then(function(result){
 			var path = `${user.username}-tmp.tar.gz`;
