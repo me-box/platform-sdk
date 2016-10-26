@@ -49,11 +49,11 @@ Run your first examples
 
 To access the example apps click load on the toolbar shown below:
 
-![toolbar](https://raw.githubusercontent.com/me-box/iot.red/master/docs/images/toolbar.pgg "toolbar")
+![toolbar](https://raw.githubusercontent.com/me-box/iot.red/master/docs/images/toolbar.png "toolbar")
 
 Then enter "tlodge" into the user box and press browse. 
 
-![browse](https://raw.githubusercontent.com/me-box/iot.red/master/docs/images/toolbar.pgg "browse")
+![browse](https://raw.githubusercontent.com/me-box/iot.red/master/docs/images/toolbar.png "browse")
 
 A list of available examples will then be shown on the left-hand side. Dubble click on the node and have a look around. 
 
