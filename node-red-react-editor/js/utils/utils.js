@@ -138,7 +138,8 @@ export function matchLibraries(code){
 }
 
 export function  nodesWithTestOutputs(nodes){
-		const typesOfInterest = ["debugger", "app"];
+		
+		const typesOfInterest = ["debugger", "app", "pipstaprint", "bulbsout"];
 		const seen = {};
 		return nodes.reduce((acc, node)=>{
 			if (!seen[node.type] && typesOfInterest.indexOf(node.type) != -1){

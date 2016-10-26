@@ -37,11 +37,19 @@ class D3Node extends Component {
             node_highlighted: d.highlighted,
         });
 
+
+		const clickrectprops = {
+		 	width: d.w,
+        	height: d.h,
+			onMouseDown: this._nodeMouseDown.bind(this,d),
+			fillOpacity: 0,
+		}
+		const clickrect =  <rect {...clickrectprops}></rect>
+        
         const mainrectprops = {
             fill:  d._def.color,
             width: d.w,
         	height: d.h,
-           	onMouseDown: this._nodeMouseDown.bind(this,d),
         };
 
 		
@@ -78,8 +86,10 @@ class D3Node extends Component {
         return <g {...gprops}>
                   	{mainrect}
                     <text style={noselect} {...textprops}>{icontxt}</text>
+                    {clickrect}
                     <Inputs d={d}/>
                     <Outputs d={d} outputs={d.outputs}/>
+                    
                 </g>
         
     }

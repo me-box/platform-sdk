@@ -11,8 +11,9 @@ const _postFlows = function(port, data, username){
 
 	
 	//add in channelIDs here
-	const flows = data.map((node)=>{		
-			const modifier = node.type === "app" || node.type === "debugger" ? {appId: username} : {}; //inject the appID
+	const flows = data.map((node)=>{
+			const outputtypes = ["app", "debugger", "bulbsout", "pipstaprint"];		
+			const modifier = outputtypes.indexOf(node.type) != -1 ? {appId: username} : {}; //inject the appID
 			return Object.assign({}, node, modifier);
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
