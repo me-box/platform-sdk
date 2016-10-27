@@ -249,6 +249,8 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 
 const _publish = function(user, reponame, app, packages, libraries, allowed, flows){
 	
+	
+	
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		
@@ -289,7 +291,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 		}; 
 		
 		console.log("saving to app store");
-		console.log(data.manifest);
+		console.log(data);
 			
 		return _saveToAppStore(data).then(function(result){
 			var path = `${user.username}-tmp.tar.gz`;
@@ -297,7 +299,8 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 		},(err)=>{
 			reject("could not save to app store!");
 		}).then(function(tarfile){
-			return createDockerImage(tarfile, `${config.registry.URL}/${app.name}`);
+			const appname = app.name.startsWith(user.username) ? app.name : `${user.username}-${app.name}`;
+			return createDockerImage(tarfile, `${config.registry.URL}/${appname}`);
 		},(err)=>{
 			reject("could not create tar file");
 		}).then(function(tag){
