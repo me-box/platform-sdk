@@ -95,7 +95,7 @@ export default composeNode(Node, 'twitter',
 														description: 'the payload object', 
 														schema: {
 															ts: {type:'time', description: 'a unix timestamp'},
-															value: {type:'object',  description: _descriptions[type] || "", schema: {}},    					
+															value: {type:'string',  description: "a tweet"},    					
 														}
 													}
 												}

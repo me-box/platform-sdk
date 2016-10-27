@@ -6,7 +6,6 @@
 			 	
 				{"name":"sensingkit", "file":"datastores/sensingkit/node"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
-				{"name":"phidgets", "file":"datastores/phidgets/node"},
 				{"name":"twitter", "file":"datastores/twitter/node"},
 				{"name":"bulbs-in", "file":"datastores/bulbs/node"},
 				{"name":"plugin", "file":"datastores/plug/node"},
