@@ -202,9 +202,12 @@ const _saveToAppStore = function(manifest){
 }
 
 const _generateManifest = function(user, reponame, app, packages, allowed){
+	
+	const appname = app.name.startsWith(user.username) ? app.name : `${user.username}-${app.name}`;
+	
 	return  {
 				'manifest-version': 1,
-				name: app.name,
+				name: appname,
 				version: "0.1.0",
 				description: app.description,
 				author: user.username,
@@ -285,8 +288,9 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 						queries: JSON.stringify(0),
 		}; 
 		
-		console.log("ok about to save to app store!");
-				
+		console.log("saving to app store");
+		console.log(data.manifest);
+			
 		return _saveToAppStore(data).then(function(result){
 			var path = `${user.username}-tmp.tar.gz`;
 			return createTarFile(dockerfile, flows, path);
@@ -382,7 +386,7 @@ router.get('/flow', function(req,res){
 	const owner = req.query.username || user.username;
 	
 	return Promise.all([_fetchFile(user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(user.username, owner, user.accessToken, repo, 'manifest.json')]).then(function(values) {
-		console.log(values);
+		
         res.send({
         	result: 'success',
         	flows: values[0],
@@ -423,7 +427,7 @@ router.post('/repo/new', function(req,res){
 });
 
 router.post('/repo/update', function(req, res){
-	
+
 	const user = req.user;
 	const repo = req.body.repo;
 	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows)).toString('base64');
@@ -467,7 +471,7 @@ router.post('/publish', function(req,res){
 	const commitmessage = 'publish commit';
 	
 	//first save the manifest and flows file - either create new repo or commit changes
-	
+		
 	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
 		if (node.type === "function"){
 			acc = [...acc, matchLibraries(node.func)];
