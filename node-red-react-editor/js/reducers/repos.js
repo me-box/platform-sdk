@@ -10,10 +10,15 @@ export default function repos(state = { loaded: {name:"", sha:{}}, browsingname:
   	switch (action.type) {
 	  
 	  case REPO_SHA_RETRIEVED:
-	  	return Object.assign({}, state, {
+	  	if (action.sha){
+	  		return Object.assign({}, state, {
 	  					loaded: Object.assign({}, state.loaded, {name:action.repo, sha: sha(state.loaded.sha, action)})
-	  				}
-	  	);
+	  				});
+	  	}else{
+	  		return Object.assign({}, state, {
+	  					loaded: Object.assign({}, state.loaded, {name:action.repo, sha:{}})
+	  		});
+	  	}
 	  
 	  //handles changes to the browsing textfield
 	  case REPO_BROWSINGNAME_CHANGED:

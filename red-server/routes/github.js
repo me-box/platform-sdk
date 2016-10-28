@@ -482,8 +482,13 @@ router.post('/publish', function(req,res){
 		return acc;
 	},[])));
 	
+	
+	console.log("REPO IS");
+	console.log(repo);
+	
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
 		
+		console.log("COMMITTING!!!");
 		const flowcontent 		= new Buffer(JSON.stringify(flows)).toString('base64');
 		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
 		const message = commitmessage;
@@ -508,9 +513,9 @@ router.post('/publish', function(req,res){
 		});
 		
 	}else{ //create a new repo!
-	  	
+	  	console.log("CREATING NEW REPO..");
 	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
-		
+		console.log(reponame);
 		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
 			console.log(`publishing...${reponame}`);
 			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);

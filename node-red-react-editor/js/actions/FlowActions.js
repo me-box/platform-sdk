@@ -258,8 +258,9 @@ export function fetchFlow(store, repo){
   												flows: res.body.flows.sha,
   												manifest: res.body.manifest.sha
   										 }))
+  					}else{ //this repo came from another user's github account
+  						dispatch(receivedSHA(repo,null));
   					}
-  					
   					
   					//create all of the flows
           			dispatch(receiveFlows(flows, store, _lookup.bind(this,getState().types.nodetypes)));  //bind the lookup function to the current set of node types

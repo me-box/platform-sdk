@@ -61,7 +61,7 @@ class TestManager extends Component {
 		
 		let message = ""
 		if (links.length == 0){
-			message = "This flow does not have any outputs that can be viewed in test mode, currently the only supported outputs for testing are debug and app";
+			message = "This flow does not have any outputs that can be viewed in test mode, currently the only supported outputs for testing are <strong>debug, app, bulbs and printer</strong>";
 		}
 		else if (links.length == 1){
 			message = "This flow has one output that can be viewed in test mode.  Click on it to take a look";
