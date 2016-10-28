@@ -131,36 +131,27 @@ class RepoManager extends Component {
 		}
 			//{saved}  			
 		if (showappmanager){
-		 	loader = 	<div>
-							<div id="sidebar" style={{display:'block', height: this.props.h}}>
-								<div style={close}> <i className="fa fa-times fa-fw"></i> </div>
-								<div id="sidebar-content">
-									<div>
-										<div className="repocontainer">									
-											<Cells>
-												<div>
-													<div className="flexrow">
-														<div>
-															{usertobrowse}
-														</div>
-														<div className="submit">
-						
-															<div className="centered">
-																<div onClick={this.browseNewUser} className="button selected">browse</div>
-															</div>
-						
-														</div>
-													</div>
-												</div>
-									
-												{saved}
-											</Cells>
+		 	loader = 	<div className="repocontainer" style={{padding:7}}>									
+							<Cells>
+								<div>
+									<div className="flexrow">
+										<div>
+											{usertobrowse}
 										</div>
-									</div>	
+										<div className="submit">
+		
+											<div className="centered">
+												<div onClick={this.browseNewUser} className="button selected">browse</div>
+											</div>
+		
+										</div>
+									</div>
 								</div>
-								<div id="sidebar-footer"></div>
-							</div>
+					
+								{saved}
+							</Cells>
 						</div>
+									
 		 }			
 						
 		let dialogue, dialoguecontent, dialogueprops;
