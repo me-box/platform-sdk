@@ -630,7 +630,7 @@ export default composeNode(Node, 'chartify',
                                 },
                                 
                                 
-                                description: ()=>"<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to data for a chart </p>",
+                                description: ()=>"<p> This node will take in datastore data from any datastore that creates numeric data and display it as a chart.  Currently the two supported types of chart are <strong> bar charts </strong> and a <strong> gauge </strong> </p>",
                                  
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

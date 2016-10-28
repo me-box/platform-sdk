@@ -67,7 +67,11 @@ export default composeNode(Node, 'debugger', {
 	outputs:0,             
 	
 	schema: (subtype)=>{					
-		return	{}
+		return	{
+			input:{
+				any: {type:"any", description: "any object"}
+			}	
+		}
 	},
 	
 	icon: "fa-bug",

@@ -64,6 +64,14 @@ export default composeNode(Node, 'pipstaprint',
                                     return this.name||this.topic||"pipstaprint";
                                 },
                                 
+                                schema: (subtype)=>{
+                                	return {
+                                		input:{
+                                			payload: {type:'string',  description: 'the message you want to print'},
+                                		}
+                                	};
+                                },
+                                
                                 description: ()=>"<p> This will send some text to a pico printer </p>",
                                  
                                 labelStyle: function() { 

@@ -107,6 +107,6 @@ export default composeNode(Node, 'bulbsin',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                 description: ()=>"<p> turn bulbs on or off </p>",
+                                 description: ()=>"<p>  This node allows you to read the current status of the phillips hue bulbs (whether on or off, the hue and the brightness) </p>",
                             }
                           );

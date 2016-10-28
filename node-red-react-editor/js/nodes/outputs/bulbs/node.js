@@ -159,6 +159,6 @@ export default composeNode(Node, 'bulbsout',
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
                                 },
-                                 description: ()=>"<p> turn bulbs on or off, change their hue or brightness </p>",
+                                 description: ()=>"<p> This node allows you to actuate phillips hue bulbs i.e. turn them on or off, change their hue or change brightness </p>",
                             }
                           );

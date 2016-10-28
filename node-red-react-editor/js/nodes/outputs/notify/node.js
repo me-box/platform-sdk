@@ -100,7 +100,23 @@ export default composeNode(Node, 'notify',
                                     return this.name||this.topic||"notify";
                                 },
                                 
-                                description: ()=>"<p> This will send a notification to a communication endpoint such as an email address, sms, twitter, growl or push.  Note that <strong> currently only twitter is supported </strong></p>",
+                                schema: ()=>{
+                                	return {
+                                		input:{
+											channel: {type:'string',  description: '<i>sms</i> or <i>twitter</i>'},
+											payload: {
+													type: 'object', 
+													description: 'the message payload', 
+													schema: {
+														to: {type:'string',  description: 'phone number or twitter handle'},
+														message: {type:'string',  description: 'message to send'},
+													}, 
+											}
+										}			
+                                	}
+                                },
+                                
+                                description: ()=>"<p> This will send a notification to a communication endpoint such as an email address, sms, twitter, growl or push.  Note that <strong> currently only twitter and sms are supported </strong></p>",
                                  
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";

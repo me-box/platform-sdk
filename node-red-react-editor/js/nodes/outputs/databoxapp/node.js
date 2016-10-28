@@ -335,7 +335,7 @@ export default composeNode(Node, 'app',
                                 	}
                                 },
                                 
-                                description: ()=> "<p>This component is used to send a display to the databox UI for this app. It can render text, bar and gauge charts (...more soon...)</p>", 
+                                description: ()=> "<p>This component will display data on the databox UI for this app. It can render text, bar and gauge charts and html.  The chartify, webify and listify nodes can feed directly into this node.  Each node that feeds into this node will be displayed as a dark box below (with the id of the node or its name).  You can drag the boxes around to determine the layout of each node in the UI</p>", 
 
                                 labelStyle: function() { 
                                     return this.name?"node_label_italic":"";
