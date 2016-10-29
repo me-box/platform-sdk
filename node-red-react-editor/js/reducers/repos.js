@@ -26,7 +26,10 @@ export default function repos(state = { loaded: {name:"", sha:{}}, browsingname:
 	  
 	  //records the (succsssfully) selected user whose repos we are browsing
 	  case REPO_CURRENTUSER_CHANGED:
-	  	return Object.assign({}, state, {currentuser:action.name});
+	  	return Object.assign({}, state, {
+	  										currentuser:action.name,
+	  										browsingname: action.name,
+	  									});
 	  		
 	  case REPO_NAME_CHANGED:
 	  	return Object.assign({}, state, {

@@ -319,8 +319,12 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 //list all apps owned by this user
 router.get('/repos/:user', function(req,res){
 	const user = req.user;
-	const username = req.params.user;
+	let username = req.params.user;
 	
+	//set to this user if passed in empty string or no user
+	if (!username  || username.trim() === ""){
+		username = req.user.username;	
+	}
 	request
    		.get(`${config.github.API}/users/${username}/repos`)
    		.set('Accept', 'application/json')

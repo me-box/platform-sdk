@@ -110,6 +110,8 @@ export function requestRepos(){
 	return function (dispatch, getState) {
 		
 		dispatch(networkAccess(`requesting repo list`));
+		dispatch(setCurrentUser(""));
+		
 		request
 		  .get(`${config.root}/github/repos`)
 		  .set('Accept', 'application/json')
