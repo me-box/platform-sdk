@@ -5,6 +5,10 @@ import {REPO_NAME_CHANGED, REPO_BROWSINGNAME_CHANGED, REPO_CURRENTUSER_CHANGED, 
 export function sha(state={}, action){
 	return Object.assign({}, state, {...action.sha});
 }
+
+const _gitify = (name)=>{
+	return name.replace(/\s/g, "-");
+}
  
 export default function repos(state = { loaded: {name:"", sha:{}}, browsingname:"", currentuser:"", tosave : {name: "", commit: "", description: ""}, repos:[]}, action) {
   	switch (action.type) {
@@ -33,7 +37,7 @@ export default function repos(state = { loaded: {name:"", sha:{}}, browsingname:
 	  		
 	  case REPO_NAME_CHANGED:
 	  	return Object.assign({}, state, {
-	  					tosave: Object.assign({}, state.tosave, {name:action.name})
+	  					tosave: Object.assign({}, state.tosave, {name:_gitify(action.name)})
 	  				}
 	  	);
 	  
