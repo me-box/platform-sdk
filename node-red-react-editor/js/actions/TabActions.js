@@ -31,9 +31,14 @@ export function selectTab(tab){
     }
 }
 
+//make sure cannot delete last tab by checking tabs length
 export function deleteTab(id){
-	return {
-		type: TAB_DELETE,
-		id,
-	}
+	return function (dispatch, getState) {
+		if (getState().tabs.tabs.length > 1){
+			dispatch({
+				type: TAB_DELETE,
+				id,
+			});
+		}
+	} 
 }
