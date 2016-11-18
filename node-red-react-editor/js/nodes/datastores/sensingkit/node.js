@@ -98,7 +98,7 @@ export default composeNode(Node, 'sensingkit',
 																payload: { 
 																			type:'object', 
 																			description: 'the message payload', 
-																			schema: {	
+																			properties: {	
 																				ts: {type:'time', description: 'a unix timestamp'},
 																				name:  {type:'string', description: 'user assigned name of the device, \`none\' if not provided'},
 																				address: {type:'string', description: 'the mac address of the device in the form aa:bb:cc:dd:ee:ff'},
@@ -124,7 +124,7 @@ export default composeNode(Node, 'sensingkit',
 																payload: { 
 																			type:'object', 
 																			description: 'the message payload', 
-																			schema: {
+																			properties: {
 																				ts: {type:'time',  description: 'a unix timestamp'},
 																				x:  {type:'numeric', description: 'the x axis value'},
 																				y:  {type:'numeric', description: 'the y axis value'},
@@ -144,7 +144,7 @@ export default composeNode(Node, 'sensingkit',
 																payload: { 
 																			type:'object', 
 																			description: 'the message payload', 
-																			schema: {
+																			properties: {
 																				ts: {type:'time',  description: 'a unix timestamp'},
 																				x:  {type:'numeric', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
 																				y:  {type:'numeric', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
@@ -167,7 +167,7 @@ export default composeNode(Node, 'sensingkit',
 																payload: { 
 																			type:'object', 
 																			description: 'the message payload', 
-																			schema: {
+																			properties: {
 																				ts: {type:'time',  description: 'a unix timestamp'},
 																				charge:  {type:'numeric', description: 'is a number from 0 to maximum battery level'}, 
 																				temperature:  {type:'numeric', description: 'is the current battery temperature'},
@@ -190,7 +190,7 @@ export default composeNode(Node, 'sensingkit',
 																	payload: { 
 																			type:'object', 
 																			description: 'the message payload', 
-																			schema: {
+																			properties: {
 																				ts:  {type:'time',  description: 'a unix timestamp'},
 																				value: {type:'numeric', description: 'the audio level captured by the phone microphone'},
 																			}
@@ -208,7 +208,7 @@ export default composeNode(Node, 'sensingkit',
 																	payload: { 
 																			type:'object', 
 																			description: 'the message payload', 
-																			schema: {
+																			properties: {
 																				ts:  {type:'time',  description: 'a unix timestamp'},
 																				value: {type:'numeric', description: 'ambient light in lux captured by a phone camera'},
 																			}
@@ -223,7 +223,7 @@ export default composeNode(Node, 'sensingkit',
 											msg: {
 												type: "object",
 												description: "the container object",
-												schema: schema(sensor),
+												properties: schema(sensor),
 											}
 										}
 									}

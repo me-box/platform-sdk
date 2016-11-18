@@ -211,21 +211,24 @@ export default composeNode(Node, 'app',
                                 	const _descriptions = [
                                 								{
                                 									type: "gauge", 
-                                									schema: {
+                                									description : "format for gauge chart",
+                                									properties: {
                                 										options: { 
                                 													type: "object",
-                                													schema :{
-                                														title : {type:"numeric", optional:true, description:"gauge title"},
-                                														ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
-                                														min: 	{type:"numeric", optional:true, description:"minimum value"},
-                                														max: 	{type:"numeric", optional:true, description:"maximum value"},
-                                														labels: {type:"string",  optional:true, description:"labels along the top of the chart in format name:value,name:value"},
+                                													description: "chart options",
+                                													properties :{
+                                														title : {type:"numeric", description:"gauge title"},
+                                														ticks:  {type:"numeric", description:"number of values displayed on the gauge"},
+                                														min: 	{type:"numeric", description:"minimum value"},
+                                														max: 	{type:"numeric", description:"maximum value"},
+                                														labels: {type:"string",  description:"labels along the top of the chart in format name:value,name:value"},
                                 													}
                                 										},
                                 										//TODO: get rid of non-essential attributes 
                                 										values: {
                                 													type: "object",
-                                													schema :{
+                                													description: "chart data",
+                                													properties :{
                                 														id: 	{type:"string",  optional:false, description:"id of the dataset"},
                                 														type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
                                 														dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
@@ -235,11 +238,13 @@ export default composeNode(Node, 'app',
                                 										}
                                 								}, 
                                 						   		{
-                                						   				type: "bar",   
-                                						   				schema:{
+                                						   				type: "bar",
+                                						   				description : "format for bar chart",   
+                                						   				properties:{
                                 						   							options: {
                                 						   								type:"object",
-                                						   								schema: {
+                                						   								description : "chart options",
+                                						   								properties: {
                                 						   									title : {type:"numeric", optional:true, description:"gauge title"},
                                 															ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
                                 															xlabel:  {type:"string", optional:true, description:"x-axis label"},
@@ -251,7 +256,8 @@ export default composeNode(Node, 'app',
                                 						   							}, 
                                 						   							values: {
                                 						   								type:"object",
-                                						   								schema:{
+                                						   								description : "chart values",
+                                						   								properties:{
                                 						   									id: 	{type:"string",  optional:false, description:"id of the dataset"},
                                 															type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
                                 															dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
@@ -262,8 +268,9 @@ export default composeNode(Node, 'app',
                                 						   				}
                                 						   		}, 
                                 						   		{
-                                						   					type: "text",  
-                    														schema:{
+                                						   					type: "text",
+                                						   					description : "format for text",    
+                    														properties:{
                                 						   							values:{
                                 						   								type: "string",
                                 						   								description: 'some text'
@@ -272,18 +279,19 @@ export default composeNode(Node, 'app',
                                 						   		}, 
                                 						   		{
                                 						   					type: "list",  
-                                						   					schema: {
+                                						   					description : "format for list",   
+                                						   					properties: {
                                 						   						values: {
                                 						   							type: "object",
-                                						   							schema:{
+                                						   							description : "list values",
+                                						   							properties:{
                                 						   								timestamp: {type:"ts", description:"a unix timestamp"}, 
                                 						   								keys: {type:"array", description:"['key1','key2', '..']"}, 
                                 						   								rows:{
-                                						   											type: "object",
-                                						   											schema:{
-                                						   												key: {type:"any", description:"key value pair where key matches key in keys array"}
-                                						   											}
-                                						   				
+																							type: "object",
+																							properties:{
+																								key: {type:"any", description:"key value pair where key matches key in keys array"}
+																							}
                                 						   								}
                                 						   							}
                                 						   						}
@@ -291,7 +299,7 @@ export default composeNode(Node, 'app',
                                 						   		},
                                 	];
                                 	 
-                                	 
+                                	 //${formatSchema(item.schema)}
                                 	const subschema = _descriptions.map((item)=>{
                                 		return `<div>
 													<div class="flexrow">
@@ -302,7 +310,7 @@ export default composeNode(Node, 'app',
 														</div>
 														<div>
 															<div class="flexcolumn">
-															${formatSchema(item.schema)}
+															
 															</div>
 														</div>
 													</div>
@@ -311,26 +319,20 @@ export default composeNode(Node, 'app',
                                 	
                                 	return {
                                 			input:{
-                                				sourceId: {type:'string',  description: '<i>[selectedid]</i>'},
-												type: {type:'string', description: "one of either \'text\', \'gauge\', \'bar\' or \'list\'"},
-                                				payload: {
-                                							type: 'object', 
-                                							description: 'the message payload', 
-                                							schema: {
-                                										values: {	
-                                													type:'any', 
-                                									 				description: `<div class="flexcolumn">
-                                									 									<div>
-                                									 										<div class="centered">dependent on the type of msg (msg.type)</div>
-                                									 									</div>
-                                									 									
-                                									 									${subschema}
-                                									 									
-                                									 								</div>`
-                                									 			}
-                                									 }, 
-                                				},
-												
+                                				type:"object",
+                                				description: "container object",
+                                				properties:{
+													sourceId: {type:'string',  description: '<i>[selectedid]</i>'},
+													type: {type:'string', description: "one of either \'text\', \'gauge\', \'bar\' or \'list\'"},
+													payload: {
+																type: 'object', 
+																description: 'the message payload', 
+																oneOf: _descriptions.map((item)=>{
+																	return item;
+																}),
+								
+													}
+												}
                                 			}
                                 	}
                                 },

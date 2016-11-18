@@ -5,19 +5,18 @@ import Select from '../../../components/form/Select';
 import Cell from '../../../components/Cell';
 import Cells from '../../../components/Cells';
 import {matchLibraries} from '../../../utils/utils';
+import {codeFromSchema} from '../../../utils/codegen';
 import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/java';
 import 'brace/theme/github';
 
-
-
-
-
 class Node extends React.Component {
 
 	   constructor(props){
 	   		super(props);
+	   		this._createInputCode = this._createInputCode.bind(this);
+	   		this._createOutputCode = this._createOutputCode.bind(this);
 	   }
 	   
        render() {
@@ -63,6 +62,7 @@ class Node extends React.Component {
         	
         	var aceprops = {
         		onChange: (value)=>{
+        			console.log(brace);
         			 this.props.updateNode("func", value);
         		},
         		value: this.props.values.func || this.props.selected.func || "",
@@ -75,8 +75,69 @@ class Node extends React.Component {
         		showPrintMargin: false,
         	}
         	
-        	const codeinput = <AceEditor {...aceprops}/>
-								  				
+        	const incode = inputs.map((node, i)=>{
+        		
+        		const iconstyle = {
+					alignSelf: 'center',
+					height: 40,
+					width: 40,
+					color:'white',
+					background: node._def.color || '#ca2525',
+					border: '2px solid white', 
+					textAlign: 'center',
+					boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+					marginTop: 5,
+					paddingTop: 5,
+					color: 'white',
+					fontSize: 30,
+				}
+        		
+        		return 	<div onClick={this._createInputCode.bind(null, node)} key={i} style={iconstyle}>
+        					<i className={`fa ${node._def.icon} fa-fw`}></i>
+        				</div>
+        	});
+        	
+        	const outcode = outputs.map((node, i)=>{
+        		
+        		const iconstyle = {
+					alignSelf: 'center',
+					height: 40,
+					width: 40,
+					color:'white',
+					background: node._def.color || '#ca2525',
+					border: '2px solid white', 
+					textAlign: 'center',
+					boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+					marginTop: 5,
+					paddingTop: 5,
+					color: 'white',
+					fontSize: 30,
+				}
+        		
+        		return 	<div onClick={this._createOutputCode.bind(null, node)} key={i} style={iconstyle}>
+        					<i className={`fa ${node._def.icon} fa-fw`}></i>
+        				</div>
+        	});
+        	
+        	const codeinput = <div className="flexrow">
+        						<div style={{width:50, background:"#333", color:"white"}}>
+        							<div className="flexcolumn">
+										<div>
+											<div className="centered">
+												<div style={{color:"white", fontSize:14}}>in</div>
+											</div>
+										</div>
+										{incode}
+										<div>
+											<div className="centered">
+												<div style={{color:"white", fontSize:14}}>out</div>
+											</div>
+										</div>
+										{outcode}
+        							</div>
+        						</div>
+        						<AceEditor {...aceprops}/>
+							  </div>		  				
           	return <div>
           			<Cells>				
 						<Cell title={"name"} content={nameinput}/>
@@ -88,9 +149,29 @@ class Node extends React.Component {
           
        }
        
+       _createInputCode(node){
+       		const {help} = this.props;
+       		const fullschema = help.outputschema[node.id] ?  help.outputschema[node.id].output : node._def.schema ? node._def.schema().output : {};
+          	const code = codeFromSchema(fullschema, "input");
+          	const func = `${code}\n${this.props.values.func || ""}`;
+            this.props.updateNode("func", func);
+       }
+       
+       _createOutputCode(node){
+       		const {help} = this.props;
+       		let schema;
+       		
+       		if (help.inputschema && help.inputschema[node.id]){
+       			schema = help.inputschema[node.id].input;
+       		}else{
+       			schema = node._def.schema ? node._def.schema().input : {};
+       		}
+       	
+       		const code = codeFromSchema(schema, "output");
+       		const func = `${this.props.values.func || ""}\n${code}`;
+            this.props.updateNode("func", func);
+       }
 }
-
-
 
 export default composeNode(Node, 'function', 
                             {
