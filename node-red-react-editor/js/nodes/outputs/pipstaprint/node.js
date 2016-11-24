@@ -67,8 +67,13 @@ export default composeNode(Node, 'pipstaprint',
                                 schema: (subtype)=>{
                                 	return {
                                 		input:{
-                                			payload: {type:'string',  description: 'the message you want to print'},
-                                		}
+											type:"object",
+											description: "container object",
+											properties:{
+												payload: {type:'string',  description: 'the message you want to print'},
+											},
+											required: ["payload"]
+										} 
                                 	};
                                 },
                                 

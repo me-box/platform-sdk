@@ -86,8 +86,13 @@ export default composeNode(Node, 'plugout',
                                 schema: (subtype)=>{
                                 	return {
 										input:{
-                                			payload: {type:'string', description: `<i> on </i> or <i> off </i>`},
-                                		}
+											type:"object",
+											description: "container object",
+											properties:{
+												payload: {type:'string', description: `<i> on </i> or <i> off </i>`}
+											},
+											required: ["payload"]
+										}                                		
 									}
                                 },
                                 

@@ -103,15 +103,21 @@ export default composeNode(Node, 'notify',
                                 schema: ()=>{
                                 	return {
                                 		input:{
-											channel: {type:'string',  description: '<i>sms</i> or <i>twitter</i>'},
-											payload: {
-													type: 'object', 
-													description: 'the message payload', 
-													schema: {
-														to: {type:'string',  description: 'phone number or twitter handle'},
-														message: {type:'string',  description: 'message to send'},
-													}, 
-											}
+                                			type: "object",
+                                			description: "the container object",
+                                			properties:{
+												channel: {type:'string',  description: '<i>sms</i> or <i>twitter</i>', enum:["sms", "twitter"]},
+												payload: {
+														type: 'object', 
+														description: 'the message payload', 
+														properties: {
+															to: {type:'string',  description: 'phone number or twitter handle'},
+															message: {type:'string',  description: 'message to send'},
+														},
+														required: ["to", "message"] 
+												}
+											},
+											required: ["channel", "payload"]
 										}			
                                 	}
                                 },

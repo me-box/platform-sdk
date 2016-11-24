@@ -76,8 +76,8 @@ export default composeNode(Node, 'bulbsin',
                                 	
                                 	const payloads = {
                                 		"bulb-on": {type: "string", description: "<i>on</i> or <i>off</i>"},
-										"bulb-hue": {type: "numeric", description: "a hue value (0-360)"},
-										"bulb-bri": {type: "numeric",description: "a brightness value (0-255)"}
+										"bulb-hue": {type: "number", description: "a hue value (0-360)"},
+										"bulb-bri": {type: "number",description: "a brightness value (0-255)"}
                                 	}
                                 	
                                 	return {
@@ -85,7 +85,7 @@ export default composeNode(Node, 'bulbsin',
                                 				msg: {
                                 					type: "object",
                                 					description: "the container object",
-                                					schema:{
+                                					properties:{
 														name: {type:'string', description: "a name assigned to this bulb"}, 
 														id:  {type:'string', description: "the node id: [id]"},
 														type:{type: 'string', description: `the type:\'bulbs-in\'`},
@@ -93,12 +93,14 @@ export default composeNode(Node, 'bulbsin',
 														payload: {
 															type: 'object', 
 															description: 'the payload object', 
-															schema: {
+															properties: {
 																ts: {type:'time', description: 'a unix timestamp'},
 																value: payloads[type],					
-															}
+															},
+															required: ["ts", "value"]
 														}
-													}
+													},
+													required: ["id", "type", "subtype", "payload"]
 												}
 										}			
 									}	

@@ -77,9 +77,9 @@ export default composeNode(Node, 'plugin',
                                 	
                                 	const payloads = {
                                 		"power-state": {type: "string", description: "<i>on</i> or <i>off</i>"},
-										"voltage": {type: "numeric", description: "voltage"},
-										"current": {type: "numeric",description: "current (amps)"},
-										"power": {type: "numeric",description: "power (watts)"}
+										"voltage": {type: "number", description: "voltage"},
+										"current": {type: "number",description: "current (amps)"},
+										"power": {type: "number",description: "power (watts)"}
                                 	}
                                 	
                                 	return {
@@ -87,7 +87,7 @@ export default composeNode(Node, 'plugin',
                                 				msg: {
                                 					type: "object",
                                 					description: "the container object",
-                                					schema:{
+                                					properties:{
 														name: {type:'string', description: "a name assigned to this plug"}, 
 														id:  {type:'string', description: "the node id: [id]"},
 														type:{type: 'string', description: `the type:\'plugin\'`},
@@ -95,12 +95,14 @@ export default composeNode(Node, 'plugin',
 														payload: {
 															type: 'object', 
 															description: 'the payload object', 
-															schema: {
+															properties: {
 																ts: {type:'time', description: 'a unix timestamp'},
 																value: payloads[type],					
-															}
+															},
+															required: ["ts", "value"]
 														}
-													}
+													},
+													required: ["id", "type", "subtype", "payload"]
 												}
 										}			
 									}	

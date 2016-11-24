@@ -22,9 +22,11 @@ function _descriptionforobject({description}){
 }
 
 function _tabsfordepth(depth){
-	return [...Array(depth).keys()].reduce((acc,item)=>{
-		return acc + "  ";
-	},"");
+	var str = "";
+	for (var i = 0; i < depth; i++){
+		str = str + "  ";
+	}
+	return str;
 }
 
 function _enumerate_properties(obj, depth){
@@ -33,10 +35,10 @@ function _enumerate_properties(obj, depth){
 					const item = obj[key];
 					switch (item.type){
 						case "object":
-							acc = `${acc}\n${_tabsfordepth(depth+1)}${key}:\n${_templateobject(item,depth+1)}`;
+							acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:\n${_templateobject(item,depth+1)}`;
 							break;
 						default:
-							acc = `${acc}\n${_tabsfordepth(depth+1)}${key}:<${item.type}>,`;
+							acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:<${item.type}>,`;
 					}
 					return acc;
 				},"")}\n${_tabsfordepth(depth)}}`.replace("\n", "");	
@@ -57,6 +59,7 @@ function _templateobject(obj,depth){
 	}
 }
 
+//creates the return object
 function _codeForInput(data){
 	switch (data.type){
 		case "object":
@@ -64,6 +67,7 @@ function _codeForInput(data){
 	}
 }
 
+//creates the var assignment
 export function codeFromSchema(data, type){	
 	if (type==="input"){
 		return Object.keys(data).reduce((lines, key)=>{

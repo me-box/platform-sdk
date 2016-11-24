@@ -82,16 +82,22 @@ export default composeNode(Node, 'temperature',
                                 schema: ()=>{
                                 	return	{
                                 		output: {
-                                			payload: {
-                                				type: 'object', 
-                                				description: 'the message payload', 
-                                				schema:{
-                                					value: {type:'numeric', description: "the temperature reading"},
-                                					unit:  {type:'string', description: "the temperature unit (e.g celcius)"},
-                                					id:    {type:'string', description: "the node id: [id]"},
-                                					time:  {type:'time', description: "a unix timestamp"},
-                                				}
-                                			}
+                                			type: "object",
+                                			description: "the container object",
+                                			properties: { 
+												payload: {
+													type: 'object', 
+													description: 'the message payload', 
+													properties:{
+														value: {type:'number', description: "the temperature reading"},
+														unit:  {type:'string', description: "the temperature unit (e.g celcius)"},
+														id:    {type:'string', description: "the node id: [id]"},
+														time:  {type:'time', description: "a unix timestamp"},
+													},
+													required: ["value", "unit", "id", "time"]
+												}
+											},
+											required: ["payload"]
                                 		}
                                 	}
                                 },

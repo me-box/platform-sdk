@@ -83,16 +83,16 @@ export default composeNode(Node, 'wirelessthings',
                                 	const type = subtype || "humidity";
                                 	
                                 	const payloads = {
-                                		"humidity": {type: "numeric", description: "a humidity reading (%)"},
-					                	"tilt": 	{type: "numeric", description: "a 0 or 1"},
-					                	"button1":  {type: "numeric", description: "button1 on keypad pressed"},
-					                	"button2":  {type: "numeric", description: "button2 on keypad pressed"},
-					                	"button3":  {type: "numeric", description: "button3 on keypad pressed"},
-					                	"button4":  {type: "numeric", description: "button4 on keypad pressed"},
-					                	"button5":	{type: "numeric", description: "button5 on keypad pressed"},
-					                	"temperature": {type: "numeric", description: "a temperature reading (degrees celsius)"},
-					                	"battery": {type: "numeric", description: "a battery reading (voltage)"},
-					                	"light":   {type: "numeric", description: "a light reading (lux)"},
+                                		"humidity": {type: "number", description: "a humidity reading (%)"},
+					                	"tilt": 	{type: "number", description: "a 0 or 1"},
+					                	"button1":  {type: "number", description: "button1 on keypad pressed"},
+					                	"button2":  {type: "number", description: "button2 on keypad pressed"},
+					                	"button3":  {type: "number", description: "button3 on keypad pressed"},
+					                	"button4":  {type: "number", description: "button4 on keypad pressed"},
+					                	"button5":	{type: "number", description: "button5 on keypad pressed"},
+					                	"temperature": {type: "number", description: "a temperature reading (degrees celsius)"},
+					                	"battery": {type: "number", description: "a battery reading (voltage)"},
+					                	"light":   {type: "number", description: "a light reading (lux)"},
                                 	}
                                 	
                                 	return {
@@ -100,7 +100,7 @@ export default composeNode(Node, 'wirelessthings',
                                 				msg: {
                                 					type: "object",
                                 					description: "the container object",
-                                					schema:{
+                                					properties:{
 														name: {type:'string', description: "a name assigned to this sensor"}, 
 														id:  {type:'string', description: "the node id: [id]"},
 														type:{type: 'string', description: `the type:\'wirelessthings\'`},
@@ -108,12 +108,14 @@ export default composeNode(Node, 'wirelessthings',
 														payload: {
 															type: 'object', 
 															description: 'the payload object', 
-															schema: {
+															properties: {
 																ts: {type:'time', description: 'a unix timestamp'},
 																value: payloads[type],					
-															}
+															},
+															required: ["ts", "value"]
 														}
-													}
+													},
+													required: ["id", "type", "subtype", "payload"]
 												}
 										}			
 									}	

@@ -437,11 +437,12 @@ export default composeNode(Node, 'inject',{
 					msg: {
 								type: 'object', 
 								description:"container object", 
-								schema:{
+								properties:{
 									topic: {type:'string', description: "a string assigned to this input"}, 
 									_msgid: {type:'string', description: "a unique message id"},
 									payload: translate[subtype], 
-								}
+								},
+								required: ["payload"]
 					}
 				}
 			}

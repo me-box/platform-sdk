@@ -27,7 +27,7 @@ export default composeNode(Node, 'fmcgs',
                                 schema: {
                                 	id:    {type:'string'},
                                 	timestamp: {type: 'time'},
-                                	values: {type: "array", elements: {type: 'object', schema: {id: 'string', product: 'string'}}}
+                                	values: {type: "array", elements: {type: 'object', properties: {id: 'string', product: 'string'}}}
                                 },
                                 
                                 label: function() {     

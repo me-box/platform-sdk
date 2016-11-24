@@ -84,7 +84,7 @@ export default composeNode(Node, 'twitter',
                                 			msg: {
                                 				type: "object",
                                 				description: "the container object",
-                                				schema:{
+                                				properties:{
 													name: {type:'string', description: "a name assigned to this twitter node"}, 
 													id:  {type:'string', description: "<i>[id]</i>"},
 													type:{type: 'string', description: "<i>twitter</i>"},
@@ -93,12 +93,14 @@ export default composeNode(Node, 'twitter',
 													payload: {
 														type: 'object', 
 														description: 'the payload object', 
-														schema: {
+														properties: {
 															ts: {type:'time', description: 'a unix timestamp'},
 															value: {type:'string',  description: "a tweet"},    					
-														}
+														},
+														required: ["ts", "value"]
 													}
-												}
+												},
+												required: ["id", "type", "subtype", "payload"]
 											}	
                                 		}
                                 	}

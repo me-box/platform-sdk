@@ -114,7 +114,7 @@ export default composeNode(Node, 'webify',
                                 			msg: {
                                 				type: "object",
                                 				description: "the container object",
-                                				schema:{
+                                				properties:{
 													name: {type:'string', description: "the name assigned to this webify node"}, 
 													sourceId:  {type:'string', description: "<i>[id]</i>"},
 													type:{type: 'string', description: "html"},
@@ -122,11 +122,20 @@ export default composeNode(Node, 'webify',
 													payload: {
 														type: 'object', 
 														description: 'the payload object', 
-														schema: {
+														properties: {
 															values: {type:'string',  description: "formatted html"},    					
-														}
+														},
+														required: ["values"]
 													}
-												}
+												},
+												required: ["sourceId", "type", "payload"]
+											}
+										},
+										input:{
+											type: "object",
+											description: "the object whose properties you wish to template",
+											properties:{
+												any: {type: "any", description: "any object"}
 											}
 										}
 									}	

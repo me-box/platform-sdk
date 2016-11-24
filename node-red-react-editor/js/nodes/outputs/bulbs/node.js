@@ -102,7 +102,8 @@ export default composeNode(Node, 'bulbsout',
                                 	const _descriptions = [		
                                 							{
                                 								type: "set-bulb-on", 
-                                								schema: {
+                                								description: "set the bulb on",
+                                								properties: {
                                 									payload: {
 																		type: "string",
 																		description: "<i>on</i> or <i>off</i>",
@@ -111,18 +112,20 @@ export default composeNode(Node, 'bulbsout',
 															},
 															{
                                 								type: "set-bulb-hue", 
-                                								schema: {
+                                								description: "set the bulb hue",
+                                								properties: {
                                 									payload: {
-																		type: "numeric",
+																		type: "number",
 																		description: "a hue value (0-360)",
 																	}
 																}
 															},
 															{
                                 								type: "set-bulb-bri", 
-                                								schema: {
+                                								description: "set the bulb brightness",
+                                								properties: {
                                 									payload: {
-																		type: "numeric",
+																		type: "number",
 																		description: "a brightness value (0-255)",
 																	}
 																}
@@ -130,28 +133,18 @@ export default composeNode(Node, 'bulbsout',
 																			
 									];
                                 									
-                                	const subschema = _descriptions.map((item)=>{
-                                		return `	<div>
-														<div class="flexrow">
-															<div class="title">
-																<div class="centered">
-																	${item.type}
-																</div>
-															</div>
-															<div>
-																<div class="flexcolumn">
-																${formatSchema(item.schema)}
-																</div>
-															</div>
-														</div>
-													</div>
-												`
-                                	}).join("");
-                                	
+                                
                                 	return {
 										input:{
-											type: 	{type:'string', description: "one of either \'set-bulb-on\', \'set-bulb-hue\', \'set-bulb-brightness\'"},
-                                			payload: {	type:'one of', description: `<div class="flexcolumn">${subschema}</div>`},
+											type: "object",
+											description: "the container object",
+											properties:{
+												type: 	{type:'string', description: "one of either \'set-bulb-on\', \'set-bulb-hue\', \'set-bulb-brightness\'", enum: ["set-bulb-on", "set-bulb-hue", "set-bulb-brightness"]},
+                                				payload: {type: 'object', description: `'type' dependent`, oneOf:_descriptions.map((item)=>{
+                                					return item;
+                                				})}
+                                			},
+                                			required: ["type", "payload"]
                                 		}
 									}
                                 },

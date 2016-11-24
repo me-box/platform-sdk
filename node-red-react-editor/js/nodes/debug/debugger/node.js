@@ -69,7 +69,11 @@ export default composeNode(Node, 'debugger', {
 	schema: (subtype)=>{					
 		return	{
 			input:{
-				any: {type:"any", description: "any object"}
+				type: "object",
+				description: "any object",
+				properties:{
+					any: {type:"any", description: "any object"}
+				}
 			}	
 		}
 	},

@@ -59,38 +59,47 @@ export default composeNode(Node, 'listify',
                                 			msg: { 
                                 				type: "object",
                                 				description: "the container object",
-                                				schema:{
+                                				properties:{
 													sourceId: {type:"string", description:"<i>[id]</i>"},
 													type: { type:"string", description:"<i>list</i>"},
 													payload: {
 														type: "object",
-														schema:{
+														description: "values to be rendered as a list",
+														properties:{
 															timestamp: {type:"ts", description:"a unix timestamp"}, 
 															keys: {type:"array", description:"['key1','key2', '..']"}, 
 															rows:{
 																type: "object",
-																schema:{
+																properties:{
 																	key: {type:"any", description:"key value pair where key matches key in keys array"}
 																}
 															}
-														}
+														},
+														required: ["timestamp", "keys", "rows"]
 													}
-												}
+												},
+												required: ["sourceId", "type", "payload"]
 											}
                                 		},
                                 		input : {
-                                			payload: {
-                                				type:"object",
-                                				schema:{
-                                					id: {type:"string", description:"a unique id"}, 
-                                					values : {
-														type: "object",
-														schema: {
-															key: {type:"any", description:"a key:value object where value is a primitive type (string,number)"}
+                                			type: "object",
+                                			description: "the container object",
+                                			properties:{
+												payload: {
+													type:"object",
+													properties:{
+														id: {type:"string", description:"a unique id"}, 
+														values : {
+															type: "object",
+															properties: {
+																key: {type:"any", description:"a key:value object where value is a primitive type (string,number)"}
+															},
 														},
+														required: ["id", "values"]
 													}
-                                				}
-											}
+												}
+											},
+											required: ["payload"]
                                 		}
                                 	}
                                 },

@@ -102,7 +102,7 @@ export default composeNode(Node, 'sensingkit',
 																				ts: {type:'time', description: 'a unix timestamp'},
 																				name:  {type:'string', description: 'user assigned name of the device, \`none\' if not provided'},
 																				address: {type:'string', description: 'the mac address of the device in the form aa:bb:cc:dd:ee:ff'},
-																				rssi: {type:'numeric', description: 'received signal strength indicator (a measure of the signal strength measured by the scanning device)'},	
+																				rssi: {type:'number', description: 'received signal strength indicator (a measure of the signal strength measured by the scanning device)'},	
 																			}
 																}
 															
@@ -126,9 +126,9 @@ export default composeNode(Node, 'sensingkit',
 																			description: 'the message payload', 
 																			properties: {
 																				ts: {type:'time',  description: 'a unix timestamp'},
-																				x:  {type:'numeric', description: 'the x axis value'},
-																				y:  {type:'numeric', description: 'the y axis value'},
-																				z:  {type:'numeric',description: 'the z axis value'},	
+																				x:  {type:'number', description: 'the x axis value'},
+																				y:  {type:'number', description: 'the y axis value'},
+																				z:  {type:'number',description: 'the z axis value'},	
 																			}
 																}
 															
@@ -146,11 +146,11 @@ export default composeNode(Node, 'sensingkit',
 																			description: 'the message payload', 
 																			properties: {
 																				ts: {type:'time',  description: 'a unix timestamp'},
-																				x:  {type:'numeric', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
-																				y:  {type:'numeric', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
-																				z:  {type:'numeric', description: 'rotation axis zcomponent*sin(theta/2) where theta is the angle of rotation'},	
-																				cos:  {type:'numeric', description: 'cosine of the angle of rotation'},	
-																				headingAccuracy:  {type:'numeric', description: 'estimated accuracy in radians'},	
+																				x:  {type:'number', description: 'rotation axis xcomponent*sin(theta/2) where theta is the angle of rotation'},
+																				y:  {type:'number', description: 'rotation axis ycomponent*sin(theta/2) where theta is the angle of rotation'},
+																				z:  {type:'number', description: 'rotation axis zcomponent*sin(theta/2) where theta is the angle of rotation'},	
+																				cos:  {type:'number', description: 'cosine of the angle of rotation'},	
+																				headingAccuracy:  {type:'number', description: 'estimated accuracy in radians'},	
 																			}
 																}
 															
@@ -169,9 +169,9 @@ export default composeNode(Node, 'sensingkit',
 																			description: 'the message payload', 
 																			properties: {
 																				ts: {type:'time',  description: 'a unix timestamp'},
-																				charge:  {type:'numeric', description: 'is a number from 0 to maximum battery level'}, 
-																				temperature:  {type:'numeric', description: 'is the current battery temperature'},
-																				voltage:  {type:'numeric', description: 'current battery voltage'},	
+																				charge:  {type:'number', description: 'is a number from 0 to maximum battery level'}, 
+																				temperature:  {type:'number', description: 'is the current battery temperature'},
+																				voltage:  {type:'number', description: 'current battery voltage'},	
 																				plugged:  {type:'string', description: 'possible values: [usb, ac, wireless,unknown]'},	
 																				status:  {type:'string', description: 'possible values: [charging, discharging, full, not charging, unknown,unsupported]'},
 																				health: {type:'string', description: 'possible values: [cold, dead, good, over heat, over voltage, unknown, failure, unsupported]'},
@@ -192,7 +192,7 @@ export default composeNode(Node, 'sensingkit',
 																			description: 'the message payload', 
 																			properties: {
 																				ts:  {type:'time',  description: 'a unix timestamp'},
-																				value: {type:'numeric', description: 'the audio level captured by the phone microphone'},
+																				value: {type:'number', description: 'the audio level captured by the phone microphone'},
 																			}
 																	}
 																
@@ -210,7 +210,7 @@ export default composeNode(Node, 'sensingkit',
 																			description: 'the message payload', 
 																			properties: {
 																				ts:  {type:'time',  description: 'a unix timestamp'},
-																				value: {type:'numeric', description: 'ambient light in lux captured by a phone camera'},
+																				value: {type:'number', description: 'ambient light in lux captured by a phone camera'},
 																			}
 																	}
 																

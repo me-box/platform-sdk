@@ -91,7 +91,7 @@ export default composeNode(Node, 'osmonitor',
                                 			msg: {
                                 				type: "object",
                                 				description: "the container object",
-                                				schema:{
+                                				properties:{
 													name: {type:'string', description: "a name assigned to this monitor"}, 
 													id:  {type:'string', description: "the node id: [id]"},
 													type:{type: 'string', description: `the type:\'osmonitor\'`},
@@ -99,12 +99,14 @@ export default composeNode(Node, 'osmonitor',
 													payload: {
 														type: 'object', 
 														description: 'the payload object', 
-														schema: {
+														properties: {
 															ts: {type:'time', description: 'a unix timestamp'},
-															value: {type:'numeric', description: _descriptions[type] || ""},    					
-														}
-													}
-												}
+															value: {type:'number', description: _descriptions[type] || ""},    					
+														},
+														required: ["ts", "value"]
+													},	
+												},
+												required: ["id", "type", "subtype", "payload"]
 											}
                                 		}
                                 	}

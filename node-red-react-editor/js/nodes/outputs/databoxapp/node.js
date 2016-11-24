@@ -217,11 +217,11 @@ export default composeNode(Node, 'app',
                                 													type: "object",
                                 													description: "chart options",
                                 													properties :{
-                                														title : {type:"numeric", description:"gauge title"},
-                                														ticks:  {type:"numeric", description:"number of values displayed on the gauge"},
-                                														min: 	{type:"numeric", description:"minimum value"},
-                                														max: 	{type:"numeric", description:"maximum value"},
-                                														labels: {type:"string",  description:"labels along the top of the chart in format name:value,name:value"},
+                                														title : {type:"number", description:"gauge title"},
+                                														ticks:  {type:"number", description:"number of values displayed on the gauge"},
+                                														min: 	{type:"number", description:"minimum value"},
+                                														max: 	{type:"number", description:"maximum value"},
+                                														labels: {type:"string", description:"labels along the top of the chart in format name:value,name:value"},
                                 													}
                                 										},
                                 										//TODO: get rid of non-essential attributes 
@@ -229,11 +229,12 @@ export default composeNode(Node, 'app',
                                 													type: "object",
                                 													description: "chart data",
                                 													properties :{
-                                														id: 	{type:"string",  optional:false, description:"id of the dataset"},
-                                														type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
-                                														dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
-                                														x:		{type:"numeric", optional:false, description:"value being measured"},
-                                													}
+                                														id: 	{type:"string",  description:"id of the dataset"},
+                                														type:	{type:"string",  description:"<i>data</i>"}, 
+                                														dataid: {type:"string",  description:"id of the data item (eg timestamp)"}, 
+                                														x:		{type:"number",  description:"value being measured"},
+                                													},
+                                													required: ["id", "type","dataid","x"]
                                 												}
                                 										}
                                 								}, 
@@ -245,25 +246,26 @@ export default composeNode(Node, 'app',
                                 						   								type:"object",
                                 						   								description : "chart options",
                                 						   								properties: {
-                                						   									title : {type:"numeric", optional:true, description:"gauge title"},
-                                															ticks:  {type:"numeric", optional:true, description:"number of values displayed on the gauge"},
-                                															xlabel:  {type:"string", optional:true, description:"x-axis label"},
-                                															ylabel:  {type:"string", optional:true, description:"y-axis label"},
-                                															min: 	{type:"numeric", optional:true, description:"minimum axis value"},
-                                															max: 	{type:"numeric", optional:true, description:"maximum axis value"},
-                                															maxreadings:  {type:"numeric", optional:true, description:"maximum number of readings shown on chart"},
+                                						   									title : {type:"number", description:"gauge title"},
+                                															ticks:  {type:"number",  description:"number of values displayed on the gauge"},
+                                															xlabel:  {type:"string",  description:"x-axis label"},
+                                															ylabel:  {type:"string",  description:"y-axis label"},
+                                															min: 	{type:"number",  description:"minimum axis value"},
+                                															max: 	{type:"number",  description:"maximum axis value"},
+                                															maxreadings:  {type:"number", description:"maximum number of readings shown on chart"},
                                 						   								}
                                 						   							}, 
                                 						   							values: {
                                 						   								type:"object",
                                 						   								description : "chart values",
                                 						   								properties:{
-                                						   									id: 	{type:"string",  optional:false, description:"id of the dataset"},
-                                															type:	{type:"string",  optional:false, description:"<i>data</i>"}, 
-                                															dataid: {type:"string",  optional:false, description:"id of the data item (eg timestamp)"}, 
-                                															x:		{type:"numeric", optional:false, description:"x value"},
-                                						   									y:		{type:"numeric", optional:false, description:"y value"},
-                                						   								}
+                                						   									id: 	{type:"string", description:"id of the dataset"},
+                                															type:	{type:"string", description:"<i>data</i>"}, 
+                                															dataid: {type:"string", description:"id of the data item (eg timestamp)"}, 
+                                															x:		{type:"number", description:"x value"},
+                                						   									y:		{type:"number", description:"y value"},
+                                						   								},
+                                						   								required: ["id", "type","dataid","x","y"]
                                 						   							}
                                 						   				}
                                 						   		}, 
@@ -298,32 +300,14 @@ export default composeNode(Node, 'app',
                                 						   					}
                                 						   		},
                                 	];
-                                	 
-                                	 //${formatSchema(item.schema)}
-                                	const subschema = _descriptions.map((item)=>{
-                                		return `<div>
-													<div class="flexrow">
-														<div class="title">
-															<div class="centered">
-																${item.type}
-															</div>
-														</div>
-														<div>
-															<div class="flexcolumn">
-															
-															</div>
-														</div>
-													</div>
-                                				</div>`
-                                	}).join("");
-                                	
+                                
                                 	return {
                                 			input:{
                                 				type:"object",
                                 				description: "container object",
                                 				properties:{
 													sourceId: {type:'string',  description: '<i>[selectedid]</i>'},
-													type: {type:'string', description: "one of either \'text\', \'gauge\', \'bar\' or \'list\'"},
+													type: {type:'string', description: "one of either \'text\', \'gauge\', \'bar\' or \'list\'", enum:["text", "gauge", "bar", "list"]},
 													payload: {
 																type: 'object', 
 																description: 'the message payload', 
