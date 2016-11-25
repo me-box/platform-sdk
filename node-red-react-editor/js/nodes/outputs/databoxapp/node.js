@@ -210,7 +210,7 @@ export default composeNode(Node, 'app',
                                 
                                 	const _descriptions = [
                                 								{
-                                									type: "gauge", 
+                                									type: "object", 
                                 									description : "format for gauge chart",
                                 									properties: {
                                 										options: { 
@@ -239,7 +239,7 @@ export default composeNode(Node, 'app',
                                 										}
                                 								}, 
                                 						   		{
-                                						   				type: "bar",
+                                						   				type: "object",
                                 						   				description : "format for bar chart",   
                                 						   				properties:{
                                 						   							options: {
@@ -270,7 +270,7 @@ export default composeNode(Node, 'app',
                                 						   				}
                                 						   		}, 
                                 						   		{
-                                						   					type: "text",
+                                						   					type: "object",
                                 						   					description : "format for text",    
                     														properties:{
                                 						   							values:{
@@ -280,7 +280,7 @@ export default composeNode(Node, 'app',
                                 						   					}
                                 						   		}, 
                                 						   		{
-                                						   					type: "list",  
+                                						   					type: "object",  
                                 						   					description : "format for list",   
                                 						   					properties: {
                                 						   						values: {

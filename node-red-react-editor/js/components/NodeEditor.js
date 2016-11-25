@@ -5,36 +5,41 @@ import {connect} from 'react-redux';
 import Cell from '../components/Cell';
 import Cells from '../components/Cells';
 
-const _payload = function(schema, id, selectedid){
+
+const _oneof = function(schema, id, selectedid){
+
+	return schema.map((item, i)=>{
 	
-	if (!schema)
-		return null;
-		
-	return Object.keys(schema).map((key,i)=>{
-		const item = schema[key];
+		let tail = null;
+	
 		if (item.type === "object"){
-			return <div key={i}>
-				   		<div className="flexrow">
-				   			<div className="attributetitle">
-								<div className="centered">
-									<strong>{key}</strong>
-								</div>
-							</div>
-						
-							<div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:100}}>
-								<div className="centered">
-									{item.type} 
-								</div>
-							</div>
-							<div>
-								<div className="flexcolumn">
-									{_payload(item.schema, id, selectedid)}
-								</div>
-				   			</div>
-				   		</div>
-				   </div>
+			if (item.properties){
+				tail = _payload(item.properties, id, selectedid)
+			}
+			if (item.oneOf){
+				tail = _oneof(item.oneOf, id, selectedid)
+			}
+		}else{
+			tail = _formatprimitive(item,i,id, selectedid);
 		}
-		return <div key={i}>
+									
+		return 	<div key={i}>
+					<div className="flexcolumn">
+						<div>
+							<div className="centered"><strong>{item.description}</strong></div>
+						</div>
+						<div>
+							<div className="flexcolumn">
+								{tail}
+							</div>
+						</div>
+					</div>
+				</div>
+	});
+};
+
+const _formatprimitive = function(item,key,id,selectedid){
+	return <div key={key}>
 				<div className="flexrow">
 					<div className="attributetitle">
 						<div className="centered">
@@ -52,9 +57,51 @@ const _payload = function(schema, id, selectedid){
 						</div>
 					</div>
 				</div>
-		   </div>
-	});
+			</div>
 }
+
+const _formatobject = function(item,key,id,selectedid){
+			return 	<div key={key}>
+						<div className="flexrow">
+						
+							<div className="attributetitle">
+								<div className="centered">
+									<strong>{key}</strong>
+								</div>
+							</div>
+					
+							<div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:100}}>
+								<div className="centered">
+									{item.type} 
+								</div>
+							</div>
+							<div>
+								<div className="flexcolumn">
+									{item.properties ? _payload(item.properties, id, selectedid) : null}
+									{item.oneOf ? _oneof(item.oneOf, id, selectedid): null}
+								</div>
+							</div>
+						</div>
+				   	</div>
+				
+}
+
+const _payload = function(schema, id, selectedid){
+	
+	console.log("generating schema for ");
+	console.log(schema);
+	
+	if (!schema)
+		return null;
+		
+	return Object.keys(schema).map((key,i)=>{
+		const item = schema[key];
+		if (item.type === "object"){
+			return _formatobject(item,key,id, selectedid); 
+		}			
+		return _formatprimitive(item,key,id, selectedid);
+	});
+};
 
 
 class NodeEditor extends Component {
@@ -156,7 +203,7 @@ class NodeEditor extends Component {
 				}
 		
 				const props = {
-						schema, 
+						schema: schema.properties || schema.oneOf, 
 						icon: output._def.icon,
 						color: output._def.color, 
 						id: output.id,
