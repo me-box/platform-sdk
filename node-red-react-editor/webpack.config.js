@@ -20,7 +20,10 @@ module.exports = {
             '/github/*': {
                 target: 'http://localhost:9000',
             },
-             '/nodered/*': {
+            '/nodered/*': {
+                target: 'http://localhost:9000',
+            },
+	    '/samples/*': {
                 target: 'http://localhost:9000',
             },
  	    '/auth/*': {

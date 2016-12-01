@@ -13,6 +13,7 @@ class Node extends React.Component {
 	   		if (this.props.values.sensor){
 	   			this.props.updateDescription(this.props.values.sensor);
 	   			this.props.updateOutputSchema(this.props.values.sensor);
+	   			this.props.fetchSampleData(this.props.values.sensor);
 	   		}
 	   	}
 	   	
@@ -47,6 +48,7 @@ class Node extends React.Component {
 				onSelect: (event)=>{
 					this.props.updateDescription(event.target.value);
 					this.props.updateOutputSchema(event.target.value);
+					this.props.fetchSampleData(event.target.value);
 					this.props.updateNode("sensor", event.target.value);
 				},
 				style: {width: '100%'},

@@ -6,7 +6,7 @@ import * as RegisterActions from '../actions/RegisterActions';
 import * as DialogueActions  from '../actions/DialogueActions';
 import * as HelpActions from '../actions/HelpActions';
 
-import {updateNode, updateNodeValueKey, incrementNodeValueKey, initNodeKeys} from '../actions/NodeActions';
+import {updateNode, updateNodeValueKey, incrementNodeValueKey, initNodeKeys, fetchSampleData} from '../actions/NodeActions';
 import {PALETTE_WIDTH, TOOLBAR_HEIGHT, TAB_HEIGHT, WORKSPACE_FOOTER} from '../constants/ViewConstants';
 
 export default function composeNode(Component, nt, config, reducer=null){
@@ -25,6 +25,7 @@ export default function composeNode(Component, nt, config, reducer=null){
               ...bindActionCreators(HelpActions, props.dispatch), 
            	);	
             this.initNodeKeys = bindActionCreators(initNodeKeys, this.props.dispatch);
+            this.fetchSampleData = bindActionCreators(fetchSampleData, this.props.dispatch);
 		}
 
 		/*
@@ -56,6 +57,11 @@ export default function composeNode(Component, nt, config, reducer=null){
     	   				this.updateOutputSchema(selected.id, selected._def.schema(type));
     	   			}
     	   		},
+    	   		
+    	   		fetchSampleData: (type)=>{
+    	   			//could add parent sensor type if required?
+    	   			this.fetchSampleData(type);
+    	   		},
     	   })
 
            const nodeeditorprops = {
@@ -72,6 +78,7 @@ export default function composeNode(Component, nt, config, reducer=null){
               outputs,
               values,
               updateNode: bindActionCreators(updateNode, this.props.dispatch),
+              fetchSampleData: bindActionCreators(fetchSampleData, this.props.dispatch),
            }
           
            //TODO: check why cannot do comparison on selected.id against configuring.id

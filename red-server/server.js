@@ -59,7 +59,7 @@ app.use('/', express.static("static"));
 app.use('/auth', require('./routes/auth'));
 app.use('/github', ensureAuthenticated, require('./routes/github'));
 app.use('/nodered', ensureAuthenticated, require('./routes/nodered'));
-
+app.use('/samples', ensureAuthenticated, require('./routes/samples'));
 
 app.get('/login', function(req,res){
 	res.render('login');	

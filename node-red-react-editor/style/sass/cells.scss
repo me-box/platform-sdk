@@ -29,7 +29,7 @@ html{
 	border: none;
 } 
 
-#nodeeditor .flexcolumn > div{
+#schemas .flexcolumn > div{
  	flex: 0 0 auto;
     -webkit-flex: 0 0 auto;
 }
@@ -61,7 +61,6 @@ html{
     display: flex;
     flex: 1 1 auto;
      -webkit-flex: 1 1 auto;
-    height: inherit; 
 }
 
 .flexrow > div.fixed {

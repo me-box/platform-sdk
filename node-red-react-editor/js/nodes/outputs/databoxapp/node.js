@@ -132,6 +132,7 @@ class Node extends React.Component {
           
         const fixedheight = {
           	height: HEIGHT - NAMEROWHEIGHT,
+          	WebkitFlex: '0 0 auto',
           	//overflow: 'hidden',
         }
           
@@ -150,7 +151,7 @@ class Node extends React.Component {
 
     	const mousestyle = {
     		position: 'absolute',
-    		top: NAMEROWHEIGHT,
+    		top: 250 + 40,
        		width: '100%',
        		height: HEIGHT - NAMEROWHEIGHT,
        		overflow: 'hidden',

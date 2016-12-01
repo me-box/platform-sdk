@@ -1,8 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { REQUEST_NODES, RECEIVE_NODES, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
+import { REQUEST_NODES, RECEIVE_NODES, RECEIVE_SAMPLE_DATA, REQUEST_CODE, NODE_DROPPED, NODE_UPDATE_VALUE, NODE_INIT_VALUES, NODE_UPDATE_VALUE_KEY, NODE_INCREMENT_VALUE_KEY} from '../constants/ActionTypes';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from '../constants/ViewConstants';
 import fetch from 'isomorphic-fetch'
+import request from 'superagent'
 import {register} from '../store/configureStore';
 import {scopeify} from '../utils/scopeify';
 import {getID, addViewProperties} from '../utils/nodeUtils';
@@ -149,7 +150,30 @@ export function _loadNodes(json, store, dispatch){
    dispatch(receiveNodes(store, toregister));
 }
 
-
+export function fetchSampleData(datastore){
+	
+	return function(dispatch){
+		request
+  			.get(`${config.root}/samples/${datastore}`)
+  			.set('Accept', 'application/json')
+  			.type('json')
+  			.end(function(err, res){
+  				if (err){
+  					console.log(err);
+  				}else{
+  					 
+  					 if (res.body.success){
+  						 dispatch({
+      						type: RECEIVE_SAMPLE_DATA,
+      						data:res.body.data,
+      						receivedAt: Date.now()
+    	   			 	});
+    	   			 }
+  	 			}
+  	 		});		
+	}
+}
+	
 //fetch the list of nodes that we want to load in the editor
 export function fetchNodes(store) {
 

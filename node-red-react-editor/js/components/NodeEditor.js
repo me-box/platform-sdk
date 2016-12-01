@@ -88,9 +88,6 @@ const _formatobject = function(item,key,id,selectedid){
 
 const _payload = function(schema, id, selectedid){
 	
-	console.log("generating schema for ");
-	console.log(schema);
-	
 	if (!schema)
 		return null;
 		
@@ -111,7 +108,6 @@ class NodeEditor extends Component {
 		this._toggleShowOutputs = this._toggleShowOutputs.bind(this);
 	   	this._toggleShowInputs = this._toggleShowInputs.bind(this);
 	}
-
 	
 	render(){
 
@@ -133,10 +129,11 @@ class NodeEditor extends Component {
 			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
 			border: '1px solid #d3d3d3',
+			
 		}
 		
 		const infostyle = {
-			//height: INFO_HEIGHT,
+			height: INFO_HEIGHT,
 			background: 'white',
 		}
 		
@@ -148,7 +145,7 @@ class NodeEditor extends Component {
 		
 		const toolbarstyle = {
 			height: TOOLBAR_HEIGHT,
-			background: '#445662',
+			background: '#424242',
 			//width: this.props.width,
 		}
 		
@@ -156,7 +153,6 @@ class NodeEditor extends Component {
             alignSelf: 'center',
             color:'white',
             background: node._def.color || '#ca2525',
-            border: '2px solid white', 
             textAlign: 'center',
             boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
             color: 'white',
@@ -166,18 +162,17 @@ class NodeEditor extends Component {
         }
         
         const descriptionstyle = {
-        	color: '#4d4d4d',
-        	background: 'white',
+        	color: 'white',
         	textAlign: 'left',
         	WebkitFontSmoothing: 'antialiased',
             textRendering: 'optimizeLegibility',
             overflow: 'auto',
             width: '100%',
-            paddingLeft: 10,
-            paddingBottom: 20,
+            paddingLeft: 15,
+            paddingBottom: 30,
             paddingTop: 15,
+            paddingRight: 15,
             fontSize: '1em',
-            height: 140,
         }
 			
         const namestyle = {
@@ -214,7 +209,7 @@ class NodeEditor extends Component {
 			
 		const inputtogglemsg = values.showinputs ? "click to hide" : "click to view";
 		const outputtogglemsg = values.showoutputs ? "click to hide" : "click to view";
-			
+		
 		
 		const fninputs = <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>	
 								{inputs.length > 0 && <div style={{flexBasis:0}}>
@@ -232,7 +227,7 @@ class NodeEditor extends Component {
 		const fnoutputs =<div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>		
 							{outputs.length > 0 && <div style={{flexBasis:0}}>
 								<div className="flexcolumn">
-									<div className="noborder" style={{background:'#445662', color: 'white'}} onClick={this._toggleShowOutputs}>
+									<div className="noborder" style={{background:'#424242', color: 'white'}} onClick={this._toggleShowOutputs}>
 										<div className="centered" >
 											there are {outputs.length} recipients of data from this function {outputtogglemsg}
 										</div>
@@ -243,21 +238,22 @@ class NodeEditor extends Component {
 						</div>
 							
 		
+		//style={{WebkitFlex: '0 0 auto'}} div under flexrow background 445662
 		
 		return <div id="nodeeditor" style={editorstyle}>
 				 <div style={infostyle}>
 					<div className="flexcolumn">
 						<div className="noborder">
-							<div className="flexrow" style={{background:'#445662', color: 'white'}}>
+							<div className="flexrow" style={{background:'#424242', color: 'white'}}>
 								<div style={{WebkitFlex: '0 0 auto'}}>
-									<div className="flexcolumn">
+									<div className="flexcolumn" style={{background:"black", width:"118px", height:"inherit"}}>
 										<div className="noborder">
-											<div className="centered" style={{padding: '8px 10px 0px 10px'}}>
+											<div className="centered" style={{width:"auto"}}>
 												<div style={iconstyle}><i className={`fa ${node._def.icon} fa-5x fa-fw`}></i></div>
 											</div>
 										</div>
 										<div className="noborder">
-											<div className="centered" style={{padding: '0px 10px 0px 10px'}}>
+											<div style={{textAlign:"center", width:"100%", padding: '0px 10px 0px 10px'}}>
 												<div style={namestyle}> {node.type} </div>
 											</div>
 										</div>
@@ -265,24 +261,41 @@ class NodeEditor extends Component {
 								</div>
 								<div>
 									<div className="flexcolumn">
+										<div className="noborder" style={{fontSize: '1.5em',WebkitFlex: '0 0 auto', background: "#333", height:50, boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)'}}>
+											<div className="centered">
+												{`${node.type} info`}
+											</div>
+										</div>
 										<div className="noborder">
 											<div style={descriptionstyle}>	
 												<div dangerouslySetInnerHTML={{__html: description}}></div>
 											</div>
 										</div>
-										<div className="noborder" style={{minHeight:10}}>
-												<div style={{background:'white', width:'100%'}}></div>
-										</div>
 									</div>
 								</div>
+								{node._def.category === "datastores" &&
+								<div>
+									<div className="flexcolumn">
+										<div className="noborder" style={{width:"100%", padding:10, background:"#303030", }}>
+											<svg width="300px" height="250px">
+											
+											</svg>
+										</div>
+									</div>
+								</div>}
 							</div>
 						</div>
 					</div>
-				 </div>	 	
-				 <Cells>
-				 		{node.type !== "app" && inputs.length > 0 && <Cell content = {fninputs} />}	
-          				{node.type !== "app" && outputs.length > 0 && <Cell content = {fnoutputs} />}	
-          		</Cells>
+				 </div>	 
+				{node.type !== "app" &&
+				 <div id="schemas">	
+				 	<div className="flexcolumn">
+				 		<Cells>
+				 			{inputs.length > 0 && <Cell content = {fninputs} />}	
+          					{outputs.length > 0 && <Cell content = {fnoutputs} />}	
+          				</Cells>
+          			</div>
+          		</div>}
 				 <div style={contentstyle}> 	
 				 	{React.cloneElement(this.props.children, {help})}
 				 </div>
@@ -334,7 +347,7 @@ class Schema extends React.Component {
 	
 		const payload = _payload(this.props.schema, this.props.id, this.props.selectedid);
 		
-		return 	<div key={this.props.id} className="flexcolumn">
+		return 	<div key={this.props.id} className="flexcolumn schema">
 					<div className="noborder">
 						<div className="flexrow">
 							<div className="fixed">

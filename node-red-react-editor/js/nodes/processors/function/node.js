@@ -90,9 +90,10 @@ class Node extends React.Component {
 					paddingTop: 5,
 					color: 'white',
 					fontSize: 30,
+					WebkitFlex: '0 0 auto',
 				}
         		
-        		return 	<div onClick={this._createInputCode.bind(null, node)} key={i} style={iconstyle}>
+        		return 	<div  onClick={this._createInputCode.bind(null, node)} key={i} style={iconstyle}>
         					<i className={`fa ${node._def.icon} fa-fw`}></i>
         				</div>
         	});
@@ -112,6 +113,7 @@ class Node extends React.Component {
 					paddingTop: 5,
 					color: 'white',
 					fontSize: 30,
+					WebkitFlex: '0 0 auto',
 				}
         		
         		return 	<div onClick={this._createOutputCode.bind(null, node)} key={i} style={iconstyle}>
@@ -122,13 +124,13 @@ class Node extends React.Component {
         	const codeinput = <div className="flexrow">
         						<div style={{width:50, background:"#333", color:"white"}}>
         							<div className="flexcolumn">
-										<div>
+										<div style={{WebkitFlex: '0 0 auto'}}>
 											<div className="centered">
 												<div style={{color:"white", fontSize:14}}>in</div>
 											</div>
 										</div>
 										{incode}
-										<div>
+										<div style={{WebkitFlex: '0 0 auto'}}>
 											<div className="centered">
 												<div style={{color:"white", fontSize:14}}>out</div>
 											</div>
