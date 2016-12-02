@@ -35,6 +35,10 @@ It will also require the following software to be installed
 
 1. Install docker (https://docs.docker.com/engine/installation)
 2. Install nodejs (https://nodejs.org)
+3. Install pm2:
+
+	npm install -g pm2
+	
 3. mkdir databox
 4. cd databox
 
@@ -84,8 +88,8 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 
 * Give it a name (e.g databox local)
 * Give it a Home page url (e.g https://github.com/me-box)
-* Give it an authorisation callback url: http://localhost:8080/auth/github/callback
-* Click on Register Application - you will be provided with a clientID and client Secret which you will use in the next stage.
+* Give it an authorisation callback url: http://localhost:8086/auth/github/callback
+* Click on Register Application - you will be provided with a ClientID and ClientSecret which you will use in the next stage.
 
 ###Configure the (SDK) editor
 
@@ -95,9 +99,12 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 
 23. [vi|vim|emacs|<editor of your choice> config.js
 
-24. Update config parameters to suit your installation and with the github credentials created in the previous step
+24. Update config parameters to suit your installation and with the github ClientID, ClientSecret and  Authorization callback URL from the previous step
 
-25. 
+25. Compile and run! - cd ~/databox/iot.red/node-red-react-editor && run build
+
+26. cd ~/databox/iot.red/red-server && npm run watch
+
 
 
 
