@@ -28,6 +28,7 @@ It will also require the following software to be installed
 * [Docker] (https://docs.docker.com/engine/installation/)
 * [Docker compose] (https://docs.docker.com/compose/)
 * [Nodejs/npm] (https://nodejs.org)
+* pm2
 
 
 ###Step by step install: install base software
@@ -63,6 +64,44 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 13. cd databox-editor-docker/node-red-databox && build.sh
 
 ###Build the (SDK) editor
+
+14. cd ~/databox && git clone https://github.com/me-box/iot.red.git
+
+15. cd iot.red
+
+16. cd ~/databox/iot.red/node-red-react-editor && npm install
+
+17. cd ~/databox/iot.red/red-server && npm install
+
+
+###Setup github oAuth
+
+18.  Login to [github](https://github.com)
+
+19.  Go to [https://github.com/settings/developers](https://github.com/settings/developers)
+
+20.  Click on 'register a new application'
+
+* Give it a name (e.g databox local)
+* Give it a Home page url (e.g https://github.com/me-box)
+* Give it an authorisation callback url: http://localhost:8080/auth/github/callback
+* Click on Register Application - you will be provided with a clientID and client Secret which you will use in the next stage.
+
+###Configure the (SDK) editor
+
+21. cd ~/databox/iot.red/node-red-react-editor/js
+
+22. cp config.sample.js config.js
+
+23. [vi|vim|emacs|<editor of your choice> config.js
+
+24. Update config parameters to suit your installation and with the github credentials created in the previous step
+
+25. 
+
+
+
+
 
 
 
