@@ -19,10 +19,6 @@ module.exports = {
                 URL: 'registry.upintheclouds.org'
     },
 
-    red: {
-        URL : 'http://127.0.0.1:1880',
-    },
-
     mongo:{
     	url : 'mongodb://localhost/passport',
     },
