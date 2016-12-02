@@ -8,9 +8,7 @@ The SDK is a re-implementation of [node red](https://nodered.org/) a visual prog
 
 ##Setting up a dev environment
 
-#A dev environment requires the following components to be installed
+A dev environment requires the following components to be installed
 
-The SDK dev environment is dependent on [Docker](https://www.docker.com/)
+* [Docker](https://www.docker.com/)
 
-
-##Creating a new node 
