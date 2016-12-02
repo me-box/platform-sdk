@@ -36,46 +36,49 @@ It will also require the following software to be installed
 1. Install docker (https://docs.docker.com/engine/installation)
 2. Install nodejs (https://nodejs.org)
 3. Install pm2:
-
-	npm install -g pm2
-	
-3. mkdir databox
-4. cd databox
+```
+	npm install pm2@latest -g
+	pm2 update
+```		
+3. `mkdir databox`
+4. `cd databox`
 
 ###Build docker containers
 
-5. git clone https://github.com/tlodge/databox-editor-docker.git
-6. cd databox-editor-docker.git
-7. docker-compose up -d
+5. `git clone https://github.com/tlodge/databox-editor-docker.git`
+6. `cd databox-editor-docker.git`
+7. `docker-compose up -d`
 8. Assuming all builds as expected, docker ps will have the following containers running:
 
+```
 CONTAINER ID        IMAGE                                 COMMAND                  CREATED              STATUS              PORTS                      NAMES
 90f2f0e7ff0f        databoxeditordocker_appserver         "/root/start.sh"         About a minute ago   Up 3 seconds        0.0.0.0:8091->8091/tcp     app-server
 7b4befe59acb        databoxeditordocker_mock-datasource   "/root/start.sh"         About a minute ago   Up About a minute   8080/tcp                   mock-datasource
 7f71791c5e12        databoxeditordocker_mongo             "/usr/bin/mongod -..."   About a minute ago   Up About a minute   0.0.0.0:27017->27017/tcp   mongo
 c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."   About a minute ago   Up 3 seconds        0.0.0.0:6379->6379/tcp     redis
+```
 
 ###Build base node-red images
 
 9.  Create the node-red base images - these are used to build containers for testing and publishing node red apps.
 
-10. cd databox-editor-docker/node-red-base && ./build.sh
+10. `cd databox-editor-docker/node-red-base && ./build.sh`
 
-11. cd databox-editor-docker/node-red-tester && build.sh
+11. `cd databox-editor-docker/node-red-tester && build.sh`
 
-12. cd databox-editor-docker/node-red-databox-base && build.sh
+12. `cd databox-editor-docker/node-red-databox-base && build.sh`
 
-13. cd databox-editor-docker/node-red-databox && build.sh
+13. `cd databox-editor-docker/node-red-databox && build.sh`
 
 ###Build the (SDK) editor
 
-14. cd ~/databox && git clone https://github.com/me-box/iot.red.git
+14. `cd ~/databox && git clone https://github.com/me-box/iot.red.git`
 
-15. cd iot.red
+15. `cd iot.red`
 
-16. cd ~/databox/iot.red/node-red-react-editor && npm install
+16. `cd ~/databox/iot.red/node-red-react-editor && npm install`
 
-17. cd ~/databox/iot.red/red-server && npm install
+17. `cd ~/databox/iot.red/red-server && npm install`
 
 
 ###Setup github oAuth
@@ -88,23 +91,32 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 
 * Give it a name (e.g databox local)
 * Give it a Home page url (e.g https://github.com/me-box)
-* Give it an authorisation callback url: http://localhost:8086/auth/github/callback
+* Give it an authorisation callback url: http://127.0.0.1:8086/auth/github/callback - note that you must use 127.0.0.1 rather than localhost to prevent cross-domain issues later on
 * Click on Register Application - you will be provided with a ClientID and ClientSecret which you will use in the next stage.
 
 ###Configure the (SDK) editor
 
-21. cd ~/databox/iot.red/node-red-react-editor/js
+21. `cd ~/databox/iot.red/node-red-react-editor/js`
 
-22. cp config.sample.js config.js
+22. `cp config.sample.js config.js`
 
-23. [vi|vim|emacs|<editor of your choice> config.js
+23. `[vi|vim|emacs|<editor of your choice> config.js`
 
 24. Update config parameters to suit your installation and with the github ClientID, ClientSecret and  Authorization callback URL from the previous step
 
-25. Compile and run! - cd ~/databox/iot.red/node-red-react-editor && run build
+25. Compile and run!
 
-26. cd ~/databox/iot.red/red-server && npm run watch
+`cd ~/databox/iot.red && ./prodbuild.sh
 
+26. check it is running: pm2 list:
+
+```
+┌──────────┬────┬──────┬───────┬────────┬─────────┬────────┬─────┬───────────┬──────────┐
+│ App name │ id │ mode │ pid   │ status │ restart │ uptime │ cpu │ mem       │ watching │
+├──────────┼────┼──────┼───────┼────────┼─────────┼────────┼─────┼───────────┼──────────┤
+│ editor   │ 0  │ fork │ 15713 │ online │ 0       │ 0s     │ 0%  │ 13.0 MB   │ disabled │
+└──────────┴────┴──────┴───────┴────────┴─────────┴────────┴─────┴───────────┴──────────┘
+```
 
 
 
