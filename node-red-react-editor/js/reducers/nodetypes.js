@@ -11,6 +11,7 @@ function _categorise(nodes){
 }
 
 export default function types(state = {isFetching:false, didInvalidate: false, nodetypes:[], categories:{}}, action) {
+
   switch (action.type) {
 
   	case  REQUEST_NODES:
