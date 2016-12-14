@@ -6,6 +6,11 @@ This document will take you through all you need to know in order to contribute/
 
 The SDK is a re-implementation of [node red](https://nodered.org/) a visual programming environment for developing IoT applications.  Node-red consists of a server execution environment (nodejs) and an HTML5 client-side editor.  The principal changes have been made to the client code, where the features relevant to the SDK have been re-written to use [React](https://facebook.github.io/react/) and [Redux](https://github.com/reactjs/redux).  The core node-red server side code has not changed; there are a number of new databox 'nodes' which adhere to the node-red guidelines/spec, and rather than rely on a single node-red server instance, a new dockerised instance is created for each user of the SDK when a 'flow' (aka app) is deployed for testing.
 
+The following is a high-level overview of the sdk components and how they currently fit together:
+
+![alt-text](https://raw.githubusercontent.com/me-box/databox-sdk/master/docs/images/demoarch.png "databox demo overview")
+
+
 ##Setting up a dev environment
 
 The dev environment consists of a nodejs server and a set of docker components.
