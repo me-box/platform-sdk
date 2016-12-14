@@ -11,10 +11,10 @@ These are not technically part of Databox. They are: IoT devices, online account
 Drivers are responsible for interfacing between the Databox and data sources. They provide a mechanism for extracting data from a data source into a data store.
 
 ###Data Stores
-Data stores are a core part of the Databox Architecture. They record data; either **primary**, originating with a source; or **derived**, the result of computation over one or more other stores. They make this data available to other components on presentation of appropriate credentials. All accesses to datastores are logged, to provide a complete audit trail of data use.
+Data stores are a core part of the Databox Architecture. They record data; either **primary**, originating with a source; or **derived**, the result of an app's computation over one or more other stores. They make this data available to other components on presentation of appropriate credentials. All accesses to datastores are logged, to provide a complete audit trail of data use.
 
 ###Apps
-Applications are the process data in on the databox in order to accomplish a task.  The set of *things* an application can do (i.e. actuate, send data externally, access specific stores) is restricted to what was negotiated in a contract (SLA) at install. A Databox may support many applications, each installed with the permission of a databox user. 
+Applications process data in on the databox in order to accomplish a task.  The set of *things* an application can do (i.e. actuate, send data externally, access specific stores) is restricted to what was negotiated in a contract (SLA) at install. A Databox may support many applications, each installed with the permission of a databox user. 
 
 
 ###The App Store
