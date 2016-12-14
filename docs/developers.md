@@ -77,13 +77,13 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 
 ###Build the (SDK) editor
 
-14. `cd ~/databox && git clone https://github.com/me-box/iot.red.git`
+14. `cd ~/databox && git clone https://github.com/me-box/databox-sdk.git`
 
-15. `cd iot.red`
+15. `cd databox-sdk`
 
-16. `cd ~/databox/iot.red/node-red-react-editor && npm install`
+16. `cd ~/databox/databox-sdk/node-red-react-editor && npm install`
 
-17. `cd ~/databox/iot.red/red-server && npm install`
+17. `cd ~/databox/databox-sdk/red-server && npm install`
 
 
 ###Setup github oAuth
@@ -101,7 +101,7 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 
 ###Configure the (SDK) editor
 
-21. `cd ~/databox/iot.red/node-red-react-editor/js`
+21. `cd ~/databox/databox-sdk/node-red-react-editor/js`
 
 22. `cp config.sample.js config.js`
 
@@ -111,7 +111,7 @@ c41a437c4703        databoxeditordocker_redis             "/usr/bin/redis-se..."
 
 25. Compile and run!
 
-`cd ~/databox/iot.red && ./prodbuild.sh
+`cd ~/databox/databox-sdk && ./prodbuild.sh
 
 26. check it is running: pm2 list:
 
