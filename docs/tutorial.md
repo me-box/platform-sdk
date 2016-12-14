@@ -1,6 +1,6 @@
 #Databox SDK
 
-The databox SDK is a visual programming environment for building databox apps. The goal of the Databox SDK is to enable the rapid development of Databox applications with existing databox components.
+The databox SDK is a visual programming environment for building databox apps. The goal of the Databox SDK is to enable the rapid development of Databox applications.   **Databox apps can be built without using the sdk, but the sdk streamlines the process and makes it possible to build a subset of apps without resorting to code** 
 
 ##Getting started
 
