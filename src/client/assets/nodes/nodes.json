@@ -10,6 +10,8 @@
 
 				{"name":"function", "file":"processors/function/index"},
 				{"name":"chartify", "file":"processors/chartify/index"},
+				{"name":"listify", "file":"processors/listify/index"},
+			 	{"name":"webify", "file":"processors/webify/index"},
 
 				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
 				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
