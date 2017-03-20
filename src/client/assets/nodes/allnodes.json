@@ -1,0 +1,26 @@
+{
+	"nodes":[	
+				
+				
+				{"name":"timer", "file":"inputs/inject/node"}, 
+			 	
+				{"name":"sensingkit", "file":"datastores/sensingkit/node"},
+				{"name":"osmonitor", "file":"datastores/osmonitor/node"},
+				{"name":"twitter", "file":"datastores/twitter/node"},
+				{"name":"bulbs-in", "file":"datastores/bulbs/node"},
+				{"name":"plugin", "file":"datastores/plug/node"},
+				{"name":"wirelessthings", "file":"datastores/wirelessthings/node"},
+				
+			 	{"name":"function", "file":"processors/function/node"},
+				{"name":"listify", "file":"processors/listify/node"},
+			 	{"name":"chartify", "file":"processors/chartify/node"},
+			 	{"name":"webify", "file":"processors/webify/node"},
+			 	
+			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
+			 	{"name":"debugger", "file":"debug/debugger/node"},
+			 	{"name":"pipstaprint", "file":"outputs/pipstaprint/node"},
+			 	{"name":"notify", "file":"outputs/notify/node"},
+			 	{"name":"bulbs-out", "file":"outputs/bulbs/node"},
+			 	{"name":"plugout", "file":"outputs/plug/node"}
+			 ]
+}

@@ -1,0 +1,3 @@
+export {
+ registerReducer,
+} from './registerActions';

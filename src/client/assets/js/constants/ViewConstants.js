@@ -1,0 +1,17 @@
+export const NODE_WIDTH = 50;
+export const NODE_HEIGHT = 50;
+export const GRID_SIZE = 20;
+export const LINE_CURVE_SCALE = 0.75;
+export const OUTPUT_WIDTH = 10;
+export const OUTPUT_GAP = 13;
+export const PALETTE_WIDTH = 178;
+export const SIDEBAR_WIDTH = 300;//423;
+export const TOOLBAR_HEIGHT = 64;
+export const TAB_HEIGHT = 30;
+export const INFO_HEIGHT = 250;
+export const WORKSPACE_FOOTER = 25;
+export const MOUSE_X_OFFSET = -178;
+export const MOUSE_Y_OFFSET = -35 - TOOLBAR_HEIGHT;
+export const MOBILE_TEST_SCREEN_HEIGHT = 667;
+export const MOBILE_TEST_SCREEN_WIDTH  = 375;
+export const NODE_EDITOR_PADDING = 15;

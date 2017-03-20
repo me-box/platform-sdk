@@ -1,0 +1,38 @@
+@import '~react-md/src/scss/react-md';
+
+// Include all components
+@include react-md-everything;
+
+.md-dialog-content--padded {
+    padding: 0px;
+}
+
+label,
+input,
+button,
+select,
+textarea {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+$md-drawer-desktop-width: 300px;
+$md-drawer-tablet-width: 300px !default;
+
+
+.md-dialog-container.md-overlay{
+	z-index: 25;
+}
+
+.md-drawer--right{
+	width: 300px;
+}
+// Or only a few
+//@include react-md-typography;
+//@include react-md-grid;
+//@include react-md-buttons;

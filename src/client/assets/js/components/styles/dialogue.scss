@@ -1,0 +1,42 @@
+.sdkdialogue { 
+	position: absolute;
+	background: white;
+	z-index: 20;
+	overflow: auto;
+	boxShadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);
+	border: 1px solid #d3d3d3;	
+}
+
+.sdktoolbar {
+	height: 40px;
+	background: '#424242';
+}		
+
+
+.sdkdialogue select,
+.sdkdialogue input[type="text"], 
+{
+	width: 100%;
+	height: inherit;
+	border-radius: 0;
+	margin: 0px;
+	height: 40px;
+	border: none;
+	padding: 0px 0px 0px 10px;
+	box-shadow: none;
+}
+
+
+.sdkdialogue input[type="text"].md-text-field {
+    width: 100px;
+}
+
+.sdkdialogue textarea,
+{
+	width: 100%;
+	border-radius: 0;
+	padding: 0px 0px 0px 10px;
+	margin: 0;
+	height: 70px;
+	border: none;
+}

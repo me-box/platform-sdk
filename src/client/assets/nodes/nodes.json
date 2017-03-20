@@ -1,0 +1,19 @@
+{
+	"nodes":[	
+				
+				
+				{"name":"timer", "file":"inputs/inject/index"}, 
+				{"name":"bulbs-in", "file":"datastores/bulbs/index"},
+				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
+				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
+
+				{"name":"function", "file":"processors/function/index"},
+				{"name":"chartify", "file":"processors/chartify/index"},
+
+				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
+				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
+				{"name":"plugout", "file":"outputs/plug/index"},
+				
+				{"name":"debugger", "file":"debug/debugger/index"}
+			 ]
+}
