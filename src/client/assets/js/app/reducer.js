@@ -7,7 +7,6 @@ import ports, {NAME as portsName} from 'features/ports';
 import workspace, {NAME as workspaceName} from 'features/workspace';
 import mouse, {NAME as mouseName} from 'features/mouse';
 import repos, {NAME as repoName} from 'features/repos';
-import publisher, {NAME as publisherName} from 'features/publisher';
 import test, {NAME as testName} from 'features/test';
 
 export default {
@@ -19,6 +18,5 @@ export default {
   [portsName]: ports,
   [mouseName]: mouse,
   [repoName]: repos,
-  [publisherName]: publisher,
   [testName]: test,
 };

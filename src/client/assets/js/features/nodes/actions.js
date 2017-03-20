@@ -6,14 +6,15 @@ import {getID, addViewProperties, lookup} from 'utils/nodeUtils';
 import {calculateTextWidth, toggleItem} from 'utils/utils';
 import {scopeify} from 'utils/scopeify';
 import {register,unregisterAll} from 'app/store/configureStore';
-import {actionCreators as portActions} from 'features/ports';
-
-
 
 
 function loadNode({store,component,node,reducer}){
   return function(dispatch, getState){
-      const _node = Object.assign({},node);
+      
+      console.log("loading node!");
+
+      const _node = Object.assign({},node, {schema: _schema(node._def)});
+      
       addViewProperties(_node);
     
       if (reducer){
@@ -63,7 +64,7 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     
     const node = {
       id: getID(),
-      z:getState().workspace.current.id,
+      z:getState().workspace.currentId,
       type: nt,
       _def: _def,
       _: (id)=>{return id},
@@ -165,9 +166,7 @@ function updateSchema(id, schema){
 function nodeMouseDown(id){
      
   return function(dispatch, getState){
-  
-    dispatch(portActions.linkDeselected());
-  
+ 
     dispatch ({
         type: nodeActionTypes.NODE_MOUSE_DOWN,
         id

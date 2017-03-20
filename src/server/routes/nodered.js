@@ -72,7 +72,7 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 							return `RUN npm install -g ${library}`
 						});
 						
-	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /root/.node-red/flows.json`], ...libcommands]			
+	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /data/flows.json`], ...libcommands]			
 	const dockerfile = dcommands.join("\n");
 	
 	console.log(dockerfile);

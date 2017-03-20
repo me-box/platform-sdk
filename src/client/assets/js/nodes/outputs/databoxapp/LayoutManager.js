@@ -40,6 +40,8 @@ class LayoutManager extends Component {
       }, 0)
 
       const boxh = h/MAXROWS;
+      console.log("in layout manager with boxes");
+      console.log(boxes);
 
       const b = boxes.map((row, i)=>{
           //const box = boxes[key];
@@ -74,7 +76,7 @@ class LayoutManager extends Component {
               fontSize: 30,
             }
 
-            return  <div className={className} onMouseDown={this._onMouseDown.bind(this, {id:box.id, name:box.name}, w, h)} key={`${i} ${j}`} style={style}>
+            return  <div className={className} onMouseDown={this._onMouseDown.bind(null, {id:box.id, name:box.name}, w, h)} key={`${i} ${j}`} style={style}>
                         <div style={centered}>
                           {box.name}
                         </div>

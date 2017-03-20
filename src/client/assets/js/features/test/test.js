@@ -41,15 +41,14 @@ export default function reducer(state = initialState, action) {
 }
 
 export function test(){
-	console.log("IN TEST!!!");
-
+	
 	return function (dispatch, getState) {
 		
 		dispatch(setVisible());
 		
 		const nodesById = getState().nodes.nodesById;
 		const portsById = getState().ports.linksById;
-
+		const tabsById = getState().workspace.tabsById;
 		const nodes = Object.keys(nodesById).map(k=>nodesById[k]);
 		const ports = Object.keys(portsById).map(k=>portsById[k]);
 
@@ -74,7 +73,14 @@ export function test(){
 			return n;
 		});
 		
-		const tabs = getState().workspace.tabs;
+		
+		const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    	});
 		console.log([...tabs, ...jsonnodes]);
 		console.log(`DEPLOYING TO ${config.root}/nodered/flows`);
 		

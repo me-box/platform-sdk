@@ -56,7 +56,7 @@ export default class Link extends Component {
 
     render(){
     
-        const {id, link, link:{source,target,sourcePort}, selectedId}  = this.props;
+        const {id, link, link:{source,target,sourcePort}, ports:{selectedId}}  = this.props;
 
         const DELTA = (source.w/2) + OUTPUT_WIDTH/2;
         
@@ -77,6 +77,7 @@ export default class Link extends Component {
          
         const clickrectprops = {
             fill: 'transparent',
+
             x:  xpos(),
             
             y: Math.min(source.y, target.y),
@@ -85,7 +86,7 @@ export default class Link extends Component {
             
             height: Math.abs(target.y - source.y),
             
-            onClick: this.props.actions.linkSelected.bind(null, link),
+            onClick: this.props.actions.linkSelected.bind(null, id),
         };
 
 		const className = cx({

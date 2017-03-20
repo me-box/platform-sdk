@@ -249,14 +249,21 @@ function commitPressed(){
 		
 		const message = getState().repos.tosave.commit;
 		const repo 	= getState().repos.loaded;
-		const tabs = getState().workspace.tabs; 
 		const packages = getState().publisher.packages;
 		const grid = getState().publisher.grid;
 		const app = getState().publisher.app;
-		
+		const tabsById = getState().workspace.tabsById;
 
 		const nodes = getState().nodes.nodesById;
 		const ports = getState().ports.linksById;
+
+    const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    });
 
 		const jsonnodes = Object.keys(nodes).map((key)=>{
 			const node = nodes[key];
@@ -311,13 +318,20 @@ function savePressed(){
 		dispatch(networkActions.networkAccess(`saving submission`));
 		const nodes = getState().nodes.nodesById;
 		const ports = getState().ports.linksById;
-
+    const tabsById = getState().workspace.tabsById;
+    
 		const jsonnodes = Object.keys(nodes).map((key)=>{
 			const node = nodes[key];
 			return Object.assign({}, convertNode(node, Object.keys(ports).map((k)=>ports[k])));
 		});
 	
-		const tabs = getState().workspace.tabs;
+		const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    });
 		
 		const {name, description, commit} = getState().repos.tosave;
   			
@@ -362,6 +376,87 @@ function savePressed(){
   	 }		
 }
 
+
+function publish(){
+
+  return function (dispatch, getState) {
+    
+    const nodesById =getState().nodes.nodesById;
+    const nodes = Object.keys(nodesById).map(k=>nodesById[k]);
+    const ports = getState().ports.linksById;
+    const tabsById = getState().workspace.tabsById;
+
+    const jsonnodes = nodes.map((node)=>{
+      return Object.assign({}, convertNode(node, Object.keys(ports).map((k)=>ports[k])));
+    });
+    
+    const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    });
+  
+    const flows = [
+        ...tabs,
+        ...jsonnodes
+    ]
+      
+    const packages = getState().workspace.tabs.map((tabId)=>{
+        
+        const pkg = getState().workspace.tabsById[tabId];
+
+        return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
+          return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger")))
+          }).map((node)=>{
+              return {
+                id: node.id,
+                name: node.name || node.type,
+                type: node.subtype || node.type, 
+              }
+            })
+          })
+    });
+      
+    const repo = getState().repos.loaded;
+      
+    const data = {
+          
+          repo : repo,
+          
+          flows: flows,
+          
+          manifest: {
+          app: Object.assign({}, getState().workspace.app),
+          packages,
+          'allowed-combinations': getState().workspace.grid,
+        }
+    };
+      
+    dispatch(networkActions.networkAccess(`publishing app ${name}`));
+      
+    console.log("PUBLISHING");
+    console.log(data);
+
+    request
+        .post(`${config.root}/github/publish`)
+        .send(data)
+        .set('Accept', 'application/json')
+        .type('json')
+        .end(function(err, res){
+          if (err){
+            console.log(err);
+            dispatch(networkActions.networkError(err.message));
+          }else{
+            dispatch(networkActions.networkSuccess('successfully published app!'));
+                //dispatch(submissionSuccess(res.body));
+            dispatch(receivedSHA(res.body.repo, res.body.sha));
+            dispatch(requestRepos());
+          }
+        }); 
+  }
+}
 
 function requestFlows() {
   return {
@@ -486,6 +581,7 @@ export const actionCreators = {
 	savePressed,
 	fetchFlow,
 	requestRepos,
+  publish,
 	toggleSaveDialogue,
 	toggleVisible,
 	mouseUp,

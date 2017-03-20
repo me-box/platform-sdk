@@ -25,6 +25,8 @@ export default class Node extends React.Component {
           
         const {node, values={}, inputs=[], outputs=[], updateNode} = this.props;
             
+        console.log("in function and values are");
+        console.log(values);
         const libraries = <div style={{padding: 8}}>
             					           <strong>{matchLibraries(values.func || node.func || "").join(", ")}</strong>
             				        </div>
@@ -64,8 +66,10 @@ export default class Node extends React.Component {
         	
       const aceprops = {
     	
-      	onChange: (value)=>updateNode("func", value),
-    		
+      	onChange: (value)=>{
+            console.log(`updating value *${value}*`);
+            updateNode("func", value);
+        },
       	value: values.func || node.func || "",
     	
       	mode: "javascript",

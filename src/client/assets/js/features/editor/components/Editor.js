@@ -8,25 +8,29 @@ import {PALETTE_WIDTH, SIDEBAR_WIDTH, TOOLBAR_HEIGHT} from 'constants/ViewConsta
 import DragDropContainer from './DragDropContainer';
 import Toolbar from './Toolbar';
 import {actionCreators as repoActions} from 'features/repos/actions';
-import {actionCreators as publisherActions} from 'features/publisher';
+import {actionCreators as workspaceActions} from 'features/workspace';
 import {actionCreators as testActions} from 'features/test';
 
 import RepoManager from 'features/repos/components/RepoManager';
-import Publisher from 'features/publisher/components/Publisher';
+import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
+
+console.log("in editor and workspace actuions re");
+console.log(workspaceActions);
 
 @connect((state)=>{
     return {
         editor: state[NAME],
-        publishervisible: state["publisher"].visible,
+        publishervisible: state.workspace.publishervisible,
     }
   }, (dispatch) => {    
   return{
      actions:{...bindActionCreators(editorActions, dispatch), 
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
-              togglePublisher: bindActionCreators(publisherActions.toggleVisible, dispatch),
+              togglePublisher: bindActionCreators(workspaceActions.toggleVisible, dispatch),
               test: bindActionCreators(testActions.test, dispatch),
+
               }
     }
 })
@@ -150,6 +154,7 @@ export default class Editor extends Component {
     _handleResize(e){
       const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      this.props.actions.windowResize(w,h);
       //taken out for now
       //this.windowResize(w,h);
     }

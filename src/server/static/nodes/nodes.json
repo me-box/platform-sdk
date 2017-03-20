@@ -6,6 +6,7 @@
 				{"name":"bulbs-in", "file":"datastores/bulbs/index"},
 				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
+				{"name":"twitter", "file":"datastores/twitter/index"},
 
 				{"name":"function", "file":"processors/function/index"},
 				{"name":"chartify", "file":"processors/chartify/index"},

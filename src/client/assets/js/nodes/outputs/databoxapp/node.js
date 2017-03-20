@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux';
 import * as LayoutActions from './actions';
 import { bindNodeIds, formatSchema } from 'utils/utils';
 import {LAYOUT_HEIGHT} from './ViewConstants';
+import {TOOLBAR_HEIGHT} from 'constants/ViewConstants'; 
 import {configNode} from 'utils/ReactDecorators';
 
 function _haveinput(id, inputs){
@@ -101,26 +102,27 @@ export default class Node extends Component {
 	    	
 	  	 super(props);
 	  	 const id = props.node.id; 
-	  	 Object.assign(  this, 
-              ...bindActionCreators(bindNodeIds(LayoutActions, id), props.dispatch), 
-         );
+	  	 this._actions = bindActionCreators(bindNodeIds(LayoutActions, id), props.dispatch); 
 	  	 this._onMouseMove = this._onMouseMove.bind(this);
 	  }
 	  
 	  componentDidMount(){
+        console.log(this);
         const {node, inputs=[]} = this.props;
 	  	const boxes = _convertlayout(node.layout, inputs) || _convertinputs(inputs);
-		//this.initLayout(boxes);
+		this._actions.initLayout(boxes);
 	  }
       
       render() {
-		const NAMEROWHEIGHT = 190;
-		const WIDTH = 300;//this.props.width;
-		const HEIGHT = LAYOUT_HEIGHT;
+		
          
         //local is the stuff in this node's reducer
-		const {local, node, inputs=[], values={}, updateNode} = this.props;
+		const {local, node, inputs=[], values={}, updateNode, w} = this.props;
     
+    	const NAMEROWHEIGHT = 190;
+		const WIDTH = w;
+		const HEIGHT = LAYOUT_HEIGHT;
+
         const nameprops = {
 
               id: "name",
@@ -143,19 +145,19 @@ export default class Node extends Component {
         const layoutprops = {
           	w: WIDTH,
           	h: HEIGHT-NAMEROWHEIGHT,
-          	mouseDown: this.mouseDown,
+          	mouseDown: this._actions.mouseDown,
           	local: local, 
         }
           
         const mouseprops = {
        		onMouseMove: this._onMouseMove,
-       		onMouseUp: this.mouseUp,
-       		onDragEnd: this.onDragEnd,
+       		onMouseUp: this._actions.mouseUp,
+       		onDragEnd: this._actions.onDragEnd,
     	}
 
     	const mousestyle = {
     		position: 'absolute',
-    		top: 250 + 40,
+    		top: TOOLBAR_HEIGHT + 40,
        		width: '100%',
        		height: HEIGHT - NAMEROWHEIGHT,
        		overflow: 'hidden',
@@ -189,6 +191,6 @@ export default class Node extends Component {
        
 		_onMouseMove(e){
     		const {clientX, clientY} = e;
-    		this.mouseMove(clientX,clientY);
+    		this._actions.mouseMove(clientX,clientY);
   		}
 }

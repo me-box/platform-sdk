@@ -1,8 +1,10 @@
 import {actionConstants as nodeActionTypes} from './constants';
 import { createStructuredSelector } from 'reselect';
 import { NODE_WIDTH } from 'constants/ViewConstants';
+import {actionConstants as portActionTypes} from "features/ports/constants";
 export const NAME = 'nodes';
 
+const {LINK_SELECTED} = portActionTypes;
 
 function _configureNode(current, changes){
   
@@ -81,6 +83,8 @@ export default function reducer(state = initialState, action) {
         configuringId: action.id,
       })
    
+     
+    case LINK_SELECTED:
     case nodeActionTypes.NODE_DESELECTED:
     	return Object.assign({}, state, {
     		selectedId: null,
@@ -88,10 +92,11 @@ export default function reducer(state = initialState, action) {
     
     //called from features/tabs
     case nodeActionTypes.TAB_DELETE:
+
         return Object.assign({}, state, {
             nodes: state.nodes.filter((id)=>{
                 const node = state.nodesById[id];
-                return node.id != item.z;
+                return node.z != action.id;
             }),
             nodesById: Object.keys(state.nodesById).reduce((acc,key)=>{
                 const node = state.nodesById[key];
@@ -103,7 +108,8 @@ export default function reducer(state = initialState, action) {
       	});
 
     case nodeActionTypes.NODE_DELETE:
-    
+      
+     
       if (!state.selectedId){
           return state;
       }
@@ -228,7 +234,7 @@ export default function reducer(state = initialState, action) {
   }
 }
 
-const nodes = (state)=>state[NAME].nodes;
+const nodes = (state)=>state[NAME];
 const selectedId = (state)=>state[NAME].selectedId;
 const configuringId = (state)=>state[NAME].configuringId;
 const node = (state, ownProps)=>state[NAME].nodesById[ownProps.id];

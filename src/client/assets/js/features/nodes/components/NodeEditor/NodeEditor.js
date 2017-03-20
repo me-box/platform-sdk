@@ -208,13 +208,13 @@ export default class NodeEditor extends Component {
 	}
 
 	render(){
-		const {name, editor:{screen:{w,h}}} = this.props;
+		const {name, w, h} = this.props;
 		//const {name} = this.props;
 		const editorstyle = {
 			position: 'absolute',
 			zIndex: 20,
-			maxHeight: h - (2 * NODE_EDITOR_PADDING),
-			width: w - (2* NODE_EDITOR_PADDING) - PALETTE_WIDTH,
+			maxHeight: h,
+			width: w,
 			top: 0 + NODE_EDITOR_PADDING, 
 			left:  PALETTE_WIDTH + NODE_EDITOR_PADDING, 
 			background: 'white',
