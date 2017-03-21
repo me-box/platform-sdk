@@ -27,7 +27,33 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(filters)=>{return {}}
+    schemafn:(filters)=>{
+
+        const payload = filters.reduce((acc,filter)=>{
+            const {name, type, description} = filter.item;
+            acc[name] = {type,description}
+            return acc; 
+        },{});
+
+
+        return {
+                    output: {
+                        name: {type:'string', description: "a name assigned to this node"}, 
+                        id:  {type:'string', description: "the node id: [id]"},
+                        msg: {
+                            type: "object",
+                            description: "the container object",
+                            properties: {
+                                payload: {
+                                    type: "object",
+                                    description: "the message payload",
+                                    properties: payload,
+                                }
+                            }
+                        }
+                    }
+                }
+    }
     
 }
 

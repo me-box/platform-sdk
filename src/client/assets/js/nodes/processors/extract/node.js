@@ -2,7 +2,9 @@ import {configNode} from 'utils/ReactDecorators';
 import React, {Component} from 'react';
 import Checkbox from 'react-md/lib/SelectionControls/Checkbox';
 import "./filter.scss";
-
+import Cell from 'components/Cell';
+import Cells from 'components/Cells';
+import Textfield from 'components/form/Textfield';
 @configNode()
 export default class Node extends React.Component {
 
@@ -41,7 +43,7 @@ export default class Node extends React.Component {
 
 	renderSchema(source, schema, path=[]){
 		return Object.keys(schema).map((key,i)=>{
-			const item = schema[key];
+			const item = Object.assign({}, schema[key], {name:key});
 			return <ul className="filterList" key={i}> {this.renderItem(source, key, item, [...path, key])} </ul>
 					
 
@@ -60,7 +62,18 @@ export default class Node extends React.Component {
 
 	render(){
 		const {inputs = [], values={}, updateNode} = this.props;
-		console.log(this.state.selections);
+		
+		const nameprops = {	
+			 value: values.name || "",
+			 id: "name",
+			 onChange:(property, event)=>{
+				 updateNode(property, event.target.value);
+			 }
+		}
+							
+		const nameinput = 	<div className="centered">
+								<Textfield {...nameprops}/>												
+						  	</div>
 
 
 		const sources = inputs.reduce((acc, node)=>{
@@ -71,7 +84,14 @@ export default class Node extends React.Component {
 			return acc;
 		},[]) 	
 
-		return <div style={{padding:7}}> {this.renderFilters(sources)} </div>
+		return <div>
+          			<Cells>	
+          				<Cell title={"name"} content={nameinput}/>
+          				<Cell title={"data"} content={this.renderFilters(sources)}/>
+          			</Cells>
+            	</div>
+
+		
 
 	}
 

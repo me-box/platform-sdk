@@ -9,7 +9,7 @@
 				{"name":"twitter", "file":"datastores/twitter/index"},
 
 				{"name":"function", "file":"processors/function/index"},
-				{"name":"filter", "file":"processors/filter/index"},
+				{"name":"extract", "file":"processors/extract/index"},
 				{"name":"chartify", "file":"processors/chartify/index"},
 				{"name":"listify", "file":"processors/listify/index"},
 			 	{"name":"webify", "file":"processors/webify/index"},
