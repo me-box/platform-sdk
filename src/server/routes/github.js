@@ -261,8 +261,9 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		
+		
 		const libcommands = libraries.map((library)=>{
-							return `RUN npm install -g ${library}`
+							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
 		
 		

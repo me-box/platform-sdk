@@ -249,9 +249,9 @@ function commitPressed(){
 		
 		const message = getState().repos.tosave.commit;
 		const repo 	= getState().repos.loaded;
-		const packages = getState().publisher.packages;
-		const grid = getState().publisher.grid;
-		const app = getState().publisher.app;
+		const packages = getState().workspace.packages;
+		const grid = getState().workspace.grid;
+		const app = getState().workspace.app;
 		const tabsById = getState().workspace.tabsById;
 
 		const nodes = getState().nodes.nodesById;
@@ -319,7 +319,7 @@ function savePressed(){
 		const nodes = getState().nodes.nodesById;
 		const ports = getState().ports.linksById;
     const tabsById = getState().workspace.tabsById;
-    
+
 		const jsonnodes = Object.keys(nodes).map((key)=>{
 			const node = nodes[key];
 			return Object.assign({}, convertNode(node, Object.keys(ports).map((k)=>ports[k])));
@@ -345,9 +345,9 @@ function savePressed(){
   					...jsonnodes
   			],
   			manifest: {
-  				app: Object.assign({}, getState().publisher.app, {id: getID()}),
-  				packages: getState().publisher.packages,
-  				'allowed-combinations': getState().publisher.grid,
+  				app: Object.assign({}, getState().workspace.app, {id: getID()}),
+  				packages: getState().workspace.packages,
+  				'allowed-combinations': getState().workspace.grid,
   			}
 		}
 		
@@ -437,7 +437,7 @@ function publish(){
     dispatch(networkActions.networkAccess(`publishing app ${name}`));
       
     console.log("PUBLISHING");
-    console.log(data);
+    console.log(data.manifest);
 
     request
         .post(`${config.root}/github/publish`)
@@ -454,7 +454,7 @@ function publish(){
             dispatch(receivedSHA(res.body.repo, res.body.sha));
             dispatch(requestRepos());
           }
-        }); 
+        });
   }
 }
 
@@ -483,7 +483,7 @@ function receiveFlows(data, store, lookuptypes){
   }
 }
 
-//this is picked up by the publisher
+//this is picked up by the workspace
 function receiveManifest(manifest){
   return {
     type: nodeActionTypes.RECEIVE_MANIFEST,
@@ -544,7 +544,7 @@ function fetchFlow(store, repo){
           	console.log("DISPATCHING RECEIEVD MANIFEST!!!");
           	console.log(manifest);
 
-            //create the manifest - this will be picked up by the publisher.
+            //create the manifest - this will be picked up by the workspace.
             dispatch(receiveManifest(manifest));
           }
         });   

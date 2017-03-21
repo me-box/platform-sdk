@@ -59,7 +59,7 @@ export function test(){
 			return;
 		}
 		
-		const channelId = getState().publisher.app.id;
+		const channelId = getState().workspace.app.id;
 		
 		const jsonnodes = nodes.map((node)=>{
 			

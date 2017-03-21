@@ -264,7 +264,7 @@ function updatePackageBenefits(benefits){
 function updateAppName(name){
 	return {
 		type: APP_NAME_CHANGED,
-		name
+		name: name.replace(/\s/g, "-"),
 	}
 } 
 
