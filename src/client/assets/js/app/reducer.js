@@ -8,6 +8,7 @@ import workspace, {NAME as workspaceName} from 'features/workspace';
 import mouse, {NAME as mouseName} from 'features/mouse';
 import repos, {NAME as repoName} from 'features/repos';
 import test, {NAME as testName} from 'features/test';
+import network, {NAME as networkName} from 'features/network';
 
 export default {
   routing,
@@ -19,4 +20,5 @@ export default {
   [mouseName]: mouse,
   [repoName]: repos,
   [testName]: test,
+  [networkName]: network,
 };

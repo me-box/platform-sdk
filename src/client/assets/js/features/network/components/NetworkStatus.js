@@ -1,13 +1,23 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {TOOLBAR_HEIGHT, PALETTE_WIDTH, SIDEBAR_WIDTH} from 'constants/ViewConstants';
-import '../../style/sass/cells.scss';
+//import '../../../../styles/cells.scss';
 import cx from 'classnames';
+import { actionCreators as networkActions, selector } from '../';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-class NetworkStatus extends React.Component {
+@connect(selector, (dispatch) => {
+  return{
+     actions: bindActionCreators(networkActions, dispatch),
+  }
+})
+export default class NetworkStatus extends Component {
 	
 	render() {
 		
-		let status = null;
+		const {network:{status}} = this.props;
+		console.log("in network status with");
+		console.log(status);
 		
 		const style ={
 			position: 'absolute',
@@ -28,26 +38,26 @@ class NetworkStatus extends React.Component {
 			paddingTop: 10,
 		}
 	
+		let _status = null;
 		
-		
-		if (this.props.status.status){
+		if (status){
 			const icon = cx({
 				fa: true,
 				'fa-4x': true,
 				'fa-fw': true,
-				'fa-cog': this.props.status.status === 'access',
-				'fa-spin' : this.props.status.status === 'access',
-				'fa-times'	: this.props.status.status === 'error',
-				'fa-check'	: this.props.status.status === 'success',
+				'fa-cog': status === 'access',
+				'fa-spin' : status === 'access',
+				'fa-times'	: status === 'error',
+				'fa-check'	: status === 'success',
 			})
 		
-			status = <div style={style}>
+			_status = <div style={style}>
 						<div className="flexcolumn">
 							<div>
 								<div className="centered">
 										<div style={noborder}>
 											<i className={icon}></i>
-											<div style={messagestyle}>{this.props.status.message}</div>
+											<div style={messagestyle}>{status.message}</div>
 										</div>
 								</div>
 							</div>
@@ -55,8 +65,6 @@ class NetworkStatus extends React.Component {
 			    	 </div>
 		}
 
-		return status;	
+		return _status;	
 	}
 }
-
-export default NetworkStatus;

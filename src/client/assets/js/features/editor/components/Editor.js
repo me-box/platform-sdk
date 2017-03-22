@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {Palette} from 'features/palette/components';
 import {Workspace} from 'features/workspace/components';
+import NetworkStatus from 'features/network/components';
+
 import {NAME, actionCreators as editorActions, selector } from '../';
 import {PALETTE_WIDTH, SIDEBAR_WIDTH, TOOLBAR_HEIGHT} from 'constants/ViewConstants';
 import DragDropContainer from './DragDropContainer';
@@ -15,8 +17,8 @@ import RepoManager from 'features/repos/components/RepoManager';
 import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
 
-console.log("in editor and workspace actuions re");
-console.log(workspaceActions);
+console.log("in editor and network status is");
+console.log(NetworkStatus);
 
 @connect((state)=>{
     return {
@@ -116,6 +118,7 @@ export default class Editor extends Component {
               {publishervisible && <Publisher/>}
 	    			</DragDropContainer>
 	    		</div>
+          <NetworkStatus/>
           <RepoManager h={h-TOOLBAR_HEIGHT}/>
           <TestManager h={h-TOOLBAR_HEIGHT}/>
 	    	</div>);
@@ -135,7 +138,7 @@ export default class Editor extends Component {
               {publisher}
             </DragDropContainer>
                 <Sidebar h={dimensions.h-TOOLBAR_HEIGHT}/>
-                <NetworkStatus {...networkstatusprops}/>
+                <NetworkStatus />
                 <RepoManager h={dimensions.h-TOOLBAR_HEIGHT}/>
           </div>
         </div>);*/
