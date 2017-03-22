@@ -8,7 +8,7 @@
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
 				{"name":"twitter", "file":"datastores/twitter/index"},
 
-				{"name":"function", "file":"processors/function/index"},
+				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"extract", "file":"processors/extract/index"},
 				{"name":"chartify", "file":"processors/chartify/index"},
 				{"name":"listify", "file":"processors/listify/index"},
@@ -16,7 +16,7 @@
 
 				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
 				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
-				{"name":"plugout", "file":"outputs/plug/index"},
+				
 				
 				{"name":"debugger", "file":"debug/debugger/index"}
 			 ]

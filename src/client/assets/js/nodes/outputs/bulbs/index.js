@@ -80,7 +80,8 @@ const config = {
     labelStyle: function() { 
         return this.name?"node_label_italic":"";
     },
-     description: ()=>"<p> This node allows you to actuate phillips hue bulbs i.e. turn them on or off, change their hue or change brightness </p>",
+    
+    descriptionfn: ()=>"<p> This node allows you to actuate phillips hue bulbs i.e. turn them on or off, change their hue or change brightness </p>",
 }
 
 export default {

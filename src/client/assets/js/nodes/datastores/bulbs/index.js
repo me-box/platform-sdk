@@ -59,6 +59,19 @@ const config = {
                 }
             }
         }
+    },
+
+    descriptionfn:(subtype)=>{
+        switch(subtype){
+            case "bulb-on":
+                return "use to determine whether a bulb is on or off";
+            case "bulb-hue":
+                return "use to access the hue bulb's hue setting";
+            case "bulb-bri":
+                return "use to access the hue bulb's brightness setting";
+            default:
+                return "unknown setting";
+        }
     } 
 }
 

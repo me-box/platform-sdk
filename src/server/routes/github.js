@@ -261,7 +261,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		
-		
+
 		const libcommands = libraries.map((library)=>{
 							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
@@ -349,6 +349,7 @@ router.get('/repos/:user', function(req,res){
      			const repos = data.body.map(function(repo){
        				return {
        							name: repo.name, 
+       							description: repo.description,
        							updated: repo.updated_at, 
        							icon:repo.owner.avatar_url, 
        							url:repo.url, 
@@ -383,6 +384,7 @@ router.get('/repos', function(req,res){
        				
        				return {
        							name: repo.name, 
+       							description: repo.description,
        							updated: repo.updated_at, 
        							icon:repo.owner.avatar_url, 
        							url:repo.url, 
@@ -539,7 +541,7 @@ router.post('/publish', function(req,res){
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			const repodetails = values[0];
-		
+			console.log("SENDING SUCCESS RESPONSE!");
 			res.send({
 				result:'success', 
 				repo: repodetails[0], 

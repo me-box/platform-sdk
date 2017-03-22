@@ -229,6 +229,14 @@ export default function reducer(state = initialState, action) {
                 })
             });
 
+    case nodeActionTypes.NODE_UPDATE_DESCRIPTION:
+    
+      return Object.assign({}, state, {
+                nodesById : Object.assign({}, state.nodesById, {
+                  [action.id]: Object.assign({}, state.nodesById[action.id], {description:action.description})
+                })
+            });
+
 	  default:
 	    return state;
   }

@@ -10,6 +10,29 @@ import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as tabActions} from 'features/workspace';
 import {actionCreators as appActions} from 'features/apps';
 
+
+//TODO: lots of duplication here..
+function extractPackages(state){
+    const nodesById =state.nodes.nodesById;
+    const nodes = Object.keys(nodesById).map(k=>nodesById[k]);
+
+    return state.workspace.tabs.map((tabId)=>{
+        
+        const pkg = state.workspace.tabsById[tabId];
+
+        return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
+          return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger")))
+          }).map((node)=>{
+              return {
+                id: node.id,
+                name: node.name || node.type,
+                type: node.subtype || node.type, 
+              }
+            })
+          })
+    });
+}
+
 function extractNodes(newNodesObj, store, lookuptype){
 
   //var i;
@@ -249,7 +272,6 @@ function commitPressed(){
 		
 		const message = getState().repos.tosave.commit;
 		const repo 	= getState().repos.loaded;
-		const packages = getState().workspace.packages;
 		const grid = getState().workspace.grid;
 		const app = getState().workspace.app;
 		const tabsById = getState().workspace.tabsById;
@@ -279,7 +301,7 @@ function commitPressed(){
 			
 			manifest: {
   				app: Object.assign({}, app, {id: getID()}),
-  				packages: packages,
+  				packages: extractPackages(getState()),
   				'allowed-combinations': grid,
   			},
 			
@@ -332,7 +354,8 @@ function savePressed(){
               type: 'tab'
           }                                                     
     });
-		
+	
+
 		const {name, description, commit} = getState().repos.tosave;
   			
 		const submission = {
@@ -346,7 +369,7 @@ function savePressed(){
   			],
   			manifest: {
   				app: Object.assign({}, getState().workspace.app, {id: getID()}),
-  				packages: getState().workspace.packages,
+  				packages: extractPackages(getState()),
   				'allowed-combinations': getState().workspace.grid,
   			}
 		}
@@ -403,22 +426,6 @@ function publish(){
         ...jsonnodes
     ]
       
-    const packages = getState().workspace.tabs.map((tabId)=>{
-        
-        const pkg = getState().workspace.tabsById[tabId];
-
-        return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
-          return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger")))
-          }).map((node)=>{
-              return {
-                id: node.id,
-                name: node.name || node.type,
-                type: node.subtype || node.type, 
-              }
-            })
-          })
-    });
-      
     const repo = getState().repos.loaded;
       
     const data = {
@@ -428,8 +435,12 @@ function publish(){
           flows: flows,
           
           manifest: {
+          
           app: Object.assign({}, getState().workspace.app),
-          packages,
+          
+
+          packages: extractPackages(getState()),
+
           'allowed-combinations': getState().workspace.grid,
         }
     };
@@ -446,9 +457,11 @@ function publish(){
         .type('json')
         .end(function(err, res){
           if (err){
+            console.log("DISPATCHING NETWORK ERRRIR!");
             console.log(err);
             dispatch(networkActions.networkError(err.message));
           }else{
+            console.log("DISPATCHING NETWORK SUCCESS!!!");
             dispatch(networkActions.networkSuccess('successfully published app!'));
                 //dispatch(submissionSuccess(res.body));
             dispatch(receivedSHA(res.body.repo, res.body.sha));

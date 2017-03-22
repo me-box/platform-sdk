@@ -53,6 +53,10 @@ const config = {
                         }
                     }
                 }
+    },
+
+    descriptionfn: (filters)=>{
+        return "pulls out specific data from incoming data";
     }
     
 }

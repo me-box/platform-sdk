@@ -327,18 +327,17 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  description: (subtype) => {
+  descriptionfn: (subtype) => {
 
-    const core = "<strong>android mobile sensingkit</strong><hr/>";
 
     if (subtype) {
-      const chosen = `<p> the current chosen sensor is <strong>${subtype}</strong>.</p>`
+      const chosen = `<h3> ${subtype} </h3>`
       switch (subtype) {
 
         case 'light':
-          return `${core} ${chosen} <p> This will return the ambient light in lux captured by a phone camera.</p>`;
+          return `${chosen} <p> This will return the ambient light in lux captured by a phone camera.</p>`;
         case 'bluetooth':
-          return `${core} ${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
+          return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 
         case 'accelerometer':
         case 'linear-acceleration':
@@ -348,10 +347,10 @@ const config = {
         case 'rotation':
         case 'battery':
         case 'audio-level':
-          return `${core} ${chosen} <p>This will return the device ${subtype} data</p>`;
+          return `${chosen} <p>This will return the device ${subtype} data</p>`;
 
         default:
-          return `${core} ${chosen}`
+          return `${chosen}`
       }
     }
     return core;

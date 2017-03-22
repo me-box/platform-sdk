@@ -35,7 +35,7 @@ const config = {
 	labelStyle: function() { 
 		return this.name?"node_label_italic":"";
 	},
-	description: ()=>"<p>The Debug node can be connected to the output of any node. It can be used to display the output of any message property in the debug tab of the sidebar. The default is to display <code>msg.payload</code>.</p> <p>Each message will also display the timestamp, and the type of property chosen to output.</p><p>If the payload is an object or buffer it will be stringified first for display and indicate that by saying '(Object)' or '(Buffer)'.</p>",
+	descriptionfn: ()=>"<p>The Debug node can be connected to the output of any node. It can be used to display the output of any message property in the debug tab of the sidebar. The default is to display <code>msg.payload</code>.</p> <p>Each message will also display the timestamp, and the type of property chosen to output.</p><p>If the payload is an object or buffer it will be stringified first for display and indicate that by saying '(Object)' or '(Buffer)'.</p>",
 
 };
 

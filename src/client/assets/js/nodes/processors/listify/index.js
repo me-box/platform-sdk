@@ -91,7 +91,7 @@ const config = {
     }
   },
 
-  description: () => "<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to <code> {keys:Array, rows: Array[]} </code> which is the form expected for the list view of the companion app </p>",
+  descriptionfn: () => "<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to <code> {keys:Array, rows: Array[]} </code> which is the form expected for the list view of the companion app </p>",
 
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";

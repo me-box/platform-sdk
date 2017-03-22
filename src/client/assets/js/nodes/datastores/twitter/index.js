@@ -57,7 +57,7 @@ const config =  {
         labelStyle: function() { 
             return this.name?"node_label_italic":"";
         },
-        description: ()=>"<p>Latest tweets from a twitter account</p>",
+        descriptionfn: ()=>"<p>Latest tweets from a twitter account</p>",
 
 }
                           

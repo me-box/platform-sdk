@@ -68,10 +68,11 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	//need to create a new Image!
 	console.log("found external libraries, so creating new image!");
 	
+	
 	const libcommands = libraries.map((library)=>{
-							return `RUN npm install -g ${library}`
+							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
-						
+
 	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /data/flows.json`], ...libcommands]			
 	const dockerfile = dcommands.join("\n");
 	
@@ -147,7 +148,7 @@ router.post('/flows', function(req, res){
 
 
 	const libraries = dedup(flatten(req.body.reduce((acc, node)=>{
-		if (node.type === "function"){
+		if (node.type === "dbfunction"){
 			acc = [...acc, matchLibraries(node.func)];
 		}
 		return acc;

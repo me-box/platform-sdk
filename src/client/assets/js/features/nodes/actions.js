@@ -13,7 +13,7 @@ function loadNode({store,component,node,reducer}){
       
       console.log("loading node!");
 
-      const _node = Object.assign({},node, {schema: _schema(node._def)});
+      const _node = Object.assign({},node, {schema: _schema(node._def), description:_description(node._def)});
       
       addViewProperties(_node);
     
@@ -48,6 +48,18 @@ function _schema(def){
   return def.schemafn ? def.schemafn() : {}
 }
 
+function _description(def){
+  if (def.schemakey){
+      const key = def.defaults[def.schemakey];
+      if (key && key.value){
+          if (def.descriptionfn){
+              return def.descriptionfn(key.value);
+          }
+      }
+  }
+  return def.descriptionfn ? def.descriptionfn() : {}
+}
+
 function dropNode({store, component, nt, def, reducer}, x0, y0){
   
   return function(dispatch, getState){
@@ -71,6 +83,7 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
       inputs: _def.inputs || 0,
       outputs: _def.outputs,
       schema: _schema(_def),
+      description: _description(_def),
       changed: true,
       selected: true,
       dirty: true,
@@ -159,6 +172,14 @@ function updateSchema(id, schema){
     type: nodeActionTypes.NODE_UPDATE_SCHEMA,
     id,
     schema,
+  }
+}
+
+function updateDescription(id, description){
+  return {
+    type: nodeActionTypes.NODE_UPDATE_DESCRIPTION,
+    id,
+    description,
   }
 }
 
@@ -274,6 +295,7 @@ export const actionCreators = {
   updateNodeValueKey,
   incrementNodeValueKey,
   updateSchema,
+  updateDescription,
   nodeMouseDown,
   nodeDoubleClicked,
   nodeConfigureOk,

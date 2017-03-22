@@ -58,7 +58,7 @@ const config =  {
 		}	
     },
     
-    description: ()=> "<p>Sets a property based on the provided template.</p><p>By default this uses the <i><a href='http://mustache.github.io/mustache.5.html' target='_new'>mustache</a></i></p><p>For example, when a template of:<pre>Hello {{name}}. Today is {{date}}</pre><p>receives a message containing:<pre>{name: \"Fred\",date: \"Monday\" payload...}</pre><p>The resulting property will be:<pre>Hello Fred. Today is Monday</pre><p>By default, mustache will escape any HTML entities in the values it substitutes. To prevent this, use <code>{{{triple}}}</code> braces.",
+    descriptionfn: ()=> "<p>Sets a property based on the provided template.</p><p>By default this uses the <i><a href='http://mustache.github.io/mustache.5.html' target='_new'>mustache</a></i></p><p>For example, when a template of:<pre>Hello {{name}}. Today is {{date}}</pre><p>receives a message containing:<pre>{name: \"Fred\",date: \"Monday\" payload...}</pre><p>The resulting property will be:<pre>Hello Fred. Today is Monday</pre><p>By default, mustache will escape any HTML entities in the values it substitutes. To prevent this, use <code>{{{triple}}}</code> braces.",
     
     labelStyle: function() { 
         return this.name?"node_label_italic":"";

@@ -71,6 +71,7 @@ export function configNode(){
                     this.props.actions.updateNode(property,value);
                     if (property === node._def.schemakey){
                         this.props.actions.updateSchema(id, node._def.schemafn(value));
+                        this.props.actions.updateDescription(id, node._def.descriptionfn(value));
                     }
                 },
                 inputs,

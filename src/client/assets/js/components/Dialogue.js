@@ -5,10 +5,6 @@ import './styles/dialogue.scss';
 import Button  from 'react-md/lib/Buttons';
 
 class Dialogue extends Component {
-	
-	constructor(props){
-		super(props);
-	}
 
 	render(){
 
@@ -27,14 +23,16 @@ class Dialogue extends Component {
 
 	
 		const close = <Button icon onClick={this.props.close}>close</Button>;
-
+		
 		return  <div className="sdkdialogue" style={dialoguestyle}>
 					<Toolbar
 		      			colored
 		      			title={this.props.title}
 		        		actions={close}
+		        		nav={this.props.nav}
 		        		className="md-divider-border md-divider-border--bottom"
 		      		/>
+		      		
 					{this.props.children}
 					<div className="sdktoolbar">
 					 	<div className="flexcolumn">
@@ -57,12 +55,15 @@ class Dialogue extends Component {
 				</div>
 		
 	}
+
+	
 }
 
 Dialogue.defaultProps ={
    ok: ()=>{console.warn("no ok callback provided as prop!")},
    cancel:()=>{console.warn("no cancel callback provided as prop!")},
    close: ()=>{console.warn("no close callback provided as prop!")},
+   nav: null,
    title: "",
 }
 
