@@ -1,17 +1,17 @@
 import http from 'http';
 import express from 'express';
 import expressSession from 'express-session';
-//import connectredis from 'connect-redis';
-import connectmongostore from 'connect-mongostore';
+import connectredis from 'connect-redis';
+//import connectmongostore from 'connect-mongostore';
 import bodyparser from 'body-parser';
 import config from './config';
 import mongoose from 'mongoose';
 import initPassport from './strategies';
-//const RedisStore 	 = connectredis(expressSession);
+const RedisStore 	 = connectredis(expressSession);
 
 //require('connect-mongostore')(express);
 mongoose.connect(config.mongo.url);
-const MongoStore = connectmongostore(expressSession);
+//const MongoStore = connectmongostore(expressSession);
 
 let PORT = 8086
 
@@ -25,16 +25,13 @@ let app = express();
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 
-/*store: new RedisStore({
-  host: config.redis.host,
-  port: config.redis.port,
-  disableTTL: true,
-  //pass: config.redis.pass || undefined,
-}),*/
-
 app.use(expressSession(
                       {
-                        store: new MongoStore({'db': 'sessions'}),
+                        store: new RedisStore({
+                            host: config.redis.host,
+                            port: config.redis.port,
+                            disableTTL: true,
+                        }),
                         key: 'express.sid',
                         resave: false,
                         rolling: false,

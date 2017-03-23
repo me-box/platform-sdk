@@ -90,8 +90,8 @@ export default class Link extends Component {
         };
 
 		const className = cx({
-			'link_line' : !selectedId,
-			'drag_line' : selectedId,
+			'link_line' : !(selectedId === id),
+			'drag_line' : (selectedId === id),
 		});
 		
         return <g>
