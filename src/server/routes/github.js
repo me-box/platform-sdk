@@ -424,7 +424,7 @@ router.get('/flow', function(req,res){
 router.post('/repo/new', function(req,res){
 
 	var user 			= req.user;
-	var name 			= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
+	var name 			= req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : `databox.${req.body.name.toLowerCase()}`;
 	var description 	= req.body.description || "";
 	var flows       	= req.body.flows 	|| [];
 	var manifest    	= req.body.manifest || {};
@@ -532,7 +532,7 @@ router.post('/publish', function(req,res){
 		
 	}else{ //create a new repo!
 	  	console.log("CREATING NEW REPO..");
-	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
+	  	const reponame =  app.name.startsWith("databox.") ? app.name.toLowerCase() : `databox.${app.name.toLowerCase()}`;	
 		console.log(reponame);
 		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
 			console.log(`publishing...${reponame}`);
