@@ -21,18 +21,27 @@ function loadNode({store,component,node,reducer}){
         register(store, _node.id, scopeify(_node.id, reducer));
       }
 
-      dispatch({type: nodeActionTypes.NODE_DROPPED, node: _node});
-
       const elementprops = {
         store: store,
         id: node.id,
       }
 
-      const element = React.createElement(component, {...elementprops});
-      const g = document.createElement('div');
-      g.id = `config-${node.id}`;
-      document.body.appendChild(g);
-      render(element, document.getElementById(`config-${node.id}`));
+      console.log("ok component is");
+      console.log(component);
+
+
+      const config = React.createElement(component, {...elementprops});
+      dispatch({type: nodeActionTypes.NODE_DROPPED, node: _node, config});
+
+      
+
+      //const element = React.createElement(component, {...elementprops});
+      //const root = document.getElementById('main-container');
+      //const g = document.createElement('div');
+      //g.id = `config-${node.id}`;
+      //root.appendChild(g);
+      //document.body.appendChild(g);
+      //render(element, document.getElementById(`config-${node.id}`));
   };
 }
 
@@ -102,31 +111,32 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     
     //might need to make this a separate action?
     //register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
-    //this means that instances of the same node can trasparently make use of the same action constants without a clash!.
+    //this means that instances of the same node can transparently make use of the same action constants without a clash!.
     if (reducer){
       register(store, node.id, scopeify(node.id, reducer));
     }
     
+    console.log("ok component is");
+    console.log(component);
 
-    dispatch({type: nodeActionTypes.NODE_DROPPED, node: node});
-
-    //THIS IS WHERE WE RENDER THE CONFIG PROPS!
-
-    //think this is where we render!!
-    const elementprops = {
-        store: store,
-        id: node.id,
-    }
-
- 
-     
-    const element = React.createElement(component, {...elementprops});
+    //const elementprops = {
+    //    store: store,
+    //    id: node.id,
+    //}
+      
+    dispatch({type: nodeActionTypes.NODE_DROPPED, node, config:{id: node.id, fn:component}});
+    
     //console.log("create element");
     //console.log(element);
-    const g = document.createElement('div');
-    g.id = `config-${node.id}`;
-    document.body.appendChild(g);
-    render(element, document.getElementById(`config-${node.id}`));
+    //const root = document.getElementById('main-container');
+     
+    //  root.appendChild(g);
+
+    //const g = document.createElement('div');
+    //g.id = `config-${node.id}`;
+    //root.appendChild(g);
+    //document.body.appendChild(g);
+    //render(element, document.getElementById(`config-${node.id}`));
     //dispatch(editorActions.closeAll());
   }
 }

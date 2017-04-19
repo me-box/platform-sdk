@@ -27,9 +27,6 @@ export default class Workspace extends React.Component {
 	
 		const {workspace:{currentId, tabs, tabsById}} = this.props;
 
-		console.log("OK CURRENTR TAB IS ");
-		console.log(currentId);
-
 		const style={
 			width: '48.0676%',
 		}
@@ -116,6 +113,7 @@ export default class Workspace extends React.Component {
 		    		</div>
 		    		
 		    		<NodeCanvas {...this.props}/>
+
 		    		<div id="workspace-toolbar"></div>
 		    		<div id="workspace-footer">
 			            <a className="workspace-footer-button" id="btn-zoom-out" href="#">

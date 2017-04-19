@@ -8,6 +8,8 @@ const config = {
         name: {value:""},
 		func: {value:"return msg;"},
 		outputs: {value:1},
+        inputtypedef: {value:""},
+        outputtypedef: {value:""},
 		noerr: {value:0,required:true,validate:function(v){ return ((!v) || (v === 0)) ? true : false; }}
     },
     

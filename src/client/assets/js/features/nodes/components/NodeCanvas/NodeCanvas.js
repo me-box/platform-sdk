@@ -36,6 +36,10 @@ const ItemTypes = {
 
 class NodeCanvas extends Component {
 
+  static contextTypes = {
+    store: React.PropTypes.object
+  }
+
   constructor(props){
   	super(props);
   	this._onMouseMove = this._onMouseMove.bind(this);
@@ -50,12 +54,27 @@ class NodeCanvas extends Component {
 
   render() {
 
-    const {nodes, links, connectDropTarget, w, h} = this.props;
-   
+    console.log("orops are");
+    console.log(this.props);
+    const {nodes, configs, links, connectDropTarget, w, h} = this.props;
+    const {store} = this.context;
+
     const _nodes = nodes.map((id)=>{
       return  <Node key={id} id={id}/>
     })
 
+    const _configs = configs.map((config, i)=>{
+      const elementprops = {
+          store,
+          id: config.id,
+      }
+      console.log("ok element rpops are");
+      console.log(elementprops);
+
+      return <div key={i}>
+                {React.createElement(config.fn, {...elementprops})}
+             </div>
+    })
     const _links = links.map((id)=>{
       return <Link key={id} id={id}/>
     })
@@ -71,6 +90,7 @@ class NodeCanvas extends Component {
                   {_links}
                   {_nodes}
                </svg>
+               {_configs}
             </div> ); 
   }
 
@@ -168,6 +188,13 @@ function select(state) {
   const tabId = state.workspace.currentId;
   //TODO: - hacky - this needs to be in secltors of corresponding reducers
   return {
+    configs:  Object.keys(state.nodes.nodesById).reduce((acc, key)=>{
+       const n = state.nodes.nodesById[key];
+       if (n.z === tabId){
+          acc.push(state.nodes.configsById[n.id]);
+       }
+       return acc;
+    },[]),
     nodes: Object.keys(state.nodes.nodesById).reduce((acc, key)=>{
        const n = state.nodes.nodesById[key];
        if (n.z === tabId){

@@ -17,9 +17,6 @@ import RepoManager from 'features/repos/components/RepoManager';
 import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
 
-console.log("in editor and network status is");
-console.log(NetworkStatus);
-
 @connect((state)=>{
     return {
         editor: state[NAME],
@@ -38,10 +35,13 @@ console.log(NetworkStatus);
 })
 export default class Editor extends Component {
 
+  
   constructor(props){
   	super(props);
     this._handleResize = this._handleResize.bind(this);
     this._handleKeyDown = this._handleKeyDown.bind(this);
+   
+
     //taken out for now..
     //this.windowResize  = bindActionCreators(editorActions.windowResize, props.dispatch);
  
@@ -66,10 +66,7 @@ export default class Editor extends Component {
 
   render() {
 
-    console.log("actions are");
-    console.log(this.props.actions);
-
-  	const {store} = this.context;
+   
     const {editor:{screen:{w,h}}, publishervisible} = this.props;
    	/*const { types, tabs, currentTab,sidebarExpanded, showPublisher, categories, dimensions, status, dispatch } = this.props;
 
@@ -111,13 +108,13 @@ export default class Editor extends Component {
 
    	return (<div onKeyDown={this._keyPress}> 
           <Toolbar {...toolbarprops}/>
-	    		<div id="main-container" className="sidebar-closed">
-	    			<DragDropContainer>
+          <DragDropContainer>
+	    		 <div id="main-container" className="sidebar-closed">
 	    				<Palette />
-              <Workspace />
+              <Workspace/>
               {publishervisible && <Publisher/>}
-	    			</DragDropContainer>
-	    		</div>
+	    		 </div>
+          </DragDropContainer>
           <NetworkStatus/>
           <RepoManager h={h-TOOLBAR_HEIGHT}/>
           <TestManager h={h-TOOLBAR_HEIGHT}/>

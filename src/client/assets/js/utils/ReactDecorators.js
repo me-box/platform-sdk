@@ -78,6 +78,7 @@ export function configNode(){
                 outputs,
                 local:local,
                 dispatch,
+                store,
                 w,
                 h,
             }

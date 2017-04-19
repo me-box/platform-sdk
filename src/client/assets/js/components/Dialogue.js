@@ -13,7 +13,7 @@ class Dialogue extends Component {
 			maxHeight: `calc(100vh - ${2 * NODE_EDITOR_PADDING}px)`,
 			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING) + PALETTE_WIDTH}px)`,
 			top: NODE_EDITOR_PADDING, 
-			left:  PALETTE_WIDTH + NODE_EDITOR_PADDING, 
+			left: NODE_EDITOR_PADDING, 
 			background: 'white',
 			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',

@@ -35,6 +35,7 @@ function _configureNode(current, changes){
 const initialState = {
   nodes:[], 
   nodesById: {},
+  configsById: {},
   draggingNode: null, 
   selectedId: null, 
   configuringId: null, 
@@ -66,6 +67,11 @@ export default function reducer(state = initialState, action) {
         return Object.assign({}, state, {
           nodes: [  ...state.nodes, action.node.id],
           nodesById: Object.assign({}, state.nodesById, {[action.node.id]:action.node}),
+          configsById: Object.assign({}, state.configsById, {[action.node.id]:{
+                                                                                fn: action.config.fn,
+                                                                                id: action.config.id,
+                                                                              }
+                                                                            }),
         })
 
     case nodeActionTypes.NODE_MOUSE_DOWN:
