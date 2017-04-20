@@ -3,6 +3,7 @@
 import { createStructuredSelector } from 'reselect';
 //import { State } from 'models/editor';
 import {post, get} from 'utils/net';
+
 //import {actionCreators as mapperActions} from 'features/mapper';
 //import {actionCreators as templateActions} from 'features/canvas';
 //import {actionCreators as liveActions} from 'features/live';
@@ -20,6 +21,7 @@ const SET_SCENES = 'uibuilder/editor/SET_SCENES';
 export const NAME = 'uibuilder/editor';
 
 // Define the initial state for `shapes` module
+
 
 const initialState = {
     w : window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
@@ -110,11 +112,11 @@ function setScenes(scenes){
 }
 
 // Selectors
-//const editor = (state) => state;
+const editor = (state) => state;
 
 export const selector = createStructuredSelector({
   [NAME] : (state, ownProps)=>{
-      return state[ownProps.node.id][NAME];
+      return state[ownProps.nid][NAME];
   }
 });
 

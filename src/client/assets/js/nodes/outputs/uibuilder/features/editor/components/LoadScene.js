@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actionCreators as editorActions, selector } from '../';
+import { actionCreators as editorActions, selector, NAME } from '../';
 import Dialog from 'react-md/lib/Dialogs';
 import {get} from 'utils/net';
 import List from 'react-md/lib/Lists/List';
@@ -27,7 +27,7 @@ export default class LoadScene extends PureComponent {
   }
 
   renderSceneList(){
-      const {editor:{scenes}, onLoad} = this.props;
+      const {[NAME]:{scenes}, onLoad} = this.props;
       
       const listitems = scenes.map((scene,i)=>{
           return <ListItem key={i} primaryText={scene} onClick={onLoad.bind(null,scene)}/>

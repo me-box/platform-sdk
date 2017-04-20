@@ -4,8 +4,7 @@ import {selector} from 'features/nodes';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 import { bindActionCreators } from 'redux';
 import NodeEditor from 'features/nodes/components/NodeEditor/';
-import {NODE_EDITOR_PADDING, PALETTE_WIDTH} from 'constants/ViewConstants';
-
+import {NODE_EDITOR_PADDING, TAB_HEIGHT, PALETTE_WIDTH, TOOLBAR_HEIGHT, WORKSPACE_FOOTER} from 'constants/ViewConstants';
 export function contextTypes(cType) {
     return function (DecoratedComponent) {
         DecoratedComponent.contextTypes = cType;
@@ -46,7 +45,7 @@ export function configNode(){
                 return null;
             }
 
-            const NODE_EDITOR_WIDTH       = w - (2* NODE_EDITOR_PADDING) - PALETTE_WIDTH;
+            const NODE_EDITOR_WIDTH       = w - ((2* NODE_EDITOR_PADDING) + PALETTE_WIDTH);
             const NODE_EDITOR_MAX_HEIGHT  = h - (2 * NODE_EDITOR_PADDING);
 
             const inputs = Object.keys(links).filter((key)=>{
@@ -81,6 +80,8 @@ export function configNode(){
                 store,
                 w,
                 h,
+                contenth: h - (TOOLBAR_HEIGHT + TAB_HEIGHT + TOOLBAR_HEIGHT +  (2 * NODE_EDITOR_PADDING) + WORKSPACE_FOOTER  + 40),
+                contentw: NODE_EDITOR_WIDTH,
             }
 
             const nodeeditorprops = {

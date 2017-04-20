@@ -7,12 +7,17 @@ import { formatSchema } from 'utils/utils';
 import {configNode} from 'utils/ReactDecorators';
 import Editor from './features/editor/components/Editor';
 
+const PALETTE_WIDTH = 60;
+
 @configNode()
 export default class Node extends Component {	
 	   	
   render() {
        
-      const {node,values={},updateNode, store} = this.props;
+      console.log("IN NODE WITH PROPS");
+      console.log(this.props);
+
+      const {node,h,w,values={},updateNode, store, contentw, contenth} = this.props;
 
       const nameprops = {
           id: "name",
@@ -28,13 +33,15 @@ export default class Node extends Component {
       			<Textfield {...nameprops}/>												
       	  	</div>
 
-      	  
+
+      const height = contenth -  40 /*Cell height*/;  
+
       return <div>
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>
           			</Cells>
-                <div style={{height: 'calc(100vh - 200px)', background:'green', width:"100%"}}>
-                   <Editor store={store} node={node}/>
+                <div style={{height:height, background:'green', width:"100%"}}>
+                   <Editor canvasheight={height} canvaswidth={contentw-PALETTE_WIDTH} store={store} nid={node.id}/>
                 </div>
         	   </div>	
           

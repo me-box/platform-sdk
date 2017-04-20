@@ -15,24 +15,16 @@ function loadNode({store,component,node,reducer}){
 
       const _node = Object.assign({},node, {schema: _schema(node._def), description:_description(node._def)});
       
+
       addViewProperties(_node);
     
+      console.log(_node);
+
       if (reducer){
         register(store, _node.id, scopeify(_node.id, reducer));
       }
 
-      const elementprops = {
-        store: store,
-        id: node.id,
-      }
-
-      console.log("ok component is");
-      console.log(component);
-
-
-      const config = React.createElement(component, {...elementprops});
-      dispatch({type: nodeActionTypes.NODE_DROPPED, node: _node, config});
-
+      dispatch({type: nodeActionTypes.NODE_DROPPED, node:_node, config:{id: _node.id, fn:component}});
       
 
       //const element = React.createElement(component, {...elementprops});
@@ -115,9 +107,6 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     if (reducer){
       register(store, node.id, scopeify(node.id, reducer));
     }
-    
-    console.log("ok component is");
-    console.log(component);
 
     //const elementprops = {
     //    store: store,

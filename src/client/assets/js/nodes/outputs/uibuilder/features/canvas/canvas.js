@@ -21,7 +21,7 @@ const LOAD_TEMPLATES             = 'uibuilder/canvas/LOAD_TEMPLATES';
 const CLEAR_STATE                = 'uibuilder/canvas/CLEAR_STATE';
 
 // This will be used in our root reducer and selectors
-export const NAME = 'canvas';
+export const NAME = 'uibuilder/canvas';
 
 let _x =0, _y=0;
 
@@ -671,20 +671,18 @@ function clearState(){
 }
 // Selectors
 
-const canvas = (state) => state[NAME];
+const canvas = (state, ownProps) => state[ownProps.nid][NAME];
 
 export const selector = createStructuredSelector({
-  canvas,
+  [NAME]: canvas,
   
   template : (state, ownProps)=>{
-    console.log("OK LOOKING AT props")
-    console.log(ownProps);
-    
-    return state[ownProps.node.id][NAME].templatesById[ownProps.id]
+   
+    return state[ownProps.nid][NAME].templatesById[ownProps.id]
   },
   
   selected : (state, ownProps)=>{
-    return state[ownProps.node.id][NAME].selected ? state[NAME].selected.path : [];
+    return state[ownProps.nid][NAME].selected ? state[NAME].selected.path : [];
   },
 });
 

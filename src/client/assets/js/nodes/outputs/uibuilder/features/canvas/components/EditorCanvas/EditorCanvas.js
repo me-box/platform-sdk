@@ -7,7 +7,7 @@ import {Circle,Ellipse,Text,Rect,Line,Path,Group} from '../svg/';
 import { DropTarget } from 'react-dnd';
 
 //import {PALETTE_WIDTH} from 'features/palette/constants';
-const PALLETE_WIDTH = 150;
+const PALETTE_WIDTH = 150;
 
 function collect(connect, monitor) {
   return {
@@ -53,7 +53,9 @@ class EditorCanvas extends Component {
 
   renderTemplate(template){
     
-    
+      console.log("am in rener template!");
+      console.log(template);
+
       switch(template.type){
           
           case "circle":
@@ -86,8 +88,6 @@ class EditorCanvas extends Component {
 
 
   renderTemplates(){
-    console.log("IN RENDER TEMPLATES WITH");
-    console.log(this.props);
 
     const {[NAME]:{templates, templatesById, selected}} = this.props;
 
