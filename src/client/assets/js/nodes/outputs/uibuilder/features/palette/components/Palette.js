@@ -17,9 +17,11 @@ import PaletteLayout from './PaletteLayout';
 export default class Palette extends Component {
 
   render() {
+    
+    const {h} = this.props;
 
     return (
-      <Paper zDepth={2} style={{position:'absolute', overflowY:'auto', height:'100%', color:"white", background:"#03a9f4", width:viewConstants.PALETTE_WIDTH}}>
+      <Paper zDepth={2} style={{position:'absolute', overflowY:'auto', overflowX:'hidden', height:h, color:"white", background:"#3f51b5", width:viewConstants.PALETTE_WIDTH}}>
         <PaletteLayout {...this.props} />
       </Paper>
     );

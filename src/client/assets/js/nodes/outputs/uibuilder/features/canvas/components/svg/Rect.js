@@ -75,21 +75,23 @@ export default class Rect extends Component {
 	}
 
 	_templateSelected(){
-		const {id, template} = this.props;
-		this.props.actions.templateSelected({path:[id], type:template.type});
+		const {nid,id, template} = this.props;
+		this.props.actions.templateSelected(nid,{path:[id], type:template.type});
 	}
 
 	_onMouseDown(){
-		const {id, template} = this.props;
-		this.props.actions.onMouseDown({path:[id], type:template.type});
+		const {nid,id, template} = this.props;
+		this.props.actions.onMouseDown(nid,{path:[id], type:template.type});
 	}
 
 	_onRotate(){
-		this.props.actions.onRotate(this.props.id);
+		const {nid,id} = this.props;
+		this.props.actions.onRotate(nid,id);
 	}
 
 	_onExpand(){
-		this.props.actions.onExpand(this.props.id);
+		const {nid,id} = this.props;
+		this.props.actions.onExpand(nid,id);
 	}
 
 }

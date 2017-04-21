@@ -84,7 +84,7 @@ export default function reducer(state=initialState, action = {}) {
     case SELECT_TEMPLATE: {
       return {
         ...state,
-        selected: action.id,
+        selected: action.tid,
       };
     }
 
@@ -131,41 +131,45 @@ export default function reducer(state=initialState, action = {}) {
 
 // Action Creators
 
-function selectTemplate(id: number) {
+function selectTemplate(id, tid: number) {
   return {
-    type: SELECT_TEMPLATE,
     id,
+    type: SELECT_TEMPLATE,
+    tid,
   };
 }
 
-function fetchingTemplates(){
+function fetchingTemplates(id){
   return {
+      id,
       type: FETCHING_TEMPLATES,
   }
 }
 
-function loadTemplate(template){
+function loadTemplate(id,template){
   return {
+    id,
     type: LOAD_TEMPLATE,
     template
   }
 }
 
-function loadTemplates(templates){
+function loadTemplates(id,templates){
   return {
+    id,
     type: LOAD_TEMPLATES,
     templates
   }
 }
 
-function loadSVGTemplates(){
+function loadSVGTemplates(id){
 
   return (dispatch,getState)=>{
   
-    dispatch(fetchingTemplates());
+    dispatch(fetchingTemplates(id));
 
     get('/images/').then((res)=>{
-      dispatch(loadTemplates(res.body));
+      dispatch(loadTemplates(id, res.body));
     }).catch((err)=>{
       console.log("Seen a network error!!");
       throw err;
@@ -176,7 +180,7 @@ function loadSVGTemplates(){
 // Selectors
 
 const templates = (state, newProps) => {
-  console.log(state[newProps.nid][NAME]); 
+  
   return state[newProps.nid][NAME];
 }
 

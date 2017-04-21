@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import {camelise,componentsFromTransform} from 'nodes/outputs/uibuilder/utils';
-import { actionCreators as canvasActions, selector } from '../..';
+import { actionCreators as canvasActions, selector, NAME } from '../..';
 import { connect } from 'react-redux';
 import {Circle, Text, Line, Rect, Ellipse,Path} from "./"
 
@@ -24,7 +24,7 @@ export default class Group extends Component {
 
 	renderChildren(children){
 
-		const {canvas:{templatesById}} = this.props;
+		const {[NAME]:{templatesById}} = this.props;
 
 		return children.map((id)=>{
 
@@ -87,7 +87,7 @@ export default class Group extends Component {
 
 	render(){
 
-		const {id, selected, canvas:{templatesById}} = this.props;
+		const {id, selected, [NAME]:{templatesById}} = this.props;
 		const template = templatesById[id];
 		const amSelected = selected.indexOf(id) != -1;
 		const {x,y,width,height,style,transform="translate(0,0)"} = template;
@@ -118,21 +118,23 @@ export default class Group extends Component {
 	}
 
 	_templateSelected(){
-		const {id, template} = this.props;
-		this.props.actions.templateSelected({path:[id], type:template.type});
+		const {nid, id, template} = this.props;
+		this.props.actions.templateSelected(nid,{path:[id], type:template.type});
 	}
 
 	_onMouseDown(){
-		const {id, template} = this.props;
-		this.props.actions.onMouseDown({path:[id], type:template.type});
+		const {nid, id, template} = this.props;
+		this.props.actions.onMouseDown(nid,{path:[id], type:template.type});
 	}
 
 	_onRotate(){
-		this.props.actions.onRotate(this.props.id);
+		const {nid, id} = this.props;
+		this.props.actions.onRotate(nid,id);
 	}
 
 	_onExpand(){
-		this.props.actions.onExpand(this.props.id);
+		const {nid, id} = this.props;
+		this.props.actions.onExpand(nid,id);
 	}
 
 

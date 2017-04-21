@@ -14,8 +14,7 @@ export default class Node extends Component {
 	   	
   render() {
        
-      console.log("IN NODE WITH PROPS");
-      console.log(this.props);
+    
 
       const {node,h,w,values={},updateNode, store, contentw, contenth} = this.props;
 
@@ -40,7 +39,7 @@ export default class Node extends Component {
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>
           			</Cells>
-                <div style={{height:height, background:'green', width:"100%"}}>
+                <div style={{height:height, width:"100%"}}>
                    <Editor canvasheight={height} canvaswidth={contentw-PALETTE_WIDTH} store={store} nid={node.id}/>
                 </div>
         	   </div>	

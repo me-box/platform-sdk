@@ -5,7 +5,7 @@ import { actionCreators as canvasActions, selector, NAME } from '../../';
 import './Canvas.scss';
 import {Circle,Ellipse,Text,Rect,Line,Path,Group} from '../svg/';
 import { DropTarget } from 'react-dnd';
-
+import { bindNodeIds } from 'utils/utils';
 //import {PALETTE_WIDTH} from 'features/palette/constants';
 const PALETTE_WIDTH = 150;
 
@@ -18,13 +18,14 @@ function collect(connect, monitor) {
 
 const canvasTarget = {
   drop(props,monitor) {
+   
     const {template,children} = monitor.getItem();
 
     const {x,y}   = monitor.getSourceClientOffset()
     if (template !== "group"){
-      props.dispatch(canvasActions.templateDropped(template,(x-100),y))
+      props.dispatch(canvasActions.templateDropped(props.nid, template,(x-100),y))
     }else{
-      props.dispatch(canvasActions.groupTemplateDropped(children, (x-100), y))
+      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, (x-100), y))
     }
   }
 };
@@ -37,12 +38,14 @@ class EditorCanvas extends Component {
 
   constructor(props, context){
   	super(props, context);
+    const {nid, dispatch} = props;
+
   	this._onMouseMove = this._onMouseMove.bind(this);
-    this.mouseMove = bindActionCreators(canvasActions.mouseMove, props.dispatch);
-    this.onMouseUp = bindActionCreators(canvasActions.onMouseUp, props.dispatch);
-    this.deletePressed = bindActionCreators(canvasActions.deletePressed, props.dispatch);
-    this._handleKeyDown = this._handleKeyDown.bind(this);
-    window.addEventListener('keydown', this._handleKeyDown);
+    this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
+    this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
+    this.deletePressed = bindActionCreators(canvasActions.deletePressed.bind(null,nid), dispatch);
+    //this._handleKeyDown = this._handleKeyDown.bind(this);
+    //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
   _onMouseMove(e){
@@ -53,32 +56,35 @@ class EditorCanvas extends Component {
 
   renderTemplate(template){
     
-      console.log("am in rener template!");
-      console.log(template);
+      const {nid} = this.props;
 
+      const props = {
+          id: template.id,
+          nid,
+      }
       switch(template.type){
           
           case "circle":
           
-            return <Circle key={template.id} id={template.id}/>
+            return <Circle key={template.id} {...props}/>
           
           case "ellipse":
-            return <Ellipse key={template.id} id={template.id}/>
+            return <Ellipse key={template.id} {...props}/>
 
           case "rect":
-            return <Rect key={template.id} id={template.id}/>
+            return <Rect key={template.id} {...props}/>
 
           case "path":
-            return <Path key={template.id} id={template.id}/>
+            return <Path key={template.id} {...props}/>
           
           case "text":
-            return <Text key={template.id} id={template.id}/>
+            return <Text key={template.id} {...props}/>
           
           case "line":
-            return <Line key={template.id} id={template.id}/>
+            return <Line key={template.id} {...props}/>
 
           case "group":
-            return <Group key={template.id} id={template.id} />
+            return <Group key={template.id} {...props} />
 
        }
       

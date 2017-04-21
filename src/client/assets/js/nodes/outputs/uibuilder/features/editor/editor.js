@@ -55,22 +55,24 @@ export default function reducer(state = initialState, action = {}) {
 
 // Action Creators
 
-function screenResize(w: number, h:number) {
+function screenResize(id, w: number, h:number) {
   return {
+    id,
     type: SCREEN_RESIZE,
     w,
     h,
   };
 }
 
-function setView(view:string){
+function setView(id, view){
   return{
+    id,
     type: SET_VIEW,
     view,
   }
 }
 
-function save(){
+function save(id){
    return (dispatch, getState)=>{
        const {canvas : {templates, templatesById}, mapper: {mappings, transformers}} = getState();
       
@@ -83,13 +85,13 @@ function save(){
 
        post("scene/add", {name:"test", scene:state});
 
-       dispatch({type:SAVING});
+       dispatch({id, type:SAVING});
     }
 }
 
-function load(scene){
+function load(id, scene){
     return (dispatch, getState)=>{
-       dispatch({type:LOADING});
+       dispatch({id, type:LOADING});
        
        dispatch(liveActions.clearState());
        dispatch(templateActions.clearState());
@@ -104,8 +106,9 @@ function load(scene){
     }
 }
 
-function setScenes(scenes){
+function setScenes(id, scenes){
   return {
+    id,
     type: SET_SCENES,
     scenes: scenes,
   }

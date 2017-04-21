@@ -38,8 +38,7 @@ export default class TestManager extends Component {
             boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.9), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
             color:'white',
         }
-		console.log("nodes are");
-		console.log(nodes);
+		
 
 		const links = nodes.map((node,i)=>{
 			return <div key={i}>

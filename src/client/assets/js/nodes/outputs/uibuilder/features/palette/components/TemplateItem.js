@@ -72,8 +72,10 @@ class TemplateItem extends Component {
   };
 
   render() {
-    const { isDragging, connectDragSource, name, type } = this.props;
    
+    const { isDragging, connectDragSource, name, type } = this.props;
+    console.log(isDragging);
+
     const draggable = connectDragSource( <div style={{paddingTop:20}} onClick={() => this.props.selectTemplate(this.props.id)}><FontIcon style={{color:"white", fontSize:"2em"}}>{iconForType(type)}</FontIcon></div>)
     
     return  <div style={{textAlign:"center"}}>

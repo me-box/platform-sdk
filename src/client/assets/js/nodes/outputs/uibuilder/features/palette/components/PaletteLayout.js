@@ -14,9 +14,6 @@ export default class PaletteLayout extends Component {
   }
 
   render() {
-    
-    console.log("---> PALETTE LAYOUT----> ok we have props as");
-    console.log(this.props);
   
     const { [NAME] : { templatesById, selected }, actions } = this.props;
   

@@ -455,7 +455,7 @@ const _modifyTemplate = (state, action)=>{
 
 
 const _templatecoords = (template)=>{
-
+ 
   switch(template.type){
     
     case "rect":
@@ -474,10 +474,12 @@ const _templatecoords = (template)=>{
 
 
 export default function reducer(state = initialState, action={}) {
+
+ 
   switch (action.type) {
-    
+   
+
     case MOUSE_MOVE: 
-      
       _x = action.x;
       _y = action.y;
 
@@ -491,18 +493,32 @@ export default function reducer(state = initialState, action={}) {
 
     case MOUSE_DOWN:
 
-
       const {path} = action.path;
       const [id,...rest] = path;
       const _tmpl = state.templatesById[id];
-      const {x,y} = _templatecoords(_tmpl);
 
-      return Object.assign({}, state,  {
-                                            selected: action.path,
-                                            dragging: !state.expanding && !state.rotating,
-                                            dx: _x-x,
-                                            dy: _y-y,
-                                        });
+      if (_tmpl){ // have to do this check for dev mode to work
+        const {x,y} = _templatecoords(_tmpl);
+
+        return Object.assign({}, state,  {
+                                              selected: action.path,
+                                              dragging: !state.expanding && !state.rotating,
+                                              dx: _x-x,
+                                              dy: _y-y,
+                                          });
+      }
+
+      //see: https://github.com/gaearon/redux-devtools/issues/167
+      //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+
+      console.log("-------> template is null <-----------------");
+      console.log("ACTION is");
+      console.log(action);
+      console.log(`reducer:${action.id}`);
+      console.log(`shape id : ${id}`);
+      console.log(state);
+      console.log("--------------------------------------------");
+
       return state;
 
     case MOUSE_UP:
@@ -514,13 +530,19 @@ export default function reducer(state = initialState, action={}) {
                                         });
     
     case TEMPLATE_DROPPED:
+      
+
       const template = createTemplate(action.template, action.x, action.y);
-      return Object.assign({}, state, {
+  
+
+      return  Object.assign({}, state, {
                                           templates: [...state.templates, template.id],
                                           templatesById: {...state.templatesById, ...{[template.id]:template}},
                                           selected: {path:[template.id], type:template.type},
                                        });
     
+    
+
     case GROUP_TEMPLATE_DROPPED:
       const {root, templates} = createGroupTemplate(action.children, action.x, action.y);
       return Object.assign({}, state, {
@@ -564,49 +586,61 @@ export default function reducer(state = initialState, action={}) {
 
 // Action Creators
 
-function mouseMove(x: number, y:number) {
+function mouseMove(id, x: number, y:number) {
+
   return {
+    id,
     type: MOUSE_MOVE,
     x,
     y,
   };
 }
 
-function onMouseDown(path, type){
+function onMouseDown(id, path, type){
+  console.log("------------ on Mouse donw had been called!--------");
   return {
+    id,
     type: MOUSE_DOWN,
     path,
   };
 }
 
-function onMouseUp(){
+function onMouseUp(id){
   return {
+    id,
     type: MOUSE_UP
   };
 }
 
-function onExpand(templateId){
+function onExpand(id,templateId){
   return {
+    id,
     type: EXPAND,
     templateId,
   }
 }
 
-function onRotate(){
+function onRotate(id){
   return {
+    id,
     type: ROTATE,
   }
 }
 
-function deletePressed(){
+function deletePressed(id){
 
   return {
+    id,
     type: DELETE,
   }
 }
 
-function templateDropped(template:string, x:number, y:number) {
+function templateDropped(id, template:string, x:number, y:number) {
+  console.log("template dropped and id is");
+  console.log(id);
+
   return {
+    id,
     type: TEMPLATE_DROPPED,
     template,
     x,
@@ -614,8 +648,9 @@ function templateDropped(template:string, x:number, y:number) {
   };
 }
 
-function groupTemplateDropped(children, x:number, y:number){
+function groupTemplateDropped(id,children, x:number, y:number){
   return {
+    id,
     type: GROUP_TEMPLATE_DROPPED,
     children,
     x,
@@ -623,22 +658,25 @@ function groupTemplateDropped(children, x:number, y:number){
   };
 }
 
-function templateSelected(path) {
+function templateSelected(id,path) {
   return {
+    id,
     type: TEMPLATE_SELECTED,
     path,
   };
 }
 
-function templateParentSelected(path) {
+function templateParentSelected(id,path) {
   return {
+    id,
     type: TEMPLATE_PARENT_SELECTED,
   };
 }
 
 
-function updateTemplateAttribute(path:Array, property:string, value){
+function updateTemplateAttribute(id,path:Array, property:string, value){
  return {
+    id,
     type: UPDATE_TEMPLATE_ATTRIBUTE,
     path,
     property,
@@ -646,8 +684,9 @@ function updateTemplateAttribute(path:Array, property:string, value){
   };
 }
 
-function updateTemplateStyle(path:Array, property:string, value){
+function updateTemplateStyle(id,path:Array, property:string, value){
   return {
+    id,
     type: UPDATE_TEMPLATE_STYLE,
     path,
     property:property ,
@@ -655,8 +694,9 @@ function updateTemplateStyle(path:Array, property:string, value){
   };
 }
 
-function loadTemplates({templates, templatesById}){
+function loadTemplates(id, {templates, templatesById}){
    return {
+    id,
     type: LOAD_TEMPLATES,
     templates,
     templatesById,
@@ -666,23 +706,25 @@ function loadTemplates({templates, templatesById}){
 
 function clearState(){
   return {
+    id,
     type: CLEAR_STATE,
   }
 }
 // Selectors
 
-const canvas = (state, ownProps) => state[ownProps.nid][NAME];
+const canvas = (state, ownProps) => {
+   return state[ownProps.nid][NAME];
+}
 
 export const selector = createStructuredSelector({
   [NAME]: canvas,
   
   template : (state, ownProps)=>{
-   
     return state[ownProps.nid][NAME].templatesById[ownProps.id]
   },
   
   selected : (state, ownProps)=>{
-    return state[ownProps.nid][NAME].selected ? state[NAME].selected.path : [];
+    return state[ownProps.nid][NAME].selected ? state[ownProps.nid][NAME].selected.path : [];
   },
 });
 

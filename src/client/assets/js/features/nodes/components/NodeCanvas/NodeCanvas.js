@@ -54,8 +54,7 @@ class NodeCanvas extends Component {
 
   render() {
 
-    console.log("orops are");
-    console.log(this.props);
+   
     const {nodes, configs, links, connectDropTarget, w, h} = this.props;
     const {store} = this.context;
 
@@ -68,8 +67,7 @@ class NodeCanvas extends Component {
           store,
           id: config.id,
       }
-      console.log("ok element rpops are");
-      console.log(elementprops);
+     
 
       return <div key={i}>
                 {React.createElement(config.fn, {...elementprops})}

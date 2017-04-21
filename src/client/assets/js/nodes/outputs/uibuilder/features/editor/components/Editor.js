@@ -9,7 +9,7 @@ import EditorCanvas from '../../canvas/components/EditorCanvas';
 //import LiveCanvas from '../../live/components/LiveCanvas';
 
 import Palette from '../../palette/components';
-//import Mapper from '../../mapper/components/Mapper';
+import Mapper from '../../mapper/components/Mapper';
 import DragDropContainer from 'nodes/outputs/uibuilder/components/DragDrop';
 import './Editor.scss';
 //import {DatasourceManager} from '../../../datasources';
@@ -42,10 +42,11 @@ export default class Editor extends Component {
       this._closeDialog = this._closeDialog.bind(this);
       this._openLoadDialog = this._openLoadDialog.bind(this);
       this.state = {load:false};
+
    }		
   	
     componentDidMount(){
-		  window.addEventListener('resize', this._handleResize);
+		  //window.addEventListener('resize', this._handleResize);
   	}
 
 /*    render() {
@@ -89,13 +90,13 @@ export default class Editor extends Component {
 
       return (
         <div className="uieditor">
-            <Palette nid={nid}/>
+            <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
                 {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
             </div> 
-         
-          <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
-          <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
+            {view==="editor" && <Mapper nid={nid} h={canvasheight}/>}
+            <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
+            <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
         </div>
       );
     }
@@ -144,28 +145,33 @@ export default class Editor extends Component {
   	}*/
 
   	_handleResize(e){
+        const {nid} = this.props;
      	  const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
       	const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-      	this.props.actions.screenResize(w,h);
+      	this.props.actions.screenResize(nid,w,h);
   	}
 
    _handleEdit(){
+      const {nid} = this.props;
       this.props.actions.unsubscribeMappings();
-      this.props.actions.setView("editor")
+      this.props.actions.setView(nid,"editor")
     }
 
     _handleLive(){
+      const {nid} = this.props;
       this.props.actions.subscribeMappings();
-      this.props.actions.setView("live")
+      this.props.actions.setView(nid,"live")
     }
 
     _handleSave(){
-      this.props.actions.save();
+      const {nid} = this.props;
+      this.props.actions.save(nid);
     }
 
     _handleLoad(scene){
+      const {nid} = this.props;
       this.setState({load:false});
-      this.props.actions.load(scene);
+      this.props.actions.load(nid,scene);
     }
 
     _openLoadDialog(){
