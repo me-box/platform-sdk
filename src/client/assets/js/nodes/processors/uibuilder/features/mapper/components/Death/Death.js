@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { actionCreators as templateActions } from 'nodes/outputs/uibuilder/features/canvas/';
+import { actionCreators as templateActions } from 'nodes/processors/uibuilder/features/canvas/';
 import { selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

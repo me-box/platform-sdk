@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
@@ -12,7 +12,7 @@ import 'brace/theme/github';
 import {configNode} from 'utils/ReactDecorators';
 
 @configNode()
-export default class Node extends React.Component {
+export default class Node extends Component {
 
 	   constructor(props){
 	   		super(props);
@@ -21,6 +21,9 @@ export default class Node extends React.Component {
        render() {
           
         	const {node, inputs, values={}, outputs, updateNode} = this.props;
+            
+
+         
             
        		
 			 const nameprops = {

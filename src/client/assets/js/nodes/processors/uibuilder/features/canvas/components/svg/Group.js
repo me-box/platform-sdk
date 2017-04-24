@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
-import {camelise,componentsFromTransform} from 'nodes/outputs/uibuilder/utils';
+import {camelise,componentsFromTransform} from 'nodes/processors/uibuilder/utils';
 import { actionCreators as canvasActions, selector, NAME } from '../..';
 import { connect } from 'react-redux';
 import {Circle, Text, Line, Rect, Ellipse,Path} from "./"

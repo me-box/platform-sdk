@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
 import { Flex, Box } from 'reflexbox'
 import Schema from "../Schema";
-import { actionCreators as templateActions } from 'nodes/outputs/uibuilder/features/canvas/';
+import { actionCreators as templateActions } from 'nodes/processors/uibuilder/features/canvas/';
 import { selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {resolvePath} from 'nodes/outputs/uibuilder/utils';
+import {resolvePath} from 'nodes/processors/uibuilder/utils';
 import TextField from 'react-md/lib/TextFields';
 import Button from 'react-md/lib/Buttons/Button';
 

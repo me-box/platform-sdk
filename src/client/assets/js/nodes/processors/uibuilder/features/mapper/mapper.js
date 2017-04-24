@@ -3,10 +3,11 @@ import {NAME as CANVASNAME, actionCreators as templateActions} from '../canvas/'
 //import {NAME as LIVENAME, actionCreators as liveActions} from '../live'
 //import {NAME as SOURCENAME} from '../sources'
 //import {DatasourceManager} from '../../datasources';
-import {generateId, defaultCode, resolvePath} from 'nodes/outputs/uibuilder/utils';
+import {generateId, defaultCode, resolvePath} from 'nodes/processors/uibuilder/utils';
 // Action Types
-
+import {actionCreators as nodeActions} from 'features/nodes/actions';
 // Define types in the form of 'npm-module-or-myapp/feature-name/ACTION_TYPE_NAME'
+const INIT = 'uibuilder/mapper/INIT';
 const TOGGLE_MAPPER  = 'uibuilder/mapper/TOGGLE_MAPPER';
 const MAP_FROM  = 'uibuilder/mapper/MAP_FROM';
 const MAP_TO = 'uibuilder/mapper/MAP_TO';
@@ -118,6 +119,12 @@ const _removeSubscriptions = ()=>{
 
 export default function reducer(state = initialState, action= {}) {
 	switch (action.type){
+		case INIT:
+
+      		return Object.assign({}, state, {
+          		mappings: action.mappings,
+          		transformers: action.transformers,
+      		});
 		
 		case TOGGLE_MAPPER:
 			return Object.assign({}, state, {open:!state.open});
@@ -161,14 +168,16 @@ export default function reducer(state = initialState, action= {}) {
 }
 
 // Action Creators
-function toggleMapper() {
+function toggleMapper(id) {
   return {
+  	id,
     type: TOGGLE_MAPPER,
   };
 }
 
-function mapFrom(sourceId, key, path, type){
+function mapFrom(id, sourceId, key, path, type){
 	return {
+		id,
 		type: MAP_FROM,
 		sourceId,
 		key,
@@ -177,13 +186,14 @@ function mapFrom(sourceId, key, path, type){
 	};
 }
 
-function mapTo(ttype, path, property){
+function mapTo(id, ttype, path, property){
 
 	return (dispatch,getState)=>{
 	
-		const template = getState().canvas.templatesById[path[path.length-1]];
+		const template = getState()[id][CANVASNAME].templatesById[path[path.length-1]];
 		
 		const action = {
+			id,
 			type: MAP_TO,
 			path,
 			ttype,
@@ -196,7 +206,7 @@ function mapTo(ttype, path, property){
 	}
 }
 
-function subscribeMappings(){
+function subscribeMappings(id){
 
 	return (dispatch, getState)=>{
 		const {mapper:{mappings}} = getState();
@@ -226,48 +236,60 @@ function subscribeMappings(){
 					const node = _getNode(nodesByKey, nodesById, enterKey, mapping.to.path); 
 					
 					if (remove){
-						dispatch(liveActions.removeNode(node.id, mapping.to.path, enterKey));
+						dispatch(liveActions.removeNode(id, node.id, mapping.to.path, enterKey));
 					}else if (shouldenter){
 						const transformer = transformers[mappingId] || defaultCode(key,property);
 						const transform   = Function(key, "node", "i", transformer);	
+						//TODO: do we need id here?
 						dispatch(fn(mapping.to.path,property,transform(value, node, count), enterKey, Date.now(), count));
 					}
 				}
 				_listeners.push(_subscribe(mappings[i], onData));
 			}
 		}
-		dispatch({type: SUBSCRIBED});
+		dispatch({id,type: SUBSCRIBED});
 	}
 }
 
-function unsubscribeMappings(){
+function unsubscribeMappings(id){
 	_removeSubscriptions();
 
 	return {
+		id,
 		type: UNSUBSCRIBED
 	}
 }
 
-function mapToAttribute(path, property){
-	return mapTo("attribute", path, property);
+function mapToAttribute(id, path, property){
+	return (dispatch, getState)=>{
+      dispatch(mapTo(id,"attribute", path, property));
+      dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+  	}
 }
 
-function mapToStyle(path, property){
-	return mapTo("style", path, property);
+function mapToStyle(id,path, property){
+	return (dispatch, getState)=>{
+      dispatch(mapTo(id,"style", path, property));
+      dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+  	}
 }
 
-function mapToTransform(path, property){
-	return mapTo("transform", path, property);
+function mapToTransform(id,path, property){
+	return (dispatch, getState)=>{
+      dispatch(mapTo(id,"transform", path, property));
+      dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+  	}
 }
 
-function selectMapping(mapping){
+function selectMapping(id,mapping){
 	return {
+		id,
 		type: SELECT_MAPPING,
 		mapping,
 	}
 }
 
-function createEnterSubscription(path, sourceId, sourcepath, enterFn){
+function createEnterSubscription(id,path, sourceId, sourcepath, enterFn){
 	
 	return (dispatch,getState)=>{
 		_subscribe( {
@@ -283,43 +305,64 @@ function createEnterSubscription(path, sourceId, sourcepath, enterFn){
 			const {enter,key} = enterFn;
 			const shouldenter = Function(...enter.params, enter.body)(data,count);
 			const enterKey = 	Function(...key.params, key.body)(data,count);
-			dispatch(liveActions.cloneNode(path,enterKey,count));
+			dispatch(liveActions.cloneNode(id,path,enterKey,count));
 		});
 
 		dispatch({
+			id,
 			type: CREATED_ENTER_SUBSCRIPTION,
 		});
 	}
 }
 
-function saveTransformer(mappingId, transformer){
+function saveTransformer(id, mappingId, transformer){
+
+
 	return (dispatch,getState)=>{
-		dispatch(selectMapping(null));
+		dispatch(selectMapping(id, null));
 	
 		dispatch({
+			id,
 			type: SAVE_TRANSFORMER,
 			mappingId,
 			transformer,
 		})
+
+		dispatch(nodeActions.updateNode('transformers', getState()[id][NAME].transformers));
 	}
 }
 
-function loadMappings({mappings, transformers}){
+function loadMappings(id,{mappings, transformers}){
 	
 	return {
+		id,
 		type: LOAD_MAPPINGS,
 		mappings,
 		transformers,
 	}
 }
 
-function clearState(){
+function clearState(id){
 	unsubscribeMappings();
 	return {
+		id,
 		type: CLEAR_STATE,
 	}
 }
 
+
+function init(id, mappings, transformers){
+	console.log("NICE - setting");
+	console.log(mappings);
+	console.log(transformers);
+
+	return {
+		id,
+		type: INIT,
+		mappings, 
+		transformers,
+	}
+}
 // Selectors
 const mapper  = (state,ownProps) => state[ownProps.nid][NAME];
 //const sources = (state,ownProps) => state[SOURCENAME];
@@ -334,6 +377,7 @@ export const selector = createStructuredSelector({
 });
 
 export const actionCreators = {
+  init,
   toggleMapper,
   mapFrom,
   mapToAttribute,

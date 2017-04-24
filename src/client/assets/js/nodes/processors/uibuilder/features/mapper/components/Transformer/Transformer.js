@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import Dialog from 'react-md/lib/Dialogs';
 import TextField from 'react-md/lib/TextFields';
 
-import {schemaLookup, defaultCode} from 'nodes/outputs/uibuilder/utils';
+import {schemaLookup, defaultCode} from 'nodes/processors/uibuilder/utils';
 
 
 

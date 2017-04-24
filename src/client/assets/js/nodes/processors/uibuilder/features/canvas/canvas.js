@@ -1,10 +1,12 @@
 import { createStructuredSelector } from 'reselect';
 import {createTemplate, createGroupTemplate, typeForProperty, generateId, componentsFromTransform, scalePreservingOrigin, originForNode, templateForPath, pathBounds} from '../../utils';
+import {actionCreators as nodeActions} from 'features/nodes/actions';
 
 const commands = ['M','m','L','l', 'H', 'h', 'V', 'v', 'C', 'c','S', 's', 'Q', 'q', 'T', 't', 'A', 'a', 'Z', 'z'];
 
 // Action Types
 
+const INIT                       = 'uibuilder/canvas/INIT';
 const EXPAND                     = 'uibuilder/canvas/EXPAND';
 const ROTATE                     = 'uibuilder/canvas/ROTATE';
 const MOUSE_MOVE                 = 'uibuilder/canvas/MOUSE_MOVE';
@@ -478,6 +480,13 @@ export default function reducer(state = initialState, action={}) {
  
   switch (action.type) {
    
+    case INIT:
+
+      return Object.assign({}, state, {
+          templates: Object.keys(action.templates),
+          templatesById: action.templates,
+      });
+    
 
     case MOUSE_MOVE: 
       _x = action.x;
@@ -587,17 +596,19 @@ export default function reducer(state = initialState, action={}) {
 // Action Creators
 
 function mouseMove(id, x: number, y:number) {
-
-  return {
-    id,
-    type: MOUSE_MOVE,
-    x,
-    y,
-  };
+  return (dispatch, getState)=>{
+    dispatch({ id,
+                type: MOUSE_MOVE,
+                x,
+                y,
+              });
+    if (getState()[id][NAME].selected){
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+    }
+  } 
 }
 
 function onMouseDown(id, path, type){
-  console.log("------------ on Mouse donw had been called!--------");
   return {
     id,
     type: MOUSE_DOWN,
@@ -636,26 +647,31 @@ function deletePressed(id){
 }
 
 function templateDropped(id, template:string, x:number, y:number) {
-  console.log("template dropped and id is");
-  console.log(id);
+  return (dispatch, getState)=>{
+      dispatch({id,
+                type: TEMPLATE_DROPPED,
+                template,
+                x,
+                y,
+              });
 
-  return {
-    id,
-    type: TEMPLATE_DROPPED,
-    template,
-    x,
-    y,
-  };
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+  }
 }
 
+
 function groupTemplateDropped(id,children, x:number, y:number){
-  return {
-    id,
-    type: GROUP_TEMPLATE_DROPPED,
-    children,
-    x,
-    y,
-  };
+  return (dispatch, getState)=>{
+      dispatch({
+                  id,
+                  type: GROUP_TEMPLATE_DROPPED,
+                  children,
+                  x,
+                  y,
+                });
+
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+  }
 }
 
 function templateSelected(id,path) {
@@ -675,39 +691,64 @@ function templateParentSelected(id,path) {
 
 
 function updateTemplateAttribute(id,path:Array, property:string, value){
- return {
-    id,
-    type: UPDATE_TEMPLATE_ATTRIBUTE,
-    path,
-    property,
-    value,
-  };
+
+  console.log("IN UPDATE TEMPLATE ATTRIBUTE!!!");
+
+  return (dispatch, getState)=>{
+    dispatch({
+        id,
+        type: UPDATE_TEMPLATE_ATTRIBUTE,
+        path,
+        property,
+        value,
+    });
+
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+  }
 }
 
 function updateTemplateStyle(id,path:Array, property:string, value){
-  return {
-    id,
-    type: UPDATE_TEMPLATE_STYLE,
-    path,
-    property:property ,
-    value,
-  };
+  return (dispatch, getState)=>{
+    dispatch({
+      id,
+      type: UPDATE_TEMPLATE_STYLE,
+      path,
+      property:property ,
+      value,
+    });
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+  }
 }
 
 function loadTemplates(id, {templates, templatesById}){
-   return {
-    id,
-    type: LOAD_TEMPLATES,
-    templates,
-    templatesById,
-  };
+  return (dispatch, getState)=>{
+    dispatch({
+      id,
+      type: LOAD_TEMPLATES,
+      templates,
+      templatesById,
+    });
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+  }
 }
 
 
-function clearState(){
+function clearState(id){
+  return (dispatch, getState)=>{
+    dispatch({
+      id,
+      type: CLEAR_STATE,
+    });
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+  }
+}
+
+function init(id, templates){
+ 
   return {
     id,
-    type: CLEAR_STATE,
+    type: INIT,
+    templates, 
   }
 }
 // Selectors
@@ -729,6 +770,7 @@ export const selector = createStructuredSelector({
 });
 
 export const actionCreators = {
+  init,
   mouseMove,
   onMouseUp,
   onMouseDown,

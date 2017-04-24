@@ -176,7 +176,7 @@ export default class NodeEditor extends Component {
 		const {node, inputs=[], outputs=[]} = this.props;
 		
 		//dont show if app node or nothing to show
-		if (node.type === "app" || (inputs.length + outputs.length <= 0))
+		if (["app", "uibuilder"].indexOf(node.type) != -1 || (inputs.length + outputs.length <= 0))
 			return null;
 
 		return <div id="schemas">	

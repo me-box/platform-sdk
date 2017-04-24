@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
-import {camelise} from 'nodes/outputs/uibuilder/utils';
+import {camelise} from 'nodes/processors/uibuilder/utils';
 import { actionCreators as canvasActions, selector } from '../..';
 import { connect } from 'react-redux';
 

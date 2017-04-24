@@ -13,9 +13,10 @@
 				{"name":"chartify", "file":"processors/chartify/index"},
 				{"name":"listify", "file":"processors/listify/index"},
 			 	{"name":"webify", "file":"processors/webify/index"},
+			 	{"name":"uibuilder", "file":"processors/uibuilder/index"},
 
 				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
-				{"name":"uibuilder", "file":"outputs/uibuilder/index"},
+				
 				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
 				
 				{"name":"debugger", "file":"debug/debugger/index"}

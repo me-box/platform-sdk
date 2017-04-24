@@ -3,7 +3,7 @@ import CSSTransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators as mapperActions, viewConstants, selector, NAME } from '../..';
-import { actionCreators as shapeActions, NAME as CANVASNAME } from 'nodes/outputs/uibuilder/features/canvas/';
+import { actionCreators as shapeActions, NAME as CANVASNAME } from 'nodes/processors/uibuilder/features/canvas/';
 //import { actionCreators as sourceActions } from 'features/sources';
 
 import Schema from "../Schema";
@@ -16,7 +16,7 @@ import Death from "../Death";
 import "./Mapper.scss";
 import { Flex, Box } from 'reflexbox'
 //import '../../../../../styles/index.scss';
-import {schemaLookup} from 'nodes/outputs/uibuilder/utils';
+import {schemaLookup} from 'nodes/processors/uibuilder/utils';
 import Paper from 'react-md/lib/Papers';
 
 
@@ -70,34 +70,32 @@ export default class Mapper extends Component {
       this.state = { activeTabIndex: 0, propertiesExpanded:false, objectsExpanded:false, mapperExpanded:false, mappingsExpanded:false, birthExpanded:false, deathExpanded:false};
       this._handleTabChange = this._handleTabChange.bind(this);
       this._toggleSelected = this._toggleSelected.bind(this);
+      this.state = {selected: null};
   }
 
-  renderSources() {
-   
 
-    /*const {sources:{sources, selected}} = this.props;
-    const path = selected;
-
-    //const path = selected ? selected.path[0] : null;
-
-    const srcs = sources.map((source) =>{
-        return <Box key={source.id} onClick={this.props.actions.selectSource.bind(null, source.id)}>{source.name}</Box>
+  renderInputs(){
+    const {inputs, nid} = this.props;
+    const {selected} = this.state;
+    
+    const srcs = inputs.map((input) => {
+        const name = input.name.trim() === "" ? input.label : input.name;
+        return <Box key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
     });
 
-    
-    const schema = path != null ? <Schema {
+    const schema = selected != null ? <Schema {
                                                 ...{
-                                                    schema: sources.reduce((acc, source)=>{return (source.id === path) ? source.schema : acc;},{}),
-                                                    onSelect: this.props.actions.mapFrom.bind(null, path) 
+                                                      schema: inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{}),
+                                                      onSelect: this.props.actions.mapFrom.bind(null, nid, selected) 
                                                     }
                                               }
                                     />: null;
-
-                                  
+    
     return <Flex flexColumn={true}>
                   {srcs}
                   {schema}
-            </Flex>*/
+            </Flex>
+
   }
 
   renderTemplate(templateId, path, selectedPath){
@@ -132,7 +130,7 @@ export default class Mapper extends Component {
 
   renderComponents() {
     
-    const {[CANVASNAME]:{templatesById, selected}} = this.props;
+    const {[CANVASNAME]:{templatesById, selected}, nid} = this.props;
     
     const {path=null} = selected || [];
     const [id, ...rest] = path;
@@ -144,7 +142,7 @@ export default class Mapper extends Component {
     const attrs = id != null ? <Attributes {
                                                       ...{
                                                             attributes: Object.keys(schemaLookup(template.type).attributes), 
-                                                            onSelect: this.props.actions.mapToAttribute.bind(null, path)
+                                                            onSelect: this.props.actions.mapToAttribute.bind(null, nid, path)
                                                           }
                                                   }
                                       /> : null;
@@ -152,7 +150,7 @@ export default class Mapper extends Component {
     const style = id != null ? <Attributes {
                                                       ...{
                                                             attributes:  Object.keys(schemaLookup(template.type).style), 
-                                                            onSelect: this.props.actions.mapToStyle.bind(null,path)
+                                                            onSelect: this.props.actions.mapToStyle.bind(null,nid,path)
                                                           }
                                                   }
                                       /> : null;
@@ -160,7 +158,7 @@ export default class Mapper extends Component {
     const transforms = id != null ? <Attributes {
                                                           ...{
                                                               attributes: ["rotate", "scale", "translate"],
-                                                              onSelect: this.props.actions.mapToTransform.bind(null, path)
+                                                              onSelect: this.props.actions.mapToTransform.bind(null,nid,path)
                                                           }
                                                       }
                                       /> : null;
@@ -175,7 +173,7 @@ export default class Mapper extends Component {
 
   renderMapper(){
       const {[CANVASNAME]:{templatesById, selected:{path=null}}} = this.props; 
-      
+
       if (!path || path.lnegth <= 0)
         return null;
 
@@ -184,27 +182,28 @@ export default class Mapper extends Component {
       return  <Box>
                 <div style={{paddingBottom:7, fontWeight:"bold"}}>{template.label}</div>
                 <Flex>
-                    <Box col={6}>{this.renderSources()}</Box>
+                    <Box col={6}>{this.renderInputs()}</Box>
                     <Box col={6}>{this.renderComponents()}</Box>
                 </Flex>
             </Box>
   }
 
   renderMappings(){
-    const {[CANVASNAME]:{templatesById}, /*sources:{sources},*/ [NAME]:{mappings}} = this.props;
+
+    const {[CANVASNAME]:{templatesById}, [NAME]:{mappings}, inputs, nid} = this.props;
   
     return mappings.map((item,i)=>{
         
-        /*const sourceName = sources.reduce((acc,source)=>{
-          if (item.from.sourceId === source.id)
-            return source.name;
+        const sourceName = inputs.reduce((acc,input)=>{
+          if (item.from.sourceId === input.id)
+            return input.name.trim() != "" ? input.name : input.label;
           return acc;
-        },item.from.sourceId);*/
-        const sourceName = "a source";
+        },item.from.sourceId);
+
         const [id, ...rest] = item.to.path; 
         const templateName = templatesById[id].label;
 
-        return <div onClick={this.props.actions.selectMapping.bind(null,item)} key={i}>{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</div>
+        return <div onClick={this.props.actions.selectMapping.bind(null,nid,item)} key={i}>{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</div>
     })
    
   }
@@ -223,14 +222,16 @@ export default class Mapper extends Component {
   renderProperties(){
 
       const { activeTabIndex } = this.state;
-      const {[CANVASNAME]:{templatesById, selected:{path}}} = this.props; 
+
+      const {[CANVASNAME]:{templatesById, selected:{path}}, nid} = this.props; 
+      console.log("rendering properties and binding to nid " + nid);
       const template = templatesById[path[path.length-1]]
-      return <Properties template={template} updateAttribute={this.props.actions.updateTemplateAttribute.bind(null,path)} updateStyle={this.props.actions.updateTemplateStyle.bind(null,path)}/>
+      return <Properties template={template} updateAttribute={this.props.actions.updateTemplateAttribute.bind(null,nid,path)} updateStyle={this.props.actions.updateTemplateStyle.bind(null,nid,path)}/>
   }
 
   render() {
 
-    const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h} = this.props;
+    const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h, nid} = this.props;
     const {propertiesExpanded, objectsExpanded, mappingsExpanded, mapperExpanded, birthExpanded, deathExpanded} = this.state;
 
     return (
@@ -275,7 +276,7 @@ export default class Mapper extends Component {
                         <CardText expandable>
                           {this.renderMapper()}
                           {this.renderMappings()}
-                          {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,null)}/>}
+                          {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}
                         </CardText>
                     </Card>}
                   </Paper>
@@ -289,17 +290,17 @@ export default class Mapper extends Component {
    }
 
    _toggleSelected(path,type,selectedPath){
-
+      const {nid} = this.props;
       //toogle here by checking laste elements of each path;
       if (selectedPath != null && path.length > 0 && type==="group"){
           const id1 = selectedPath[selectedPath.length-1];
           const id2 = path[path.length-1];
           if (id1 === id2){
-            this.props.actions.templateParentSelected();
+            this.props.actions.templateParentSelected(nid);
             return;
           }
       }
-      this.props.actions.templateSelected({path:path, type:type});
+      this.props.actions.templateSelected(nid, {path:path, type:type});
       
    }
 }

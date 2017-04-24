@@ -10,7 +10,7 @@ import EditorCanvas from '../../canvas/components/EditorCanvas';
 
 import Palette from '../../palette/components';
 import Mapper from '../../mapper/components/Mapper';
-import DragDropContainer from 'nodes/outputs/uibuilder/components/DragDrop';
+import DragDropContainer from 'nodes/processors/uibuilder/components/DragDrop';
 import './Editor.scss';
 //import {DatasourceManager} from '../../../datasources';
 import LoadScene from './LoadScene';
@@ -64,7 +64,7 @@ export default class Editor extends Component {
     render() {
            
 
-      const {[NAME]:{w,h,ow,oh,view},actions:{setView},store, canvasheight, canvaswidth, nid} = this.props;
+      const {[NAME]:{w,h,ow,oh,view},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
    
 
       const canvasstyle ={
@@ -94,7 +94,7 @@ export default class Editor extends Component {
             <div className="canvascontainer" style={canvasstyle}>
                 {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
             </div> 
-            {view==="editor" && <Mapper nid={nid} h={canvasheight}/>}
+            {view==="editor" && <Mapper nid={nid} h={canvasheight} inputs={inputs}/>}
             <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
             <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
         </div>

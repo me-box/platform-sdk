@@ -2,15 +2,18 @@ import Node from "./node";
 import reducer from './reducer';
 
 const config = {
-    category: 'outputs',    
-    color: '#d45500',
+    category: 'processors',    
+    color: '#002255',
     defaults: {             
-        name: {value:""},   
+        name: {value:""},
+        templates: {value:{}},
+        mappings: {value:[]},
+        transformers: {value:{}},   
     },
 
     inputs:1,               
     
-    outputs:0,             
+    outputs:1,             
    
     icon: "fa-picture-o ",
     

@@ -36,7 +36,8 @@ export default class Schema extends Component {
   	  }
 
   	  render(){
-
+        console.log("OK AM IN SCHEMA WITH");
+        console.log(this.props.schema);
   	  	const items = Object.keys(this.props.schema).map((key,i)=>{
   	  		const schema = this.props.schema[key];
   	  		
