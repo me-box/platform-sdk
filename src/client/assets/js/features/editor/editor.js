@@ -1,5 +1,5 @@
 import { createStructuredSelector } from 'reselect';
-import {actionCreators as publisherActions} from 'features/publisher';
+import {actionCreators as workspaceActions} from 'features/workspace';
 import request  from 'superagent';
 import config from 'config';
 import {getID} from 'utils/nodeUtils';
@@ -27,8 +27,8 @@ const initialState = {
     }
 }
 
-export default function reducer(state = initialState, action) {
-
+export default function reducer(state = initialState, action={}) {
+	
 	switch (action.type) {
 
 		case SIDEBAR_CLOSE:
@@ -56,21 +56,6 @@ export default function reducer(state = initialState, action) {
 	    	return Object.assign({}, state, {
 	    										deploymenuexpanded:!state.deploymenuexpanded,
 	    									 });
-	    
-	    									
-	    /*case TOGGLE_PUBLISHER:
-	    	
-	    	return Object.assign({}, state, {
-	    										publisher: !state.publisher,
-	    										repomanager: !state.publisher ? false : state.repomanager,
-	    										testing: !state.publisher ? false: state.testing,
-	    									});
-	    									
-		case PUBLISHER_CANCEL:
-			return Object.assign({}, state, {
-							publisher: false,
-			});*/
-			
 	
 		case  WINDOW_RESIZED:
 	    	return Object.assign({}, state, {
@@ -86,7 +71,7 @@ export default function reducer(state = initialState, action) {
 function initEditor(){
 	return (dispatch, getState)=>{
 		const id = getID();
-		dispatch(publisherActions.initEditor(id));
+		dispatch(workspaceActions.initApp(id));
 	}
 }
 
@@ -145,7 +130,7 @@ function deletePressed() {
       
     const node = getState().nodes.selectedId;
 	const link = getState().ports.selectedId;
-	    
+	
   	if (node){
   		dispatch(portActions.nodeDelete(node));
       	dispatch(nodeActions.nodeDelete(node));

@@ -5,6 +5,7 @@ export const actionConstants = {
 	NODE_UPDATE_VALUE_KEY  : 'iot.red/nodes/NODE_UPDATE_VALUE_KEY',
 	NODE_INCREMENT_VALUE_KEY  : 'iot.red/nodes/NODE_INCREMENT_VALUE_KEY',
 	NODE_UPDATE_SCHEMA : 'iot.red/nodes/NODE_UPDATE_SCHEMA',
+	NODE_UPDATE_DESCRIPTION : 'iot.red/nodes/NODE_UPDATE_DESCRIPTION',
 	NODE_MOUSE_DOWN :  'iot.red/nodes/NODE_MOUSE_DOWN',
 	NODE_DOUBLE_CLICKED : 'iot.red/nodes/NODE_DOUBLE_CLICKED',
  	NODE_DELETE : 'iot.red/nodes/NODE_DELETE',

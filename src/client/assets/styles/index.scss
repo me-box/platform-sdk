@@ -32,7 +32,14 @@ $md-drawer-tablet-width: 300px !default;
 .md-drawer--right{
 	width: 300px;
 }
-// Or only a few
-//@include react-md-typography;
-//@include react-md-grid;
-//@include react-md-buttons;
+
+.md-toolbar--discrete{
+	height: 64px;
+}
+
+
+
+.ace_content *{
+	font-family: "Lucida Console", Monaco, monospace;
+	height:100%;
+}

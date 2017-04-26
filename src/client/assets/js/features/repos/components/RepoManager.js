@@ -159,7 +159,7 @@ export default class RepoManager extends Component {
 				        leftAvatar={avatar}
 				        rightIcon={<LoadIcon />}
 				        primaryText={repo.name.replace("databox.", "")}
-				        secondaryText="repo description"
+				        secondaryText={repo.description || "no description provided"}
 				      />
 					
 		});

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
@@ -9,10 +9,10 @@ import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/java';
 import 'brace/theme/github';
+import {configNode} from 'utils/ReactDecorators';
 
-
-
-class Node extends React.Component {
+@configNode()
+export default class Node extends Component {
 
 	   constructor(props){
 	   		super(props);
@@ -20,16 +20,19 @@ class Node extends React.Component {
 	   
        render() {
           
-        	const {selected, inputs, outputs, help} = this.props;
+        	const {node, inputs, values={}, outputs, updateNode} = this.props;
+            
+
+         
             
        		
-			const nameprops = {	
-									value: 	this.props.values.name || this.props.selected.name || "",
-									id: "name",
-									onChange:(property, event)=>{
-										 this.props.updateNode(property, event.target.value);
-									}
-								}
+			 const nameprops = {
+              id: "name",
+              value: values.name || "",
+              onChange: (property, event)=>{
+                  updateNode(property, event.target.value);
+              },
+          	}
 							
 			const nameinput = <div className="centered">
 									<Textfield {...nameprops}/>												
@@ -43,11 +46,11 @@ class Node extends React.Component {
 				],
 					     
 				onSelect: (event)=>{
-					this.props.updateNode("syntax", event.target.value);
+					updateNode("syntax", event.target.value);
 				},
 				
 				style: {width: '100%'},
-				value: this.props.values.syntax || "mustache",
+				value: values.syntax || "mustache",
 		  	}
 			
 		  	const syntaxinput = <div className="centered">
@@ -58,12 +61,12 @@ class Node extends React.Component {
         	
         	var aceprops = {
         		onChange: (value)=>{
-        			 this.props.updateNode("template", value);
+        			 updateNode("template", value);
         		},
-        		value: this.props.values.template || this.props.selected.template || "",
+        		value: values.template || this.props.node.template || "",
         		mode: "html",
         		theme: "github",
-        		name: selected.id,
+        		name: node.id,
         		editorProps:{$blockScrolling: true},
         		height: '300px',
         		width: '100%',
@@ -82,69 +85,3 @@ class Node extends React.Component {
           
        }   
 }
-
-export default composeNode(Node, 'webify', 
-                            {
-                                category: 'processors',    
-                                color: '#002255',
-                                
-                                defaults: {             
-                                    name: {value:""},
-									name: {value:""},
-									field: {value:"payload"},
-									fieldType: {value:"msg"},
-									format: {value:"handlebars"},
-									syntax: {value:"mustache"},
-									template: {value:"This is the payload: {{payload}} !"},
-                                },
-                                
-                                inputs:1,               
-                                outputs:1,             
-                               
-                                
-                                icon: "fa-file-code-o",    
-                                unicode: '\uf1c9',    
-                                label: function() {     
-                                    return this.name||"webify";
-                                },
-                                
-                                schema: (subtype)=>{
-                                	return{
-                                		output:{
-                                			msg: {
-                                				type: "object",
-                                				description: "the container object",
-                                				properties:{
-													name: {type:'string', description: "the name assigned to this webify node"}, 
-													sourceId:  {type:'string', description: "<i>[id]</i>"},
-													type:{type: 'string', description: "html"},
-													
-													payload: {
-														type: 'object', 
-														description: 'the payload object', 
-														properties: {
-															values: {type:'string',  description: "formatted html"},    					
-														},
-														required: ["values"]
-													}
-												},
-												required: ["sourceId", "type", "payload"]
-											}
-										},
-										input:{
-											type: "object",
-											description: "the object whose properties you wish to template",
-											properties:{
-												any: {type: "any", description: "any object"}
-											}
-										}
-									}	
-                                },
-                                
-                                description: ()=> "<p>Sets a property based on the provided template.</p><p>By default this uses the <i><a href='http://mustache.github.io/mustache.5.html' target='_new'>mustache</a></i></p><p>For example, when a template of:<pre>Hello {{name}}. Today is {{date}}</pre><p>receives a message containing:<pre>{name: \"Fred\",date: \"Monday\" payload...}</pre><p>The resulting property will be:<pre>Hello Fred. Today is Monday</pre><p>By default, mustache will escape any HTML entities in the values it substitutes. To prevent this, use <code>{{{triple}}}</code> braces.",
-                                
-                                labelStyle: function() { 
-                                    return this.name?"node_label_italic":"";
-                                }
-                            }
-                          );

@@ -261,8 +261,9 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		
+
 		const libcommands = libraries.map((library)=>{
-							return `RUN npm install -g ${library}`
+							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
 		
 		
@@ -348,6 +349,7 @@ router.get('/repos/:user', function(req,res){
      			const repos = data.body.map(function(repo){
        				return {
        							name: repo.name, 
+       							description: repo.description,
        							updated: repo.updated_at, 
        							icon:repo.owner.avatar_url, 
        							url:repo.url, 
@@ -382,6 +384,7 @@ router.get('/repos', function(req,res){
        				
        				return {
        							name: repo.name, 
+       							description: repo.description,
        							updated: repo.updated_at, 
        							icon:repo.owner.avatar_url, 
        							url:repo.url, 
@@ -421,7 +424,7 @@ router.get('/flow', function(req,res){
 router.post('/repo/new', function(req,res){
 
 	var user 			= req.user;
-	var name 			= req.body.name.startsWith("databox.") ? req.body.name : `databox.${req.body.name}`;
+	var name 			= req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : `databox.${req.body.name.toLowerCase()}`;
 	var description 	= req.body.description || "";
 	var flows       	= req.body.flows 	|| [];
 	var manifest    	= req.body.manifest || {};
@@ -529,7 +532,7 @@ router.post('/publish', function(req,res){
 		
 	}else{ //create a new repo!
 	  	console.log("CREATING NEW REPO..");
-	  	const reponame =  app.name.startsWith("databox.") ? app.name : `databox.${app.name}`;	
+	  	const reponame =  app.name.startsWith("databox.") ? app.name.toLowerCase() : `databox.${app.name.toLowerCase()}`;	
 		console.log(reponame);
 		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
 			console.log(`publishing...${reponame}`);
@@ -538,7 +541,7 @@ router.post('/publish', function(req,res){
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			const repodetails = values[0];
-		
+			console.log("SENDING SUCCESS RESPONSE!");
 			res.send({
 				result:'success', 
 				repo: repodetails[0], 

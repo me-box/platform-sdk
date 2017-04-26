@@ -82,7 +82,7 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  description: () => "<p>OS monitor of the databox, providing 1,5 and 15 minute load averages (percentages) and free memory (bytes)</p>",
+  descriptionfn: () => "<p>OS monitor of the databox, providing 1,5 and 15 minute load averages (percentages) and free memory (bytes)</p>",
 }
 
 export default {

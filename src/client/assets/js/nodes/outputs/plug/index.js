@@ -42,7 +42,7 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  description: () => "<p> turn a plug on or off </p>",
+  descriptionfn: () => "<p> turn a plug on or off </p>",
 };
 
 

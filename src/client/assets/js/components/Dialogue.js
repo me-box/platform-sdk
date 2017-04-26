@@ -5,10 +5,6 @@ import './styles/dialogue.scss';
 import Button  from 'react-md/lib/Buttons';
 
 class Dialogue extends Component {
-	
-	constructor(props){
-		super(props);
-	}
 
 	render(){
 
@@ -17,7 +13,7 @@ class Dialogue extends Component {
 			maxHeight: `calc(100vh - ${2 * NODE_EDITOR_PADDING}px)`,
 			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING) + PALETTE_WIDTH}px)`,
 			top: NODE_EDITOR_PADDING, 
-			left:  PALETTE_WIDTH + NODE_EDITOR_PADDING, 
+			left: NODE_EDITOR_PADDING, 
 			background: 'white',
 			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
@@ -27,14 +23,16 @@ class Dialogue extends Component {
 
 	
 		const close = <Button icon onClick={this.props.close}>close</Button>;
-
+		
 		return  <div className="sdkdialogue" style={dialoguestyle}>
 					<Toolbar
 		      			colored
 		      			title={this.props.title}
 		        		actions={close}
+		        		nav={this.props.nav}
 		        		className="md-divider-border md-divider-border--bottom"
 		      		/>
+		      		
 					{this.props.children}
 					<div className="sdktoolbar">
 					 	<div className="flexcolumn">
@@ -57,12 +55,15 @@ class Dialogue extends Component {
 				</div>
 		
 	}
+
+	
 }
 
 Dialogue.defaultProps ={
    ok: ()=>{console.warn("no ok callback provided as prop!")},
    cancel:()=>{console.warn("no cancel callback provided as prop!")},
    close: ()=>{console.warn("no close callback provided as prop!")},
+   nav: null,
    title: "",
 }
 

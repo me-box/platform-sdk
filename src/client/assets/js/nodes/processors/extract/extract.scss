@@ -1,0 +1,31 @@
+ul.filterList{
+	list-style-type: none;
+	padding-left: 10px;
+	padding-top: 7px;
+}
+
+ul.filterList:first-child{
+	padding-top: 0px;
+}
+
+ul.filterList li{
+	list-style-type: none;
+	
+	line-height: 26px;
+	color: #333333;
+}
+
+.filter-description{
+	line-height: 30px;
+	background: transparent;
+}
+
+.filter-divider {
+    border-color: rgba(0, 0, 0, 0.12);
+    border-style: solid;
+    border-width: 1px;
+}
+
+.md-selection-control-container{
+	height: 30px;
+}

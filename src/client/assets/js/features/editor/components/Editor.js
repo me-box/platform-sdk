@@ -3,39 +3,45 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {Palette} from 'features/palette/components';
 import {Workspace} from 'features/workspace/components';
+import NetworkStatus from 'features/network/components';
+
 import {NAME, actionCreators as editorActions, selector } from '../';
 import {PALETTE_WIDTH, SIDEBAR_WIDTH, TOOLBAR_HEIGHT} from 'constants/ViewConstants';
 import DragDropContainer from './DragDropContainer';
 import Toolbar from './Toolbar';
 import {actionCreators as repoActions} from 'features/repos/actions';
-import {actionCreators as publisherActions} from 'features/publisher';
+import {actionCreators as workspaceActions} from 'features/workspace';
 import {actionCreators as testActions} from 'features/test';
 
 import RepoManager from 'features/repos/components/RepoManager';
-import Publisher from 'features/publisher/components/Publisher';
+import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
 
 @connect((state)=>{
     return {
         editor: state[NAME],
-        publishervisible: state["publisher"].visible,
+        publishervisible: state.workspace.publishervisible,
     }
   }, (dispatch) => {    
   return{
      actions:{...bindActionCreators(editorActions, dispatch), 
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
-              togglePublisher: bindActionCreators(publisherActions.toggleVisible, dispatch),
+              togglePublisher: bindActionCreators(workspaceActions.toggleVisible, dispatch),
               test: bindActionCreators(testActions.test, dispatch),
+
               }
     }
 })
 export default class Editor extends Component {
 
+  
   constructor(props){
   	super(props);
     this._handleResize = this._handleResize.bind(this);
     this._handleKeyDown = this._handleKeyDown.bind(this);
+   
+
     //taken out for now..
     //this.windowResize  = bindActionCreators(editorActions.windowResize, props.dispatch);
  
@@ -60,10 +66,7 @@ export default class Editor extends Component {
 
   render() {
 
-    console.log("actions are");
-    console.log(this.props.actions);
-
-  	const {store} = this.context;
+   
     const {editor:{screen:{w,h}}, publishervisible} = this.props;
    	/*const { types, tabs, currentTab,sidebarExpanded, showPublisher, categories, dimensions, status, dispatch } = this.props;
 
@@ -105,13 +108,14 @@ export default class Editor extends Component {
 
    	return (<div onKeyDown={this._keyPress}> 
           <Toolbar {...toolbarprops}/>
-	    		<div id="main-container" className="sidebar-closed">
-	    			<DragDropContainer>
+          <DragDropContainer>
+	    		 <div id="main-container" className="sidebar-closed">
 	    				<Palette />
-              <Workspace />
+              <Workspace/>
               {publishervisible && <Publisher/>}
-	    			</DragDropContainer>
-	    		</div>
+	    		 </div>
+          </DragDropContainer>
+          <NetworkStatus/>
           <RepoManager h={h-TOOLBAR_HEIGHT}/>
           <TestManager h={h-TOOLBAR_HEIGHT}/>
 	    	</div>);
@@ -131,7 +135,7 @@ export default class Editor extends Component {
               {publisher}
             </DragDropContainer>
                 <Sidebar h={dimensions.h-TOOLBAR_HEIGHT}/>
-                <NetworkStatus {...networkstatusprops}/>
+                <NetworkStatus />
                 <RepoManager h={dimensions.h-TOOLBAR_HEIGHT}/>
           </div>
         </div>);*/
@@ -150,6 +154,7 @@ export default class Editor extends Component {
     _handleResize(e){
       const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      this.props.actions.windowResize(w,h);
       //taken out for now
       //this.windowResize(w,h);
     }

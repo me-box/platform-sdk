@@ -142,7 +142,7 @@ export default class Node extends React.Component {
           	});
           	return <div key={type}>
           			 	<div className="centered">
-          			 		<div onClick={ ()=>{updateNode("chart", type); this.props.updateOutputSchema(type)} } className={className}>{type}</div>
+          			 		<div onClick={ ()=>{updateNode("chart", type)} } className={className}>{type}</div>
           			 	</div>
           			</div>
           });

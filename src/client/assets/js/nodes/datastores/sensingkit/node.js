@@ -48,12 +48,10 @@ export default class Node extends Component {
 				],
 					     
 				onSelect: (event)=>{
-					//this.props.updateDescription(event.target.value);
-					//this.props.fetchSampleData(event.target.value);
-					this.props.updateNode("sensor", event.target.value);
+					this.props.updateNode("subtype", event.target.value);
 				},
 				style: {width: '100%'},
-				value: this.props.values.sensor || "",
+				value: this.props.values.subtype || "",
 			}
 			
 			const sensorinput = <div className="centered">

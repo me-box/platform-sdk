@@ -1,8 +1,10 @@
 import {actionConstants as nodeActionTypes} from './constants';
 import { createStructuredSelector } from 'reselect';
 import { NODE_WIDTH } from 'constants/ViewConstants';
+import {actionConstants as portActionTypes} from "features/ports/constants";
 export const NAME = 'nodes';
 
+const {LINK_SELECTED} = portActionTypes;
 
 function _configureNode(current, changes){
   
@@ -33,6 +35,7 @@ function _configureNode(current, changes){
 const initialState = {
   nodes:[], 
   nodesById: {},
+  configsById: {},
   draggingNode: null, 
   selectedId: null, 
   configuringId: null, 
@@ -64,6 +67,11 @@ export default function reducer(state = initialState, action) {
         return Object.assign({}, state, {
           nodes: [  ...state.nodes, action.node.id],
           nodesById: Object.assign({}, state.nodesById, {[action.node.id]:action.node}),
+          configsById: Object.assign({}, state.configsById, {[action.node.id]:{
+                                                                                fn: action.config.fn,
+                                                                                id: action.config.id,
+                                                                              }
+                                                                            }),
         })
 
     case nodeActionTypes.NODE_MOUSE_DOWN:
@@ -81,6 +89,8 @@ export default function reducer(state = initialState, action) {
         configuringId: action.id,
       })
    
+     
+    case LINK_SELECTED:
     case nodeActionTypes.NODE_DESELECTED:
     	return Object.assign({}, state, {
     		selectedId: null,
@@ -88,10 +98,11 @@ export default function reducer(state = initialState, action) {
     
     //called from features/tabs
     case nodeActionTypes.TAB_DELETE:
+
         return Object.assign({}, state, {
             nodes: state.nodes.filter((id)=>{
                 const node = state.nodesById[id];
-                return node.id != item.z;
+                return node.z != action.id;
             }),
             nodesById: Object.keys(state.nodesById).reduce((acc,key)=>{
                 const node = state.nodesById[key];
@@ -103,7 +114,8 @@ export default function reducer(state = initialState, action) {
       	});
 
     case nodeActionTypes.NODE_DELETE:
-    
+      
+     
       if (!state.selectedId){
           return state;
       }
@@ -137,6 +149,10 @@ export default function reducer(state = initialState, action) {
 
     case nodeActionTypes.NODE_UPDATE_VALUE:
       //handle array case here too?
+      console.log("UPDATEING NODE VALUE!!!");
+      console.log(action.property);
+      console.log(action.value);
+      
       return Object.assign({}, state, {
         buffer : Object.assign({}, state.buffer, {[action.property]:action.value})
       })
@@ -223,12 +239,20 @@ export default function reducer(state = initialState, action) {
                 })
             });
 
+    case nodeActionTypes.NODE_UPDATE_DESCRIPTION:
+    
+      return Object.assign({}, state, {
+                nodesById : Object.assign({}, state.nodesById, {
+                  [action.id]: Object.assign({}, state.nodesById[action.id], {description:action.description})
+                })
+            });
+
 	  default:
 	    return state;
   }
 }
 
-const nodes = (state)=>state[NAME].nodes;
+const nodes = (state)=>state[NAME];
 const selectedId = (state)=>state[NAME].selectedId;
 const configuringId = (state)=>state[NAME].configuringId;
 const node = (state, ownProps)=>state[NAME].nodesById[ownProps.id];

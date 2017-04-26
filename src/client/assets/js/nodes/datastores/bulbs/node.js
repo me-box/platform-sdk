@@ -49,7 +49,7 @@ export default class Node extends Component {
               <Select {...typeprops}/>                        
               </div>
 
-      const nameinput = <div className="centered">
+        const nameinput = <div className="centered">
                 <Textfield {...nameprops}/>                       
                 </div>
         

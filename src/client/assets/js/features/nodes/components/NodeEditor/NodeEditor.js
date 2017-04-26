@@ -115,14 +115,68 @@ export default class NodeEditor extends Component {
 	
 	constructor(props){
 		super(props);
+		this.state = {showhelp:false};
+		this._toggleInfo = this._toggleInfo.bind(this);
 	}
 	
+	
+
+	renderHelp(){
+
+		const {node} = this.props;
+
+
+		const infostyle = {
+			height: INFO_HEIGHT,
+			background: 'white'
+		};
+
+        const namestyle = {
+        	fontSize: fitText(node.type || "", {width: "118px", padding: '16px', textAlign:'center'}, 40, 118),
+        	color: 'white'
+        }
+
+		return <div style={infostyle}>
+			<div className="flexcolumn">
+				<div className="noborder">
+					<div className="flexrow">
+						<div style={{WebkitFlex: '0 0 auto'}}>
+							<div className="flexcolumn" style={{background:"#333", width:"118px", height:"inherit"}}>
+								<div className="noborder">
+									<div className="centered" style={{width:"auto"}}>
+										<div className="editor-icon" style={{background: node._def.color || '#ca2525'}}><i className={`fa ${node._def.icon} fa-5x fa-fw`}></i></div>
+									</div>
+								</div>
+								<div className="noborder">
+									<div style={{textAlign:"center", width:"100%", padding: '0px 10px 0px 10px'}}>
+										<div style={namestyle}> {node.type} </div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div>
+							<div className="flexcolumn">
+								<div className="noborder">
+									<div className="editor-description">	
+										<div dangerouslySetInnerHTML={{__html: node.description}}></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	}
+
 
 	renderInputsAndOutputs(){
 
-		const {node, inputs, outputs} = this.props;
+		const {node, inputs=[], outputs=[]} = this.props;
 		
-		if (node.type === "app")
+		//dont show if app node or nothing to show
+		if (["app", "uibuilder"].indexOf(node.type) != -1 || (inputs.length + outputs.length <= 0))
 			return null;
 
 		return <div id="schemas">	
@@ -156,8 +210,12 @@ export default class NodeEditor extends Component {
  			updateNode("showinputs", !values.showinputs);
 		};
 
+		if (inputs.length <= 0){
+			return null;
+		}
+
 		return  <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>	
-					{inputs.length > 0 && <div style={{flexBasis:0}}>
+					<div style={{flexBasis:0}}>
 						<div className="flexcolumn">
 							<div className="noborder" style={{background:'#333', color: 'white'}} onClick={toggleInputs}>
 								<div className="centered" >
@@ -166,7 +224,7 @@ export default class NodeEditor extends Component {
 							</div>	
 							{values.showinputs && inputdescription}
 						</div>
-					</div>}
+					</div>
 				</div>
 	}
 
@@ -193,28 +251,35 @@ export default class NodeEditor extends Component {
 		const toggleOutputs = ()=>{
  			updateNode("showoutputs", !values.showoutputs);
 		};
-		return <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>		
-							{outputs.length > 0 && <div style={{flexBasis:0}}>
-								<div className="flexcolumn">
-									<div className="noborder" style={{background:'#424242', color: 'white'}} onClick={toggleOutputs}>
-										<div className="centered" >
-											there are {outputs.length} recipients of data from this function {outputtogglemsg}
-										</div>
-									</div>
-									{this.props.values.showoutputs && outputdescription}
+
+		if (outputs.length <= 0){
+			return null;
+		}
+
+		return 	<div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>		
+					<div style={{flexBasis:0}}>
+						<div className="flexcolumn">
+							<div className="noborder" style={{background:'#424242', color: 'white'}} onClick={toggleOutputs}>
+								<div className="centered" >
+									there are {outputs.length} recipients of data from this function {outputtogglemsg}
 								</div>
-							</div>}
+							</div>
+							{this.props.values.showoutputs && outputdescription}
 						</div>
+					</div>
+				</div>
 	}
 
 	render(){
-		const {name, editor:{screen:{w,h}}} = this.props;
+		const {name, w, h} = this.props;
+		const {showhelp} = this.state;
+
 		//const {name} = this.props;
 		const editorstyle = {
 			position: 'absolute',
 			zIndex: 20,
-			maxHeight: h - (2 * NODE_EDITOR_PADDING),
-			width: w - (2* NODE_EDITOR_PADDING) - PALETTE_WIDTH,
+			maxHeight: h,
+			width: w,
 			top: 0 + NODE_EDITOR_PADDING, 
 			left:  PALETTE_WIDTH + NODE_EDITOR_PADDING, 
 			background: 'white',
@@ -224,17 +289,22 @@ export default class NodeEditor extends Component {
 		}
 
 		const close = this.props.actions.nodeConfigureOk;
+		const info  = <Button icon onClick={this._toggleInfo}>info_outline</Button>;
 
 		return  <Dialogue 
 					title={`configure ${name}`} 
 					close={close} 
 					ok={this.props.actions.nodeConfigureOk} 
-					cancel={this.props.actions.nodeConfigureCancel}>
-				
+					cancel={this.props.actions.nodeConfigureCancel}
+					nav={info}>
+					{showhelp && this.renderHelp()}
 					{this.renderInputsAndOutputs()}
 					{this.props.children}
-					
 				</Dialogue>
+	}
+
+	_toggleInfo(){
+		this.setState({showhelp: !this.state.showhelp});
 	}
 
 }

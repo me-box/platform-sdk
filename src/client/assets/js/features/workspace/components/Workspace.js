@@ -15,20 +15,17 @@ export default class Workspace extends React.Component {
 	
 	constructor(props){
         super(props);
-        this._updateTab = this._updateTab.bind(this);
+        this._updateTabName = this._updateTabName.bind(this);
         this._deleteTab = this._deleteTab.bind(this);
     }
 
     componentDidMount(){
-    	console.log("calling addTab!");
     	 this.props.actions.addTab();
     }
 	
 	render() {
-		
-		console.log("workspac props are");
-		console.log(this.props);
-		const {workspace:{current, tabs}} = this.props;
+	
+		const {workspace:{currentId, tabs, tabsById}} = this.props;
 
 		const style={
 			width: '48.0676%',
@@ -54,46 +51,49 @@ export default class Workspace extends React.Component {
 			height: 30,	
 		}
 		
-		const _tabs = tabs.map((item,i)=>{
-						const selected =  current ? item.id === current.id : false;
-						
-						const className = cx({
-							'red-ui-tab': true,
-							'active' : selected,
-						});
-						
-						let tabcontent;
-						
-						if (selected){
-						
-						 	const inputprops = {
-								value: current ? current.label : "",
-								onClick: this.props.actions.selectTab.bind(this, item),
-								onChange: this._updateTab.bind(this,item.id),
-							}
-							
-							tabcontent =  <div>
-											<div>
-												<input type="text" {...inputprops} style={tabtextstyle}></input>
-										  	</div>
-										  	<div style={{position: 'absolute', top: 5, right: 5}}>
-										  		<i className="fa fa-times fa-fw" onClick={this._deleteTab.bind(this,item.id)} />
-										  	</div>
-										  </div>
-							
-						}
-						else{
-							tabcontent = <a className="red-ui-tab-label" onClick={this.props.actions.selectTab.bind(this, item)}>
-											<span>{item.label}</span>
-										 </a>
-						
-						}
-						
-						return <li key={i} className={className} style={style}> 
-									{tabcontent}
-							   </li>
+		const _tabs = tabs.map((tabId,i)=>{
+
+			const selected =  currentId === tabId;
+			const tab = tabsById[tabId];
+			
+
+			const className = cx({
+				'red-ui-tab': true,
+				'active' : selected,
+			});
+			
+			let tabcontent;
+			
+			if (selected){
+			
+			 	const inputprops = {
+					value: selected ? tab.name : "",
+					onClick: this.props.actions.selectTab.bind(this, tab.id),
+					onChange: this._updateTabName.bind(this,tab.id),
+				}
 				
-					});
+				tabcontent =  <div>
+								<div>
+									<input type="text" {...inputprops} style={tabtextstyle}></input>
+							  	</div>
+							  	<div style={{position: 'absolute', top: 5, right: 5}}>
+							  		<i className="fa fa-times fa-fw" onClick={this._deleteTab.bind(this,tab.id)} />
+							  	</div>
+							  </div>
+				
+			}
+			else{
+				tabcontent = <a className="red-ui-tab-label" onClick={this.props.actions.selectTab.bind(this, tab.id)}>
+								<span>{tab.name}</span>
+							 </a>
+			
+			}
+			
+			return <li key={i} className={className} style={style}> 
+						{tabcontent}
+				   </li>
+	
+		});
 		
 		
 		 
@@ -113,6 +113,7 @@ export default class Workspace extends React.Component {
 		    		</div>
 		    		
 		    		<NodeCanvas {...this.props}/>
+
 		    		<div id="workspace-toolbar"></div>
 		    		<div id="workspace-footer">
 			            <a className="workspace-footer-button" id="btn-zoom-out" href="#">
@@ -131,10 +132,10 @@ export default class Workspace extends React.Component {
 	
 	
 	_deleteTab(id, event){
-		this.props.actions.deleteTab(id, event.target.value);
+		this.props.actions.deleteTab(id);
 	}
 	
-	_updateTab(id, event){
-		this.props.actions.updateTab(id, event.target.value);
+	_updateTabName(id, event){
+		this.props.actions.updatePackageName(id, event.target.value);
 	}
 }

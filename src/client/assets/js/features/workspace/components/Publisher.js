@@ -2,27 +2,30 @@ import React, {Component} from 'react';
 import {TOOLBAR_HEIGHT, PALETTE_WIDTH, SIDEBAR_WIDTH, WORKSPACE_FOOTER} from 'constants/ViewConstants';
 import cx from 'classnames';
 import { bindActionCreators } from 'redux';
-import { NAME, actionCreators as publisherActions, selector } from '../';
+import { NAME, actionCreators as workspaceActions, selector } from '../';
+import { actionCreators as repoActions} from 'features/repos/actions';
 
 import { connect } from 'react-redux';
 import Textfield from 'components/form/Textfield';
 import Textarea from 'components/form/Textarea';
 
+
 @connect(selector, (dispatch) => {
   return{
-     actions: bindActionCreators(publisherActions, dispatch)
-  }
+     actions: {...bindActionCreators(workspaceActions, dispatch),
+     		   publish: bindActionCreators(repoActions.publish, dispatch)
+     		}
+  	 }
 })
 export default class Publisher extends Component {
 	
 	constructor(props){
         super(props);
-        Object.assign(this, ...bindActionCreators(publisherActions, props.dispatch));
     }
 	
 	render() {
 		
-		const {publisher:{packages, app, grid}, datastores, pkg} = this.props;
+		const {workspace:{app, grid}, packages, datastores, selectedPackage} = this.props;
 		
 		const style ={
 			position: 'absolute',
@@ -42,13 +45,13 @@ export default class Publisher extends Component {
 		}
 		
 		const packagesprops = {
-			packageSelected: this.props.actions.packageSelected,
+			packageSelected: this.props.actions.selectTab,
 			installSelected: this.props.actions.installSelected,
 			updatePackagePurpose: this.props.actions.updatePackagePurpose,
 			updatePackageBenefits: this.props.actions.updatePackageBenefits,
 			packages: packages,
 			datastores: datastores,
-			selected: pkg || {},
+			selected: selectedPackage,
 		}
 		
 		const combiprops = {
@@ -58,7 +61,7 @@ export default class Publisher extends Component {
 		}
 		
 		const submitprops = {
-			submit: this.props.actions.submit,
+			submit: this.props.actions.publish,
 			cancel: this.props.actions.cancel,	
 		}
 		

@@ -4,7 +4,7 @@ import {selector} from 'features/nodes';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 import { bindActionCreators } from 'redux';
 import NodeEditor from 'features/nodes/components/NodeEditor/';
-
+import {NODE_EDITOR_PADDING, TAB_HEIGHT, PALETTE_WIDTH, TOOLBAR_HEIGHT, WORKSPACE_FOOTER} from 'constants/ViewConstants';
 export function contextTypes(cType) {
     return function (DecoratedComponent) {
         DecoratedComponent.contextTypes = cType;
@@ -24,7 +24,9 @@ export function configNode(){
             configuringId: state.nodes.configuringId,
             node: state.nodes.nodesById[ownProps.id],
             buffer: state.nodes.buffer,
-            local: state[ownProps.id] //this is the local reducer provided by a node!
+            local: state[ownProps.id],
+            w: state.editor.screen.w,
+            h: state.editor.screen.h, //this is the local reducer provided by a node!
         }
       }, (dispatch) => {
           return{
@@ -37,11 +39,14 @@ export function configNode(){
 
         render(){
            
-            const {node, id, configuringId, store, buffer, local, store:{dispatch}, nodes, links} = this.props;
+            const {node, id, configuringId, store, buffer, local, store:{dispatch}, nodes, links, w, h} = this.props;
 
             if (!node){
                 return null;
             }
+
+            const NODE_EDITOR_WIDTH       = w - ((2* NODE_EDITOR_PADDING) + PALETTE_WIDTH);
+            const NODE_EDITOR_MAX_HEIGHT  = h - (2 * NODE_EDITOR_PADDING);
 
             const inputs = Object.keys(links).filter((key)=>{
                 const link = links[key]; 
@@ -65,12 +70,18 @@ export function configNode(){
                     this.props.actions.updateNode(property,value);
                     if (property === node._def.schemakey){
                         this.props.actions.updateSchema(id, node._def.schemafn(value));
+                        this.props.actions.updateDescription(id, node._def.descriptionfn(value));
                     }
                 },
                 inputs,
                 outputs,
                 local:local,
                 dispatch,
+                store,
+                w,
+                h,
+                contenth: h - (TOOLBAR_HEIGHT + TAB_HEIGHT + TOOLBAR_HEIGHT +  (2 * NODE_EDITOR_PADDING) + WORKSPACE_FOOTER  + 40),
+                contentw: NODE_EDITOR_WIDTH,
             }
 
             const nodeeditorprops = {
@@ -81,6 +92,8 @@ export function configNode(){
               outputs,
               updateNode: this.props.actions.updateNode,
               values:buffer,
+              w,
+              h,
             }
 
             if (node.id && node.id === configuringId){

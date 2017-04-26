@@ -3,4 +3,4 @@ export {
   actionCreators,
   selector,
   NAME
-} from './publisher';
+} from './canvas';

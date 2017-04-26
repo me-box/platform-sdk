@@ -1,5 +1,5 @@
 export {
   default,
   selector,
-  NAME
+  NAME,
 } from './nodes';

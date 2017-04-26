@@ -10,6 +10,29 @@ import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as tabActions} from 'features/workspace';
 import {actionCreators as appActions} from 'features/apps';
 
+
+//TODO: lots of duplication here..
+function extractPackages(state){
+    const nodesById =state.nodes.nodesById;
+    const nodes = Object.keys(nodesById).map(k=>nodesById[k]);
+
+    return state.workspace.tabs.map((tabId)=>{
+        
+        const pkg = state.workspace.tabsById[tabId];
+
+        return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
+          return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger")))
+          }).map((node)=>{
+              return {
+                id: node.id,
+                name: node.name || node.type,
+                type: node.subtype || node.type, 
+              }
+            })
+          })
+    });
+}
+
 function extractNodes(newNodesObj, store, lookuptype){
 
   //var i;
@@ -249,14 +272,20 @@ function commitPressed(){
 		
 		const message = getState().repos.tosave.commit;
 		const repo 	= getState().repos.loaded;
-		const tabs = getState().workspace.tabs; 
-		const packages = getState().publisher.packages;
-		const grid = getState().publisher.grid;
-		const app = getState().publisher.app;
-		
+		const grid = getState().workspace.grid;
+		const app = getState().workspace.app;
+		const tabsById = getState().workspace.tabsById;
 
 		const nodes = getState().nodes.nodesById;
 		const ports = getState().ports.linksById;
+
+    const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    });
 
 		const jsonnodes = Object.keys(nodes).map((key)=>{
 			const node = nodes[key];
@@ -272,7 +301,7 @@ function commitPressed(){
 			
 			manifest: {
   				app: Object.assign({}, app, {id: getID()}),
-  				packages: packages,
+  				packages: extractPackages(getState()),
   				'allowed-combinations': grid,
   			},
 			
@@ -311,14 +340,22 @@ function savePressed(){
 		dispatch(networkActions.networkAccess(`saving submission`));
 		const nodes = getState().nodes.nodesById;
 		const ports = getState().ports.linksById;
+    const tabsById = getState().workspace.tabsById;
 
 		const jsonnodes = Object.keys(nodes).map((key)=>{
 			const node = nodes[key];
 			return Object.assign({}, convertNode(node, Object.keys(ports).map((k)=>ports[k])));
 		});
 	
-		const tabs = getState().workspace.tabs;
-		
+		const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    });
+	
+
 		const {name, description, commit} = getState().repos.tosave;
   			
 		const submission = {
@@ -331,9 +368,9 @@ function savePressed(){
   					...jsonnodes
   			],
   			manifest: {
-  				app: Object.assign({}, getState().publisher.app, {id: getID()}),
-  				packages: getState().publisher.packages,
-  				'allowed-combinations': getState().publisher.grid,
+  				app: Object.assign({}, getState().workspace.app, {id: getID()}),
+  				packages: extractPackages(getState()),
+  				'allowed-combinations': getState().workspace.grid,
   			}
 		}
 		
@@ -363,6 +400,77 @@ function savePressed(){
 }
 
 
+function publish(){
+
+  return function (dispatch, getState) {
+    
+    const nodesById =getState().nodes.nodesById;
+    const nodes = Object.keys(nodesById).map(k=>nodesById[k]);
+    const ports = getState().ports.linksById;
+    const tabsById = getState().workspace.tabsById;
+
+    const jsonnodes = nodes.map((node)=>{
+      return Object.assign({}, convertNode(node, Object.keys(ports).map((k)=>ports[k])));
+    });
+    
+    const tabs = getState().workspace.tabs.map((key)=>{    
+          return{
+              id: tabsById[key].id,
+              label: tabsById[key].name,
+              type: 'tab'
+          }                                                     
+    });
+  
+    const flows = [
+        ...tabs,
+        ...jsonnodes
+    ]
+      
+    const repo = getState().repos.loaded;
+      
+    const data = {
+          
+          repo : repo,
+          
+          flows: flows,
+          
+          manifest: {
+          
+          app: Object.assign({}, getState().workspace.app),
+          
+
+          packages: extractPackages(getState()),
+
+          'allowed-combinations': getState().workspace.grid,
+        }
+    };
+      
+    dispatch(networkActions.networkAccess(`publishing app ${name}`));
+      
+    console.log("PUBLISHING");
+    console.log(data.manifest);
+
+    request
+        .post(`${config.root}/github/publish`)
+        .send(data)
+        .set('Accept', 'application/json')
+        .type('json')
+        .end(function(err, res){
+          if (err){
+            console.log("DISPATCHING NETWORK ERRRIR!");
+            console.log(err);
+            dispatch(networkActions.networkError(err.message));
+          }else{
+            console.log("DISPATCHING NETWORK SUCCESS!!!");
+            dispatch(networkActions.networkSuccess('successfully published app!'));
+                //dispatch(submissionSuccess(res.body));
+            dispatch(receivedSHA(res.body.repo, res.body.sha));
+            dispatch(requestRepos());
+          }
+        });
+  }
+}
+
 function requestFlows() {
   return {
     type: nodeActionTypes.REQUEST_FLOWS,
@@ -388,7 +496,7 @@ function receiveFlows(data, store, lookuptypes){
   }
 }
 
-//this is picked up by the publisher
+//this is picked up by the workspace
 function receiveManifest(manifest){
   return {
     type: nodeActionTypes.RECEIVE_MANIFEST,
@@ -449,7 +557,7 @@ function fetchFlow(store, repo){
           	console.log("DISPATCHING RECEIEVD MANIFEST!!!");
           	console.log(manifest);
 
-            //create the manifest - this will be picked up by the publisher.
+            //create the manifest - this will be picked up by the workspace.
             dispatch(receiveManifest(manifest));
           }
         });   
@@ -486,6 +594,7 @@ export const actionCreators = {
 	savePressed,
 	fetchFlow,
 	requestRepos,
+  publish,
 	toggleSaveDialogue,
 	toggleVisible,
 	mouseUp,

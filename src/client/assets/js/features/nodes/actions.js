@@ -6,32 +6,34 @@ import {getID, addViewProperties, lookup} from 'utils/nodeUtils';
 import {calculateTextWidth, toggleItem} from 'utils/utils';
 import {scopeify} from 'utils/scopeify';
 import {register,unregisterAll} from 'app/store/configureStore';
-import {actionCreators as portActions} from 'features/ports';
-
-
 
 
 function loadNode({store,component,node,reducer}){
   return function(dispatch, getState){
-      const _node = Object.assign({},node);
+      
+      console.log("loading node!");
+
+      const _node = Object.assign({},node, {schema: _schema(node._def), description:_description(node._def)});
+      
+
       addViewProperties(_node);
     
+      console.log(_node);
+
       if (reducer){
         register(store, _node.id, scopeify(_node.id, reducer));
       }
 
-      dispatch({type: nodeActionTypes.NODE_DROPPED, node: _node});
+      dispatch({type: nodeActionTypes.NODE_DROPPED, node:_node, config:{id: _node.id, fn:component}});
+      
 
-      const elementprops = {
-        store: store,
-        id: node.id,
-      }
-
-      const element = React.createElement(component, {...elementprops});
-      const g = document.createElement('div');
-      g.id = `config-${node.id}`;
-      document.body.appendChild(g);
-      render(element, document.getElementById(`config-${node.id}`));
+      //const element = React.createElement(component, {...elementprops});
+      //const root = document.getElementById('main-container');
+      //const g = document.createElement('div');
+      //g.id = `config-${node.id}`;
+      //root.appendChild(g);
+      //document.body.appendChild(g);
+      //render(element, document.getElementById(`config-${node.id}`));
   };
 }
 
@@ -45,6 +47,18 @@ function _schema(def){
       }
   }
   return def.schemafn ? def.schemafn() : {}
+}
+
+function _description(def){
+  if (def.schemakey){
+      const key = def.defaults[def.schemakey];
+      if (key && key.value){
+          if (def.descriptionfn){
+              return def.descriptionfn(key.value);
+          }
+      }
+  }
+  return def.descriptionfn ? def.descriptionfn() : {}
 }
 
 function dropNode({store, component, nt, def, reducer}, x0, y0){
@@ -63,13 +77,14 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     
     const node = {
       id: getID(),
-      z:getState().workspace.current.id,
+      z:getState().workspace.currentId,
       type: nt,
       _def: _def,
       _: (id)=>{return id},
       inputs: _def.inputs || 0,
       outputs: _def.outputs,
       schema: _schema(_def),
+      description: _description(_def),
       changed: true,
       selected: true,
       dirty: true,
@@ -88,31 +103,29 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     
     //might need to make this a separate action?
     //register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
-    //this means that instances of the same node can trasparently make use of the same action constants without a clash!.
+    //this means that instances of the same node can transparently make use of the same action constants without a clash!.
     if (reducer){
       register(store, node.id, scopeify(node.id, reducer));
     }
+
+    //const elementprops = {
+    //    store: store,
+    //    id: node.id,
+    //}
+      
+    dispatch({type: nodeActionTypes.NODE_DROPPED, node, config:{id: node.id, fn:component}});
     
-
-    dispatch({type: nodeActionTypes.NODE_DROPPED, node: node});
-
-    //THIS IS WHERE WE RENDER THE CONFIG PROPS!
-
-    //think this is where we render!!
-    const elementprops = {
-        store: store,
-        id: node.id,
-    }
-
- 
-     
-    const element = React.createElement(component, {...elementprops});
     //console.log("create element");
     //console.log(element);
-    const g = document.createElement('div');
-    g.id = `config-${node.id}`;
-    document.body.appendChild(g);
-    render(element, document.getElementById(`config-${node.id}`));
+    //const root = document.getElementById('main-container');
+     
+    //  root.appendChild(g);
+
+    //const g = document.createElement('div');
+    //g.id = `config-${node.id}`;
+    //root.appendChild(g);
+    //document.body.appendChild(g);
+    //render(element, document.getElementById(`config-${node.id}`));
     //dispatch(editorActions.closeAll());
   }
 }
@@ -161,13 +174,19 @@ function updateSchema(id, schema){
   }
 }
 
+function updateDescription(id, description){
+  return {
+    type: nodeActionTypes.NODE_UPDATE_DESCRIPTION,
+    id,
+    description,
+  }
+}
+
 
 function nodeMouseDown(id){
      
   return function(dispatch, getState){
-  
-    dispatch(portActions.linkDeselected());
-  
+ 
     dispatch ({
         type: nodeActionTypes.NODE_MOUSE_DOWN,
         id
@@ -275,6 +294,7 @@ export const actionCreators = {
   updateNodeValueKey,
   incrementNodeValueKey,
   updateSchema,
+  updateDescription,
   nodeMouseDown,
   nodeDoubleClicked,
   nodeConfigureOk,

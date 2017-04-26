@@ -34,6 +34,10 @@ const addIfNew = (state, action) =>{
 }
 
 const app = (state, action) =>{
+
+	console.log("----> app seen action ");
+	console.log(action);
+	
 	switch (action.type){
 		case APP_MESSAGE:
 

@@ -18,6 +18,7 @@ const _postFlows = function(port, data, username){
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
+
 	return new Promise((resolve,reject)=>{
 		request
 				.post(`localhost:${port}/flows`)
@@ -68,11 +69,12 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	//need to create a new Image!
 	console.log("found external libraries, so creating new image!");
 	
+	
 	const libcommands = libraries.map((library)=>{
-							return `RUN npm install -g ${library}`
+							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
-						
-	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /root/.node-red/flows.json`], ...libcommands]			
+
+	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /data/flows.json`], ...libcommands]			
 	const dockerfile = dcommands.join("\n");
 	
 	console.log(dockerfile);
@@ -141,13 +143,11 @@ const _createContainerFromStandardImage = function(username, flows){
 router.post('/flows', function(req, res){
 	
 	const flows = req.body;
-
 	console.log("OK SEEN FLOWS");
 	console.log(req.body);
 
-
 	const libraries = dedup(flatten(req.body.reduce((acc, node)=>{
-		if (node.type === "function"){
+		if (node.type === "dbfunction"){
 			acc = [...acc, matchLibraries(node.func)];
 		}
 		return acc;
@@ -171,7 +171,7 @@ router.post('/flows', function(req, res){
 	}	
 	
 	//remove this and re-instate commented code for prod
-	//_postFlows(1880, flows, req, res);
+	//_postFlows(1880, flows, 'tlodge');
 	
 });
 

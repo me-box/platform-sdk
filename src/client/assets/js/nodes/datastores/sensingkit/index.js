@@ -15,20 +15,17 @@ const config = {
       value: "sensingkit"
     },
     subtype: {
-      value: "sensingkit"
-    },
-    sensor: {
       value: "light"
     },
   },
 
-  schemakey: "sensor",
+  schemakey: "subtype",
 
-  schemafn: (sensor) => {
+  schemafn: (subtype) => {
 
-    const schema = (sensor) => {
+    const schema = (subtype) => {
 
-      switch (sensor) {
+      switch (subtype) {
 
         case "bluetooth":
           return {
@@ -45,9 +42,9 @@ const config = {
               type: 'string',
               description: '<i>sensingkit</i>'
             },
-            sensor: {
+            subtype: {
               type: 'string',
-              description: `<i>${sensor}</i>`
+              description: `<i>${subtype}</i>`
             },
 
             payload: {
@@ -95,9 +92,9 @@ const config = {
               type: 'string',
               description: '<i>sensingkit</i>'
             },
-            sensor: {
+            subtype: {
               type: 'string',
-              description: `<i>${sensor}</i>`
+              description: `<i>${subtype}</i>`
             },
 
             payload: {
@@ -140,9 +137,9 @@ const config = {
               type: 'string',
               description: '<i>sensingkit</i>'
             },
-            sensor: {
+            subtype: {
               type: 'string',
-              description: `<i>${sensor}</i>`
+              description: `<i>${subtype}</i>`
             },
             payload: {
               type: 'object',
@@ -193,9 +190,9 @@ const config = {
               type: 'string',
               description: '<i>sensingkit</i>'
             },
-            sensor: {
+            subtype: {
               type: 'string',
-              description: `<i>${sensor}</i>`
+              description: `<i>${subtype}</i>`
             },
             payload: {
               type: 'object',
@@ -249,9 +246,9 @@ const config = {
               type: 'string',
               description: '<i>sensingkit</i>'
             },
-            sensor: {
+            subtype: {
               type: 'string',
-              description: `<i>${sensor}</i>`
+              description: `<i>${subtype}</i>`
             },
             payload: {
               type: 'object',
@@ -285,7 +282,7 @@ const config = {
               type: 'string',
               description: '<i>sensingkit</i>'
             },
-            sensor: {
+            subtype: {
               type: 'string',
               description: '<i>light</i>'
             },
@@ -313,7 +310,7 @@ const config = {
         msg: {
           type: "object",
           description: "the container object",
-          properties: schema(sensor),
+          properties: schema(subtype),
         }
       }
     }
@@ -330,18 +327,17 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  description: (sensor) => {
+  descriptionfn: (subtype) => {
 
-    const core = "<strong>android mobile sensingkit</strong><hr/>";
 
-    if (sensor) {
-      const chosen = `<p> the current chosen sensor is <strong>${sensor}</strong>.</p>`
-      switch (sensor) {
+    if (subtype) {
+      const chosen = `<h3> ${subtype} </h3>`
+      switch (subtype) {
 
         case 'light':
-          return `${core} ${chosen} <p> This will return the ambient light in lux captured by a phone camera.</p>`;
+          return `${chosen} <p> This will return the ambient light in lux captured by a phone camera.</p>`;
         case 'bluetooth':
-          return `${core} ${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
+          return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 
         case 'accelerometer':
         case 'linear-acceleration':
@@ -351,10 +347,10 @@ const config = {
         case 'rotation':
         case 'battery':
         case 'audio-level':
-          return `${core} ${chosen} <p>This will return the device ${sensor} data</p>`;
+          return `${chosen} <p>This will return the device ${subtype} data</p>`;
 
         default:
-          return `${core} ${chosen}`
+          return `${chosen}`
       }
     }
     return core;
