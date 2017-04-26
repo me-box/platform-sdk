@@ -549,12 +549,6 @@ export default function reducer(state = initialState, action={}) {
                                           templatesById: {...state.templatesById, ...{[template.id]:template}},
                                           selected: {path:[template.id], type:template.type},
                                        });
-<<<<<<< HEAD
-       
-=======
-    
-    
->>>>>>> 075d089acb2140799873659cb105b552caf6fb09
 
     case GROUP_TEMPLATE_DROPPED:
       const {root, templates} = createGroupTemplate(action.children, action.x, action.y);
@@ -569,10 +563,6 @@ export default function reducer(state = initialState, action={}) {
 
     case TEMPLATE_PARENT_SELECTED: 
       return Object.assign({}, state,  {selected: _selectParent(state,action)});
-<<<<<<< HEAD
-=======
-
->>>>>>> 075d089acb2140799873659cb105b552caf6fb09
    
     case UPDATE_TEMPLATE_STYLE: 
       return Object.assign({}, state, {templatesById:_updateTemplateStyle(state,action)});
