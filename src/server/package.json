@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon --ignore 'flow*.flow' --exec babel-node server.js",
-    "startpm": "pm2 start server.js --name editor --interpreter ./node_modules/.bin/babel-node",
+    "pm": "pm2 start server.js --name editor --interpreter ./node_modules/.bin/babel-node",
     "start": "nodemon --ignore 'flow*.flow' --exec babel-node server.js",
     "dev": "nodemon --ignore 'flow*.flow' --exec babel-node server.js 9000"
   },
