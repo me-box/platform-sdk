@@ -689,11 +689,6 @@ function templateParentSelected(id,path) {
 
 function updateTemplateAttribute(id,path:Array, property:string, value){
 
-<<<<<<< HEAD
-=======
-  console.log("IN UPDATE TEMPLATE ATTRIBUTE!!!");
-
->>>>>>> 075d089acb2140799873659cb105b552caf6fb09
   return (dispatch, getState)=>{
     dispatch({
         id,
