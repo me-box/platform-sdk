@@ -73,7 +73,29 @@ app.use("/samples/*", function(req, res) {
     });
 });
 
+app.use("/image/*", function(req, res) {
+  console.log("proxying samples...>");
+    req.url = `${req.baseUrl}${req.url}`;
+    apiProxy.web(req, res, {
+      target: {
+        port: 9000,
+        host: "localhost"
+      }
+    });
+});
+
 app.use("/auth/*", function(req, res) {
+  console.log("proxying auth...>");
+   req.url = `${req.baseUrl}${req.url}`;
+    apiProxy.web(req, res, {
+      target: {
+        port: 9000,
+        host: "localhost"
+      }
+    });
+});
+
+app.use("/uibuilder/*", function(req, res) {
   console.log("proxying auth...>");
    req.url = `${req.baseUrl}${req.url}`;
     apiProxy.web(req, res, {

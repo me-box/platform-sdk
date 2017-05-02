@@ -21,7 +21,7 @@ export default class LoadScene extends PureComponent {
   }		
   
   componentDidMount(){
-    get('/scenes').then((scenes)=>{
+    get('/uibuilder/scenes').then((scenes)=>{
         try{
           this.props.actions.setScenes(JSON.parse(scenes.text));
         }

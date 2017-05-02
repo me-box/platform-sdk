@@ -24,31 +24,43 @@ export default class Birth extends PureComponent {
   
   constructor(props) {
     super(props);
-    this.state = { sourceId: null, type:"static", bufferenter:null, bufferkey:null}; 
+    this.state = { sourceId: null, type:"static", selected:null, bufferenter:null, bufferkey:null}; 
     this._selectSource = this._selectSource.bind(this);
     this._selectType = this._selectType.bind(this);
   }
 
   renderKeys() {
    
+    const {inputs, nid, path} = this.props;
 
-    const {sources:{sources}, path} = this.props;
+    console.log("OK THE PATH THAT BIRTH HAS BEEN PROVIDED IS");
+    console.log(path);
+    
+    const {selected} = this.state;
+    
+    //const {sources:{sources}, path} = this.props;
    
-
-    const srcs = sources.map((source) =>{
-        return <Box key={source.id} onClick={this._selectSource.bind(null, source.id)}>{source.name}</Box>
+    const srcs = inputs.map((input) => {
+        const name = input.name.trim() === "" ? input.label : input.name;
+        return <Box key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
     });
 
-    const schemas = sources.reduce((acc, source)=>{
-                                                    return (source.id === this.state.sourceId) ? source.schema : acc
-                                                  },{});
+    //const srcs = sources.map((source) =>{
+    //    return <Box key={source.id} onClick={this._selectSource.bind(null, source.id)}>{source.name}</Box>
+    //});
+    
+    const schemas = inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{});
+    
+    //const schemas = sources.reduce((acc, source)=>{
+    //                                                return (source.id === this.state.sourceId) ? source.schema : acc
+    //                                             },{});
 
     const schema =   <Schema schema={schemas} onSelect={(key,sourcepath)=>{
         //cannot have closures (so can serialise) so have to insert lookup function (mapping path,key to data value) here;
         const keybody = _wraplookup(key, sourcepath, "return lookup(data)");
         
 
-        this.props.actions.updateTemplateAttribute(path, "enterFn", {
+        this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
                                                                       enter:  {params:["data","index"], body: "return true"},
                                                                       key:    {params:["data", "index"], body: keybody}
                                                                     });
@@ -68,7 +80,7 @@ export default class Birth extends PureComponent {
             </Flex>
  }
 
- renderFunction() {
+ /*renderFunction() {
    
 
     const {sources:{sources},path} = this.props;
@@ -121,7 +133,13 @@ export default class Birth extends PureComponent {
                   //key textfield function
                   //ok button
             </Flex>
- }
+ }*/
+
+ /*
+ <li onClick={this._selectType.bind(null, "function")}>
+            <strong> bind to data function </strong>
+             {type==="function" && this.renderFunction()}
+          </li>*/
 
  render() {
     const {type} = this.state;
@@ -136,10 +154,7 @@ export default class Birth extends PureComponent {
             <strong> bind to data key </strong>
             {type==="key" && this.renderKeys()}
           </li>
-          <li onClick={this._selectType.bind(null, "function")}>
-            <strong> bind to data function </strong>
-             {type==="function" && this.renderFunction()}
-          </li>
+          
         </ul>
       </div>
     );

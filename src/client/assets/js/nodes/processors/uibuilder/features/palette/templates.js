@@ -168,7 +168,7 @@ function loadSVGTemplates(id){
   
     dispatch(fetchingTemplates(id));
 
-    get('/images/').then((res)=>{
+    get('/uibuilder/images/').then((res)=>{
       dispatch(loadTemplates(id, res.body));
     }).catch((err)=>{
       console.log("Seen a network error!!");

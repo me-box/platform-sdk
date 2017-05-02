@@ -209,8 +209,8 @@ export default class Mapper extends Component {
   }
 
   renderBirthOptions(){
-    const {[CANVASNAME]:{selected:{path}}} = this.props;
-    return <Birth path={path}/>
+    const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
+    return <Birth inputs={inputs} nid={nid} path={path}/>
   }
 
   renderDeathOptions(){

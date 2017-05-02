@@ -62,6 +62,11 @@ class EditorCanvas extends Component {
           id: template.id,
           nid,
       }
+
+      console.log("in render template with prosp");
+      console.log(props);
+      
+
       switch(template.type){
           
           case "circle":

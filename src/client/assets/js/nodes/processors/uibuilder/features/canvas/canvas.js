@@ -89,6 +89,13 @@ const _validNumber = (value)=>{
 
 const _updateTemplateAttribute = (state, action)=>{
 
+  console.log("in _updateTemplate attribute")
+  console.log("action is");
+  console.log(action);
+
+  console.log("tenplatesbyid is");
+  console.log(state.templatesById);
+
   const path = action.path;
 
   if (path.length == 0){
@@ -97,6 +104,13 @@ const _updateTemplateAttribute = (state, action)=>{
 
   const id = path[path.length-1];
   
+  console.log("id is " + id);
+
+  //see: https://github.com/gaearon/redux-devtools/issues/167
+  //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+  if (!state.templatesById[id]){
+    return state.templatesById;
+  }
 
   /* special case when attribute is width or height and type is group as we need to adjust children too*/
   if (state.templatesById[id].type === "group" && ["width", "height"].indexOf(action.property) != -1){
@@ -437,17 +451,21 @@ const _modifyTemplate = (state, action)=>{
     if (state.selected){
         const [id,...rest] = state.selected.path;
         const _tmpl = state.templatesById[id];
+       
+        //see: https://github.com/gaearon/redux-devtools/issues/167
+        //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+        if (_tmpl){
+          if (state.expanding){
+            return Object.assign({}, state.templatesById, _expandTemplates(state, action));
+          }
 
-        if (state.expanding){
-          return Object.assign({}, state.templatesById, _expandTemplates(state, action));
-        }
+          if (state.dragging){
+            return Object.assign({}, state.templatesById, {[id] : _moveTemplate(_tmpl, action.x-state.dx, action.y-state.dy)});       
+          }
 
-        if (state.dragging){
-          return Object.assign({}, state.templatesById, {[id] : _moveTemplate(_tmpl, action.x-state.dx, action.y-state.dy)});       
-        }
-
-         if (state.rotating){
-          return Object.assign({}, state.templatesById, {[id] : _rotateTemplate(_tmpl, action.x, action.y)});
+           if (state.rotating){
+            return Object.assign({}, state.templatesById, {[id] : _rotateTemplate(_tmpl, action.x, action.y)});
+          }
         }
     }
 
@@ -473,6 +491,23 @@ const _templatecoords = (template)=>{
         return {x:0,y:0};
   }
 }
+const _parenttemplates = (templatesById)=>{
+  
+    const templates = Object.keys(templatesById);
+
+    const children = templates.reduce((acc, key)=>{
+        const template = templatesById[key];
+        if (template.children){
+          acc = [...acc, ...template.children];
+        }
+        return acc;
+    },[]);
+
+    return templates.filter((id)=>{
+      return children.indexOf(id) == -1;
+    });
+}
+
 
 
 export default function reducer(state = initialState, action={}) {
@@ -483,7 +518,7 @@ export default function reducer(state = initialState, action={}) {
     case INIT:
 
       return Object.assign({}, state, {
-          templates: Object.keys(action.templates),
+          templates: _parenttemplates(action.templates),
           templatesById: action.templates,
       });
     
