@@ -41,25 +41,12 @@ export default class Editor extends Component {
       this._handleLoad = this._handleLoad.bind(this);
       this._closeDialog = this._closeDialog.bind(this);
       this._openLoadDialog = this._openLoadDialog.bind(this);
+      this._onKeyPress= this._handleKeyPress.bind(this);
+
       this.state = {load:false};
 
    }		
-  	
-    componentDidMount(){
-		  //window.addEventListener('resize', this._handleResize);
-  	}
-
-/*    render() {
-      const {w,h,ow,oh,view} = {w:500,h:500,ow:500,oh:500,view:"editor"};
-      const {store} = this.props;
-
-      return (
-        <div className="editor">
-          <EditorCanvas w={w} h={h} ow={ow} oh={oh} view={view} store={store}/>
-        </div>
-      )
-
-    }*/
+  
 
     render() {
            
@@ -89,10 +76,10 @@ export default class Editor extends Component {
 
 
       return (
-        <div className="uieditor">
+        <div  tabIndex="0" className="uieditor" onKeyDown={this._onKeyPress}>
             <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
-                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
+                {view==="editor" && <EditorCanvas   nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
             </div> 
             {view==="editor" && <Mapper nid={nid} h={canvasheight} inputs={inputs}/>}
             <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
@@ -101,48 +88,10 @@ export default class Editor extends Component {
       );
     }
 
-    /* */
-
-  	/*render() {
-  		
-  		const {editor:{w,h,ow,oh,view},actions:{setView}, canvaswidth, canvasheight} = this.props;
-      
-      const canvasstyle ={
-        left: PALETTE_WIDTH,
-        width: w-PALETTE_WIDTH,
-      }
-
-      const actions = [
-                        <Button flat key="load" label="load" onClick={this._openLoadDialog}>cloud_download</Button>,
-                        <Button flat key="save" label="save" onClick={this._handleSave}>save</Button>
-                      ]
-
-     
-
-      if (view === "editor"){
-        actions.push(<Button flat key="toggle" label="live" onClick={this._handleLive}>tap_and_play</Button>);
-      }else{
-        actions.push(<Button flat key="toggle" label="editor" onClick={this._handleEdit}>mode_edit</Button>);
-      }
-
-      const toolbarwidth = view==="editor" ? w-MAPPER_WIDTH-PALETTE_WIDTH : w-PALETTE_WIDTH;
-
-
-    	return (
-      	<div className="editor">
-            <DragDropContainer w={w} h={h}>
-              <Palette/>
-              <div className="canvascontainer" style={canvasstyle}>
-                  {view==="editor" && <EditorCanvas  w={w} h={h} ow={ow} oh={oh} view={view}/>}
-                  {view==="live" && <LiveCanvas w={w} h={h} ow={ow} oh={oh}/>}
-              </div> 
-            </DragDropContainer>
-            {view==="editor" && <Mapper height={h}/>}
-            <Toolbar colored title={view} actions={actions} style={{position:'fixed', width:toolbarwidth, background:"#3f51b5", left:PALETTE_WIDTH, bottom:0}}/>
-            <LoadScene visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
-        </div>
-    	);
-  	}*/
+    _handleKeyPress(e){
+        console.log("seen a key press!!!");
+        e.preventDefault();
+    }
 
   	_handleResize(e){
         const {nid} = this.props;

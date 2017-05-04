@@ -109,8 +109,8 @@ export default class Node extends Component {
 	  componentDidMount(){
         console.log(this);
         const {node, inputs=[]} = this.props;
-	  	const boxes = _convertlayout(node.layout, inputs) || _convertinputs(inputs);
-		this._actions.initLayout(boxes);
+	  	//const boxes = _convertlayout(node.layout, inputs) || _convertinputs(inputs);
+		//this._actions.initLayout(boxes);
 	  }
       
       render() {
