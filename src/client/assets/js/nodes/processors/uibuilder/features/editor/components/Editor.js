@@ -41,12 +41,25 @@ export default class Editor extends Component {
       this._handleLoad = this._handleLoad.bind(this);
       this._closeDialog = this._closeDialog.bind(this);
       this._openLoadDialog = this._openLoadDialog.bind(this);
-      this._onKeyPress= this._handleKeyPress.bind(this);
-
       this.state = {load:false};
 
    }		
-  
+  	
+    componentDidMount(){
+		  //window.addEventListener('resize', this._handleResize);
+  	}
+
+/*    render() {
+      const {w,h,ow,oh,view} = {w:500,h:500,ow:500,oh:500,view:"editor"};
+      const {store} = this.props;
+
+      return (
+        <div className="editor">
+          <EditorCanvas w={w} h={h} ow={ow} oh={oh} view={view} store={store}/>
+        </div>
+      )
+
+    }*/
 
     render() {
            
@@ -76,21 +89,16 @@ export default class Editor extends Component {
 
 
       return (
-        <div  tabIndex="0" className="uieditor" onKeyDown={this._onKeyPress}>
+        <div className="uieditor">
             <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
-                {view==="editor" && <EditorCanvas   nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
+                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
             </div> 
             {view==="editor" && <Mapper nid={nid} h={canvasheight} inputs={inputs}/>}
             <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
             <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
         </div>
       );
-    }
-
-    _handleKeyPress(e){
-        console.log("seen a key press!!!");
-        e.preventDefault();
     }
 
   	_handleResize(e){

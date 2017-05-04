@@ -44,7 +44,7 @@ class EditorCanvas extends Component {
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
     this.deletePressed = bindActionCreators(canvasActions.deletePressed.bind(null,nid), dispatch);
-    //this._handleKeyDown = this._handleKeyDown.bind(this);
+    this._handleKeyDown = this._handleKeyDown.bind(this);
     //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
@@ -62,10 +62,6 @@ class EditorCanvas extends Component {
           id: template.id,
           nid,
       }
-
-      console.log("in render template with prosp");
-      console.log(props);
-      
 
       switch(template.type){
           
@@ -112,7 +108,7 @@ class EditorCanvas extends Component {
   	const {w,h,ow,oh, view, connectDropTarget} = this.props;
 
     return connectDropTarget(
-      <div onMouseMove={this._onMouseMove} className="canvas">
+      <div tabIndex="0"  onKeyDown={this._handleKeyDown} onMouseMove={this._onMouseMove} className="canvas">
          <svg id="svgchart" viewBox={`0 0 ${ow} ${oh}`} width={w} height={h} onMouseUp={this.onMouseUp}>
             {view==="editor" && this.renderTemplates()} 
             {view==="live" && this.renderNodes()} 
@@ -122,11 +118,18 @@ class EditorCanvas extends Component {
   }
 
   _handleKeyDown(e) {
-      var rx = /INPUT|SELECT|TEXTAREA|DIV/i;
+      console.log("seen handle key down");
+      console.log(e.which);
+      e.preventDefault();
+      const {nid} = this.props;
+      var rx = /INPUT|SELECT|TEXTAREA/i;
+      console.log(e.target.tagName);
+
       if( e.which == 8 ){ // 8 == backspace
+            console.log("BACKSPACE!!");
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+                console.log("nice am here");
                 this.deletePressed();
-                e.preventDefault();
             }
       }
   }

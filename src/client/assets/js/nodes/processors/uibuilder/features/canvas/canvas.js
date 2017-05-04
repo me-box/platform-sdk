@@ -671,7 +671,7 @@ function onRotate(id){
 }
 
 function deletePressed(id){
-
+  console.log("seen delete pressed")
   return {
     id,
     type: DELETE,
