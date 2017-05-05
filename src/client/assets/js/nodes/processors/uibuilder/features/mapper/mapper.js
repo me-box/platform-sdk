@@ -12,11 +12,8 @@ const TOGGLE_MAPPER  = 'uibuilder/mapper/TOGGLE_MAPPER';
 const MAP_FROM  = 'uibuilder/mapper/MAP_FROM';
 const MAP_TO = 'uibuilder/mapper/MAP_TO';
 const SELECT_MAPPING = 'uibuilder/mapper/SELECT_MAPPING';
-const SUBSCRIBE_MAPPINGS = 'uibuilder/mapper/SUBSCRIBE_MAPPINGS';
-const UNSUBSCRIBE_MAPPINGS = 'uibuilder/mapper/UNSUBSCRIBE_MAPPINGS';
 const SAVE_TRANSFORMER = 'uibuilder/mapper/SAVE_TRANSFORMER';
-const SUBSCRIBED = 'uibuilder/mapper/SUBSCRIBED';
-const UNSUBSCRIBED = 'uibuilder/mapper/UNSUBSCRIBED';
+const REMOVE_MAPPING = 'uibuilder/mapper/REMOVE_MAPPING';
 const LOAD_MAPPINGS =  'uibuilder/mapper/LOAD_MAPPINGS';
 const CREATED_ENTER_SUBSCRIPTION=  'uibuilder/mapper/CREATED_ENTER_SUBSCRIPTION';
 const CLEAR_STATE =  'uibuilder/mapper/CLEAR_STATE';
@@ -107,14 +104,6 @@ const _getNode = (nodesByKey, nodesById, enterKey, path)=>{
 	return {};
 }
 
-
-const _removeSubscriptions = ()=>{
-
-	for (let i = 0; i < _listeners.length; i++){
-		_listeners[i].remove();
-	}
-	_listeners = [];
-}
 	
 
 export default function reducer(state = initialState, action= {}) {
@@ -145,13 +134,6 @@ export default function reducer(state = initialState, action= {}) {
 		case SELECT_MAPPING:
 			return Object.assign({},state,{selectedMapping:action.mapping});
 
-		case SUBSCRIBE_MAPPINGS:
-			_createSubscriptions(state);
-			return state;
-
-		case UNSUBSCRIBE_MAPPINGS:
-			_removeSubscriptions(state);
-			return state;
 
 		case SAVE_TRANSFORMER:
 			return Object.assign({},state,{transformers:Object.assign({}, state.transformers, {[action.mappingId]:action.transformer})});
@@ -162,6 +144,16 @@ export default function reducer(state = initialState, action= {}) {
 		case CLEAR_STATE:
 			return Object.assign({}, state, initialState);
 
+		case REMOVE_MAPPING:
+			return Object.assign({}, state, {
+				mappings: state.mappings.filter(mapping=>mapping.mappingId != action.mappingId),
+				transformers:  Object.keys(state.transformers).reduce((acc, key)=>{
+					if (key != action.mappingId){
+						acc[key] = state.transformers[key];
+					}
+					return acc;
+				},{})
+			})
 		default:	
 			return state;
 	}
@@ -251,12 +243,25 @@ function subscribeMappings(id){
 	}
 }
 
-function unsubscribeMappings(id){
-	_removeSubscriptions();
-
+function removeMapping(id, mappingId){
 	return {
 		id,
-		type: UNSUBSCRIBED
+		type: REMOVE_MAPPING,
+		mappingId,
+	}
+}
+
+function deletePressed(id, templateId){
+
+	console.log("would remove all mappings / transformers that refereence templateId " + templateId);
+	
+	return (dispatch, getState)=>{
+		const todelete = getState()[id][NAME].mappings.filter(mapping=>mapping.to.path[mapping.to.path.length-1] === templateId).map(item=>item.mappingId);
+		console.log("Deleting");
+		console.log(todelete);
+		todelete.map((mappingId)=>{
+			dispatch(removeMapping(id, mappingId));
+		});
 	}
 }
 
@@ -288,6 +293,7 @@ function selectMapping(id,mapping){
 		mapping,
 	}
 }
+
 
 function createEnterSubscription(id,path, sourceId, sourcepath, enterFn){
 	
@@ -387,7 +393,8 @@ export const actionCreators = {
   loadMappings,
   saveTransformer,
   subscribeMappings,
-  unsubscribeMappings,
+  removeMapping,
+  deletePressed,
   createEnterSubscription,
   clearState,
 };

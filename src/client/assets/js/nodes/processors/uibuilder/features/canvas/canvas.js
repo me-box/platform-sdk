@@ -89,13 +89,6 @@ const _validNumber = (value)=>{
 
 const _updateTemplateAttribute = (state, action)=>{
 
-  console.log("in _updateTemplate attribute")
-  console.log("action is");
-  console.log(action);
-
-  console.log("tenplatesbyid is");
-  console.log(state.templatesById);
-
   const path = action.path;
 
   if (path.length == 0){
@@ -671,7 +664,6 @@ function onRotate(id){
 }
 
 function deletePressed(id){
-  console.log("seen delete pressed")
   return {
     id,
     type: DELETE,

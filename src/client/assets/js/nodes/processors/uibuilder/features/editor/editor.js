@@ -4,8 +4,8 @@ import { createStructuredSelector } from 'reselect';
 //import { State } from 'models/editor';
 import {post, get} from 'utils/net';
 
-//import {actionCreators as mapperActions} from 'features/mapper';
-//import {actionCreators as templateActions} from 'features/canvas';
+import {actionCreators as mapperActions} from '../mapper';
+import {actionCreators as templateActions, NAME as CANVASNAME} from '../canvas';
 //import {actionCreators as liveActions} from 'features/live';
 // Action Types
 
@@ -106,6 +106,18 @@ function load(id, scene){
     }
 }
 
+function deletePressed(id){
+  return (dispatch, getState)=>{
+    const {selected} = getState()[id][CANVASNAME];
+    if (selected && selected.path){
+      dispatch(templateActions.deletePressed(id));
+      dispatch(mapperActions.deletePressed(id, selected.path[selected.path.length-1]));
+    }
+  }
+} 
+//= bindActionCreators(canvasActions.deletePressed.bind(null,nid), dispatch);
+
+
 function setScenes(id, scenes){
   return {
     id,
@@ -129,4 +141,5 @@ export const actionCreators = {
   setScenes,
   save,
   load,
+  deletePressed,
 };

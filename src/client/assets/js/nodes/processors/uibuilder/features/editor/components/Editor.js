@@ -34,6 +34,8 @@ export default class Editor extends Component {
 
 	 constructor(props,context){
 		  super(props,context);
+      const {nid, dispatch} = props;
+
 		  this._handleResize = this._handleResize.bind(this);
       this._handleLive = this._handleLive.bind(this);
       this._handleEdit = this._handleEdit.bind(this);
@@ -41,6 +43,8 @@ export default class Editor extends Component {
       this._handleLoad = this._handleLoad.bind(this);
       this._closeDialog = this._closeDialog.bind(this);
       this._openLoadDialog = this._openLoadDialog.bind(this);
+      this._handleKeyDown = this._handleKeyDown.bind(this);
+
       this.state = {load:false};
 
    }		
@@ -89,7 +93,7 @@ export default class Editor extends Component {
 
 
       return (
-        <div className="uieditor">
+        <div className="uieditor" tabIndex="0"  onKeyDown={this._handleKeyDown}>
             <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
                 {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
@@ -99,6 +103,23 @@ export default class Editor extends Component {
             <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
         </div>
       );
+    }
+
+    _handleKeyDown(e) {
+      console.log("seen handle key down");
+      console.log(e.which);
+      e.preventDefault();
+      const {nid} = this.props;
+      var rx = /INPUT|SELECT|TEXTAREA/i;
+      console.log(e.target.tagName);
+
+      if( e.which == 8 ){ // 8 == backspace
+            console.log("BACKSPACE!!");
+            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+                console.log("nice am here");
+                this.props.actions.deletePressed(nid);
+            }
+      }
     }
 
   	_handleResize(e){

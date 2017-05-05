@@ -203,7 +203,10 @@ export default class Mapper extends Component {
         const [id, ...rest] = item.to.path; 
         const templateName = templatesById[id].label;
 
-        return <div onClick={this.props.actions.selectMapping.bind(null,nid,item)} key={i}>{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</div>
+        return <Flex key={i}>
+                    <Box col={11} onClick={this.props.actions.selectMapping.bind(null,nid,item)} >{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</Box>
+                    <Box col={1} onClick={this.props.actions.removeMapping.bind(null,nid,item.mappingId)}><strong>x</strong></Box>
+                </Flex>
     })
    
   }
@@ -220,11 +223,8 @@ export default class Mapper extends Component {
 
 
   renderProperties(){
-
       const { activeTabIndex } = this.state;
-
       const {[CANVASNAME]:{templatesById, selected:{path}}, nid} = this.props; 
-      console.log("rendering properties and binding to nid " + nid);
       const template = templatesById[path[path.length-1]]
       return <Properties template={template} updateAttribute={this.props.actions.updateTemplateAttribute.bind(null,nid,path)} updateStyle={this.props.actions.updateTemplateStyle.bind(null,nid,path)}/>
   }

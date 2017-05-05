@@ -43,8 +43,7 @@ class EditorCanvas extends Component {
   	this._onMouseMove = this._onMouseMove.bind(this);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
-    this.deletePressed = bindActionCreators(canvasActions.deletePressed.bind(null,nid), dispatch);
-    this._handleKeyDown = this._handleKeyDown.bind(this);
+   
     //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
@@ -108,30 +107,13 @@ class EditorCanvas extends Component {
   	const {w,h,ow,oh, view, connectDropTarget} = this.props;
 
     return connectDropTarget(
-      <div tabIndex="0"  onKeyDown={this._handleKeyDown} onMouseMove={this._onMouseMove} className="canvas">
+      <div  onMouseMove={this._onMouseMove} className="canvas">
          <svg id="svgchart" viewBox={`0 0 ${ow} ${oh}`} width={w} height={h} onMouseUp={this.onMouseUp}>
             {view==="editor" && this.renderTemplates()} 
             {view==="live" && this.renderNodes()} 
           </svg>
       </div>
     );
-  }
-
-  _handleKeyDown(e) {
-      console.log("seen handle key down");
-      console.log(e.which);
-      e.preventDefault();
-      const {nid} = this.props;
-      var rx = /INPUT|SELECT|TEXTAREA/i;
-      console.log(e.target.tagName);
-
-      if( e.which == 8 ){ // 8 == backspace
-            console.log("BACKSPACE!!");
-            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
-                console.log("nice am here");
-                this.deletePressed();
-            }
-      }
   }
 
 }
