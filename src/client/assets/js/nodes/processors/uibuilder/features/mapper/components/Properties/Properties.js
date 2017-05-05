@@ -26,7 +26,7 @@ export default class Properties extends Component {
   renderAttributes(){
 
       const { template }       = this.props;
-      const ignore = ["id", "style", "type", "children", "enterFn"];
+      const ignore = ["id", "style", "type", "children", "enterFn", "exitFn"];
      
       const form = Object.keys(template).filter((key)=>ignore.indexOf(key)==-1).map((key,i)=>{
           return <TextField key={i} onChange={this._updateAttribute.bind(null,key)} id={key} label={key} value={template[key] || ""} className="md-cell md-cell--12"/>

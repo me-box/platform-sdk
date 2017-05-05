@@ -244,24 +244,21 @@ function subscribeMappings(id){
 }
 
 function removeMapping(id, mappingId){
-	return {
-		id,
-		type: REMOVE_MAPPING,
-		mappingId,
+	return (dispatch, getState)=>{
+		dispatch({id,type: REMOVE_MAPPING,mappingId});
+		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
 	}
 }
 
 function deletePressed(id, templateId){
 
-	console.log("would remove all mappings / transformers that refereence templateId " + templateId);
-	
 	return (dispatch, getState)=>{
 		const todelete = getState()[id][NAME].mappings.filter(mapping=>mapping.to.path[mapping.to.path.length-1] === templateId).map(item=>item.mappingId);
-		console.log("Deleting");
-		console.log(todelete);
+		
 		todelete.map((mappingId)=>{
 			dispatch(removeMapping(id, mappingId));
 		});
+		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
 	}
 }
 
@@ -358,9 +355,6 @@ function clearState(id){
 
 
 function init(id, mappings, transformers){
-	console.log("NICE - setting");
-	console.log(mappings);
-	console.log(transformers);
 
 	return {
 		id,

@@ -20,7 +20,7 @@ const config = {
     unicode: '\uf03e',     
     
     label: function() {     
-        return this.name||this.topic||"uibuilder";
+        return this.name||"uibuilder";
     },
     
     schemafn:()=>{return {}},

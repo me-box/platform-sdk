@@ -63,33 +63,15 @@ export default class Birth extends PureComponent {
 
  renderFunction() {
  
-
-
     const {inputs, nid, path} = this.props;
     const {selected} = this.state;
+    
     const srcs = inputs.map((input) => {
         const name = input.name.trim() === "" ? input.label : input.name;
         return <Box key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
     });
    
     const schemas = inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{});
-    
-
-    //const srcs = sources.map((source) =>{
-    //    return <Box key={source.id} onClick={this._selectSource.bind(null, source.id)}>{source.name}</Box>
-    //});
-
-    //const schemas = sources.reduce((acc, source)=>{
-    //                                                return (source.id === this.state.sourceId) ? source.schema : acc
-    //                                              },{});
-
-    //const schema =   <Schema schema={schemas} onSelect={(key,sourcepath)=>{
-    //    const keybody = _wraplookup(key, sourcepath, "return lookup(data)");
-    //    this.props.actions.updateTemplateAttribute(path, "enterFn", {
-    //                                                                    enter:  {params:["data","index"], body: `return data.person==="mum"`},
-    //                                                                    key:    {params:["data", "index"], body: `return "mum"`}                                                              });
-    //}}/>
-                  
                               
     return <Flex flexColumn={true}>
                   //enter textfield function
@@ -97,12 +79,13 @@ export default class Birth extends PureComponent {
                     id="enterfunction"
                     block
                     rows={4}
-                    value={this.state.bufferenter || `return "true"`} 
+                    value={this.state.bufferenter || `return true`} 
                     onChange={(e)=>{
                                       this.setState({bufferenter:e})
                                   }
                               }
                   />
+
                   <TextField
                     id="enterfunction"
                     block
@@ -120,8 +103,7 @@ export default class Birth extends PureComponent {
                                                                         key:    {params:["data", "index"], body: this.state.bufferkey || `return "root"`},
                       }); 
                   }}>submit</Button>
-                  //key textfield function
-                  //ok button
+        
             </Flex>
  }
 

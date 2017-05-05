@@ -217,7 +217,8 @@ export default class Mapper extends Component {
   }
 
   renderDeathOptions(){
-     return <Death />
+     const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
+     return <Death inputs={inputs} nid={nid} path={path}/>
   }
 
 

@@ -716,6 +716,7 @@ function templateParentSelected(id,path) {
 
 function updateTemplateAttribute(id,path:Array, property:string, value){
 
+
   return (dispatch, getState)=>{
     dispatch({
         id,

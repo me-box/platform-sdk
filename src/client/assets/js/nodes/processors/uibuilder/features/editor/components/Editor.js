@@ -108,7 +108,7 @@ export default class Editor extends Component {
     _handleKeyDown(e) {
       console.log("seen handle key down");
       console.log(e.which);
-      e.preventDefault();
+      
       const {nid} = this.props;
       var rx = /INPUT|SELECT|TEXTAREA/i;
       console.log(e.target.tagName);
@@ -118,6 +118,7 @@ export default class Editor extends Component {
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
                 console.log("nice am here");
                 this.props.actions.deletePressed(nid);
+                e.preventDefault();
             }
       }
     }
