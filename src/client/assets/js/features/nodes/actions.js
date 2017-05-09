@@ -39,10 +39,12 @@ function loadNode({store,component,node,reducer}){
 
 function _schema(def){
   if (def.schemakey){
+      
       const key = def.defaults[def.schemakey];
-      if (key && key.value){
+
+      if (key && (typeof key.value !== "undefined")){
           if (def.schemafn){
-              return def.schemafn(key.value);
+            return def.schemafn(key.value);
           }
       }
   }

@@ -18,7 +18,7 @@ const config = {
     icon: "fa-hand-o-up",    
     unicode: '\uf0a6',    
     label: function() {     
-        return this.name||this.topic||"function";
+        return this.name||this.topic||"extract";
     },
     
     description: ()=> "a node for extracting object attributes",
