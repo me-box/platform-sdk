@@ -275,7 +275,7 @@ export default class NodeEditor extends Component {
 		const {showhelp} = this.state;
 
 		//const {name} = this.props;
-		const editorstyle = {
+		/*const editorstyle = {
 			position: 'absolute',
 			zIndex: 20,
 			maxHeight: h,
@@ -286,7 +286,7 @@ export default class NodeEditor extends Component {
 			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
 			border: '1px solid #d3d3d3',	
-		}
+		}*/
 
 		const close = this.props.actions.nodeConfigureOk;
 		const info  = <Button icon onClick={this._toggleInfo}>info_outline</Button>;

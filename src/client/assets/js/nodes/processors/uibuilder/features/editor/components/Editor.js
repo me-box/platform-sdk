@@ -45,7 +45,7 @@ export default class Editor extends Component {
       this._openLoadDialog = this._openLoadDialog.bind(this);
       this._handleKeyDown = this._handleKeyDown.bind(this);
 
-      this.state = {load:false};
+      this.state = {load:false, aspect:1440/900};
 
    }		
   	
@@ -67,40 +67,40 @@ export default class Editor extends Component {
 
     render() {
            
-
+      const TOOLBARHEIGHT = 64;
       const {[NAME]:{w,h,ow,oh,view},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
    
 
       const canvasstyle ={
         left: PALETTE_WIDTH,
+        height: canvasheight-TOOLBARHEIGHT,
+        width: canvaswidth,
+        overflow: 'auto',
         //width: w-PALETTE_WIDTH,
       }
 
       const actions = [
-                        <Button flat key="load" label="load" onClick={this._openLoadDialog}>cloud_download</Button>,
-                        <Button flat key="save" label="save" onClick={this._handleSave}>save</Button>
-                      ]
+          <Button flat key="aspect_mobile" onClick={()=>{this.setState({aspect:750/1334})}}>phone_android</Button>,
+          <Button flat key="aspect_tablet" onClick={()=>{this.setState({aspect:750/1334})}}>tablet_android</Button>,
+          <Button flat key="aspect_screen" onClick={()=>{this.setState({aspect:1440/900})}}>laptop</Button>,
+          <Button flat key="aspect_rotate" onClick={()=>{}}>screen_rotation</Button>,
+      ]
 
-     
+      /*
+       
+            <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>*/
 
-      if (view === "editor"){
-        actions.push(<Button flat key="toggle" label="live" onClick={this._handleLive}>tap_and_play</Button>);
-      }else{
-        actions.push(<Button flat key="toggle" label="editor" onClick={this._handleEdit}>mode_edit</Button>);
-      }
-
-      const toolbarwidth = view==="editor" ? w-MAPPER_WIDTH-PALETTE_WIDTH : w-PALETTE_WIDTH;
-
-
+    
       return (
         <div className="uieditor" tabIndex="0"  onKeyDown={this._handleKeyDown}>
-            <Palette nid={nid} h={canvasheight}/>
+            <Toolbar colored title={view} actions={actions}/>
+            <Palette nid={nid} h={canvasheight-TOOLBARHEIGHT}/>
+
             <div className="canvascontainer" style={canvasstyle}>
-                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
+                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} aspect={this.state.aspect} h={canvasheight-TOOLBARHEIGHT} ow={1500} oh={1200} view={view}/>}
             </div> 
             {view==="editor" && <Mapper nid={nid} h={canvasheight} inputs={inputs}/>}
-            <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
-            <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
+           
         </div>
       );
     }

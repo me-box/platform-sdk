@@ -14,8 +14,6 @@ export default class PaletteLayout extends Component {
 
   componentWillMount(){
     const {nid, actions: {loadSVGTemplates}} = this.props;
-    console.log("LSVGT");
-    console.log(loadSVGTemplates);
     loadSVGTemplates(nid);
   }
 

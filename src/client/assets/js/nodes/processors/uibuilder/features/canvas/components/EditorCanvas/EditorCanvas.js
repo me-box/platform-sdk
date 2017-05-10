@@ -18,14 +18,13 @@ function collect(connect, monitor) {
 
 const canvasTarget = {
   drop(props,monitor) {
-   
     const {template,children} = monitor.getItem();
-
     const {x,y}   = monitor.getSourceClientOffset()
+
     if (template !== "group"){
-      props.dispatch(canvasActions.templateDropped(props.nid, template,(x-100),y))
+      props.dispatch(canvasActions.templateDropped(props.nid, template,x,y))
     }else{
-      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, (x-100), y))
+      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, x, y))
     }
   }
 };
@@ -41,16 +40,26 @@ class EditorCanvas extends Component {
     const {nid, dispatch} = props;
 
   	this._onMouseMove = this._onMouseMove.bind(this);
+    this._setOffset = this._setOffset.bind(this);
+    this.setOffset = bindActionCreators(canvasActions.setOffset.bind(null,nid), dispatch);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
-   
+    this.state = {offset:{left:0, top:0}};
     //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
+  _setOffset(input){
+    if (input){
+      const {left, top} = input.getBoundingClientRect();
+      this.setOffset(left,top);
+    }
+  }
+
   _onMouseMove(e){
     const {clientX, clientY} = e;
-    //console.log(`${clientX},${clientY}`);
-    this.mouseMove(clientX-PALETTE_WIDTH,clientY);
+    const x = clientX-this.state.offset.left;
+    const y = clientY-this.state.offset.top;
+    this.mouseMove(x,y);
   }
 
   renderTemplate(template){
@@ -102,16 +111,30 @@ class EditorCanvas extends Component {
     });
   }
   
+  /* */
+
   render() {
-   
-  	const {w,h,ow,oh, view, connectDropTarget} = this.props;
+    const padding = 15;
+  	const {w,h, ow,oh,view,aspect, connectDropTarget} = this.props;
+    let boxh, boxw;
+
+    if (w < h){
+      boxw = w-(padding*2);
+      boxh = boxw / aspect;
+    }else{
+      boxh = h-(padding*2);
+      boxw = boxh * aspect;
+    }
+    const margin = `${Math.floor((h-boxh)/2)}px ${Math.floor((w-boxw)/2)}px`
 
     return connectDropTarget(
-      <div  onMouseMove={this._onMouseMove} className="canvas">
-         <svg id="svgchart" viewBox={`0 0 ${ow} ${oh}`} width={w} height={h} onMouseUp={this.onMouseUp}>
-            {view==="editor" && this.renderTemplates()} 
-            {view==="live" && this.renderNodes()} 
-          </svg>
+      <div style={{width:w, height:h}} className="canvas">
+         <div  ref={this._setOffset} onMouseMove={this._onMouseMove} style={{margin:margin, height:boxh, width: boxw, border:"1px solid black"}}>
+            <svg id="svgchart"  viewBox={`0 0 ${boxw} ${boxh}`} width={boxw} height={boxh} onMouseUp={this.onMouseUp}>
+              {view==="editor" && this.renderTemplates()} 
+              {view==="live" && this.renderNodes()} 
+            </svg>
+          </div>
       </div>
     );
   }

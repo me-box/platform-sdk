@@ -9,6 +9,7 @@ const commands = ['M','m','L','l', 'H', 'h', 'V', 'v', 'C', 'c','S', 's', 'Q', '
 const INIT                       = 'uibuilder/canvas/INIT';
 const EXPAND                     = 'uibuilder/canvas/EXPAND';
 const ROTATE                     = 'uibuilder/canvas/ROTATE';
+const SET_OFFSET                 = 'uibuilder/canvas/SET_OFFSET';
 const MOUSE_MOVE                 = 'uibuilder/canvas/MOUSE_MOVE';
 const MOUSE_UP                   = 'uibuilder/canvas/MOUSE_UP';
 const MOUSE_DOWN                 = 'uibuilder/canvas/MOUSE_DOWN';
@@ -38,6 +39,10 @@ const initialState = {
   rotating: false,
   dx: 0, //drag x pos
   dy: 0, //drag y pos
+  offset: {
+    left: 0,
+    top: 0,
+  }
 };
 
 
@@ -516,6 +521,9 @@ export default function reducer(state = initialState, action={}) {
       });
     
 
+    case SET_OFFSET:  
+      return  Object.assign({}, state, {offset:{left:action.left, top:action.top}});
+    
     case MOUSE_MOVE: 
       _x = action.x;
       _y = action.y;
@@ -568,8 +576,9 @@ export default function reducer(state = initialState, action={}) {
     
     case TEMPLATE_DROPPED:
       
-
-      const template = createTemplate(action.template, action.x, action.y);
+      console.log("TEMPLATE DROPPED");
+      console.log(state.offset);
+      const template = createTemplate(action.template, action.x-state.offset.left, action.y-state.offset.top);
   
 
       return  Object.assign({}, state, {
@@ -579,7 +588,7 @@ export default function reducer(state = initialState, action={}) {
                                        });
 
     case GROUP_TEMPLATE_DROPPED:
-      const {root, templates} = createGroupTemplate(action.children, action.x, action.y);
+      const {root, templates} = createGroupTemplate(action.children, action.x-state.offset.left, action.y-state.offset.top);
       return Object.assign({}, state, {
                                           templates: [...state.templates, root.id],
                                           templatesById: {...state.templatesById, ...{[root.id]:root, ...templates}},//{[grouptemplate.id]:grouptemplate}),
@@ -631,6 +640,16 @@ function mouseMove(id, x: number, y:number) {
       dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
     }
   } 
+}
+
+function setOffset(id, left, top){
+  
+  return {
+    id,
+    type:SET_OFFSET,
+    left,
+    top,
+  }
 }
 
 function onMouseDown(id, path, type){
@@ -794,6 +813,7 @@ export const selector = createStructuredSelector({
 
 export const actionCreators = {
   init,
+  setOffset,
   mouseMove,
   onMouseUp,
   onMouseDown,

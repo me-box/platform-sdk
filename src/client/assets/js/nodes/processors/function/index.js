@@ -34,12 +34,18 @@ const config = {
     },
 
     schemafn:(outputdef)=>{
-        console.log("in schema func with ");
-        console.log(outputdef);
+        console.log("in schema func!");
+       
         let output = {};
 
         try{
+            console.log("parsing")
+            console.log(outputdef);
             output =  JSON.parse(outputdef);
+            console.log("*************************************");
+            console.log("great - have set the correct output def");
+            console.log(output);
+            console.log("**************************************");
         }
         catch(err){
            console.log("JSON parse error: setting output to {}")

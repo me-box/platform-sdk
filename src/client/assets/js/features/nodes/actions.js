@@ -13,11 +13,12 @@ function loadNode({store,component,node,reducer}){
       
       console.log("loading node!");
 
-      const _node = Object.assign({},node, {schema: _schema(node._def), description:_description(node._def)});
+      const _node = Object.assign({},node, {schema: _schema(node), description:_description(node._def)});
       
 
       addViewProperties(_node);
     
+      console.log("loaded node is:");
       console.log(_node);
 
       if (reducer){
@@ -25,19 +26,22 @@ function loadNode({store,component,node,reducer}){
       }
 
       dispatch({type: nodeActionTypes.NODE_DROPPED, node:_node, config:{id: _node.id, fn:component}});
-      
-
-      //const element = React.createElement(component, {...elementprops});
-      //const root = document.getElementById('main-container');
-      //const g = document.createElement('div');
-      //g.id = `config-${node.id}`;
-      //root.appendChild(g);
-      //document.body.appendChild(g);
-      //render(element, document.getElementById(`config-${node.id}`));
   };
 }
 
-function _schema(def){
+function _schema(node){
+  
+   if (node._def.schemakey && (typeof node._def.schemakey !== "undefined")){
+      if (node._def.schemafn){
+        return node._def.schemafn(node[node._def.schemakey]);
+      }
+   }
+
+   return _defaultschema(node._def);
+}
+
+function _defaultschema(def){  
+
   if (def.schemakey){
       
       const key = def.defaults[def.schemakey];
@@ -52,6 +56,15 @@ function _schema(def){
 }
 
 function _description(def){
+
+  if (def.nodetype==="dbfunction"){
+    console.log("def is");
+    console.log(JSON.stringify(def,null,4));
+    console.log("def defaults for db function are");
+    JSON.stringify(def.defaults, null, 4);
+
+  }
+
   if (def.schemakey){
       const key = def.defaults[def.schemakey];
       if (key && key.value){
@@ -85,7 +98,7 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
       _: (id)=>{return id},
       inputs: _def.inputs || 0,
       outputs: _def.outputs,
-      schema: _schema(_def),
+      schema: _defaultschema(_def),
       description: _description(_def),
       changed: true,
       selected: true,
