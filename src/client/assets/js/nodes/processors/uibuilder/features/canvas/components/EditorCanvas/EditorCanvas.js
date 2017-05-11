@@ -33,6 +33,23 @@ const ItemTypes = {
   TEMPLATE: 'template'
 };
 
+
+const canvasdim = (w, h, aspect)=>{
+  const padding = 0;//15;
+  let boxw, boxh;
+
+  if (w < h){
+      boxw = w-(padding*2);
+      boxh = boxw / aspect;
+  }else{
+      boxh = h-(padding*2);
+      boxw = boxh * aspect;
+  }
+
+  return {w:boxw, h:boxh};
+}
+
+
 class EditorCanvas extends Component {
 
   constructor(props, context){
@@ -114,23 +131,17 @@ class EditorCanvas extends Component {
   /* */
 
   render() {
-    const padding = 15;
-  	const {w,h, ow,oh,view,aspect, connectDropTarget} = this.props;
-    let boxh, boxw;
+ 
+  	const {w,h,ow,oh,view,aspect, connectDropTarget} = this.props;
+    const currentdim = canvasdim(w,h, aspect);
+    const originaldim = canvasdim(ow,oh, aspect);
 
-    if (w < h){
-      boxw = w-(padding*2);
-      boxh = boxw / aspect;
-    }else{
-      boxh = h-(padding*2);
-      boxw = boxh * aspect;
-    }
-    const margin = `${Math.floor((h-boxh)/2)}px ${Math.floor((w-boxw)/2)}px`
-
+    const margin = `${Math.floor((h-currentdim.h)/2)}px ${Math.floor((w-currentdim.w)/2)}px`
+    //   <div>{`original:${originaldim.w}x${originaldim.h} -> current:${currentdim.w}x${currentdim.h}`}</div>
     return connectDropTarget(
       <div style={{width:w, height:h}} className="canvas">
-         <div  ref={this._setOffset} onMouseMove={this._onMouseMove} style={{margin:margin, height:boxh, width: boxw, border:"1px solid black"}}>
-            <svg id="svgchart"  viewBox={`0 0 ${boxw} ${boxh}`} width={boxw} height={boxh} onMouseUp={this.onMouseUp}>
+         <div  ref={this._setOffset} onMouseMove={this._onMouseMove} style={{margin:margin, height:currentdim.h, width: currentdim.w, border:"1px solid black"}}>
+            <svg id="svgchart"  viewBox={`0 0 ${originaldim.w} ${originaldim.h}`} width={currentdim.w} height={currentdim.h} onMouseUp={this.onMouseUp}>
               {view==="editor" && this.renderTemplates()} 
               {view==="live" && this.renderNodes()} 
             </svg>

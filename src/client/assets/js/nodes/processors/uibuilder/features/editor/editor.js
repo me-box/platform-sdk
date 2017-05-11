@@ -26,8 +26,8 @@ export const NAME = 'uibuilder/editor';
 const initialState = {
     w : window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
     h : window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-    ow: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-    oh: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
+    //ow: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+    //oh: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
     view: "editor",
     scenes: [],
 };

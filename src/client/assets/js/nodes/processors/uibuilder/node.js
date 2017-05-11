@@ -11,15 +11,14 @@ import { actionCreators as templateActions } from 'nodes/processors/uibuilder/fe
 import { actionCreators as mapperActions } from 'nodes/processors/uibuilder/features/mapper/';
 
 const PALETTE_WIDTH = 60;
+const TOOLBARHEIGHT = 64;
+const CELLHEIGHT = 40;
 
 @configNode()
 export default class Node extends Component {	
 	 
 
   componentDidMount(){
-      console.log("component mounted and props is ");
-      console.log(this.props);
-
       const {dispatch, node:{id}, values={}} = this.props;
       const {templates={}, mappings={}, transformers={}} = values;
       dispatch(templateActions.init(id, templates));
@@ -29,7 +28,6 @@ export default class Node extends Component {
   render() {
        
       const {node,h,w,values={},updateNode, inputs=[], store, contentw, contenth} = this.props;
-
 
       const nameprops = {
           id: "name",
@@ -47,13 +45,14 @@ export default class Node extends Component {
 
 
       const height = contenth -  40 /*Cell height*/;  
+      const width  = contentw - PALETTE_WIDTH;
 
       return <div>
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>
           			</Cells>
-                <div style={{height:height, width:"100%"}}>
-                   <Editor canvasheight={height} canvaswidth={contentw-PALETTE_WIDTH} store={store} nid={node.id} inputs={inputs}/>
+                <div style={{height:contenth-CELLHEIGHT}}>
+                   <Editor canvasheight={contenth-CELLHEIGHT} canvaswidth={contentw} originaldimensions={node.canvasdimensions} store={store} nid={node.id} inputs={inputs} updateNode={updateNode}/>
                 </div>
         	   </div>	
           

@@ -3,7 +3,6 @@ import {NODE_EDITOR_PADDING, PALETTE_WIDTH, TOOLBAR_HEIGHT} from 'constants/View
 import Toolbar from 'react-md/lib/Toolbars';
 import './styles/dialogue.scss';
 import Button  from 'react-md/lib/Buttons';
-import ResizableBox from 'react-resizable-component';
 
 class Dialogue extends Component {
 

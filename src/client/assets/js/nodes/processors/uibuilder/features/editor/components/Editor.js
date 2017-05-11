@@ -22,6 +22,13 @@ import Button from 'react-md/lib/Buttons';
 const PALETTE_WIDTH = 60;
 const MAPPER_WIDTH = 150;
 
+
+//const canvasdimensions = ()=>{
+//   const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+//   const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+ //  return {w,h};
+//};
+
 @connect(selector, (dispatch) => {
   /*DatasourceManager.init(bindActionCreators(sourceActions.registerSource, dispatch));*/
   return{
@@ -32,50 +39,49 @@ const MAPPER_WIDTH = 150;
 
 export default class Editor extends Component {
 
-	 constructor(props,context){
-		  super(props,context);
+   constructor(props,context){
+      super(props,context);
       const {nid, dispatch} = props;
+      //const {w,h} = canvasdimensions();
 
-		  this._handleResize = this._handleResize.bind(this);
-      this._handleLive = this._handleLive.bind(this);
-      this._handleEdit = this._handleEdit.bind(this);
-      this._handleSave = this._handleSave.bind(this);
-      this._handleLoad = this._handleLoad.bind(this);
-      this._closeDialog = this._closeDialog.bind(this);
-      this._openLoadDialog = this._openLoadDialog.bind(this);
+      this._handleResize = this._handleResize.bind(this);
+      //this._handleLive = this._handleLive.bind(this);
+      //this._handleEdit = this._handleEdit.bind(this);
+      //this._handleSave = this._handleSave.bind(this);
+      //this._handleLoad = this._handleLoad.bind(this);
+      //this._closeDialog = this._closeDialog.bind(this);
+      //this._openLoadDialog = this._openLoadDialog.bind(this);
       this._handleKeyDown = this._handleKeyDown.bind(this);
+      this.state = {load:false, aspect:1440/900};//, ow:w, oh:h};
 
-      this.state = {load:false, aspect:1440/900};
-
-   }		
-  	
+   }    
+    
     componentDidMount(){
-		  //window.addEventListener('resize', this._handleResize);
-  	}
-
-/*    render() {
-      const {w,h,ow,oh,view} = {w:500,h:500,ow:500,oh:500,view:"editor"};
-      const {store} = this.props;
-
-      return (
-        <div className="editor">
-          <EditorCanvas w={w} h={h} ow={ow} oh={oh} view={view} store={store}/>
-        </div>
-      )
-
-    }*/
+      const {canvasheight, canvaswidth} = this.props;
+      window.addEventListener('resize', this._handleResize);
+      if (!this.props.originaldimensions){
+        //const {w,h} = canvasdimensions();
+        //this.setState({ow:w, oh:h});
+        console.log("AM UPDATING CANVAS DIMENSIONS!!");
+        this.props.updateNode("canvasdimensions",{w:canvaswidth, h:canvasheight});
+      }
+    }
 
     render() {
            
-      const TOOLBARHEIGHT = 64;
-      const {[NAME]:{w,h,ow,oh,view},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
-   
+      
+      const {[NAME]:{w,h,view},actions:{setView},store, originaldimensions, canvasheight, canvaswidth, nid, inputs} = this.props;
+      const originalcanvasheight = originaldimensions ? originaldimensions.h : canvasheight;
+      const originalcanvaswidth = originaldimensions ? originaldimensions.w  : canvaswidth;
+      const currentcanvasheight = canvasheight;
+      const currentcanvaswidth  = canvaswidth; 
+
 
       const canvasstyle ={
         left: PALETTE_WIDTH,
-        height: canvasheight-TOOLBARHEIGHT,
+        height: canvasheight,
         width: canvaswidth,
-        overflow: 'auto',
+        //overflow: 'auto',
         //width: w-PALETTE_WIDTH,
       }
 
@@ -90,17 +96,15 @@ export default class Editor extends Component {
        
             <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>*/
 
-    
+    //  <Toolbar colored title={view} actions={actions}/>
+
       return (
         <div className="uieditor" tabIndex="0"  onKeyDown={this._handleKeyDown}>
-            <Toolbar colored title={view} actions={actions}/>
-            <Palette nid={nid} h={canvasheight-TOOLBARHEIGHT}/>
-
+            <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
-                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} aspect={this.state.aspect} h={canvasheight-TOOLBARHEIGHT} ow={1500} oh={1200} view={view}/>}
+                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} aspect={this.state.aspect} h={canvasheight} ow={originalcanvaswidth} oh={originalcanvasheight} view={view}/>}
             </div> 
             {view==="editor" && <Mapper nid={nid} h={canvasheight} inputs={inputs}/>}
-           
         </div>
       );
     }
@@ -123,13 +127,22 @@ export default class Editor extends Component {
       }
     }
 
-  	_handleResize(e){
-        const {nid} = this.props;
-     	  const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-      	const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-      	this.props.actions.screenResize(nid,w,h);
-  	}
-
+    _handleResize(e){
+        //const {nid} = this.props;
+        const {canvasheight, canvaswidth} = this.props;
+        //window.addEventListener('resize', this._handleResize);
+        if (!this.props.originaldimensions){
+        //const {w,h} = canvasdimensions();
+        //this.setState({ow:w, oh:h});
+          console.log("AM UPDATING CANVAS DIMENSIONS!!");
+          this.props.updateNode("canvasdimensions",{w:canvaswidth, h:canvasheight});
+        }
+        //const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        //const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        //this.props.actions.screenResize(nid,w,h);
+        //console.log("in handle resize!!");
+    }
+/*
    _handleEdit(){
       const {nid} = this.props;
       this.props.actions.unsubscribeMappings();
@@ -159,5 +172,5 @@ export default class Editor extends Component {
 
     _closeDialog(){
       this.setState({load:false});
-    }
+    }*/
 }

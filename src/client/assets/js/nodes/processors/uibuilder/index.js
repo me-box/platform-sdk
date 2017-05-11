@@ -9,6 +9,7 @@ const config = {
         templates: {value:{}},
         mappings: {value:[]},
         transformers: {value:{}},   
+        canvasdimensions:{value:null},
     },
 
     inputs:1,               
