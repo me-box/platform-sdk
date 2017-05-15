@@ -20,6 +20,9 @@ export default class Ellipse extends Component {
   		this._templateSelected = this._templateSelected.bind(this);
   	}
 
+  	shouldComponentUpdate(nextProps, nextState){
+        return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
+    }
 
   	renderControls(rx, ry){
   		
@@ -51,7 +54,7 @@ export default class Ellipse extends Component {
   	}
 
 	render(){
-	
+		console.log("ELLIPSE in render");
 		const {id, template, selected}  = this.props;
 		const {cx,cy,rx,ry,r,style,transform="translate(0,0)"} = template;
 		const _style = camelise(style);

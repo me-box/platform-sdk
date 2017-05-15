@@ -8,7 +8,7 @@ import {configNode} from 'utils/ReactDecorators';
 export default class Node extends React.Component {
 
        render() {
-          const {selected,values,updateNode} = this.props;
+          const {values,updateNode} = this.props;
           
           const nameprops = {
               id: "name",

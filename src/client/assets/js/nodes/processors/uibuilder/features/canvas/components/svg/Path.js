@@ -12,8 +12,12 @@ import { connect } from 'react-redux';
 
 export default class Path extends Component {
 
+	shouldComponentUpdate(nextProps, nextState){
+        return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
+    }
 
 	render(){
+		console.log("PATH in render");
 		const {id,template,selected} = this.props;
 		const {d,style} = template;
 		const amSelected = selected.indexOf(id) != -1;

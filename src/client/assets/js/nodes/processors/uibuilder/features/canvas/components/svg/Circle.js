@@ -50,9 +50,17 @@ export default class Circle extends Component {
   				</g>
   	}
 
-	render(){
+ 	shouldComponentUpdate(nextProps, nextState){
+ 		
 
+        return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
+    }
+
+	render(){
+		
 		const {id, template, selected}  = this.props;
+		console.log(`CIRCLE  ${id} in render`);
+
 		const {cx,cy,r,style,transform="translate(0,0)"} = template;
 		const amSelected = selected.indexOf(id) != -1;
 		

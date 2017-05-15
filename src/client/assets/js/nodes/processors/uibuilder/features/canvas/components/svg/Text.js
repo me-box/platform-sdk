@@ -25,7 +25,12 @@ export default class Text extends Component {
   		this._templateSelected = this._templateSelected.bind(this);
   	}
 
+  	shouldComponentUpdate(nextProps, nextState){
+        return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
+    }
+
 	render(){
+		console.log("TEXT in render");
 		const {id, template, selected} = this.props;
 		const {x,y,text,style} = template;
 

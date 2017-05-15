@@ -297,10 +297,15 @@ const _rotateTemplate = (template, x, y)=>{
 }
 
 const _expandTemplate = (template, x, y)=>{
-  
+    
     switch (template.type){
 
       case "circle":
+        console.log("expanding circle!!");
+        console.log(`${template.cx} -> ${x} , ${template.cy} -> ${y}`);
+
+        console.log()
+
         const dx = x - template.cx;
         const dy = y - template.cy;
         const r  = Math.sqrt((dx*dx) + (dy*dy)); 
@@ -528,7 +533,8 @@ export default function reducer(state = initialState, action={}) {
       _x = action.x;
       _y = action.y;
 
-      if (!state.selected)
+      //performance improvement
+      if (!state.selected || (!state.expanding && !state.dragging && !state.rotating))
         return state;
 
       return {
@@ -555,16 +561,8 @@ export default function reducer(state = initialState, action={}) {
 
       //see: https://github.com/gaearon/redux-devtools/issues/167
       //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
-
-      console.log("-------> template is null <-----------------");
-      console.log("ACTION is");
-      console.log(action);
-      console.log(`reducer:${action.id}`);
-      console.log(`shape id : ${id}`);
-      console.log(state);
-      console.log("--------------------------------------------");
-
       return state;
+
 
     case MOUSE_UP:
        return Object.assign({}, state,  {
@@ -576,8 +574,6 @@ export default function reducer(state = initialState, action={}) {
     
     case TEMPLATE_DROPPED:
       
-      console.log("TEMPLATE DROPPED");
-      console.log(state.offset);
       const template = createTemplate(action.template, action.x-state.offset.left, action.y-state.offset.top);
   
 
@@ -636,7 +632,9 @@ function mouseMove(id, x: number, y:number) {
                 x,
                 y,
               });
-    if (getState()[id][NAME].selected){
+
+    if (getState()[id][NAME].selected && getState()[id][NAME].dragging){
+      console.log("dispatching template update!");
       dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
     }
   } 

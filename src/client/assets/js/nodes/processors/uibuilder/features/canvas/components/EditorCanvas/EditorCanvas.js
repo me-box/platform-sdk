@@ -61,21 +61,21 @@ class EditorCanvas extends Component {
     this.setOffset = bindActionCreators(canvasActions.setOffset.bind(null,nid), dispatch);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
-    this.state = {offset:{left:0, top:0}};
     //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
   _setOffset(input){
     if (input){
       const {left, top} = input.getBoundingClientRect();
-      this.setOffset(left,top);
+      this.setOffset(left,top); //name field
     }
   }
 
   _onMouseMove(e){
+    const {[NAME]:{offset}} = this.props;
     const {clientX, clientY} = e;
-    const x = clientX-this.state.offset.left;
-    const y = clientY-this.state.offset.top;
+    const x = clientX-offset.left;
+    const y = clientY-offset.top;
     this.mouseMove(x,y);
   }
 
@@ -118,6 +118,9 @@ class EditorCanvas extends Component {
 
   }
 
+  shouldComponentUpdate(nextProps, nextState){
+    return this.props !== nextProps;
+  }
 
   renderTemplates(){
 
@@ -128,11 +131,10 @@ class EditorCanvas extends Component {
     });
   }
   
-  /* */
-
   render() {
- 
-  	const {w,h,ow,oh,view,aspect, connectDropTarget} = this.props;
+   //viewBox={`0 0 ${originaldim.w} ${originaldim.h}`} 
+  	const {w,h,ow,oh,view,aspect,connectDropTarget} = this.props;
+
     const currentdim = canvasdim(w,h, aspect);
     const originaldim = canvasdim(ow,oh, aspect);
 
@@ -140,8 +142,8 @@ class EditorCanvas extends Component {
     //   <div>{`original:${originaldim.w}x${originaldim.h} -> current:${currentdim.w}x${currentdim.h}`}</div>
     return connectDropTarget(
       <div style={{width:w, height:h}} className="canvas">
-         <div  ref={this._setOffset} onMouseMove={this._onMouseMove} style={{margin:margin, height:currentdim.h, width: currentdim.w, border:"1px solid black"}}>
-            <svg id="svgchart"  viewBox={`0 0 ${originaldim.w} ${originaldim.h}`} width={currentdim.w} height={currentdim.h} onMouseUp={this.onMouseUp}>
+         <div  ref={this._setOffset} onMouseMove={this._onMouseMove} style={{overflow:'auto', margin:margin, height:currentdim.h, width: currentdim.w, border:"1px solid black"}}>
+            <svg id="svgchart"  width={originaldim.w} height={originaldim.h} onMouseUp={this.onMouseUp}>
               {view==="editor" && this.renderTemplates()} 
               {view==="live" && this.renderNodes()} 
             </svg>

@@ -222,6 +222,23 @@ export default class Mapper extends Component {
   }
 
 
+  shouldComponentUpdate(nextProps, nextState){
+
+     //first check to see if nothing has been selected, in which case only re-render if mapping has changed
+     if (!this.props[CANVASNAME].selected && !nextProps[CANVASNAME].selected){
+         console.log(`updating: ${this.props[NAME] !== nextProps[NAME]}`)
+         return  this.props[NAME] !== nextProps[NAME] 
+     }
+     //otherwise check to see if previously selected template != current selected template
+     else if (this.props[CANVASNAME].selected !== nextProps[CANVASNAME].selected){
+        return true;
+     }
+     else{
+        const {[CANVASNAME]:{selected:{path}}} = this.props;
+        const tId = path[path.length-1];
+        return this.props[CANVASNAME].templatesById[tId] !=  nextProps[CANVASNAME].templatesById[tId] || this.props[NAME] !== nextProps[NAME]     
+     }
+  }
 
   renderProperties(){
       const { activeTabIndex } = this.state;
@@ -231,10 +248,13 @@ export default class Mapper extends Component {
   }
 
   render() {
-
+   
     const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h, nid} = this.props;
     const {propertiesExpanded, objectsExpanded, mappingsExpanded, mapperExpanded, birthExpanded, deathExpanded} = this.state;
 
+    if (!selected)
+        return null;
+      
     return (
               <div id="mapper" style={{width:viewConstants.MAPPER_WIDTH, boxSizing:'border-box', height: h, overflow:'auto'}}>
                  <Paper key={1} zDepth={1}>

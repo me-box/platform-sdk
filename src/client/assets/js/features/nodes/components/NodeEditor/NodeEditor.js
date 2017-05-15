@@ -119,7 +119,9 @@ export default class NodeEditor extends Component {
 		this._toggleInfo = this._toggleInfo.bind(this);
 	}
 	
-	
+	//shouldComponentUpdate(nextProps, nextState){
+        //return this.props.node != nextProps.node;
+    //}
 
 	renderHelp(){
 
