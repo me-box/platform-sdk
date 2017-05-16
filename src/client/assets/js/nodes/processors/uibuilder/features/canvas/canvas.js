@@ -102,9 +102,7 @@ const _updateTemplateAttribute = (state, action)=>{
 
   const id = path[path.length-1];
   
-  console.log("id is " + id);
-
-  //see: https://github.com/gaearon/redux-devtools/issues/167
+  //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
   //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
   if (!state.templatesById[id]){
     return state.templatesById;
@@ -301,11 +299,6 @@ const _expandTemplate = (template, x, y)=>{
     switch (template.type){
 
       case "circle":
-        console.log("expanding circle!!");
-        console.log(`${template.cx} -> ${x} , ${template.cy} -> ${y}`);
-
-        console.log()
-
         const dx = x - template.cx;
         const dy = y - template.cy;
         const r  = Math.sqrt((dx*dx) + (dy*dy)); 
@@ -455,7 +448,7 @@ const _modifyTemplate = (state, action)=>{
         const [id,...rest] = state.selected.path;
         const _tmpl = state.templatesById[id];
        
-        //see: https://github.com/gaearon/redux-devtools/issues/167
+        //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
         //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
         if (_tmpl){
           if (state.expanding){
@@ -559,8 +552,8 @@ export default function reducer(state = initialState, action={}) {
                                           });
       }
 
-      //see: https://github.com/gaearon/redux-devtools/issues/167
-      //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+        //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
+        //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
       return state;
 
 

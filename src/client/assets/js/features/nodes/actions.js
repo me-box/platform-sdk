@@ -18,9 +18,7 @@ function loadNode({store,component,node,reducer}){
 
       addViewProperties(_node);
     
-      console.log("loaded node is:");
-      console.log(_node);
-
+    
       if (reducer){
         register(store, _node.id, scopeify(_node.id, reducer));
       }
@@ -58,9 +56,6 @@ function _defaultschema(def){
 function _description(def){
 
   if (def.nodetype==="dbfunction"){
-    console.log("def is");
-    console.log(JSON.stringify(def,null,4));
-    console.log("def defaults for db function are");
     JSON.stringify(def.defaults, null, 4);
 
   }

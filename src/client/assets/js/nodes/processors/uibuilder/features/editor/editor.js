@@ -11,7 +11,6 @@ import {actionCreators as templateActions, NAME as CANVASNAME} from '../canvas';
 
 // Define types in the form of 'npm-module-or-myapp/feature-name/ACTION_TYPE_NAME'
 const SCREEN_RESIZE  = 'uibuilder/editor/SCREEN_RESIZE';
-const SET_VIEW  = 'uibuilder/editor/SET_VIEW';
 const SAVING = 'uibuilder/editor/SAVING';
 const LOADING = 'uibuilder/editor/LOADING';
 const SET_SCENES = 'uibuilder/editor/SET_SCENES';
@@ -26,9 +25,6 @@ export const NAME = 'uibuilder/editor';
 const initialState = {
     w : window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
     h : window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-    //ow: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
-    //oh: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
-    view: "editor",
     scenes: [],
 };
 
@@ -42,9 +38,6 @@ export default function reducer(state = initialState, action = {}) {
       };
     }
 
-    case SET_VIEW:
-      return Object.assign({}, state, {view:action.view})
-    
     case SET_SCENES:
       return Object.assign({}, state, {scenes:action.scenes})
     
@@ -62,14 +55,6 @@ function screenResize(id, w: number, h:number) {
     w,
     h,
   };
-}
-
-function setView(id, view){
-  return{
-    id,
-    type: SET_VIEW,
-    view,
-  }
 }
 
 function save(id){
@@ -137,7 +122,6 @@ export const selector = createStructuredSelector({
 
 export const actionCreators = {
   screenResize,
-  setView,
   setScenes,
   save,
   load,

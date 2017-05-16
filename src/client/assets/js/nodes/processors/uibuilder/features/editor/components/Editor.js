@@ -17,6 +17,28 @@ import Button from 'react-md/lib/Buttons';
 
 const PALETTE_WIDTH = 60;
 const MAPPER_WIDTH = 150;
+const PADDING = 30;
+
+const canvasdim = (w, h, aspect)=>{
+  const _w = (w - PADDING*2);
+  const _h = (h - PADDING*2);
+  let boxw, boxh;
+
+  if (aspect < 1){
+      boxw = _w;
+      boxh = boxw / aspect;
+  }else{
+      boxh = _h;
+      boxw = boxh * aspect;
+  }
+
+  if (boxw > _w - PADDING*2){
+    boxw = boxw - (boxw-_w) - PADDING*2;
+    boxh = boxw / aspect;
+  }
+
+  return {w:boxw, h:boxh};
+}
 
 
 @connect(selector, (dispatch) => {
@@ -31,26 +53,25 @@ export default class Editor extends Component {
    constructor(props,context){
       super(props,context);
       const {nid, dispatch} = props;
+      
       this._handleKeyDown = this._handleKeyDown.bind(this);
-       this._handleResize = this._handleResize.bind(this);
-      this.state = {load:false, aspect:1440/900};//, ow:w, oh:h};
-
+      this._handleResize = this._handleResize.bind(this);
+      this.state = {load:false, aspect:(1440-64)/900};
    }    
     
+
     componentDidMount(){
-      const {canvasheight, canvaswidth} = this.props;
+      this._handleResize();
       window.addEventListener('resize', this._handleResize);
-      if (!this.props.originaldimensions){
-        this.props.updateNode("canvasdimensions",{w:canvaswidth, h:canvasheight});
-      }
+    }
+
+    componentWillUnmount(){
+      window.removeEventListener('resize', this._handleResize);
     }
 
     render() {
-           
-   
-      const {[NAME]:{w,h,view},actions:{setView},store, originaldimensions, canvasheight, canvaswidth, nid, inputs} = this.props;
-      const originalcanvasheight = originaldimensions ? originaldimensions.h : canvasheight;
-      const originalcanvaswidth = originaldimensions ? originaldimensions.w  : canvaswidth;
+              
+      const {[NAME]:{w,h},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
     
       const canvasstyle ={
         left: PALETTE_WIDTH,
@@ -58,10 +79,13 @@ export default class Editor extends Component {
         width: canvaswidth,
       }
 
+      const scaledcanvas = canvasdim(canvaswidth, canvasheight, this.state.aspect);
+      const margin = `${Math.floor((canvasheight-scaledcanvas.h)/2)}px ${Math.floor((canvaswidth-scaledcanvas.w)/2)}px`
+      
       const actions = [
           <Button flat key="aspect_mobile" onClick={()=>{this.setState({aspect:750/1334})}}>phone_android</Button>,
           <Button flat key="aspect_tablet" onClick={()=>{this.setState({aspect:750/1334})}}>tablet_android</Button>,
-          <Button flat key="aspect_screen" onClick={()=>{this.setState({aspect:1440/900})}}>laptop</Button>,
+          <Button flat key="aspect_screen" onClick={()=>{this.setState({aspect:(1440-64)/900})}}>laptop</Button>,
           <Button flat key="aspect_rotate" onClick={()=>{}}>screen_rotation</Button>,
       ]
 
@@ -70,7 +94,7 @@ export default class Editor extends Component {
         <div className="uieditor" tabIndex="0"  onKeyDown={this._handleKeyDown}>
             <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
-                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} aspect={this.state.aspect} h={canvasheight} ow={originalcanvaswidth} oh={originalcanvasheight} view={view}/>}
+                <EditorCanvas nid={nid} store={store} w={scaledcanvas.w} h={scaledcanvas.h} margin={margin} />
             </div> 
             <Mapper nid={nid} h={canvasheight} inputs={inputs}/>
         </div>
@@ -86,18 +110,17 @@ export default class Editor extends Component {
       if( e.which == 8 ){ // 8 == backspace
             console.log("BACKSPACE!!");
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
-                console.log("nice am here");
+                
                 this.props.actions.deletePressed(nid);
                 e.preventDefault();
             }
       }
     }
 
-    _handleResize(e){
-        const {canvasheight, canvaswidth} = this.props;
-        if (!this.props.originaldimensions){
-          this.props.updateNode("canvasdimensions",{w:canvaswidth, h:canvasheight});
-        }
+    _handleResize(){
+        const {canvaswidth,canvasheight} = this.props;
+        const dim = canvasdim(canvaswidth,canvasheight,this.state.aspect);
+        this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
     }
 
 }

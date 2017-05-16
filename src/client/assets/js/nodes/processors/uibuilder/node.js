@@ -52,7 +52,7 @@ export default class Node extends Component {
           				<Cell title={"name"} content={nameinput}/>
           			</Cells>
                 <div style={{height:contenth-CELLHEIGHT}}>
-                   <Editor canvasheight={contenth-CELLHEIGHT} canvaswidth={contentw} originaldimensions={node.canvasdimensions} store={store} nid={node.id} inputs={inputs} updateNode={updateNode}/>
+                   <Editor canvasheight={contenth-CELLHEIGHT} canvaswidth={width} originaldimensions={node.canvasdimensions} store={store} nid={node.id} inputs={inputs} updateNode={updateNode}/>
                 </div>
         	   </div>	
           
