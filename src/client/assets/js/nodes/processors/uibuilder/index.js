@@ -10,6 +10,7 @@ const config = {
         mappings: {value:[]},
         transformers: {value:{}},   
         canvasdimensions:{value:null},
+        tree: {value:{}}, 
     },
 
     inputs:1,               

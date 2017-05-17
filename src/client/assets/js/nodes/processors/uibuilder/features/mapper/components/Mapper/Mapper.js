@@ -290,7 +290,7 @@ export default class Mapper extends Component {
       const {[CANVASNAME]:{selected, templates}} = this.props;
       const {path=null} = selected || [];
       const tree = this.renderTree(templates, [], path);
-      return <Flex flexColumn={true}>
+      return <Flex flexColumn={true} style={{maxHeight: 300, overflow:'auto'}}>
               <Box> 
                 {tree}
               </Box>
@@ -329,6 +329,7 @@ export default class Mapper extends Component {
         right: 0,
         background: "#dfdfdf",
         opacity: 0.95,
+        overflow:'auto',
     }
 
     return <div id="mapper">
@@ -338,12 +339,11 @@ export default class Mapper extends Component {
                     <Box auto p={1} onClick={this.showAttributes}> attributes </Box>
                     <Box auto p={1} onClick={this.showMappings}> mappings </Box>
                     <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
-                    <Box auto p={1} onClick={this.showTree}> tree </Box>
                   </Flex>
+                  {this.renderObjects()}
                   {attributesSelected && this.renderAttributes()}
                   {mappingsSelected && this.renderMappings()}
                   {canvasSelected && this.renderCanvas()}
-                  {treeSelected && this.renderObjects()}
                 </Flex>
               </div>
             </div>    

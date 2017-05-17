@@ -51,8 +51,6 @@ export default class Circle extends Component {
   	}
 
  	shouldComponentUpdate(nextProps, nextState){
- 		
-
         return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
     }
 

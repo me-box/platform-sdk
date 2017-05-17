@@ -56,7 +56,7 @@ export default class Editor extends Component {
       
       this._handleKeyDown = this._handleKeyDown.bind(this);
       this._handleResize = this._handleResize.bind(this);
-      this.state = {load:false, aspect:(1440-64)/900};
+      this.state = {load:false, aspect:1440/(900-64)};
    }    
     
 

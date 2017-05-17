@@ -23,7 +23,7 @@ const Root = ({ store, history }) => {
   );
 
   if (process.env.NODE_ENV !== 'production') {
-    /*const DevTools = require('./DevTools').default;
+    const DevTools = require('./DevTools').default;
 
     ComponentEl = (
       <Provider store={store}>
@@ -32,15 +32,15 @@ const Root = ({ store, history }) => {
           {!window.devToolsExtension ? <DevTools /> : null}
         </div>
       </Provider>
-    );*/
+    );
 
-    ComponentEl = (
+    /*ComponentEl = (
       <Provider store={store}>
         <div>
           <Router history={history} routes={routes} />
         </div>
       </Provider>
-    );
+    );*/
   }
 
   return ComponentEl;

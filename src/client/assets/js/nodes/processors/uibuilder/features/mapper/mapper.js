@@ -42,6 +42,43 @@ const createTo = (action)=>{
 	return {path:action.path, type:action.shape, property:action.property}
 }
 
+const _parent = (node)=>{
+	if (!node.inputs){
+		return [];
+	}
+	return {
+
+	}
+}
+
+const _provenance_data = (nid, nodes)=>{
+	return {
+		nid,
+		type: nodes[nid].type,
+	}
+}
+const _reverseTree = (nid, links, nodes)=>{
+
+	return Object.keys(links).reduce((acc, key)=>{
+		const link = links[key];
+		if (link.target.id === nid){
+			acc.push({node:_provenance_data(link.source.id,nodes), parents: _reverseTree(link.source.id,links,nodes)});
+		}
+		return acc;
+	},[]);
+}
+
+const _buildTree = (mappings, nodes, links)=>{
+	
+	const leaves = mappings.map( (mapping)=>{ return {id:mapping.mappingId, nid:mapping.from.sourceId}});
+
+	return leaves.reduce((acc, mapping)=>{
+		acc[mapping.id] = {node: _provenance_data(mapping.nid,nodes), parents: _reverseTree(mapping.nid, links, nodes)};
+		return acc;
+	},{})
+
+}
+
 const _function_for = (ttype)=>{
 	switch (ttype){
 
@@ -266,6 +303,8 @@ function mapToAttribute(id, path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"attribute", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      //build provenance tree
+      dispatch(nodeActions.updateNode('tree', _buildTree(getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -273,6 +312,8 @@ function mapToStyle(id,path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"style", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      //build provenance tree
+      dispatch(nodeActions.updateNode('tree', _buildTree(getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -280,6 +321,8 @@ function mapToTransform(id,path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"transform", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      //build provenance tree
+      dispatch(nodeActions.updateNode('tree', _buildTree(getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
