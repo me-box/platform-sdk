@@ -155,6 +155,8 @@ const _addFile = function(options){
 
 const _fetchFile = function(username, repoowner, accessToken, repo, filename){
 	
+	console.log(`{fetching file: ${filename}`);
+
 	return new Promise((resolve,reject)=>{
 		request
 			.get(`${config.github.API}/repos/${repoowner}/${repo}/contents/${filename}`)
@@ -168,10 +170,17 @@ const _fetchFile = function(username, repoowner, accessToken, repo, filename){
 				
 					//only send back sha (used for future updates) if user that requested this repo is the owner
 					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
-					if (username === repoowner){
-						resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
-					}else{
-						resolve({content: JSON.parse(jsonstr)});
+					try{
+						if (username === repoowner){
+							resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
+						}else{
+							resolve({content: JSON.parse(jsonstr)});
+						}
+					}catch(error){
+						console.log("error parsing JSON");
+						console.log(error);
+						console.log(jsonstr);
+						resolve({content:{}});
 					}
 				}
 			});		

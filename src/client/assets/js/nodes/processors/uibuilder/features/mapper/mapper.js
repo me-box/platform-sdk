@@ -51,12 +51,28 @@ const _parent = (node)=>{
 	}
 }
 
+const _hexEncode = (str)=>{
+    var hex, i;
+
+    var result = "";
+    for (i=0; i<str.length; i++) {
+        hex = str.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+
+    return result
+}
+
 const _provenance_data = (nid, nodes)=>{
 	return {
 		nid,
 		type: nodes[nid].type,
+		category: nodes[nid]._def.category,
+		color: nodes[nid]._def.color,
+		unicode: _hexEncode(nodes[nid]._def.unicode)
 	}
 }
+
 const _reverseTree = (nid, links, nodes)=>{
 
 	return Object.keys(links).reduce((acc, key)=>{
@@ -68,15 +84,18 @@ const _reverseTree = (nid, links, nodes)=>{
 	},[]);
 }
 
-const _buildTree = (mappings, nodes, links)=>{
+const _buildTree = (nid, mappings, nodes, links)=>{
 	
+	//first build the tree from this node upwards
 	const leaves = mappings.map( (mapping)=>{ return {id:mapping.mappingId, nid:mapping.from.sourceId}});
 
 	return leaves.reduce((acc, mapping)=>{
-		acc[mapping.id] = {node: _provenance_data(mapping.nid,nodes), parents: _reverseTree(mapping.nid, links, nodes)};
+		acc[mapping.id] = {
+									node:_provenance_data(nid, nodes), 
+									parents: [{node: _provenance_data(mapping.nid,nodes), parents: _reverseTree(mapping.nid, links, nodes)}]
+						  };
 		return acc;
-	},{})
-
+	},{});
 }
 
 const _function_for = (ttype)=>{
@@ -304,7 +323,7 @@ function mapToAttribute(id, path, property){
       dispatch(mapTo(id,"attribute", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
       //build provenance tree
-      dispatch(nodeActions.updateNode('tree', _buildTree(getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
+      dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -313,7 +332,7 @@ function mapToStyle(id,path, property){
       dispatch(mapTo(id,"style", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
       //build provenance tree
-      dispatch(nodeActions.updateNode('tree', _buildTree(getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
+      dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -322,7 +341,7 @@ function mapToTransform(id,path, property){
       dispatch(mapTo(id,"transform", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
       //build provenance tree
-      dispatch(nodeActions.updateNode('tree', _buildTree(getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
+      dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
