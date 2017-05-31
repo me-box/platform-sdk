@@ -17,7 +17,7 @@ export default class Path extends Component {
     }
 
 	render(){
-		console.log("PATH in render");
+		
 		const {id,template,selected} = this.props;
 		const {d,style} = template;
 		const amSelected = selected.indexOf(id) != -1;

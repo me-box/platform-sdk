@@ -22,6 +22,8 @@ const UPDATE_TEMPLATE_STYLE      = 'uibuilder/canvas/UPDATE_TEMPLATE_STYLE';
 const DELETE                     = 'uibuilder/canvas/DELETE';
 const LOAD_TEMPLATES             = 'uibuilder/canvas/LOAD_TEMPLATES';
 const CLEAR_STATE                = 'uibuilder/canvas/CLEAR_STATE';
+const MOVE_UP                    = 'uibuilder/canvas/MOVE_UP';
+const MOVE_DOWN                  = 'uibuilder/canvas/MOVE_DOWN';
 
 // This will be used in our root reducer and selectors
 export const NAME = 'uibuilder/canvas';
@@ -505,6 +507,16 @@ const _parenttemplates = (templatesById)=>{
 }
 
 
+const _swap = (items, firstIndex, secondIndex) =>
+  items.map(
+    (element, index) =>
+      index === firstIndex
+        ? items[secondIndex]
+        : index === secondIndex
+        ? items[firstIndex]
+        : element
+  )
+
 
 export default function reducer(state = initialState, action={}) {
 
@@ -610,6 +622,37 @@ export default function reducer(state = initialState, action={}) {
 
     case CLEAR_STATE:
       return Object.assign({}, state, initialState);
+
+    case MOVE_UP:
+      const _templateToMoveUp = state.selected.path || null;
+
+      if (_templateToMoveUp && _templateToMoveUp[0]){
+        if (state.templates.length > 1){
+          
+          const index = state.templates.indexOf(_templateToMoveUp[0]);
+          
+          
+          if (index != -1  && index < state.templates.length -1){
+            return Object.assign({}, state, {templates: _swap(state.templates, index, index+1)})
+          } 
+        }
+      }
+      return state;
+
+    case MOVE_DOWN:
+      const _templateToMoveDown = state.selected.path || null;
+
+      if (_templateToMoveDown && _templateToMoveDown[0]){
+        if (state.templates.length > 1){
+          
+          const index = state.templates.indexOf(_templateToMoveDown[0]);
+          
+         if (index != -1  && index > 0){
+            return Object.assign({}, state, {templates: _swap(state.templates, index, index-1)})
+          } 
+        }
+      }
+      return state;
 
     default:
       return state;
@@ -776,6 +819,20 @@ function clearState(id){
   }
 }
 
+function moveUp(id){
+   return{
+      id,
+      type: MOVE_UP,
+   }
+}
+
+function moveDown(id){
+ return{
+      id,
+      type: MOVE_DOWN,
+   }
+}
+
 function init(id, templates){
  
   return {
@@ -819,4 +876,6 @@ export const actionCreators = {
   updateTemplateStyle,
   loadTemplates,
   clearState,
+  moveUp,
+  moveDown,
 };

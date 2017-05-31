@@ -124,7 +124,7 @@ export default class Mapper extends Component {
   renderTree(templates, path, selectedPath){
       return templates.map((id)=>{
           return <ul key={id}>{this.renderTemplate(id, [...path], selectedPath)}</ul>;
-      });
+      }).reverse();
   }
 
 
@@ -207,9 +207,6 @@ export default class Mapper extends Component {
         //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
         //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
         if (!templatesById[id]){
-          console.log("cannot get id " + id);
-          console.log("for templates by id");
-          console.log(JSON.stringify(templatesById,null,4));
           return null;
         }
 
@@ -287,14 +284,26 @@ export default class Mapper extends Component {
 
   
   renderObjects(){
-      const {[CANVASNAME]:{selected, templates}} = this.props;
+      const {[CANVASNAME]:{selected, templates}, nid} = this.props;
       const {path=null} = selected || [];
       const tree = this.renderTree(templates, [], path);
-      return <Flex flexColumn={true} style={{maxHeight: 300, overflow:'auto'}}>
-              <Box> 
-                {tree}
-              </Box>
-            </Flex>
+    
+      const layerstyle = {
+        fontFamily:"FontAwesome",
+        textAlign: "center",
+        color: "white",
+      }
+      return <div>
+              <Flex flexColumn={true} style={{maxHeight: 300, overflow:'auto'}}>
+                <Box> 
+                  {tree}
+                </Box>
+              </Flex>
+              <Flex align="center" style={{background:"#667793", color:"white"}}>
+                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveUp(nid)}><i className="fa fa-arrow-up"></i></Box>
+                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveDown(nid)}><i className="fa fa-arrow-down"></i></Box>
+              </Flex>
+            </div>
   }
 
   showAttributes(){
@@ -335,7 +344,7 @@ export default class Mapper extends Component {
     return <div id="mapper">
               <div style={mapperstyle}>
                 <Flex flexColumn={true}>
-                  <Flex align="center">
+                  <Flex align="center" style={{background:"#535353", color:"#fff"}}>
                     <Box auto p={1} onClick={this.showAttributes}> attributes </Box>
                     <Box auto p={1} onClick={this.showMappings}> mappings </Box>
                     <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
