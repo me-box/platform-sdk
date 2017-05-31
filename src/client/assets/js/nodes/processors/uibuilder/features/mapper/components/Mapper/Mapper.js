@@ -133,11 +133,12 @@ export default class Mapper extends Component {
     const {[CANVASNAME]:{templatesById, selected}, nid} = this.props;
     
     const {path=null} = selected || [];
-    const [id, ...rest] = path;
-
+    //const [id, ...rest] = path;
+    const id = path[path.length-1];
 
     const template = id ? templatesById[id] : null;
    
+    console.log("LOOKING UP TEMPLATE TYPE: " + template.type);
 
     const attrs = id != null ? <Attributes {
                                                       ...{
