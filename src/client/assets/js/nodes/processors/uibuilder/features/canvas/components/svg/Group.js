@@ -24,34 +24,38 @@ export default class Group extends Component {
 
 	renderChildren(children){
 
-		const {[NAME]:{templatesById}} = this.props;
+		const {[NAME]:{templatesById}, nid} = this.props;
+		console.log("GROUP in render children");
 
 		return children.map((id)=>{
 
 			const type = templatesById[id].type;
-			
+			const props = {
+				id, nid
+			}
+
 			switch(type){
 				
 				case "circle":
-					return <Circle key={id} id={id}/>
+					return <Circle key={id} {...props}/>
 			 	
 			 	case "ellipse":
-					return <Ellipse key={id} id={id}/>
+					return <Ellipse key={id} {...props}/>
 
 				case "rect":
-					return <Rect key={id}  id={id}/>
+					return <Rect key={id}  {...props}/>
 
 				case "text":
-					return <Text key={id} id={id}/>
+					return <Text key={id} {...props}/>
 
 				case "line":
-					return <Line key={id} id={id}/>
+					return <Line key={id} {...props}/>
 
 			 	case "path":
-					return <Path key={id} id={id}/>
+					return <Path key={id} {...props}/>
 
 				case "group":
-					return <Group key={id} {...{...this.props, ...{id}}}/>
+					return <Group key={id} {...{...this.props, ...{id}, ...{nid}}}/>
 							
 				default:
 					return null;
@@ -85,8 +89,12 @@ export default class Group extends Component {
   				</g>
   	}
 
-	render(){
+  	shouldComponentUpdate(nextProps, nextState){
+  		return this.props[NAME].templatesById[this.props.id] != nextProps[NAME].templatesById[nextProps.id] || this.props.selected != nextProps.selected;
+    }
 
+	render(){
+		console.log("GROUP in render");
 		const {id, selected, [NAME]:{templatesById}} = this.props;
 		const template = templatesById[id];
 		const amSelected = selected.indexOf(id) != -1;

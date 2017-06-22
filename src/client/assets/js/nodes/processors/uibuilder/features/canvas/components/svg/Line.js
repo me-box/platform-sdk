@@ -11,8 +11,12 @@ import { connect } from 'react-redux';
 })
 export default class Line extends Component {
 
+	shouldComponentUpdate(nextProps, nextState){
+        return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
+    }
 
 	render(){
+		console.log("LINE in render");
 		const {id, template} = this.props;
 		const {x1,x2,y1,y2,style} = template;
 		const _style = camelise(style);

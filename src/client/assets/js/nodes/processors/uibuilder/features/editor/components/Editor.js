@@ -3,182 +3,124 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { actionCreators as editorActions, selector, NAME } from '../';
-//import { actionCreators as sourceActions} from 'features/sources';
-//import { actionCreators as mapperActions} from 'features/mapper';
 import EditorCanvas from '../../canvas/components/EditorCanvas';
-//import LiveCanvas from '../../live/components/LiveCanvas';
 
 import Palette from '../../palette/components';
 import Mapper from '../../mapper/components/Mapper';
 import DragDropContainer from 'nodes/processors/uibuilder/components/DragDrop';
 import './Editor.scss';
-//import {DatasourceManager} from '../../../datasources';
+
 import LoadScene from './LoadScene';
 import Toolbar from 'react-md/lib/Toolbars';
 import Button from 'react-md/lib/Buttons';
-//import {MAPPER_WIDTH} from '../../mapper/constants';
-//import {PALETTE_WIDTH} from '../../palette/constants';
+
 
 const PALETTE_WIDTH = 60;
 const MAPPER_WIDTH = 150;
+const PADDING = 30;
+
+const canvasdim = (w, h, aspect)=>{
+  const _w = (w - PADDING*2);
+  const _h = (h - PADDING*2);
+  let boxw, boxh;
+
+  if (aspect < 1){
+      boxw = _w;
+      boxh = boxw / aspect;
+  }else{
+      boxh = _h;
+      boxw = boxh * aspect;
+  }
+
+  if (boxw > _w - PADDING*2){
+    boxw = boxw - (boxw-_w) - PADDING*2;
+    boxh = boxw / aspect;
+  }
+
+  return {w:boxw, h:boxh};
+}
+
 
 @connect(selector, (dispatch) => {
-  /*DatasourceManager.init(bindActionCreators(sourceActions.registerSource, dispatch));*/
+
   return{
      actions: {...bindActionCreators(editorActions, dispatch)}
-     //, ...bindActionCreators(mapperActions, dispatch)}
   }
 })
 
 export default class Editor extends Component {
 
-	 constructor(props,context){
-		  super(props,context);
-		  this._handleResize = this._handleResize.bind(this);
-      this._handleLive = this._handleLive.bind(this);
-      this._handleEdit = this._handleEdit.bind(this);
-      this._handleSave = this._handleSave.bind(this);
-      this._handleLoad = this._handleLoad.bind(this);
-      this._closeDialog = this._closeDialog.bind(this);
-      this._openLoadDialog = this._openLoadDialog.bind(this);
-      this.state = {load:false};
+   constructor(props,context){
+      super(props,context);
+      const {nid, dispatch} = props;
+      
+      this._handleKeyDown = this._handleKeyDown.bind(this);
+      this._handleResize = this._handleResize.bind(this);
+      this.state = {load:false, aspect:1440/(900-64)};
+   }    
+    
 
-   }		
-  	
     componentDidMount(){
-		  //window.addEventListener('resize', this._handleResize);
-  	}
+      this._handleResize();
+      window.addEventListener('resize', this._handleResize);
+    }
 
-/*    render() {
-      const {w,h,ow,oh,view} = {w:500,h:500,ow:500,oh:500,view:"editor"};
-      const {store} = this.props;
-
-      return (
-        <div className="editor">
-          <EditorCanvas w={w} h={h} ow={ow} oh={oh} view={view} store={store}/>
-        </div>
-      )
-
-    }*/
+    componentWillUnmount(){
+      window.removeEventListener('resize', this._handleResize);
+    }
 
     render() {
-           
-
-      const {[NAME]:{w,h,ow,oh,view},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
-   
-
+              
+      const {[NAME]:{w,h},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
+    
       const canvasstyle ={
         left: PALETTE_WIDTH,
-        //width: w-PALETTE_WIDTH,
+        height: canvasheight,
+        width: canvaswidth,
       }
 
+      const scaledcanvas = canvasdim(canvaswidth, canvasheight, this.state.aspect);
+      const margin = `${Math.floor((canvasheight-scaledcanvas.h)/2)}px ${Math.floor((canvaswidth-scaledcanvas.w)/2)}px`
+      
       const actions = [
-                        <Button flat key="load" label="load" onClick={this._openLoadDialog}>cloud_download</Button>,
-                        <Button flat key="save" label="save" onClick={this._handleSave}>save</Button>
-                      ]
-
-     
-
-      if (view === "editor"){
-        actions.push(<Button flat key="toggle" label="live" onClick={this._handleLive}>tap_and_play</Button>);
-      }else{
-        actions.push(<Button flat key="toggle" label="editor" onClick={this._handleEdit}>mode_edit</Button>);
-      }
-
-      const toolbarwidth = view==="editor" ? w-MAPPER_WIDTH-PALETTE_WIDTH : w-PALETTE_WIDTH;
+          <Button flat key="aspect_mobile" onClick={()=>{this.setState({aspect:750/1334})}}>phone_android</Button>,
+          <Button flat key="aspect_tablet" onClick={()=>{this.setState({aspect:750/1334})}}>tablet_android</Button>,
+          <Button flat key="aspect_screen" onClick={()=>{this.setState({aspect:(1440-64)/900})}}>laptop</Button>,
+          <Button flat key="aspect_rotate" onClick={()=>{}}>screen_rotation</Button>,
+      ]
 
 
       return (
-        <div className="uieditor">
+        <div className="uieditor" tabIndex="0"  onKeyDown={this._handleKeyDown}>
             <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
-                {view==="editor" && <EditorCanvas nid={nid} store={store} w={canvaswidth} h={canvasheight} ow={ow} oh={oh} view={view}/>}
+                <EditorCanvas nid={nid} store={store} w={scaledcanvas.w} h={scaledcanvas.h} margin={margin} />
             </div> 
-            {view==="editor" && <Mapper nid={nid} h={canvasheight} inputs={inputs}/>}
-            <Toolbar colored title={view} actions={actions} style={{position:"relative", bottom:100, background:"#3f51b5"}}/>
-            <LoadScene store={store} nid={nid} visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
+            <Mapper nid={nid} h={canvasheight} inputs={inputs}/>
         </div>
       );
     }
 
-    /* */
+    _handleKeyDown(e) {
+    
+      const {nid} = this.props;
+      var rx = /INPUT|SELECT|TEXTAREA/i;
+      console.log(e.target.tagName);
 
-  	/*render() {
-  		
-  		const {editor:{w,h,ow,oh,view},actions:{setView}, canvaswidth, canvasheight} = this.props;
-      
-      const canvasstyle ={
-        left: PALETTE_WIDTH,
-        width: w-PALETTE_WIDTH,
+      if( e.which == 8 ){ // 8 == backspace
+            console.log("BACKSPACE!!");
+            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
+                
+                this.props.actions.deletePressed(nid);
+                e.preventDefault();
+            }
       }
-
-      const actions = [
-                        <Button flat key="load" label="load" onClick={this._openLoadDialog}>cloud_download</Button>,
-                        <Button flat key="save" label="save" onClick={this._handleSave}>save</Button>
-                      ]
-
-     
-
-      if (view === "editor"){
-        actions.push(<Button flat key="toggle" label="live" onClick={this._handleLive}>tap_and_play</Button>);
-      }else{
-        actions.push(<Button flat key="toggle" label="editor" onClick={this._handleEdit}>mode_edit</Button>);
-      }
-
-      const toolbarwidth = view==="editor" ? w-MAPPER_WIDTH-PALETTE_WIDTH : w-PALETTE_WIDTH;
-
-
-    	return (
-      	<div className="editor">
-            <DragDropContainer w={w} h={h}>
-              <Palette/>
-              <div className="canvascontainer" style={canvasstyle}>
-                  {view==="editor" && <EditorCanvas  w={w} h={h} ow={ow} oh={oh} view={view}/>}
-                  {view==="live" && <LiveCanvas w={w} h={h} ow={ow} oh={oh}/>}
-              </div> 
-            </DragDropContainer>
-            {view==="editor" && <Mapper height={h}/>}
-            <Toolbar colored title={view} actions={actions} style={{position:'fixed', width:toolbarwidth, background:"#3f51b5", left:PALETTE_WIDTH, bottom:0}}/>
-            <LoadScene visible={this.state.load} onHide={this._closeDialog} onLoad={this._handleLoad}/>
-        </div>
-    	);
-  	}*/
-
-  	_handleResize(e){
-        const {nid} = this.props;
-     	  const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-      	const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-      	this.props.actions.screenResize(nid,w,h);
-  	}
-
-   _handleEdit(){
-      const {nid} = this.props;
-      this.props.actions.unsubscribeMappings();
-      this.props.actions.setView(nid,"editor")
     }
 
-    _handleLive(){
-      const {nid} = this.props;
-      this.props.actions.subscribeMappings();
-      this.props.actions.setView(nid,"live")
+    _handleResize(){
+        const {canvaswidth,canvasheight} = this.props;
+        const dim = canvasdim(canvaswidth,canvasheight,this.state.aspect);
+        this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
     }
 
-    _handleSave(){
-      const {nid} = this.props;
-      this.props.actions.save(nid);
-    }
-
-    _handleLoad(scene){
-      const {nid} = this.props;
-      this.setState({load:false});
-      this.props.actions.load(nid,scene);
-    }
-
-    _openLoadDialog(){
-      this.setState({load:true});
-    }
-
-    _closeDialog(){
-      this.setState({load:false});
-    }
 }

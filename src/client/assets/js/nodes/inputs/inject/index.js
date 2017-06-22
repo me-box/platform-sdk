@@ -66,16 +66,14 @@ const config = {
 
         return  {
             output:{
-                msg: {
-                            type: 'object', 
-                            description:"container object", 
-                            properties:{
-                                topic: {type:'string', description: "a string assigned to this input"}, 
-                                _msgid: {type:'string', description: "a unique message id"},
-                                payload: translate[subtype], 
-                            },
-                            required: ["payload"]
-                }
+                type: 'object', 
+                description:"container object", 
+                properties:{
+                    topic: {type:'string', description: "a string assigned to this input"}, 
+                    _msgid: {type:'string', description: "a unique message id"},
+                    payload: translate[subtype], 
+                },
+                required: ["payload"],
             }
         }
     },

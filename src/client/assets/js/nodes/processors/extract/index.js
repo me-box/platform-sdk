@@ -18,7 +18,7 @@ const config = {
     icon: "fa-hand-o-up",    
     unicode: '\uf0a6',    
     label: function() {     
-        return this.name||this.topic||"function";
+        return this.name||this.topic||"extract";
     },
     
     description: ()=> "a node for extracting object attributes",
@@ -28,26 +28,29 @@ const config = {
     },
 
     schemafn:(filters)=>{
-
+       
         const payload = filters.reduce((acc,filter)=>{
             const {name, type, description} = filter.item;
             acc[name] = {type,description}
             return acc; 
         },{});
 
-
         return {
                     output: {
-                        name: {type:'string', description: "a name assigned to this node"}, 
-                        id:  {type:'string', description: "the node id: [id]"},
-                        msg: {
-                            type: "object",
-                            description: "the container object",
-                            properties: {
-                                payload: {
-                                    type: "object",
-                                    description: "the message payload",
-                                    properties: payload,
+                        type: "object",
+                        description: "container object",
+                        properties: {
+                            name: {type:'string', description: "a name assigned to this node"}, 
+                            id:  {type:'string', description: "the node id: [id]"},
+                            msg: {
+                                type: "object",
+                                description: "the container object",
+                                properties: {
+                                    payload: {
+                                        type: "object",
+                                        description: "the message payload",
+                                        properties: payload,
+                                    }
                                 }
                             }
                         }

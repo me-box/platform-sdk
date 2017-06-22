@@ -28,13 +28,13 @@ export default class Node extends Component {
         this._nodeDoubleClicked= this._nodeDoubleClicked.bind(this);
 	}
 
+    shouldComponentUpdate(nextProps, nextState){
+        return this.props.node != nextProps.node;
+    }
 
     render(){
 
         const {id, node, selectedId}  = this.props;
-
-
-        //const {d,selected} = this.props;
        
         const mainrectclass= className({
             node: true,

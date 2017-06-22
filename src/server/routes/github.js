@@ -155,6 +155,8 @@ const _addFile = function(options){
 
 const _fetchFile = function(username, repoowner, accessToken, repo, filename){
 	
+	console.log(`{fetching file: ${filename}`);
+
 	return new Promise((resolve,reject)=>{
 		request
 			.get(`${config.github.API}/repos/${repoowner}/${repo}/contents/${filename}`)
@@ -168,10 +170,17 @@ const _fetchFile = function(username, repoowner, accessToken, repo, filename){
 				
 					//only send back sha (used for future updates) if user that requested this repo is the owner
 					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
-					if (username === repoowner){
-						resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
-					}else{
-						resolve({content: JSON.parse(jsonstr)});
+					try{
+						if (username === repoowner){
+							resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
+						}else{
+							resolve({content: JSON.parse(jsonstr)});
+						}
+					}catch(error){
+						console.log("error parsing JSON");
+						console.log(error);
+						console.log(jsonstr);
+						resolve({content:{}});
 					}
 				}
 			});		
@@ -257,7 +266,9 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 const _publish = function(user, reponame, app, packages, libraries, allowed, flows){
 	
 	
-	
+	console.log("PUBLISHING NOW WITH LIBRARIES");
+	console.log(libraries);
+
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		
@@ -283,7 +294,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 		
 		const dockerfile = [...dcommands, ...libcommands, ...startcommands].join("\n");
 	
-		console.log("building with dockerfile");
+		console.log("-->building with dockerfile");
 		console.log(dockerfile);
 		
 		const manifest = _generateManifest(user, app.name, app, packages, allowed);
@@ -311,7 +322,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 		},(err)=>{
 			reject("could not save to app store!");
 		}).then(function(tarfile){
-			const appname = app.name.startsWith(user.username) ? app.name : `${user.username}-${app.name}`;
+			const appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
 			return createDockerImage(tarfile, `${config.registry.URL}/${appname}`);
 		},(err)=>{
 			reject("could not create tar file");
@@ -494,7 +505,7 @@ router.post('/publish', function(req,res){
 	//first save the manifest and flows file - either create new repo or commit changes
 		
 	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
-		if (node.type === "function"){
+		if (node.type === "dbfunction"){
 			acc = [...acc, matchLibraries(node.func)];
 		}
 		return acc;

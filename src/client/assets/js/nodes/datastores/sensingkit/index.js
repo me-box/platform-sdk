@@ -307,11 +307,9 @@ const config = {
 
     return {
       output: {
-        msg: {
           type: "object",
           description: "the container object",
           properties: schema(subtype),
-        }
       }
     }
   },

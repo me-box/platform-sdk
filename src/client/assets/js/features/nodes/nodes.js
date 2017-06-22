@@ -148,10 +148,7 @@ export default function reducer(state = initialState, action) {
 
 
     case nodeActionTypes.NODE_UPDATE_VALUE:
-      //handle array case here too?
-      console.log("UPDATEING NODE VALUE!!!");
-      console.log(action.property);
-      console.log(action.value);
+   
       
       return Object.assign({}, state, {
         buffer : Object.assign({}, state.buffer, {[action.property]:action.value})

@@ -49,8 +49,12 @@ export default class Rect extends Component {
   				</g>
   	}
 
-	render(){
+  	shouldComponentUpdate(nextProps, nextState){
+        return this.props.template != nextProps.template || this.props.selected != nextProps.selected;
+    }
 
+	render(){
+		console.log("RECT in render");
 		const {id, template, selected} = this.props;
 		const {x,y,rx,ry,width,height,style,transform="translate(0,0)"} = template;
 		const _style = camelise(style);

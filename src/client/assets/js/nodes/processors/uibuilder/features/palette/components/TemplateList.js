@@ -13,11 +13,14 @@ export default class TemplateList extends Component {
   };
 
   renderShapes() {
+    const {nid} = this.props;
+
     return this.props.templates.filter((template)=>template.type!=="group").map((template) =>
       (
         <TemplateItem
           key={template.id}
           id={template.id}
+          nid={nid}
           name={template.name}
           type={template.type}
           children={template.children}
@@ -28,11 +31,14 @@ export default class TemplateList extends Component {
   }
 
   renderGroups() {
+    const {nid} = this.props;
+    
     return this.props.templates.filter((template)=>template.type==="group").map((template) =>
       (
         <TemplateItem
           key={template.id}
           id={template.id}
+          nid={nid}
           name={template.name}
           type={template.type}
           children={template.children}
@@ -52,7 +58,7 @@ export default class TemplateList extends Component {
                     const reader = new FileReader();
                     reader.onload = (output)=>{
                       //console.log(output.target.result); 
-                      post("image/add", {name:f.name, image:output.target.result}).then(()=>{
+                      post("/uibuilder/image/add", {name:f.name, image:output.target.result}).then(()=>{
                         console.log("image uploaded!!!");
                       },(err)=>{
                         console.log(err);

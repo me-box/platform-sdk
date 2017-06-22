@@ -37,7 +37,6 @@ const config = {
       
         return {
             output:{
-              msg: {
                 type: "object",
                 description: "the container object",
                 properties:{
@@ -54,9 +53,8 @@ const config = {
                       },
                       required: ["ts", "value"]
                     }
-                  },
-                  required: ["id", "type", "subtype", "payload"]
-                }
+                },
+                required: ["id", "type", "subtype", "payload"]
             }
         }
     },

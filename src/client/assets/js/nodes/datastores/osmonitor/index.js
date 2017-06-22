@@ -32,7 +32,6 @@ const config = {
 
     return {
       output: {
-        msg: {
           type: "object",
           description: "the container object",
           properties: {
@@ -69,7 +68,6 @@ const config = {
             },
           },
           required: ["id", "type", "subtype", "payload"]
-        }
       }
     }
   },

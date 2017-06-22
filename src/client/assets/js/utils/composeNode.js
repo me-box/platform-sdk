@@ -6,6 +6,9 @@ import { bindActionCreators } from 'redux';
 //import * as DialogueActions  from '../actions/DialogueActions';
 //import * as HelpActions from '../actions/HelpActions';
 
+
+//TODO: delete - no longer used
+
 //import {updateNode, updateNodeValueKey, incrementNodeValueKey, initNodeKeys, fetchSampleData} from '../actions/NodeActions';
 import {actionCreators as nodeActions} from 'features/nodes';
 
@@ -19,30 +22,9 @@ export default function composeNode(Component, nt, config, reducer=null){
       		values: {}
   		}
 
-		constructor(props){
-			super(props);
-			/*Object.assign(  this, 
-              ...bindActionCreators(RegisterActions, props.dispatch), 
-              ...bindActionCreators(DialogueActions, props.dispatch),
-              ...bindActionCreators(HelpActions, props.dispatch), 
-           	);	
-            this.initNodeKeys = bindActionCreators(initNodeKeys, this.props.dispatch);
-            this.fetchSampleData = bindActionCreators(fetchSampleData, this.props.dispatch);*/
-		}
-
-		/*
-		* This is called once, when the node is loaded to the palette
-		*/
-	
-		componentDidMount(){
-			
-          //this.registerType(nt, config, reducer);
-    }
-		
 
 		render(){
 
-       console.log("in compose node render!");
 		   const {configuring, selected, help, inputs, outputs, values, dimensions, dispatch, store} = this.props;
     	   
     	 const props = Object.assign({}, this.props,  {

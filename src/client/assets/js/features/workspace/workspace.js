@@ -142,11 +142,6 @@ export default function reducer(state = initialState, action) {
 	  	 	},{})
 	  	 });*/
 
-	  	 console.log("IN RECEIEVE MANIFEST! - packages are");
-	  	 console.log(action.manifest);
-	  	 console.log(action.manifest.packages);
-
-
 	  	 const tabs = action.manifest.packages.map((p)=>p.id);
 
 	  	 return Object.assign({}, state, 

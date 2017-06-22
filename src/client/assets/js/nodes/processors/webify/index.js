@@ -28,25 +28,23 @@ const config =  {
     schemafn: ()=>{
     	return{
     		output:{
-    			msg: {
-    				type: "object",
-    				description: "the container object",
-    				properties:{
-						name: {type:'string', description: "the name assigned to this webify node"}, 
-						sourceId:  {type:'string', description: "<i>[id]</i>"},
-						type:{type: 'string', description: "html"},
-						
-						payload: {
-							type: 'object', 
-							description: 'the payload object', 
-							properties: {
-								values: {type:'string',  description: "formatted html"},    					
-							},
-							required: ["values"]
-						}
-					},
-					required: ["sourceId", "type", "payload"]
-				}
+				type: "object",
+				description: "the container object",
+				properties:{
+					name: {type:'string', description: "the name assigned to this webify node"}, 
+					sourceId:  {type:'string', description: "<i>[id]</i>"},
+					type:{type: 'string', description: "html"},
+					
+					payload: {
+						type: 'object', 
+						description: 'the payload object', 
+						properties: {
+							values: {type:'string',  description: "formatted html"},    					
+						},
+						required: ["values"]
+					}
+				},
+				required: ["sourceId", "type", "payload"]
 			},
 			input:{
 				type: "object",

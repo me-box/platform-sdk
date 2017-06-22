@@ -67,12 +67,22 @@ export default class Mapper extends Component {
   
   constructor(props){
       super(props);
-      this.state = { activeTabIndex: 0, propertiesExpanded:false, objectsExpanded:false, mapperExpanded:false, mappingsExpanded:false, birthExpanded:false, deathExpanded:false};
-      this._handleTabChange = this._handleTabChange.bind(this);
+      //this.state = { activeTabIndex: 0, propertiesExpanded:false, objectsExpanded:false, mapperExpanded:false, mappingsExpanded:false, birthExpanded:false, deathExpanded:false};
+      
+      this.state = {attributesSelected:true, mappingsSelected: false, canvasSelected: false, treeSelected: false, selected:null}
+      //this._handleTabChange = this._handleTabChange.bind(this);
       this._toggleSelected = this._toggleSelected.bind(this);
-      this.state = {selected: null};
-  }
+     
 
+      this.renderAttributes = this.renderAttributes.bind(this);
+      this.renderMappings= this.renderMappings.bind(this);
+      this.renderCanvas= this.renderCanvas.bind(this);
+      this.renderObjects = this.renderObjects.bind(this);
+      this.showAttributes= this.showAttributes.bind(this)
+      this.showMappings= this.showMappings.bind(this);
+      this.showCanvas= this.showCanvas.bind(this);
+      this.showTree= this.showTree.bind(this);
+  }
 
   renderInputs(){
     const {inputs, nid} = this.props;
@@ -114,30 +124,21 @@ export default class Mapper extends Component {
   renderTree(templates, path, selectedPath){
       return templates.map((id)=>{
           return <ul key={id}>{this.renderTemplate(id, [...path], selectedPath)}</ul>;
-      });
+      }).reverse();
   }
 
-  renderObjects(){
-      const {[CANVASNAME]:{selected, templates}} = this.props;
-      const {path=null} = selected || [];
-      const tree = this.renderTree(templates, [], path);
-      return <Flex flexColumn={true}>
-              <Box> 
-                {tree}
-              </Box>
-            </Flex>
-  }
 
   renderComponents() {
     
     const {[CANVASNAME]:{templatesById, selected}, nid} = this.props;
     
     const {path=null} = selected || [];
-    const [id, ...rest] = path;
-
+    //const [id, ...rest] = path;
+    const id = path[path.length-1];
 
     const template = id ? templatesById[id] : null;
    
+    console.log("LOOKING UP TEMPLATE TYPE: " + template.type);
 
     const attrs = id != null ? <Attributes {
                                                       ...{
@@ -172,6 +173,7 @@ export default class Mapper extends Component {
 
 
   renderMapper(){
+
       const {[CANVASNAME]:{templatesById, selected:{path=null}}} = this.props; 
 
       if (!path || path.lnegth <= 0)
@@ -188,7 +190,7 @@ export default class Mapper extends Component {
             </Box>
   }
 
-  renderMappings(){
+  renderTransformers(){
 
     const {[CANVASNAME]:{templatesById}, [NAME]:{mappings}, inputs, nid} = this.props;
   
@@ -201,40 +203,162 @@ export default class Mapper extends Component {
         },item.from.sourceId);
 
         const [id, ...rest] = item.to.path; 
+
+
+        //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
+        //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+        if (!templatesById[id]){
+          return null;
+        }
+
         const templateName = templatesById[id].label;
 
-        return <div onClick={this.props.actions.selectMapping.bind(null,nid,item)} key={i}>{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</div>
+        return <Flex key={i}>
+                    <Box col={11} onClick={this.props.actions.selectMapping.bind(null,nid,item)} >{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</Box>
+                    <Box col={1} onClick={this.props.actions.removeMapping.bind(null,nid,item.mappingId)}><strong>x</strong></Box>
+                </Flex>
     })
    
   }
 
   renderBirthOptions(){
-    const {[CANVASNAME]:{selected:{path}}} = this.props;
-    return <Birth path={path}/>
+    const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
+    return <Birth inputs={inputs} nid={nid} path={path}/>
   }
 
   renderDeathOptions(){
-     return <Death />
+     const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
+     return <Death inputs={inputs} nid={nid} path={path}/>
   }
 
 
+  /*shouldComponentUpdate(nextProps, nextState){
+    return true;
+     //first check to see if nothing has been selected, in which case only re-render if mapping has changed
+     if (!this.props[CANVASNAME].selected && !nextProps[CANVASNAME].selected){
+         console.log(`updating: ${this.props[NAME] !== nextProps[NAME]}`)
+         return  this.props[NAME] !== nextProps[NAME] 
+     }
+     //otherwise check to see if previously selected template != current selected template
+     else if (this.props[CANVASNAME].selected !== nextProps[CANVASNAME].selected){
+        return true;
+     }
+     else{
+        const {[CANVASNAME]:{selected:{path}}} = this.props;
+        const tId = path[path.length-1];
+        return this.props[CANVASNAME].templatesById[tId] !=  nextProps[CANVASNAME].templatesById[tId] || this.props[NAME] !== nextProps[NAME]     
+     }
+  }*/
 
   renderProperties(){
-
       const { activeTabIndex } = this.state;
-
       const {[CANVASNAME]:{templatesById, selected:{path}}, nid} = this.props; 
-      console.log("rendering properties and binding to nid " + nid);
       const template = templatesById[path[path.length-1]]
       return <Properties template={template} updateAttribute={this.props.actions.updateTemplateAttribute.bind(null,nid,path)} updateStyle={this.props.actions.updateTemplateStyle.bind(null,nid,path)}/>
   }
 
+  renderAttributes(){
+      const { activeTabIndex } = this.state;
+      const {[CANVASNAME]:{templatesById, selected:{path}}, nid} = this.props; 
+      const template = templatesById[path[path.length-1]]
+     
+      return <Properties template={template} updateAttribute={this.props.actions.updateTemplateAttribute.bind(null,nid,path)} updateStyle={this.props.actions.updateTemplateStyle.bind(null,nid,path)}/>
+          
+  }
+
+  renderMappings(){
+    const {[NAME]:{selectedMapping, transformers}, nid} = this.props;
+    return <div>
+                {/*this.renderBirthOptions()*/}
+                {/*this.renderDeathOptions()*/}
+                {this.renderMapper()}
+                {this.renderTransformers()}
+                {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}     
+          </div>
+  }
+
+  renderCanvas(){
+    return <Flex align="center" justify="center">
+              <Box auto p={1}>canvas</Box> 
+            </Flex>
+  }
+
+  
+  renderObjects(){
+      const {[CANVASNAME]:{selected, templates}, nid} = this.props;
+      const {path=null} = selected || [];
+      const tree = this.renderTree(templates, [], path);
+    
+      const layerstyle = {
+        fontFamily:"FontAwesome",
+        textAlign: "center",
+        color: "white",
+      }
+      return <div>
+              <Flex flexColumn={true} style={{maxHeight: 300, overflow:'auto'}}>
+                <Box> 
+                  {tree}
+                </Box>
+              </Flex>
+              <Flex align="center" style={{background:"#667793", color:"white"}}>
+                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveUp(nid)}><i className="fa fa-arrow-up"></i></Box>
+                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveDown(nid)}><i className="fa fa-arrow-down"></i></Box>
+              </Flex>
+            </div>
+  }
+
+  showAttributes(){
+    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:true, treeSelected:false});
+  }
+
+  showMappings(){
+    this.setState({canvasSelected:false, mappingsSelected:true, attributesSelected:false, treeSelected:false});
+  }
+
+  showCanvas(){
+    this.setState({canvasSelected:true, mappingsSelected:false, attributesSelected:false, treeSelected:false});
+  }
+
+  showTree(){
+    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:false, treeSelected:true});
+  }
+
   render() {
-
+   
     const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h, nid} = this.props;
-    const {propertiesExpanded, objectsExpanded, mappingsExpanded, mapperExpanded, birthExpanded, deathExpanded} = this.state;
+    //const {propertiesExpanded, objectsExpanded, mappingsExpanded, mapperExpanded, birthExpanded, deathExpanded} = this.state;
 
-    return (
+    const {attributesSelected, mappingsSelected, canvasSelected, treeSelected} = this.state;
+
+    if (!selected)
+        return null;
+
+    const mapperstyle = {
+        position: "absolute",
+        height: h,
+        right: 0,
+        background: "#dfdfdf",
+        opacity: 0.95,
+        overflow:'auto',
+    }
+
+    return <div id="mapper">
+              <div style={mapperstyle}>
+                <Flex flexColumn={true}>
+                  <Flex align="center" style={{background:"#535353", color:"#fff"}}>
+                    <Box auto p={1} onClick={this.showAttributes}> attributes </Box>
+                    <Box auto p={1} onClick={this.showMappings}> mappings </Box>
+                    <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
+                  </Flex>
+                  {this.renderObjects()}
+                  {attributesSelected && this.renderAttributes()}
+                  {mappingsSelected && this.renderMappings()}
+                  {canvasSelected && this.renderCanvas()}
+                </Flex>
+              </div>
+            </div>    
+
+    /*return (
               <div id="mapper" style={{width:viewConstants.MAPPER_WIDTH, boxSizing:'border-box', height: h, overflow:'auto'}}>
                  <Paper key={1} zDepth={1}>
                     <Card className="md-block-centered"  expanded={objectsExpanded} onExpanderClick={()=>{this.setState({objectsExpanded:!objectsExpanded})}}>
@@ -275,13 +399,13 @@ export default class Mapper extends Component {
                         </CardActions>
                         <CardText expandable>
                           {this.renderMapper()}
-                          {this.renderMappings()}
+                          {this.renderTransformers()}
                           {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}
                         </CardText>
                     </Card>}
                   </Paper>
               </div>
-           );
+           );*/
   }
 
 

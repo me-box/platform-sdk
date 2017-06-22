@@ -13,6 +13,7 @@ import Cells from 'components/Cells';
 import "./NodeEditor.scss";
 
 const _oneof = function(schema, id, selectedid){
+	console.log("OK am in one of with", schema);
 
 	return schema.map((item, i)=>{
 	
@@ -92,11 +93,16 @@ const _formatobject = function(item,key,id,selectedid){
 				
 }
 
+
+
 const _payload = function(schema, id, selectedid){
 	
 	if (!schema)
 		return null;
-		
+	
+	console.log("getting payload for schema", schema);
+	console.log(Object.keys(schema));
+
 	return Object.keys(schema).map((key,i)=>{
 		const item = schema[key];
 		if (item.type === "object"){
@@ -119,7 +125,9 @@ export default class NodeEditor extends Component {
 		this._toggleInfo = this._toggleInfo.bind(this);
 	}
 	
-	
+	//shouldComponentUpdate(nextProps, nextState){
+        //return this.props.node != nextProps.node;
+    //}
 
 	renderHelp(){
 
@@ -191,6 +199,7 @@ export default class NodeEditor extends Component {
 
 	renderInputs(){
 		const {inputs=[], values, updateNode} = this.props;
+		console.log("in render inputs", inputs);
 
 		const inputdescription = inputs.map((node,i)=>{
 				
@@ -232,12 +241,9 @@ export default class NodeEditor extends Component {
 
 		const{outputs=[],values,updateNode} = this.props;
 		
-		const outputdescription = outputs.map((node, i)=>{
-				
-				const schema = node.schema ? node.schema.input || {} : {}; 
-				
+		const outputdescription = outputs.map((node, i)=>{	
 				const props = {
-						schema: schema.properties || schema.oneOf, 
+						schema: node.schema ? node.schema.input || {} : {},
 						icon: node._def.icon,
 						color: node._def.color, 
 						id: node.id,
@@ -274,20 +280,6 @@ export default class NodeEditor extends Component {
 		const {name, w, h} = this.props;
 		const {showhelp} = this.state;
 
-		//const {name} = this.props;
-		const editorstyle = {
-			position: 'absolute',
-			zIndex: 20,
-			maxHeight: h,
-			width: w,
-			top: 0 + NODE_EDITOR_PADDING, 
-			left:  PALETTE_WIDTH + NODE_EDITOR_PADDING, 
-			background: 'white',
-			overflow: 'auto',
-			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
-			border: '1px solid #d3d3d3',	
-		}
-
 		const close = this.props.actions.nodeConfigureOk;
 		const info  = <Button icon onClick={this._toggleInfo}>info_outline</Button>;
 
@@ -313,6 +305,12 @@ export default class NodeEditor extends Component {
 class Schema extends React.Component {
 
 	render(){
+
+		const {schema, id, selectedid} = this.props;
+
+		if (!schema) 
+			return null;
+
 		const iconcontainer ={
 			color:'white',
 			background: this.props.color || '#ca2525',
@@ -325,7 +323,10 @@ class Schema extends React.Component {
 			display: 'flex'
 		}
 	
-		const payload = _payload(this.props.schema, this.props.id, this.props.selectedid);
+		console.log("in schema with", JSON.stringify(schema,null,4));
+
+		const payload = schema.type === "object" ? _payload(schema.properties, id, selectedid) : _formatprimitive(schema,"",id, selectedid);
+
 		
 		return 	<div key={this.props.id} className="flexcolumn schema">
 					<div className="noborder">
@@ -372,222 +373,3 @@ NodeEditor.defaultProps ={
    ok: ()=>{console.warn("no ok callback provided as prop!")},
    cancel:()=>{console.warn("no cancel callback provided as prop!")},
 }
-
-
-
-/*/*		<div id="nodeeditor" style={editorstyle}>
-					<Toolbar
-		      			colored
-		      			title={`configure ${name}`}
-		        		actions={close}
-		        		className="md-divider-border md-divider-border--bottom"
-		      		/>
-					{this.props.children}
-				</div>
-
-		
-	  	const {node, inputs, outputs, values, help} = this.props;
-	  	
-	  
-	  	const description = help ? help.description[node.id] ? help.description[node.id] : node._def.description() : node._def.description();
-	  
-	  
-		const editorstyle = {
-			position: 'absolute',
-			maxHeight: this.props.height - (2 * NODE_EDITOR_PADDING),
-			width: this.props.width - (2* NODE_EDITOR_PADDING),
-			top: this.props.top + NODE_EDITOR_PADDING, 
-			left:  this.props.left + NODE_EDITOR_PADDING, 
-			background: 'white',
-			overflow: 'auto',
-			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
-			border: '1px solid #d3d3d3',
-			
-		}
-		
-		const infostyle = {
-			height: INFO_HEIGHT,
-			background: 'white',
-		}
-		
-		
-		const contentstyle={
-			//height: this.props.height - TOOLBAR_HEIGHT - INFO_HEIGHT,
-			overflow: 'auto',
-		}
-		
-		const toolbarstyle = {
-			height: TOOLBAR_HEIGHT,
-			background: '#424242',
-			//width: this.props.width,
-		}
-		
-		const iconstyle = {
-            alignSelf: 'center',
-            color:'white',
-            background: node._def.color || '#ca2525',
-            textAlign: 'center',
-            boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
-            color: 'white',
-            height: '7em',
-            width: '7em',
-            lineHeight: '10em',
-        }
-        
-        const descriptionstyle = {
-        	color: 'white',
-        	textAlign: 'left',
-        	WebkitFontSmoothing: 'antialiased',
-            textRendering: 'optimizeLegibility',
-            overflow: 'auto',
-            width: '100%',
-            paddingLeft: 15,
-            paddingBottom: 30,
-            paddingTop: 15,
-            paddingRight: 15,
-            fontSize: '1em',
-        }
-			
-        const namestyle = {
-        	fontSize: fitText(node.type || "", {width: "118px", padding: '16px', textAlign:'center'}, 40, 118)
-        }
-		
-		const inputdescription = inputs.map((input,i)=>{
-				const schema = help.outputschema[input.id] ?  help.outputschema[input.id].output : input._def.schema ? input._def.schema().output : {}
-				const props = {
-						schema, 
-						icon: input._def.icon,
-						color: input._def.color, 
-						id: input.id,
-						selectedid: node.id,
-				};
-				return <Schema key={i} {...props}/> 
-		});
-			
-		const outputdescription = outputs.map((output, i)=>{
-				let schema = {};
-				if (isFunction(output._def.schema)){
-					schema = output._def.schema().input || {};
-				}
-		
-				const props = {
-						schema: schema.properties || schema.oneOf, 
-						icon: output._def.icon,
-						color: output._def.color, 
-						id: output.id,
-						selectedid: node.id,
-				};
-				return <Schema key={i} {...props}/> 
-		});
-			
-		const inputtogglemsg = values.showinputs ? "click to hide" : "click to view";
-		const outputtogglemsg = values.showoutputs ? "click to hide" : "click to view";
-		
-		
-		const fninputs = <div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>	
-								{inputs.length > 0 && <div style={{flexBasis:0}}>
-									<div className="flexcolumn">
-										<div className="noborder" style={{background:'#333', color: 'white'}} onClick={this._toggleShowInputs}>
-											<div className="centered" >
-												there are {inputs.length} inputs to this function ({inputtogglemsg})
-											</div>
-										</div>	
-										{this.props.values.showinputs && inputdescription}
-									</div>
-								</div>}
-							</div>
-								
-		const fnoutputs =<div className="flexrow" style={{flexBasis:0, maxHeight:200, overflow:'auto'}}>		
-							{outputs.length > 0 && <div style={{flexBasis:0}}>
-								<div className="flexcolumn">
-									<div className="noborder" style={{background:'#424242', color: 'white'}} onClick={this._toggleShowOutputs}>
-										<div className="centered" >
-											there are {outputs.length} recipients of data from this function {outputtogglemsg}
-										</div>
-									</div>
-									{this.props.values.showoutputs && outputdescription}
-								</div>
-							</div>}
-						</div>
-							
-		
-		//style={{WebkitFlex: '0 0 auto'}} div under flexrow background 445662
-		
-		return <div id="nodeeditor" style={editorstyle}>
-				 <div style={infostyle}>
-					<div className="flexcolumn">
-						<div className="noborder">
-							<div className="flexrow" style={{background:'#424242', color: 'white'}}>
-								<div style={{WebkitFlex: '0 0 auto'}}>
-									<div className="flexcolumn" style={{background:"black", width:"118px", height:"inherit"}}>
-										<div className="noborder">
-											<div className="centered" style={{width:"auto"}}>
-												<div style={iconstyle}><i className={`fa ${node._def.icon} fa-5x fa-fw`}></i></div>
-											</div>
-										</div>
-										<div className="noborder">
-											<div style={{textAlign:"center", width:"100%", padding: '0px 10px 0px 10px'}}>
-												<div style={namestyle}> {node.type} </div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div>
-									<div className="flexcolumn">
-										<div className="noborder" style={{fontSize: '1.5em',WebkitFlex: '0 0 auto', background: "#333", height:50, boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)'}}>
-											<div className="centered">
-												{`${node.type} info`}
-											</div>
-										</div>
-										<div className="noborder">
-											<div style={descriptionstyle}>	
-												<div dangerouslySetInnerHTML={{__html: description}}></div>
-											</div>
-										</div>
-									</div>
-								</div>
-								{node._def.category === "datastores" &&
-								<div>
-									<div className="flexcolumn">
-										<div className="noborder" style={{width:"100%", padding:10, background:"#303030", }}>
-											<svg width="300px" height="250px">
-											
-											</svg>
-										</div>
-									</div>
-								</div>}
-							</div>
-						</div>
-					</div>
-				 </div>	 
-				{node.type !== "app" &&
-				 <div id="schemas">	
-				 	<div className="flexcolumn">
-				 		<Cells>
-				 			{inputs.length > 0 && <Cell content = {fninputs} />}	
-          					{outputs.length > 0 && <Cell content = {fnoutputs} />}	
-          				</Cells>
-          			</div>
-          		</div>}
-				 <div style={contentstyle}> 	
-				 	{React.cloneElement(this.props.children, {help})}
-				 </div>
-				 <div style={toolbarstyle}>
-				 	<div className="flexcolumn">
-				 		<div>
-				 			<div className="flexrow">
-				 				<div>
-				 					<div className="centered">
-				 						<button className="button selected" onClick={this.props.ok}>ok</button>
-				 					</div>
-				 				</div>
-				 				<div>
-				 					<div className="centered">
-				 						<button className="button selected" onClick={this.props.cancel}>cancel</button>
-				 					</div>
-				 				</div>
-				 			</div>
-				 		</div>
-				 	</div>
-				 </div>	 	
-			  </div>*/

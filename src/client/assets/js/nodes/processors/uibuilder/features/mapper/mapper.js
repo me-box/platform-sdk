@@ -12,11 +12,8 @@ const TOGGLE_MAPPER  = 'uibuilder/mapper/TOGGLE_MAPPER';
 const MAP_FROM  = 'uibuilder/mapper/MAP_FROM';
 const MAP_TO = 'uibuilder/mapper/MAP_TO';
 const SELECT_MAPPING = 'uibuilder/mapper/SELECT_MAPPING';
-const SUBSCRIBE_MAPPINGS = 'uibuilder/mapper/SUBSCRIBE_MAPPINGS';
-const UNSUBSCRIBE_MAPPINGS = 'uibuilder/mapper/UNSUBSCRIBE_MAPPINGS';
 const SAVE_TRANSFORMER = 'uibuilder/mapper/SAVE_TRANSFORMER';
-const SUBSCRIBED = 'uibuilder/mapper/SUBSCRIBED';
-const UNSUBSCRIBED = 'uibuilder/mapper/UNSUBSCRIBED';
+const REMOVE_MAPPING = 'uibuilder/mapper/REMOVE_MAPPING';
 const LOAD_MAPPINGS =  'uibuilder/mapper/LOAD_MAPPINGS';
 const CREATED_ENTER_SUBSCRIPTION=  'uibuilder/mapper/CREATED_ENTER_SUBSCRIPTION';
 const CLEAR_STATE =  'uibuilder/mapper/CLEAR_STATE';
@@ -43,6 +40,62 @@ const createFrom = (action)=>{
 
 const createTo = (action)=>{
 	return {path:action.path, type:action.shape, property:action.property}
+}
+
+const _parent = (node)=>{
+	if (!node.inputs){
+		return [];
+	}
+	return {
+
+	}
+}
+
+const _hexEncode = (str)=>{
+    var hex, i;
+
+    var result = "";
+    for (i=0; i<str.length; i++) {
+        hex = str.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+
+    return result
+}
+
+const _provenance_data = (nid, nodes)=>{
+	return {
+		nid,
+		type: nodes[nid].type,
+		category: nodes[nid]._def.category,
+		color: nodes[nid]._def.color,
+		unicode: _hexEncode(nodes[nid]._def.unicode)
+	}
+}
+
+const _reverseTree = (nid, links, nodes)=>{
+
+	return Object.keys(links).reduce((acc, key)=>{
+		const link = links[key];
+		if (link.target.id === nid){
+			acc.push({node:_provenance_data(link.source.id,nodes), parents: _reverseTree(link.source.id,links,nodes)});
+		}
+		return acc;
+	},[]);
+}
+
+const _buildTree = (nid, mappings, nodes, links)=>{
+	
+	//first build the tree from this node upwards
+	const leaves = mappings.map( (mapping)=>{ return {id:mapping.mappingId, nid:mapping.from.sourceId}});
+
+	return leaves.reduce((acc, mapping)=>{
+		acc[mapping.id] = {
+									node:_provenance_data(nid, nodes), 
+									parents: [{node: _provenance_data(mapping.nid,nodes), parents: _reverseTree(mapping.nid, links, nodes)}]
+						  };
+		return acc;
+	},{});
 }
 
 const _function_for = (ttype)=>{
@@ -107,14 +160,6 @@ const _getNode = (nodesByKey, nodesById, enterKey, path)=>{
 	return {};
 }
 
-
-const _removeSubscriptions = ()=>{
-
-	for (let i = 0; i < _listeners.length; i++){
-		_listeners[i].remove();
-	}
-	_listeners = [];
-}
 	
 
 export default function reducer(state = initialState, action= {}) {
@@ -145,13 +190,6 @@ export default function reducer(state = initialState, action= {}) {
 		case SELECT_MAPPING:
 			return Object.assign({},state,{selectedMapping:action.mapping});
 
-		case SUBSCRIBE_MAPPINGS:
-			_createSubscriptions(state);
-			return state;
-
-		case UNSUBSCRIBE_MAPPINGS:
-			_removeSubscriptions(state);
-			return state;
 
 		case SAVE_TRANSFORMER:
 			return Object.assign({},state,{transformers:Object.assign({}, state.transformers, {[action.mappingId]:action.transformer})});
@@ -162,6 +200,16 @@ export default function reducer(state = initialState, action= {}) {
 		case CLEAR_STATE:
 			return Object.assign({}, state, initialState);
 
+		case REMOVE_MAPPING:
+			return Object.assign({}, state, {
+				mappings: state.mappings.filter(mapping=>mapping.mappingId != action.mappingId),
+				transformers:  Object.keys(state.transformers).reduce((acc, key)=>{
+					if (key != action.mappingId){
+						acc[key] = state.transformers[key];
+					}
+					return acc;
+				},{})
+			})
 		default:	
 			return state;
 	}
@@ -251,12 +299,22 @@ function subscribeMappings(id){
 	}
 }
 
-function unsubscribeMappings(id){
-	_removeSubscriptions();
+function removeMapping(id, mappingId){
+	return (dispatch, getState)=>{
+		dispatch({id,type: REMOVE_MAPPING,mappingId});
+		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+	}
+}
 
-	return {
-		id,
-		type: UNSUBSCRIBED
+function deletePressed(id, templateId){
+
+	return (dispatch, getState)=>{
+		const todelete = getState()[id][NAME].mappings.filter(mapping=>mapping.to.path[mapping.to.path.length-1] === templateId).map(item=>item.mappingId);
+		
+		todelete.map((mappingId)=>{
+			dispatch(removeMapping(id, mappingId));
+		});
+		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
 	}
 }
 
@@ -264,6 +322,8 @@ function mapToAttribute(id, path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"attribute", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      //build provenance tree
+      dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -271,6 +331,8 @@ function mapToStyle(id,path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"style", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      //build provenance tree
+      dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -278,6 +340,8 @@ function mapToTransform(id,path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"transform", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      //build provenance tree
+      dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
 }
 
@@ -288,6 +352,7 @@ function selectMapping(id,mapping){
 		mapping,
 	}
 }
+
 
 function createEnterSubscription(id,path, sourceId, sourcepath, enterFn){
 	
@@ -352,9 +417,6 @@ function clearState(id){
 
 
 function init(id, mappings, transformers){
-	console.log("NICE - setting");
-	console.log(mappings);
-	console.log(transformers);
 
 	return {
 		id,
@@ -387,7 +449,8 @@ export const actionCreators = {
   loadMappings,
   saveTransformer,
   subscribeMappings,
-  unsubscribeMappings,
+  removeMapping,
+  deletePressed,
   createEnterSubscription,
   clearState,
 };

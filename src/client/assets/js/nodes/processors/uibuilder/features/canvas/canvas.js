@@ -9,6 +9,7 @@ const commands = ['M','m','L','l', 'H', 'h', 'V', 'v', 'C', 'c','S', 's', 'Q', '
 const INIT                       = 'uibuilder/canvas/INIT';
 const EXPAND                     = 'uibuilder/canvas/EXPAND';
 const ROTATE                     = 'uibuilder/canvas/ROTATE';
+const SET_OFFSET                 = 'uibuilder/canvas/SET_OFFSET';
 const MOUSE_MOVE                 = 'uibuilder/canvas/MOUSE_MOVE';
 const MOUSE_UP                   = 'uibuilder/canvas/MOUSE_UP';
 const MOUSE_DOWN                 = 'uibuilder/canvas/MOUSE_DOWN';
@@ -21,6 +22,8 @@ const UPDATE_TEMPLATE_STYLE      = 'uibuilder/canvas/UPDATE_TEMPLATE_STYLE';
 const DELETE                     = 'uibuilder/canvas/DELETE';
 const LOAD_TEMPLATES             = 'uibuilder/canvas/LOAD_TEMPLATES';
 const CLEAR_STATE                = 'uibuilder/canvas/CLEAR_STATE';
+const MOVE_UP                    = 'uibuilder/canvas/MOVE_UP';
+const MOVE_DOWN                  = 'uibuilder/canvas/MOVE_DOWN';
 
 // This will be used in our root reducer and selectors
 export const NAME = 'uibuilder/canvas';
@@ -38,6 +41,10 @@ const initialState = {
   rotating: false,
   dx: 0, //drag x pos
   dy: 0, //drag y pos
+  offset: {
+    left: 0,
+    top: 0,
+  }
 };
 
 
@@ -97,6 +104,11 @@ const _updateTemplateAttribute = (state, action)=>{
 
   const id = path[path.length-1];
   
+  //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
+  //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+  if (!state.templatesById[id]){
+    return state.templatesById;
+  }
 
   /* special case when attribute is width or height and type is group as we need to adjust children too*/
   if (state.templatesById[id].type === "group" && ["width", "height"].indexOf(action.property) != -1){
@@ -285,7 +297,7 @@ const _rotateTemplate = (template, x, y)=>{
 }
 
 const _expandTemplate = (template, x, y)=>{
-  
+    
     switch (template.type){
 
       case "circle":
@@ -437,17 +449,21 @@ const _modifyTemplate = (state, action)=>{
     if (state.selected){
         const [id,...rest] = state.selected.path;
         const _tmpl = state.templatesById[id];
+       
+        //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
+        //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+        if (_tmpl){
+          if (state.expanding){
+            return Object.assign({}, state.templatesById, _expandTemplates(state, action));
+          }
 
-        if (state.expanding){
-          return Object.assign({}, state.templatesById, _expandTemplates(state, action));
-        }
+          if (state.dragging){
+            return Object.assign({}, state.templatesById, {[id] : _moveTemplate(_tmpl, action.x-state.dx, action.y-state.dy)});       
+          }
 
-        if (state.dragging){
-          return Object.assign({}, state.templatesById, {[id] : _moveTemplate(_tmpl, action.x-state.dx, action.y-state.dy)});       
-        }
-
-         if (state.rotating){
-          return Object.assign({}, state.templatesById, {[id] : _rotateTemplate(_tmpl, action.x, action.y)});
+           if (state.rotating){
+            return Object.assign({}, state.templatesById, {[id] : _rotateTemplate(_tmpl, action.x, action.y)});
+          }
         }
     }
 
@@ -473,6 +489,33 @@ const _templatecoords = (template)=>{
         return {x:0,y:0};
   }
 }
+const _parenttemplates = (templatesById)=>{
+  
+    const templates = Object.keys(templatesById);
+
+    const children = templates.reduce((acc, key)=>{
+        const template = templatesById[key];
+        if (template.children){
+          acc = [...acc, ...template.children];
+        }
+        return acc;
+    },[]);
+
+    return templates.filter((id)=>{
+      return children.indexOf(id) == -1;
+    });
+}
+
+
+const _swap = (items, firstIndex, secondIndex) =>
+  items.map(
+    (element, index) =>
+      index === firstIndex
+        ? items[secondIndex]
+        : index === secondIndex
+        ? items[firstIndex]
+        : element
+  )
 
 
 export default function reducer(state = initialState, action={}) {
@@ -483,16 +526,20 @@ export default function reducer(state = initialState, action={}) {
     case INIT:
 
       return Object.assign({}, state, {
-          templates: Object.keys(action.templates),
+          templates: _parenttemplates(action.templates),
           templatesById: action.templates,
       });
     
 
+    case SET_OFFSET:  
+      return  Object.assign({}, state, {offset:{left:action.left, top:action.top}});
+    
     case MOUSE_MOVE: 
       _x = action.x;
       _y = action.y;
 
-      if (!state.selected)
+      //performance improvement
+      if (!state.selected || (!state.expanding && !state.dragging && !state.rotating))
         return state;
 
       return {
@@ -517,18 +564,10 @@ export default function reducer(state = initialState, action={}) {
                                           });
       }
 
-      //see: https://github.com/gaearon/redux-devtools/issues/167
-      //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
-
-      console.log("-------> template is null <-----------------");
-      console.log("ACTION is");
-      console.log(action);
-      console.log(`reducer:${action.id}`);
-      console.log(`shape id : ${id}`);
-      console.log(state);
-      console.log("--------------------------------------------");
-
+        //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
+        //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
       return state;
+
 
     case MOUSE_UP:
        return Object.assign({}, state,  {
@@ -540,8 +579,7 @@ export default function reducer(state = initialState, action={}) {
     
     case TEMPLATE_DROPPED:
       
-
-      const template = createTemplate(action.template, action.x, action.y);
+      const template = createTemplate(action.template, action.x-state.offset.left, action.y-state.offset.top);
   
 
       return  Object.assign({}, state, {
@@ -551,7 +589,7 @@ export default function reducer(state = initialState, action={}) {
                                        });
 
     case GROUP_TEMPLATE_DROPPED:
-      const {root, templates} = createGroupTemplate(action.children, action.x, action.y);
+      const {root, templates} = createGroupTemplate(action.children, action.x-state.offset.left, action.y-state.offset.top);
       return Object.assign({}, state, {
                                           templates: [...state.templates, root.id],
                                           templatesById: {...state.templatesById, ...{[root.id]:root, ...templates}},//{[grouptemplate.id]:grouptemplate}),
@@ -585,6 +623,37 @@ export default function reducer(state = initialState, action={}) {
     case CLEAR_STATE:
       return Object.assign({}, state, initialState);
 
+    case MOVE_UP:
+      const _templateToMoveUp = state.selected.path || null;
+
+      if (_templateToMoveUp && _templateToMoveUp[0]){
+        if (state.templates.length > 1){
+          
+          const index = state.templates.indexOf(_templateToMoveUp[0]);
+          
+          
+          if (index != -1  && index < state.templates.length -1){
+            return Object.assign({}, state, {templates: _swap(state.templates, index, index+1)})
+          } 
+        }
+      }
+      return state;
+
+    case MOVE_DOWN:
+      const _templateToMoveDown = state.selected.path || null;
+
+      if (_templateToMoveDown && _templateToMoveDown[0]){
+        if (state.templates.length > 1){
+          
+          const index = state.templates.indexOf(_templateToMoveDown[0]);
+          
+         if (index != -1  && index > 0){
+            return Object.assign({}, state, {templates: _swap(state.templates, index, index-1)})
+          } 
+        }
+      }
+      return state;
+
     default:
       return state;
   }
@@ -599,10 +668,22 @@ function mouseMove(id, x: number, y:number) {
                 x,
                 y,
               });
-    if (getState()[id][NAME].selected){
+
+    if (getState()[id][NAME].selected && getState()[id][NAME].dragging){
+      console.log("dispatching template update!");
       dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
     }
   } 
+}
+
+function setOffset(id, left, top){
+  
+  return {
+    id,
+    type:SET_OFFSET,
+    left,
+    top,
+  }
 }
 
 function onMouseDown(id, path, type){
@@ -636,7 +717,6 @@ function onRotate(id){
 }
 
 function deletePressed(id){
-
   return {
     id,
     type: DELETE,
@@ -689,6 +769,7 @@ function templateParentSelected(id,path) {
 
 function updateTemplateAttribute(id,path:Array, property:string, value){
 
+
   return (dispatch, getState)=>{
     dispatch({
         id,
@@ -738,6 +819,20 @@ function clearState(id){
   }
 }
 
+function moveUp(id){
+   return{
+      id,
+      type: MOVE_UP,
+   }
+}
+
+function moveDown(id){
+ return{
+      id,
+      type: MOVE_DOWN,
+   }
+}
+
 function init(id, templates){
  
   return {
@@ -766,6 +861,7 @@ export const selector = createStructuredSelector({
 
 export const actionCreators = {
   init,
+  setOffset,
   mouseMove,
   onMouseUp,
   onMouseDown,
@@ -780,4 +876,6 @@ export const actionCreators = {
   updateTemplateStyle,
   loadTemplates,
   clearState,
+  moveUp,
+  moveDown,
 };

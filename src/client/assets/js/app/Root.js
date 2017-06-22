@@ -33,6 +33,14 @@ const Root = ({ store, history }) => {
         </div>
       </Provider>
     );
+
+    /*ComponentEl = (
+      <Provider store={store}>
+        <div>
+          <Router history={history} routes={routes} />
+        </div>
+      </Provider>
+    );*/
   }
 
   return ComponentEl;

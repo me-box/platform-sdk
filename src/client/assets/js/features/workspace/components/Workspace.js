@@ -22,6 +22,10 @@ export default class Workspace extends React.Component {
     componentDidMount(){
     	 this.props.actions.addTab();
     }
+
+    shouldComponentUpdate(nextProps, nextState){
+    	return  this.props.workspace != nextProps.workspace;
+    }
 	
 	render() {
 	
@@ -41,9 +45,6 @@ export default class Workspace extends React.Component {
 		const addTabStyle={
 			right: this.props.sidebarExpanded ? SIDEBAR_WIDTH : 0,
 		}
-		
-		//<span>{item.label}</span>
-		//className="red-ui-tab-label" 
 		
 		const tabtextstyle={
 			border: 'none',
@@ -95,13 +96,6 @@ export default class Workspace extends React.Component {
 	
 		});
 		
-		
-		 
-          
-	/*
-		    		<NodeCanvas {...this.props}/>*/
-
-
 		return ( <div style={workspace}>
 					<ul id="workspace-tabs" className="red-ui-tabs">
 						{_tabs}

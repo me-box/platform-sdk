@@ -31,7 +31,6 @@ const config = {
       
         return {
             output:{
-              msg: {
                 type: "object",
                 description: "the container object",
                 properties:{
@@ -42,8 +41,7 @@ const config = {
                     payload: {
                       type: 'string', description: 'speech-to-text value', 
                     }
-                  },
-                }
+                },
             }
         }
     },

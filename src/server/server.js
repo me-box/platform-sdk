@@ -22,8 +22,9 @@ if (process.argv.length > 2){
 let app = express();
 
 //to support posts!
-app.use(bodyparser.urlencoded({extended:false}));
-app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended:false, limit: '5mb'}));
+app.use(bodyparser.json({limit: '5mb'}));
+
 
 app.use(expressSession(
                       {
@@ -67,6 +68,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/github', ensureAuthenticated, require('./routes/github'));
 app.use('/nodered', ensureAuthenticated, require('./routes/nodered'));
 app.use('/samples', ensureAuthenticated, require('./routes/samples'));
+app.use('/uibuilder', ensureAuthenticated, require('./routes/uibuilder'));
 
 app.get('/login', function(req,res){
 	res.render('login');	

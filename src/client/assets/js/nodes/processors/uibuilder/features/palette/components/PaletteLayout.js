@@ -9,17 +9,21 @@ export default class PaletteLayout extends Component {
 
   constructor(props){
     super(props);
-    //const {actions} = this.props;
-    //this.props.actions.loadSVGTemplates();
+   
+  }
+
+  componentWillMount(){
+    const {nid, actions: {loadSVGTemplates}} = this.props;
+    loadSVGTemplates(nid);
   }
 
   render() {
   
-    const { [NAME] : { templatesById, selected }, actions } = this.props;
+    const { [NAME] : { templatesById, selected }, actions, nid } = this.props;
   
     return (
       <div className="paletteList">
-        <TemplateList templates={templatesById} selected={selected} actions={actions} />
+        <TemplateList nid={nid} templates={templatesById} selected={selected} actions={actions} />
       </div>
     );
     

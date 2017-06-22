@@ -8,6 +8,7 @@ import { DropTarget } from 'react-dnd';
 import { bindNodeIds } from 'utils/utils';
 //import {PALETTE_WIDTH} from 'features/palette/constants';
 const PALETTE_WIDTH = 150;
+const PADDING = 30;
 
 function collect(connect, monitor) {
   return {
@@ -18,14 +19,13 @@ function collect(connect, monitor) {
 
 const canvasTarget = {
   drop(props,monitor) {
-   
     const {template,children} = monitor.getItem();
-
     const {x,y}   = monitor.getSourceClientOffset()
+
     if (template !== "group"){
-      props.dispatch(canvasActions.templateDropped(props.nid, template,(x-100),y))
+      props.dispatch(canvasActions.templateDropped(props.nid, template,x,y))
     }else{
-      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, (x-100), y))
+      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, x, y))
     }
   }
 };
@@ -34,6 +34,9 @@ const ItemTypes = {
   TEMPLATE: 'template'
 };
 
+
+
+
 class EditorCanvas extends Component {
 
   constructor(props, context){
@@ -41,17 +44,30 @@ class EditorCanvas extends Component {
     const {nid, dispatch} = props;
 
   	this._onMouseMove = this._onMouseMove.bind(this);
+    this._setOffset = this._setOffset.bind(this);
+
+    this.setOffset = bindActionCreators(canvasActions.setOffset.bind(null,nid), dispatch);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
-    this.deletePressed = bindActionCreators(canvasActions.deletePressed.bind(null,nid), dispatch);
-    //this._handleKeyDown = this._handleKeyDown.bind(this);
+   
     //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
+  
+
+  _setOffset(input){
+    if (input){
+      const {left, top} = input.getBoundingClientRect();
+      this.setOffset(left,top); //name field
+    }
+  }
+
   _onMouseMove(e){
+    const {[NAME]:{offset}} = this.props;
     const {clientX, clientY} = e;
-    //console.log(`${clientX},${clientY}`);
-    this.mouseMove(clientX-PALETTE_WIDTH,clientY);
+    const x = clientX-offset.left;
+    const y = clientY-offset.top;
+    this.mouseMove(x,y);
   }
 
   renderTemplate(template){
@@ -62,6 +78,7 @@ class EditorCanvas extends Component {
           id: template.id,
           nid,
       }
+
       switch(template.type){
           
           case "circle":
@@ -92,6 +109,9 @@ class EditorCanvas extends Component {
 
   }
 
+  shouldComponentUpdate(nextProps, nextState){
+    return this.props !== nextProps;
+  }
 
   renderTemplates(){
 
@@ -103,27 +123,18 @@ class EditorCanvas extends Component {
   }
   
   render() {
-   
-  	const {w,h,ow,oh, view, connectDropTarget} = this.props;
 
+    const {w,h,margin,connectDropTarget} = this.props;
+ 
     return connectDropTarget(
-      <div onMouseMove={this._onMouseMove} className="canvas">
-         <svg id="svgchart" viewBox={`0 0 ${ow} ${oh}`} width={w} height={h} onMouseUp={this.onMouseUp}>
-            {view==="editor" && this.renderTemplates()} 
-            {view==="live" && this.renderNodes()} 
-          </svg>
+      <div className="canvas">
+         <div ref={this._setOffset} onMouseMove={this._onMouseMove} style={{margin:margin, height:h, width: w, border:"1px solid black"}}>
+            <svg id="svgchart"  width={w} height={h} onMouseUp={this.onMouseUp}>
+              {this.renderTemplates()} 
+            </svg>
+          </div>
       </div>
     );
-  }
-
-  _handleKeyDown(e) {
-      var rx = /INPUT|SELECT|TEXTAREA|DIV/i;
-      if( e.which == 8 ){ // 8 == backspace
-            if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
-                this.deletePressed();
-                e.preventDefault();
-            }
-      }
   }
 
 }

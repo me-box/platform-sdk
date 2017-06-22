@@ -32,25 +32,26 @@ export default class Schema extends Component {
   	  }
 
   	  renderNode(key, path, type){
-		return <Box key={`${Math.random()}`} onClick={this.props.onSelect.bind(null,key,path,type)}>{indent(path)}{key}</Box>
+		      return <Box key={`${Math.random()}`} onClick={this.props.onSelect.bind(null,key,path,type)}>{indent(path)}{key}</Box>
   	  }
 
   	  render(){
-        console.log("OK AM IN SCHEMA WITH");
-        console.log(this.props.schema);
-  	  	const items = Object.keys(this.props.schema).map((key,i)=>{
-  	  		const schema = this.props.schema[key];
-  	  		
+          const {schema} = this.props;
+      
+  	  	  //const items = Object.keys(this.props.schema).map((key,i)=>{
+  	  	  //	const schema = this.props.schema[key];
+  	  		const key = "";
   	  		if (schema.type === "object"){
-  	  				return <Flex key={i} flexColumn={true}>
+  	  				return <Flex flexColumn={true}>
   	  					{this.renderNode(key,[], schema)}
-  	  					{this.renderTree([key], schema.properties)}
+  	  					{this.renderTree([], schema.properties)}
   	  				</Flex>
   	  		}
   	  		else{
   	  			return this.renderNode(key, [], schema.type);
   	  		}
-  	  	});
+  	  
+      	//});
 
   	  	return <Flex flexColumn={true}>{items}</Flex>
   	  }

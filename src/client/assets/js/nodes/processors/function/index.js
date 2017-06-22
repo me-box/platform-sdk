@@ -13,11 +13,16 @@ const config = {
 		noerr: {value:0,required:true,validate:function(v){ return ((!v) || (v === 0)) ? true : false; }}
     },
     
+    schemakey: "outputtypedef",
+
     inputs:1,               
+    
     outputs:1,             
    
     icon: "fa-code",    
+    
     unicode: '\uf121',    
+    
     label: function() {     
         return this.name||this.topic||"dbfunction";
     },
@@ -28,8 +33,18 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:()=>{return {}}
-  
+    schemafn:(outputdef)=>{
+       
+        let output = {};
+
+        try{
+            output =  JSON.parse(outputdef);
+        }
+        catch(err){
+           console.log("JSON parse error: setting output to {}")
+        }
+        return {output:output}
+    },
 }
 
 export default {

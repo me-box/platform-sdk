@@ -60,10 +60,7 @@ export default class Node extends React.Component {
           	const name = input.type; 
           	
           	let schema = {};
-          	console.log("checking input");
-          	console.log(input);
-          	console.log("so schame is");
-          	console.log(input.schema);
+          	
           	const {schema:{output}} = input;
 
           	if (output && output.msg){
@@ -74,9 +71,7 @@ export default class Node extends React.Component {
           		}
           	} 	
           
-          	console.log("got schema");
-          	console.log(schema);
-          	
+       
           	const xoptions = Object.keys(schema).map((key)=>{
           		const xtype =  values.xtype || [];
           		
