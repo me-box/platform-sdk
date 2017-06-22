@@ -34,11 +34,13 @@ const config = {
     },
 
     schemafn:(outputdef)=>{
+
        
         let output = {};
 
         try{
             output =  JSON.parse(outputdef);
+         
         }
         catch(err){
            console.log("JSON parse error: setting output to {}")

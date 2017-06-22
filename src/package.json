@@ -84,7 +84,8 @@
     "webpack-dashboard": "0.1.8",
     "webpack-dev-middleware": "1.6.1",
     "webpack-hot-middleware": "2.12.2",
-    "webpack-merge": "0.14.1"
+    "webpack-merge": "0.14.1",
+    "why-did-you-update": "0.0.8"
   },
   "dependencies": {
     "autoprefixer": "6.4.1",
