@@ -54,7 +54,6 @@ export default class Ellipse extends Component {
   	}
 
 	render(){
-		console.log("ELLIPSE in render");
 		const {id, template, selected}  = this.props;
 		const {cx,cy,rx,ry,r,style,transform="translate(0,0)"} = template;
 		const _style = camelise(style);

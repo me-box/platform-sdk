@@ -10,6 +10,35 @@ import { bindNodeIds } from 'utils/utils';
 const PALETTE_WIDTH = 150;
 const PADDING = 30;
 
+
+const _originaldimensions = (dim, od)=>{
+    return{
+      ow : od ? od.w : dim.w,
+      oh : od ? od.h : dim.h,
+    } 
+}
+
+const _canvasdim = (w, h, aspect)=>{
+  const _w = (w - PADDING*2);
+  const _h = (h - PADDING*2);
+  let boxw, boxh;
+
+  if (aspect < 1){
+      boxw = _w;
+      boxh = boxw / aspect;
+  }else{
+      boxh = _h;
+      boxw = boxh * aspect;
+  }
+
+  if (boxw > _w - PADDING*2){
+    boxw = boxw - (boxw-_w) - PADDING*2;
+    boxh = boxw / aspect;
+  }
+
+  return {w:boxw, h:boxh};
+}
+
 function collect(connect, monitor) {
   return {
     connectDropTarget: connect.dropTarget(),
@@ -21,11 +50,14 @@ const canvasTarget = {
   drop(props,monitor) {
     const {template,children} = monitor.getItem();
     const {x,y}   = monitor.getSourceClientOffset()
+    const {[NAME]:{offset}, w, h, od} = props;
+    
+    const {ow, oh} = _originaldimensions({w,h}, od);
 
     if (template !== "group"){
-      props.dispatch(canvasActions.templateDropped(props.nid, template,x,y))
+      props.dispatch(canvasActions.templateDropped(props.nid, template, (x-offset.left) * ow/w, (y-offset.top) * oh/h));
     }else{
-      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, x, y))
+      props.dispatch(canvasActions.groupTemplateDropped(props.nid, children, (x-offset.left) * ow/w, (y-offset.top) * oh/h));
     }
   }
 };
@@ -44,29 +76,53 @@ class EditorCanvas extends Component {
     const {nid, dispatch} = props;
 
   	this._onMouseMove = this._onMouseMove.bind(this);
-    this._setOffset = this._setOffset.bind(this);
-
+    this._handleResize = this._handleResize.bind(this);
+    this.rootNode = null;
     this.setOffset = bindActionCreators(canvasActions.setOffset.bind(null,nid), dispatch);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
-   
+    //this.setCanvasDimensions =  bindActionCreators(canvasActions.setCanvasDimensions.bind(null,nid), dispatch);
+    this.state = {aspect:1440/(900-64)};
     //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
-  
 
-  _setOffset(input){
-    if (input){
-      const {left, top} = input.getBoundingClientRect();
-      this.setOffset(left,top); //name field
-    }
+  componentDidMount() {
+    this._handleResize();
+    window.addEventListener('resize', this._handleResize);
+    //set cw,ch if not set
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._handleResize);
+  }
+
+
+  _handleResize(){
+
+      const input = this.rootNode;
+      const {[NAME]:{templates},w,h} = this.props;
+
+      if (input){
+        const {left, top} = input.getBoundingClientRect();
+        this.setOffset(left,top-40); // name field=40
+      }
+      
+      if (templates.length <= 0){
+        const dim = _canvasdim(w,h,this.state.aspect);
+        this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
+      }
+
   }
 
   _onMouseMove(e){
-    const {[NAME]:{offset}} = this.props;
+    const {[NAME]:{offset}, w, h, od} = this.props;
+    const dim = _canvasdim(w,h,this.state.aspect);
+    const {ow, oh} = _originaldimensions(dim, od);
+
     const {clientX, clientY} = e;
-    const x = clientX-offset.left;
-    const y = clientY-offset.top;
+    const x = (clientX-offset.left) * ow/dim.w;
+    const y = (clientY-offset.top)  * oh/dim.h;
     this.mouseMove(x,y);
   }
 
@@ -122,14 +178,20 @@ class EditorCanvas extends Component {
     });
   }
   
+  //
   render() {
+  
+    const {w,h,od,connectDropTarget} = this.props;
+    const dim = _canvasdim(w, h, this.state.aspect);
+    const margin = `${Math.floor((h-dim.h)/2)}px ${Math.floor((w-dim.w)/2)}px`
+    const {ow, oh} = _originaldimensions(dim, od);
+    
+    
 
-    const {w,h,margin,connectDropTarget} = this.props;
- 
     return connectDropTarget(
       <div className="canvas">
-         <div ref={this._setOffset} onMouseMove={this._onMouseMove} style={{margin:margin, height:h, width: w, border:"1px solid black"}}>
-            <svg id="svgchart"  width={w} height={h} onMouseUp={this.onMouseUp}>
+         <div ref={node => this.rootNode = node} onMouseMove={this._onMouseMove} style={{margin:margin, height:dim.h, width: dim.w, border:"1px solid black"}}>
+            <svg id="svgchart"  width={dim.w} height={dim.h} viewBox={`0 0 ${ow} ${oh}`} onMouseUp={this.onMouseUp}>
               {this.renderTemplates()} 
             </svg>
           </div>

@@ -16,29 +16,7 @@ import Button from 'react-md/lib/Buttons';
 
 
 const PALETTE_WIDTH = 60;
-const MAPPER_WIDTH = 150;
-const PADDING = 30;
-
-const canvasdim = (w, h, aspect)=>{
-  const _w = (w - PADDING*2);
-  const _h = (h - PADDING*2);
-  let boxw, boxh;
-
-  if (aspect < 1){
-      boxw = _w;
-      boxh = boxw / aspect;
-  }else{
-      boxh = _h;
-      boxw = boxh * aspect;
-  }
-
-  if (boxw > _w - PADDING*2){
-    boxw = boxw - (boxw-_w) - PADDING*2;
-    boxh = boxw / aspect;
-  }
-
-  return {w:boxw, h:boxh};
-}
+const MAPPER_WIDTH = 250;
 
 
 @connect(selector, (dispatch) => {
@@ -53,34 +31,22 @@ export default class Editor extends Component {
    constructor(props,context){
       super(props,context);
       const {nid, dispatch} = props;
-      
       this._handleKeyDown = this._handleKeyDown.bind(this);
-      this._handleResize = this._handleResize.bind(this);
-      this.state = {load:false, aspect:1440/(900-64)};
+     
    }    
-    
-
-    componentDidMount(){
-      this._handleResize();
-      window.addEventListener('resize', this._handleResize);
-    }
-
-    componentWillUnmount(){
-      window.removeEventListener('resize', this._handleResize);
-    }
 
     render() {
               
-      const {[NAME]:{w,h},actions:{setView},store, canvasheight, canvaswidth, nid, inputs} = this.props;
+      const {[NAME]:{w,h},actions:{setView},store, canvasheight, canvaswidth, originaldimensions, nid, inputs} = this.props;
     
+
       const canvasstyle ={
         left: PALETTE_WIDTH,
         height: canvasheight,
         width: canvaswidth,
       }
 
-      const scaledcanvas = canvasdim(canvaswidth, canvasheight, this.state.aspect);
-      const margin = `${Math.floor((canvasheight-scaledcanvas.h)/2)}px ${Math.floor((canvaswidth-scaledcanvas.w)/2)}px`
+     
       
       const actions = [
           <Button flat key="aspect_mobile" onClick={()=>{this.setState({aspect:750/1334})}}>phone_android</Button>,
@@ -94,7 +60,7 @@ export default class Editor extends Component {
         <div className="uieditor" tabIndex="0"  onKeyDown={this._handleKeyDown}>
             <Palette nid={nid} h={canvasheight}/>
             <div className="canvascontainer" style={canvasstyle}>
-                <EditorCanvas nid={nid} store={store} w={scaledcanvas.w} h={scaledcanvas.h} margin={margin} />
+                <EditorCanvas nid={nid} store={store} w={canvaswidth-MAPPER_WIDTH} h={canvasheight} od={originaldimensions} updateNode={this.props.updateNode}/>
             </div> 
             <Mapper nid={nid} h={canvasheight} inputs={inputs}/>
         </div>
@@ -108,7 +74,7 @@ export default class Editor extends Component {
       console.log(e.target.tagName);
 
       if( e.which == 8 ){ // 8 == backspace
-            console.log("BACKSPACE!!");
+            
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
                 
                 this.props.actions.deletePressed(nid);
@@ -116,11 +82,4 @@ export default class Editor extends Component {
             }
       }
     }
-
-    _handleResize(){
-        const {canvaswidth,canvasheight} = this.props;
-        const dim = canvasdim(canvaswidth,canvasheight,this.state.aspect);
-        this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
-    }
-
 }

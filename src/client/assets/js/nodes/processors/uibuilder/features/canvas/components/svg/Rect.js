@@ -54,7 +54,7 @@ export default class Rect extends Component {
     }
 
 	render(){
-		console.log("RECT in render");
+	
 		const {id, template, selected} = this.props;
 		const {x,y,rx,ry,width,height,style,transform="translate(0,0)"} = template;
 		const _style = camelise(style);

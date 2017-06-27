@@ -8,6 +8,7 @@ const commands = ['M','m','L','l', 'H', 'h', 'V', 'v', 'C', 'c','S', 's', 'Q', '
 
 const INIT                       = 'uibuilder/canvas/INIT';
 const EXPAND                     = 'uibuilder/canvas/EXPAND';
+const SET_CANVAS_DIMENSIONS      = 'uibuilder/canvas/SET_CANVAS_DIMENSIONS';
 const ROTATE                     = 'uibuilder/canvas/ROTATE';
 const SET_OFFSET                 = 'uibuilder/canvas/SET_OFFSET';
 const MOUSE_MOVE                 = 'uibuilder/canvas/MOUSE_MOVE';
@@ -537,7 +538,7 @@ export default function reducer(state = initialState, action={}) {
     case MOUSE_MOVE: 
       _x = action.x;
       _y = action.y;
-
+     
       //performance improvement
       if (!state.selected || (!state.expanding && !state.dragging && !state.rotating))
         return state;
@@ -579,7 +580,7 @@ export default function reducer(state = initialState, action={}) {
     
     case TEMPLATE_DROPPED:
       
-      const template = createTemplate(action.template, action.x-state.offset.left, action.y-state.offset.top);
+      const template = createTemplate(action.template, action.x, action.y);
   
 
       return  Object.assign({}, state, {
@@ -589,7 +590,7 @@ export default function reducer(state = initialState, action={}) {
                                        });
 
     case GROUP_TEMPLATE_DROPPED:
-      const {root, templates} = createGroupTemplate(action.children, action.x-state.offset.left, action.y-state.offset.top);
+      const {root, templates} = createGroupTemplate(action.children, action.x, action.y);
       return Object.assign({}, state, {
                                           templates: [...state.templates, root.id],
                                           templatesById: {...state.templatesById, ...{[root.id]:root, ...templates}},//{[grouptemplate.id]:grouptemplate}),
@@ -670,10 +671,23 @@ function mouseMove(id, x: number, y:number) {
               });
 
     if (getState()[id][NAME].selected && getState()[id][NAME].dragging){
-      console.log("dispatching template update!");
       dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
     }
   } 
+}
+
+
+function setCanvasDimensions(id, cw,ch){
+  return (dispatch, getState)=>{
+    if (getState[NAME].templates.length <= 0){
+        dispatch({
+          id,
+          type:SET_CANVAS_DIMENSIONS,
+          cw,
+          ch,
+        })
+    }
+  }
 }
 
 function setOffset(id, left, top){
@@ -862,6 +876,7 @@ export const selector = createStructuredSelector({
 export const actionCreators = {
   init,
   setOffset,
+  setCanvasDimensions,
   mouseMove,
   onMouseUp,
   onMouseDown,

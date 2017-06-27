@@ -25,9 +25,9 @@ const getDebugSessionKey = function () {
 
 const enhancer = compose(
   applyMiddleware(...middlewares),
-  window.devToolsExtension ? window.devToolsExtension() : DevTools.instrument(),
+  //window.devToolsExtension ? window.devToolsExtension() : DevTools.instrument(),
   // Optional. Lets you write ?debug_session=<key> in address bar to persist debug sessions
-  persistState(getDebugSessionKey())
+  //persistState(getDebugSessionKey())
 );
 
 export  function configureStore(initialState) {

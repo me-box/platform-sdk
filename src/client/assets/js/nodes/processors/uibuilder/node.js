@@ -47,6 +47,7 @@ export default class Node extends Component {
       const height = contenth -  40 /*Cell height*/;  
       const width  = contentw - PALETTE_WIDTH;
 
+     
       return <div>
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>

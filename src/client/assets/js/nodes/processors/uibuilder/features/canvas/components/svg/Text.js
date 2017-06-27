@@ -30,7 +30,7 @@ export default class Text extends Component {
     }
 
 	render(){
-		console.log("TEXT in render");
+	
 		const {id, template, selected} = this.props;
 		const {x,y,text,style} = template;
 

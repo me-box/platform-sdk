@@ -25,7 +25,7 @@ export default class Group extends Component {
 	renderChildren(children){
 
 		const {[NAME]:{templatesById}, nid} = this.props;
-		console.log("GROUP in render children");
+		
 
 		return children.map((id)=>{
 
@@ -94,7 +94,7 @@ export default class Group extends Component {
     }
 
 	render(){
-		console.log("GROUP in render");
+		
 		const {id, selected, [NAME]:{templatesById}} = this.props;
 		const template = templatesById[id];
 		const amSelected = selected.indexOf(id) != -1;

@@ -53,6 +53,6 @@ export default class Schema extends Component {
   	  
       	//});
 
-  	  	return <Flex flexColumn={true}>{items}</Flex>
+  	  	//return <Flex flexColumn={true}>{items}</Flex>
   	  }
 }
