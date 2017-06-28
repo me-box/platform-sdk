@@ -16,11 +16,9 @@ export const NAME = 'uibuilder/templates';
 
 // Define the initial state for `shapes` module
 
-const initialState = {
+const coretemplates =  [0, 1, 2, 3, 4, 5];
 
-  templates: [0, 1, 2, 3, 4, 5],
-
-  templatesById: [
+const coretemplatesById = [
     {
       id: 0,
       type: 'circle',
@@ -51,7 +49,14 @@ const initialState = {
       type: 'path',
       name: 'path'
     }
-  ],
+];
+
+const initialState = {
+
+
+  templates: [...coretemplates],
+
+  templatesById: [...coretemplatesById],
 
   selected: -1,
 
@@ -90,24 +95,35 @@ export default function reducer(state=initialState, action = {}) {
 
     case LOAD_TEMPLATES:{
         
-        const ids = [];
-        const newTemplatesByIds = action.templates.map((template, i)=>{
-           
-            ids.push(state.templates.length + i);
+        const idx = coretemplates.length;
+
+        const newTemplatesById = action.templates.map((template, i)=>{
             return {
-                id: state.templates.length + i,
+                id: idx + i,
                 type: "group",
                 name: template.image,
                 children: _parseTemplate(template.body),
             }
         });
 
+        console.log("newTemplatesById is", newTemplatesById);
+        console.log("so templates is", [...coretemplates, ...newTemplatesById.map(t=>t.id)]);
+        console.log("templatesById is ", [...coretemplatesById,...newTemplatesById]);
 
-        
-        return Object.assign({}, state, {
+        return {
+            ...state,
+            templates: [...coretemplates, ...newTemplatesById.map(t=>t.id)],
+            templatesById : [
+                ...coretemplatesById,
+                ...newTemplatesById,
+            ]
+
+        }
+
+        /*return Object.assign({}, state, {
           templates: [...state.templates, ...ids],
           templatesById: [...state.templatesById, ...newTemplatesByIds],
-        })  
+        })*/  
     }
 
     case LOAD_TEMPLATE:{

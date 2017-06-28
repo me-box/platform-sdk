@@ -20,13 +20,18 @@ export default class Path extends Component {
 		
 		const {id,template,selected} = this.props;
 		const {d,style} = template;
-		const amSelected = selected.indexOf(id) != -1;
+		const amSelected = selected.indexOf(id) !== -1;
 
-		const _style = camelise(style);
+		let _style = camelise(style);
 
 		if (amSelected){
-			_style.stroke = "#3f51b5";
-			_style.strokeWidth = 2;
+			_style = {
+				..._style,
+				stroke:"#3f51b5",
+				strokeWidth:2,
+				fill:"#3f51b5",
+				fillOpacity: 0.8,
+			}
 		}
 		return <path d={d} style={_style} />
 	}

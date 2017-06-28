@@ -598,6 +598,7 @@ export default function reducer(state = initialState, action={}) {
                                         });
     
     case TEMPLATE_SELECTED: 
+
       return Object.assign({}, state,  {selected: action.path});
 
     case TEMPLATE_PARENT_SELECTED: 
@@ -731,9 +732,12 @@ function onRotate(id){
 }
 
 function deletePressed(id){
-  return {
-    id,
-    type: DELETE,
+  return (dispatch, getState)=>{
+    dispatch({
+      id,
+      type: DELETE,
+    });
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
   }
 }
 
@@ -766,6 +770,7 @@ function groupTemplateDropped(id,children, x:number, y:number){
 }
 
 function templateSelected(id,path) {
+
   return {
     id,
     type: TEMPLATE_SELECTED,
@@ -774,6 +779,7 @@ function templateSelected(id,path) {
 }
 
 function templateParentSelected(id,path) {
+  
   return {
     id,
     type: TEMPLATE_PARENT_SELECTED,

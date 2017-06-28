@@ -97,8 +97,9 @@ export default class Group extends Component {
 		
 		const {id, selected, [NAME]:{templatesById}} = this.props;
 		const template = templatesById[id];
-		const amSelected = selected.indexOf(id) != -1;
-		const {x,y,width,height,style,transform="translate(0,0)"} = template;
+		
+		const {x=0,y=0,width,height,style,transform="translate(0,0)"} = template;
+		const amSelected = x > 0 && y > 0 && selected[selected.length-1] === id; //selected.indexOf(id) != -1;
 		const _style = camelise(style);
 		
 		const {scale=1,rotate,translate} = componentsFromTransform(transform.replace(/\s+/g,""));

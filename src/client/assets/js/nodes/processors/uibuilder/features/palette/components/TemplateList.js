@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import TemplateItem from './TemplateItem';
+import TemplateGroup from './TemplateGroup';
 import { Flex, Box } from 'reflexbox'
 import SVGUpload from './SVGUpload';
 import {post} from 'utils/net';
@@ -32,25 +33,14 @@ export default class TemplateList extends Component {
 
   renderGroups() {
     const {nid} = this.props;
-    
-    return this.props.templates.filter((template)=>template.type==="group").map((template) =>
-      (
-        <TemplateItem
-          key={template.id}
-          id={template.id}
-          nid={nid}
-          name={template.name}
-          type={template.type}
-          children={template.children}
-          selected={this.props.selected===template.id}
-          {...this.props.actions} />
-      )
-    );
+    return <TemplateGroup actions={this.props.actions} nid={nid} templates={this.props.templates.filter(template=>template.type==="group")}/>
   }
 
   renderSVGs(){
+      const {nid, actions: {loadSVGTemplates}} = this.props;
+
       return <form ref="svgUpload" encType="multipart/form-data" action="/upload/image" method="post">
-                <SVGUpload style={{padding:0, width:40, height:30}}
+                <SVGUpload style={{padding:0, width:40, height:30, marginTop:20}}
                   id="videoFile"
                   secondary
                   accept="svg/*"
@@ -59,7 +49,7 @@ export default class TemplateList extends Component {
                     reader.onload = (output)=>{
                       //console.log(output.target.result); 
                       post("/uibuilder/image/add", {name:f.name, image:output.target.result}).then(()=>{
-                        console.log("image uploaded!!!");
+                          loadSVGTemplates(nid);
                       },(err)=>{
                         console.log(err);
                       });

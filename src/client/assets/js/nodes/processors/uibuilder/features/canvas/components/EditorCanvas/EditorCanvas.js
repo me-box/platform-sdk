@@ -36,7 +36,7 @@ const _canvasdim = (w, h, aspect)=>{
     boxh = boxw / aspect;
   }
 
-  return {w:boxw, h:boxh};
+  return {w:Math.max(1,boxw), h:Math.max(1,boxh)};
 }
 
 function collect(connect, monitor) {
@@ -81,34 +81,30 @@ class EditorCanvas extends Component {
     this.setOffset = bindActionCreators(canvasActions.setOffset.bind(null,nid), dispatch);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
     this.onMouseUp = bindActionCreators(canvasActions.onMouseUp.bind(null,nid), dispatch);
-    //this.setCanvasDimensions =  bindActionCreators(canvasActions.setCanvasDimensions.bind(null,nid), dispatch);
     this.state = {aspect:1440/(900-64)};
-    //window.addEventListener('keydown', this._handleKeyDown);
   }	
 
 
   componentDidMount() {
     this._handleResize();
     window.addEventListener('resize', this._handleResize);
-    //set cw,ch if not set
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this._handleResize);
   }
 
-
   _handleResize(){
-
+     
       const input = this.rootNode;
-      const {[NAME]:{templates},w,h} = this.props;
+      const {[NAME]:{templates},w,h, od} = this.props;
 
       if (input){
         const {left, top} = input.getBoundingClientRect();
         this.setOffset(left,top-40); // name field=40
       }
       
-      if (templates.length <= 0){
+      if (templates.length <= 0 && od===null){
         const dim = _canvasdim(w,h,this.state.aspect);
         this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
       }
@@ -178,15 +174,12 @@ class EditorCanvas extends Component {
     });
   }
   
-  //
   render() {
   
     const {w,h,od,connectDropTarget} = this.props;
     const dim = _canvasdim(w, h, this.state.aspect);
     const margin = `${Math.floor((h-dim.h)/2)}px ${Math.floor((w-dim.w)/2)}px`
-    const {ow, oh} = _originaldimensions(dim, od);
-    
-    
+    const {ow, oh} = _originaldimensions(dim, od);  
 
     return connectDropTarget(
       <div className="canvas">

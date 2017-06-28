@@ -517,7 +517,7 @@ const _minMax = function(bounds, minmax){
     }
 }
 
-export function calculateBounds(nodes, minX, maxX, minY, maxY){
+export function calculateBounds(nodes, minX=Number.MAX_VALUE, maxX=-1, minY=Number.MAX_VALUE, maxY=-1){
  	
 
   const _minmax = Object.keys(nodes).reduce((acc, key)=>{
