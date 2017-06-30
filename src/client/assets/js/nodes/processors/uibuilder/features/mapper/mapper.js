@@ -265,6 +265,8 @@ function subscribeMappings(id){
 			if (fn){
 
 				const onData = (mapping, data, count)=>{
+					console.log("data",data);
+					
 					const {live: {nodesByKey, nodesById}, canvas: {templatesById}, mapper:{transformers}} = getState();
 					const {mappingId, from: {key},  to:{property}} = mapping;
 

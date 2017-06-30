@@ -73,17 +73,6 @@ app.use("/samples/*", function(req, res) {
     });
 });
 
-app.use("/image/*", function(req, res) {
-  console.log("proxying samples...>");
-    req.url = `${req.baseUrl}${req.url}`;
-    apiProxy.web(req, res, {
-      target: {
-        port: 9000,
-        host: "localhost"
-      }
-    });
-});
-
 app.use("/auth/*", function(req, res) {
   console.log("proxying auth...>");
    req.url = `${req.baseUrl}${req.url}`;
@@ -117,6 +106,20 @@ app.use("/login", function(req, res) {
     });
 });
 
+app.use("/images/editor.svg", function(req, res) {
+  console.log("proxying editor ", req.url);
+  res.sendFile(path.join(__dirname, './server/static/images/editor.svg'));
+});
+
+app.use("/images/createapp.svg", function(req, res) {
+  console.log("proxying createapp ", req.url);
+  res.sendFile(path.join(__dirname, './server/static/images/createapp.svg'));
+});
+
+app.use("/images/createdriver.svg", function(req, res) {
+  console.log("proxying createdriver ", req.url);
+  res.sendFile(path.join(__dirname, './server/static/images/createdriver.svg'));
+});
 
 app.get("/nodes/nodes.json", (req,res)=>{
   res.sendFile(path.join(__dirname, './client/assets/nodes/nodes.json'));

@@ -74,7 +74,7 @@ export default class Node extends Component {
 
         const intervalprops = {
             id: "repeat",
-            value: repeat ? repeat || 1 : 1,
+            value: repeat ? repeat : 1,
             onChange: (property, event)=>{
                this._actions.setRepeat(event);
             },

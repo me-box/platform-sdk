@@ -17,10 +17,8 @@ router.post('/scene/add', function(req, res){
   var filename  = path.join(DIRECTORY, `${ts}_${name}.scene`);
   
   fs.writeFileAsync(filename, scene).then(function(){
-    console.log("success!");
     res.send({success:true});
   },function(err){
-    console.log(err);
     res.send({success:false});
   });
 
@@ -91,20 +89,15 @@ router.get('/images/:name', (req,res)=>{
 router.post('/image/add', function(req, res){
   
   const DIRECTORY = path.join(ROOTDIR, '/images/');
-  
-  console.log("OK WRITING IMAGE TO ");
-  console.log(DIRECTORY);
 
   const {name, image} = req.body;
   
   //var data = image.replace(/^data:image\/\w+;base64,/, "");
   //var buf = new Buffer(data, 'base64');
   var filename  = path.join(DIRECTORY, name);
-  console.log("FILE NAME IS ");
-  console.log(filename);
+  
   
   fs.writeFileAsync(filename, image).then(function(){
-    console.log("success!");
     res.send({success:true});
   },function(err){
     console.log(err);

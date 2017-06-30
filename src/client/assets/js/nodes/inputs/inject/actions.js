@@ -40,7 +40,7 @@ export function updateRepeatUnits(id, event){
 export function setRepeat(id, event){
 	console.log("in set repeat");
 	console.log(id);
-	console.log(event);
+	console.log(event.target.value);
 
 	return function (dispatch, getState) {
 		dispatch({
@@ -48,6 +48,9 @@ export function setRepeat(id, event){
 			value: event.target.value,
 			id,
 		})
+		console.log("setting repeat to", getState()[id].repeat * multiplier[getState()[id]['units']]);
+		
+		dispatch(nodeActions.updateNode('repeat', getState()[id].repeat * multiplier[getState()[id]['units']]));
 	}
 }
 
