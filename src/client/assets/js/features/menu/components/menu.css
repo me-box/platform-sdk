@@ -1,0 +1,46 @@
+.menu{
+	display: grid;
+	grid-template-rows: 50px 1fr 100px;
+	grid-template-columns: 1fr 1fr;
+	width: 100%;
+	height: 100vh;
+}
+
+.appheader{
+   background: #3f51b5;
+}
+
+.app {
+	grid-column: 1;
+	grid-row: 2;
+	background: #3f51b5;
+}
+
+.appfooter{
+	grid-column: 1;
+	grid-row: 3;
+	background:  #3f51b5;
+	text-align: center;
+	color: white;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.driverheader{
+	background:  #74D2AA
+}
+.driver {
+	grid-column: 2;
+	grid-row: 2;
+	background: #74D2AA;
+}
+
+.driverfooter{
+	grid-column: 2;
+	grid-row: 3;
+	background: #74D2AA;
+	text-align: center;
+	color: white;
+	font-size: 1.5em;
+	font-weight: bold;
+}
