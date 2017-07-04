@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import { browserHistory } from 'react-router';
+import { browserHistory, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import { AppContainer } from 'react-hot-loader';
@@ -15,7 +15,7 @@ import 'styles/index.scss';
 
 
 const store = configureStore();
-const history = syncHistoryWithStore(browserHistory, store);
+const history = syncHistoryWithStore(hashHistory, store);
 
 // Get the DOM Element that will host our React application
 const rootEl = document.getElementById('app');

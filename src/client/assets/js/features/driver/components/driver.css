@@ -98,9 +98,183 @@ body {
 }
 
 .panel{
-    padding: 15px;
+	padding:0;
     margin-bottom: 20px;
     border-radius: 0;
     background-color: #FFF;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
+}
+
+
+.cell{
+	display:grid;
+	width: 100%;
+	grid-template-columns: 400px 1fr;
+	grid-auto-flow: row;
+}
+
+.attribute{
+	grid-row: 1;
+	grid-column: 2;
+	background: white;
+	align-items: center;
+	height: 100%;
+}
+
+.attribute-grid {
+	display: grid;
+	grid-gap: 5px;
+    grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
+    height: inherit;
+    align-items: center;
+}
+
+
+.description{
+	grid-column: 1;
+	grid-row: 1;
+	background: #57585B;
+	color: white;
+	font-size: 1.1em;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
+	padding: 10px;
+}
+
+.driverbutton{
+	height: 40px;
+	width:100%;
+	background: #42B383;
+	color: white;
+	line-height: 40px;
+	text-align: center;
+	text-transform: uppercase;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.16), 0 0 2px 0 rgba(0,0,0,.12);
+	margin: 5px;
+}
+
+.attribute input[type=text] {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	width: 100%;
+	height: 100%;
+}
+
+
+
+
+table.drivertable {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+}
+
+
+.drivertable>tbody>tr>td, 
+.drivertable>tbody>tr>th, 
+.drivertable>tfoot>tr>td, 
+.drivertable>tfoot>tr>th, 
+.drivertable>thead>tr>td, 
+.drivertable>thead>tr>th {
+    padding: 10px;
+    line-height: 1.429;
+}
+
+.drivertable>thead>tr>th {
+    border-bottom: 2px solid rgba(0,0,0,.12);
+    font-weight: 700;
+}
+
+.drivertable>tbody>tr>th, 
+.drivertable>tfoot>tr>th, 
+.drivertable>thead>tr>th {
+    text-align: left;
+}
+
+
+
+.modal {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+   
+}
+
+.modal-header {
+    padding: 2px 16px;
+    background-color: #e5e5e5;
+    color: white;
+    border-radius: 6px 6px 0px 0px;
+}
+
+/* Modal Body */
+.modal-body {
+	padding: 2px 16px;    
+	border-top: 1px solid #ddd;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #e5e5e5;
+    color: white;
+    border-radius: 0px 0px 6px 6px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: 6px;
+}
+
+.close {
+    color: #888;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.datagrid {
+	display: grid;
+	grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.datatype{
+	margin-bottom: 5px;
+	padding: 3px;
+}
+
+.typename{
+	font-size: 16px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 2px;
+}
+
+ul,li{
+	list-style-type: none;
+}
+
+ul {
+	padding: 0;
+	margin: 0;
 }
