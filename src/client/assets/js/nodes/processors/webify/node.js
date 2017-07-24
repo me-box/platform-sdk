@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
 import Cell from 'components/Cell';
@@ -21,12 +20,8 @@ export default class Node extends Component {
        render() {
           
         	const {node, inputs, values={}, outputs, updateNode} = this.props;
-            
-
-         
-            
-       		
-			 const nameprops = {
+           
+			const nameprops = {
               id: "name",
               value: values.name || "",
               onChange: (property, event)=>{

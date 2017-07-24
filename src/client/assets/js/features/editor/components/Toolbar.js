@@ -15,6 +15,7 @@ export default class Toolbar extends Component {
   render() {
   	
   		const actions = [
+  			<Button flat label="liveload" onClick={this.props.requestCode}/>,
   			<Button flat label="logout" href="/auth/logout"/>,
   			<Button flat label="load" onClick={this.props.requestRepos}/>,
   			<Button flat label="save" onClick={this.props.toggleSaveDialogue}/>,

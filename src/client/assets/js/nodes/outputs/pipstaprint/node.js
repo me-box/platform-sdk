@@ -1,5 +1,5 @@
 import React from 'react';
-import composeNode from 'utils/composeNode';
+//import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Textarea from 'components/form/Textarea';
 import Cell from 'components/Cell';
@@ -45,7 +45,7 @@ class Node extends React.Component {
           
        }
 }
-
+/*
 export default composeNode(Node, 'pipstaprint', 
                             {
                                 category: 'outputs',    
@@ -83,4 +83,4 @@ export default composeNode(Node, 'pipstaprint',
                                     return this.name?"node_label_italic":"";
                                 }
                             }
-                          );
+                          );*/

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import moment from 'moment';
-import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Spinner from  'components/form/Spinner';
 import Select from 'components/form/Select';

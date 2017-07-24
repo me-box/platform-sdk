@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-export default class Resources extends Component {
+export default class Resources extends React.Component {
 	render(){ 
 			return <div>
 						<div className="panel">
@@ -10,7 +10,7 @@ export default class Resources extends Component {
 									 resources
 								</div>
 								<div className="attribute">
-									<input type="text" placeholder="resources"/>
+									<input type="text" placeholder="databox-store-blob"/>
 								</div>
 							</div>
 						</div>

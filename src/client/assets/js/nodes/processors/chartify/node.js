@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import composeNode from 'utils/composeNode';
 import cx from 'classnames';
 import Textfield from 'components/form/Textfield';
 import {configNode} from 'utils/ReactDecorators';

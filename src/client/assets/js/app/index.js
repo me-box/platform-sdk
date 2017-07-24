@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from 'react-dom';
+//import { render } from 'react-dom';
 
 import { browserHistory, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -9,12 +9,16 @@ import Redbox from 'redbox-react';
 
 import Root from './Root';
 import {configureStore} from './store/configureStore';
+import reducers from "./reducer";
 
 import 'styles/index.scss';
 //import 'styles/bootstrap.min.css';
+const {render} = ReactDOM;
 
+const store = configureStore(reducers);
 
-const store = configureStore();
+//const store = storelib.get();
+
 const history = syncHistoryWithStore(hashHistory, store);
 
 // Get the DOM Element that will host our React application
@@ -55,4 +59,8 @@ if (module.hot) {
       rootEl
     );
   });
+}
+
+export function test(){
+  console.log("ok we are here at last!!");
 }

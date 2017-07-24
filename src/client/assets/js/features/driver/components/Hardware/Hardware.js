@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-export default class Hardware extends Component {
+export default class Hardware extends React.Component {
 	render(){ 
 
 		return <div>

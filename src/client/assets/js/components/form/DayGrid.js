@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 
+
 class DayGrid extends React.Component {
 	
 	static defaultProps = {

@@ -1,5 +1,5 @@
 import React from 'react';
-import composeNode from 'utils/composeNode';
+//import composeNode from 'utils/composeNode';
 
 class Node extends React.Component {
 
@@ -10,6 +10,7 @@ class Node extends React.Component {
        }
 }
 
+/*
 export default composeNode(Node, 'datastore', 
                             {
                                 category: 'outputs',      
@@ -33,4 +34,4 @@ export default composeNode(Node, 'datastore',
                                     return this.name?"node_label_italic":"";
                                 }
                             }
-                          );
+                          );*/

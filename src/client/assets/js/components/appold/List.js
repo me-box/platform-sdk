@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+//import React, { Component } from 'react';
 import cx from 'classnames';
 
-class List extends Component {
+class List extends React.Component {
 	
 	constructor(props){
 		super(props);

@@ -106,6 +106,11 @@ app.use("/login", function(req, res) {
     });
 });
 
+app.use("/js/code.js", function(req, res) {
+  console.log("proxying code ", req.url);
+  res.sendFile(path.join(__dirname, './server/static/js/code.js'));
+});
+
 app.use("/images/editor.svg", function(req, res) {
   console.log("proxying editor ", req.url);
   res.sendFile(path.join(__dirname, './server/static/images/editor.svg'));

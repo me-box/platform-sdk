@@ -1,4 +1,11 @@
-import React, {PropTypes, Component} from 'react';
+const {configNode, contextTypes} = ConfigNode;
+
+module.exports = {
+  configNode,
+  contextTypes,
+}
+
+/*import React, {PropTypes, Component} from 'react';
 import {connect} from 'react-redux';
 import {selector} from 'features/nodes';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
@@ -105,4 +112,4 @@ export function configNode(){
         }
       }
    }
-}
+}*/

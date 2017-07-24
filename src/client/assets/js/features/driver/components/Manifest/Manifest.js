@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import "../driver.css";
 
-export default class Manifest extends Component {
-
-	
+export default class Manifest extends React.Component {
 
 	render(){ 
 

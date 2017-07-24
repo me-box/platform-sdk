@@ -1,5 +1,5 @@
 import React from 'react';
-import composeNode from 'utils/composeNode';
+//import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Textarea from 'components/form/Textarea';
 import Select from 'components/form/Select';
@@ -81,7 +81,7 @@ class Node extends React.Component {
        }
 }
 
-export default composeNode(Node, 'notify', 
+/*export default composeNode(Node, 'notify', 
                             {
                                 category: 'outputs',    
                                 color: '#d45500',
@@ -128,4 +128,4 @@ export default composeNode(Node, 'notify',
                                     return this.name?"node_label_italic":"";
                                 }
                             }
-                          );
+                          );*/

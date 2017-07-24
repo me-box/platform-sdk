@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-export default class Data extends Component {
+export default class Data extends React.Component {
 
 	constructor(props){
 		super(props);
@@ -29,12 +29,15 @@ export default class Data extends Component {
 											<tr>
 												<td><input type="text" placeholder="field name"/></td>
 												<td><input type="text" onClick={()=>this.setState({showdatatypes:true})} placeholder="field type"/></td>
-												<td><input type="text" placeholder="options"/></td>
-											</tr>
-											<tr>
-												<td>field two</td>
-												<td>field two type</td>
-												<td>field two options</td>
+												<td>
+													<div className="optionsgrid">
+														<div className="option"><label>blank</label></div>
+														<div className="option"><input type="text" placeholder="0"/></div>
+														<div className="option"><label>fn</label></div>
+														<div className="option"><input type="text" placeholder="fn"/></div>
+														<div className="option"><span className="close">&times;</span></div>
+													</div>
+												</td>		
 											</tr>
 										</tbody>
 									</table>

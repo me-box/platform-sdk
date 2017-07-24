@@ -258,6 +258,25 @@ table.drivertable {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 }
 
+.optionsgrid {
+	display: grid;
+	grid-gap: 3px;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    align-items: center;
+}
+
+.option{
+	padding: 2px;
+}
+
+.option label {
+	margin-bottom: 0px;
+}
+
+.option input {
+	margin-bottom: 0px;
+}
+
 .datatype{
 	margin-bottom: 5px;
 	padding: 3px;

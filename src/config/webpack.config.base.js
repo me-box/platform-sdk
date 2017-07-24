@@ -8,7 +8,8 @@ module.exports = {
   output: {
     filename: 'js/[name].js',
     path: path.resolve(__dirname, '../server/static'),
-    publicPath: '/'
+    publicPath: '/',
+
   },
   resolve: {
     modules: [
@@ -27,11 +28,11 @@ module.exports = {
       'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'  // fetch API
     }),
     // Shared code
-    new webpack.optimize.CommonsChunkPlugin({
+    /*new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       filename: 'js/vendor.bundle.js',
       minChunks: Infinity
-    })
+    })*/
   ],
   module: {
     loaders: [

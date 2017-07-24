@@ -21,7 +21,11 @@ module.exports = merge(config, {
       'react-hot-loader/patch',
       'development'
     ],
-    vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-redux', 'redux']
+    //vendor: ['react-redux', 'react-router', 'react-router-redux', 'redux']
+  },
+  externals: {
+    "react" : "React",
+    "react-dom" : "ReactDOM",
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

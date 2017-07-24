@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
 import '../../../style/sass/cells.scss';
 import '../../../style/css/devices.min.css';
 
-class MobilePhone extends Component {
+class MobilePhone extends React.Component {
 	
 	constructor(props){
 		super(props);

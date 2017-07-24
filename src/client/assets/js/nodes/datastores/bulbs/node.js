@@ -1,10 +1,11 @@
 import React, {PropTypes, Component} from 'react';
 import {configNode} from 'utils/ReactDecorators';
-import Divider from 'react-md/lib/Dividers';
 import Cell from 'components/Cell';
 import Cells from 'components/Cells';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
+
+console.log("----=got config node as", configNode);
 
 @configNode()
 export default class Node extends Component {

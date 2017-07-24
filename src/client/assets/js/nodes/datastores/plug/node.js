@@ -1,5 +1,4 @@
 import React from 'react';
-import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
 import Cell from 'components/Cell';
@@ -55,7 +54,7 @@ class Node extends React.Component {
     }
 }
 
-export default composeNode(Node, 'plugin', 
+/*export default composeNode(Node, 'plugin', 
                             {
                                 category: 'datastores',      
                                 color: '#ffcc00',
@@ -113,4 +112,4 @@ export default composeNode(Node, 'plugin',
                                 },
                                  description: ()=>"<p> smart plug readings </p>",
                             }
-                          );
+                          );*/

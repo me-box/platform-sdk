@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-export default class Overview extends Component {
+export default class Overview extends React.Component {
 	render(){ 
 		return 	<div>
 					<div className="panel">

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import "../driver.css";
 
-export default class Code extends Component {
+export default class Code extends React.Component {
 	render(){ 
 		const {props:{children}} = this.props.children;
 

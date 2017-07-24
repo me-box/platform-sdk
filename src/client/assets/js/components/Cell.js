@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './styles/cells.scss';
 
-class Cell extends Component {
+class Cell extends React.Component {
 	
 	constructor(props){
 		super(props);

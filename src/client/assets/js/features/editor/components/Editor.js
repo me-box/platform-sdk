@@ -12,6 +12,7 @@ import Toolbar from './Toolbar';
 import {actionCreators as repoActions} from 'features/repos/actions';
 import {actionCreators as workspaceActions} from 'features/workspace';
 import {actionCreators as testActions} from 'features/test';
+import {actionCreators as paletteActions} from 'features/palette';
 
 import RepoManager from 'features/repos/components/RepoManager';
 import Publisher from 'features/workspace/components/Publisher';
@@ -25,6 +26,7 @@ import TestManager from 'features/test/components/TestManager';
   }, (dispatch) => {    
   return{
      actions:{...bindActionCreators(editorActions, dispatch), 
+              requestCode: bindActionCreators(paletteActions.requestCode, dispatch),
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
               togglePublisher: bindActionCreators(workspaceActions.toggleVisible, dispatch),
@@ -100,6 +102,7 @@ export default class Editor extends Component {
 	/*<RepoManager h={h-TOOLBAR_HEIGHT}/>*/
 		
     const toolbarprops = {
+        requestCode: this.props.actions.requestCode,
        requestRepos: this.props.actions.requestRepos,
        toggleSaveDialogue: this.props.actions.toggleSaveDialogue,
        togglePublisher: this.props.actions.togglePublisher,

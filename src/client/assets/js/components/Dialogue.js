@@ -4,7 +4,7 @@ import Toolbar from 'react-md/lib/Toolbars';
 import './styles/dialogue.scss';
 import Button  from 'react-md/lib/Buttons';
 
-class Dialogue extends Component {
+class Dialogue extends React.Component {
 
 	render(){
 

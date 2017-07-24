@@ -1,6 +1,7 @@
 import React, {PropTypes} from 'react';
 //import '../../../style/jquery/style.css';
 import {default as cx} from 'classnames';
+
 class Spinner extends React.Component {
   
   static defaultProps = {

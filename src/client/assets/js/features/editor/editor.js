@@ -8,6 +8,7 @@ import {getID} from 'utils/nodeUtils';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as portActions} from 'features/ports';
 
+
 const TOGGLE_DEPLOY_MENU  = 'iot.red/editor/TOGGLE_DEPLOY_MENU';
 const SIDEBAR_CLOSE  = 'iot.red/editor/SIDEBAR_CLOSE';
 const SHOW_TEST_SIDEBAR  = 'iot.red/editor/SHOW_TEST_SIDEBAR';

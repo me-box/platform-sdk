@@ -1,0 +1,16 @@
+{
+  "name": "node-library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/store.js",
+  "scripts": {
+    "build": "../node_modules/.bin/webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2"
+  }
+}

@@ -1,5 +1,4 @@
 import React from 'react';
-import composeNode from 'utils/composeNode';
 import Textfield from 'components/form/Textfield';
 import Cell from 'components/Cell';
 import Cells from 'components/Cells';

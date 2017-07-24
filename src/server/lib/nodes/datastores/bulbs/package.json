@@ -1,0 +1,16 @@
+{
+  "name": "library-builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/yourlib.js",
+  "scripts": {
+    "build": "../../../node_modules/.bin/webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^3.3.0"
+  },
+  "dependencies": {}
+}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+//import React, { Component } from 'react';
 import cx from 'classnames';
 import {TOPPADDING,BOTTOMPADDING,LEFTPADDING,RIGHTPADDING,CHARTXPADDING,CHARTYPADDING,TICKCOUNT,BARSPACING,YAXISVALUESIZE, AXISLABELSIZE} from '../../constants/ChartConstants';
 import moment from 'moment';
@@ -18,7 +18,7 @@ const _colourFor = (id)=>{
   	return colours[index%colours.length];
 }
 
-class Chart extends Component {
+class Chart extends React.Component {
 	
 	constructor(props){
 		super(props);
