@@ -9,6 +9,7 @@ import mouse, {NAME as mouseName} from 'features/mouse';
 import repos, {NAME as repoName} from 'features/repos';
 import test, {NAME as testName} from 'features/test';
 import network, {NAME as networkName} from 'features/network';
+import driver, {NAME as driverName} from 'features/driver';
 
 export default {
   routing,
@@ -21,4 +22,5 @@ export default {
   [repoName]: repos,
   [testName]: test,
   [networkName]: network,
+  [driverName]: driver,
 };

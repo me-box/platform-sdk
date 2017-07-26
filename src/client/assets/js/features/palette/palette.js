@@ -59,18 +59,16 @@ export default function reducer(state = initialState, action) {
     
     case LOAD_NODE:
 
-        console.log("marvellous seen new node type come in!", action.node);
-        console.log("current state categoreus us", state.categories);
-
-        const nodesbycategory = state.categories[action.node.type] || {}
-
+        const category = action.node.def.category || "unknown";
+        const nodesbycategory = state.categories[category] || {};
+        
         return {
           ...state,
           categories: {
             
             ...state.categories,
 
-            [action.node.type]:  [...nodesbycategory,action.node],
+            [category]:  [...nodesbycategory,action.node],
             
           }
         }
@@ -141,45 +139,21 @@ function receiveNodes(nodes) {
 
 function requestCode(){
 
-  /*request
-    .get(`${config.root}/lib/testbulb.js`)
-    .buffer(true)
-    .end(function(err,res){ 
-      console.log(res.text);
-      var fn  = new Function(res.text);
-      console.log("fn is", fn());
-    })*/
 
   return function (dispatch, getState) {
-
 
     _injectScript(`${config.root}/lib/testbulb.js`)
     .then(() => {
         console.log('Script loaded!');
         console.log(testbulb);
         dispatch({
-          type: RECEIVE_CODE,
-          receivedAt: Date.now()
+          type: LOAD_NODE,
+          node:{component:testbulb.node, name: testbulb.type, def: testbulb.def, reducer:testbulb.reducer},
         })
     }).catch(error => {
         console.log(error);
     });
 
-    /*var head= document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.type= 'text/javascript';
-    script.src= `${config.root}/lib/testbulb.js`;
-    script.async = true;
-    script.onload = function(){
-       console.log("nice --- script has loaded!!!");
-       console.log(testbulb);
-    };
-    head.appendChild(lib);
-
-    dispatch({
-      type: RECEIVE_CODE,
-      receivedAt: Date.now()
-    })*/
   }
 }
 

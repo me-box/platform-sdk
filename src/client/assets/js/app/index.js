@@ -9,13 +9,13 @@ import Redbox from 'redbox-react';
 
 import Root from './Root';
 import {configureStore} from './store/configureStore';
-import reducers from "./reducer";
+//import reducers from "./reducer";
 
 import 'styles/index.scss';
 //import 'styles/bootstrap.min.css';
 const {render} = ReactDOM;
 
-const store = configureStore(reducers);
+const store = configureStore();
 
 //const store = storelib.get();
 

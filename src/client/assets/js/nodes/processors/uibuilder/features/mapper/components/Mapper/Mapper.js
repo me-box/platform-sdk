@@ -17,14 +17,6 @@ import "./Mapper.scss";
 import { Flex, Box } from 'reflexbox'
 //import '../../../../../styles/index.scss';
 import {schemaLookup} from 'nodes/processors/uibuilder/utils';
-import Paper from 'react-md/lib/Papers';
-
-
-import Card from 'react-md/lib/Cards/Card';
-import CardTitle from 'react-md/lib/Cards/CardTitle';
-import CardActions from 'react-md/lib/Cards/CardActions';
-import CardText from 'react-md/lib/Cards/CardText';
-
 
 const sourceName = (sources, sourceId)=>{
   for (source in sources){
@@ -357,55 +349,6 @@ export default class Mapper extends Component {
                 </Flex>
               </div>
             </div>    
-
-    /*return (
-              <div id="mapper" style={{width:viewConstants.MAPPER_WIDTH, boxSizing:'border-box', height: h, overflow:'auto'}}>
-                 <Paper key={1} zDepth={1}>
-                    <Card className="md-block-centered"  expanded={objectsExpanded} onExpanderClick={()=>{this.setState({objectsExpanded:!objectsExpanded})}}>
-                        <CardActions expander onClick={()=>{this.setState({objectsExpanded:!objectsExpanded})}}>
-                          objects
-                        </CardActions>
-                        <CardText style={{padding:0}}  expandable>
-                          {this.renderObjects()}
-                        </CardText>
-                    </Card>
-                    {selected && <Card className="md-block-centered" defaultExpanded onExpanderClick={()=>{this.setState({propertiesExpanded:!propertiesExpanded})}}>
-                        <CardActions expander onClick={()=>{this.setState({propertiesExpanded:!propertiesExpanded})}}>
-                          properties
-                        </CardActions>
-                        <CardText style={{padding:0}} expandable>
-                          {this.renderProperties()}
-                        </CardText>
-                    </Card>}
-                    {selected &&  <Card className="md-block-centered" expanded={birthExpanded} onExpanderClick={()=>{this.setState({birthExpanded:!birthExpanded})}}>
-                        <CardActions expander onClick={()=>{this.setState({birthExpanded:!birthExpanded})}}>
-                            birth
-                        </CardActions>
-                        <CardText expandable>
-                          {this.renderBirthOptions()}
-                        </CardText>
-                    </Card>}
-                    {selected && <Card className="md-block-centered" expanded={deathExpanded} onExpanderClick={()=>{this.setState({deathExpanded:!deathExpanded})}}>
-                        <CardActions expander onClick={()=>{this.setState({deathExpanded:!deathExpanded})}}>
-                          death
-                        </CardActions>
-                        <CardText expandable>
-                           {this.renderDeathOptions()}
-                        </CardText>
-                    </Card>}
-                    {selected && <Card className="md-block-centered" expanded={mapperExpanded} onExpanderClick={()=>{this.setState({mapperExpanded:!mapperExpanded})}}>
-                        <CardActions expander onClick={()=>{this.setState({mapperExpanded:!mapperExpanded})}}>
-                          behaviour
-                        </CardActions>
-                        <CardText expandable>
-                          {this.renderMapper()}
-                          {this.renderTransformers()}
-                          {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}
-                        </CardText>
-                    </Card>}
-                  </Paper>
-              </div>
-           );*/
   }
 
 

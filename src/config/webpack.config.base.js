@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
+const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin')
 
 console.log("set path to " + path.resolve(__dirname, '../server/static'));
 
@@ -24,9 +25,11 @@ module.exports = {
     extensions: ['.js', '.jsx', '.json', '.scss']
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'  // fetch API
-    }),
+    //new webpack.ProvidePlugin({
+    //  'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'  // fetch API
+   // }),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), 
+    new ContextReplacementPlugin(/brace[\\\/]mode$/, /^\.\/(javascript|html|json|css|text)$/)
     // Shared code
     /*new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',

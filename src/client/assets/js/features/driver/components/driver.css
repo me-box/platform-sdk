@@ -119,6 +119,8 @@ body {
 	background: white;
 	align-items: center;
 	height: 100%;
+	min-width: 1181px;
+	overflow-y: auto;
 }
 
 .attribute-grid {

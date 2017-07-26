@@ -1,7 +1,7 @@
 {
-  "name": "webpack-react",
+  "name": "databox-sdk",
   "version": "0.0.1",
-  "description": "A Webpack template project, configured for ES6 React and SASS",
+  "description": "databox sdk",
   "main": "index.js",
   "scripts": {
     "clean:build": "rimraf build",

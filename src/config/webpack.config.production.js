@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const config = require('./webpack.config.base');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const GLOBALS = {
   'process.env': {
@@ -55,7 +56,10 @@ module.exports = merge(config, {
     new ExtractTextPlugin({
       filename: 'css/app.css',
       allChunks: true
-    })
+    }),
+    new BundleAnalyzerPlugin({
+       analyzerMode: 'static'
+    }),
   ],
   module: {
     noParse: /\.min\.js$/,

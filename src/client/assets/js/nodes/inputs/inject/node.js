@@ -206,6 +206,8 @@ export default class Node extends Component {
           selected: specificTimeOn,
         }
 
+        console.log("specific time is", specificTime, moment(specificTime || "12.00", "HH:mm").toDate());
+
         const specifictimeprops = {
           id: "time",
           placeholder: "specific time", 

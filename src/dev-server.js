@@ -95,6 +95,19 @@ app.use("/uibuilder/*", function(req, res) {
     });
 });
 
+app.use("/lib/*", function(req, res) {
+  
+   req.url = `${req.baseUrl}${req.url}`.replace(/\/$/, "");
+   console.log("proxying LIB!", req.url);
+
+    apiProxy.web(req, res, {
+      target: {
+        port: 9000,
+        host: "localhost"
+      }
+    });
+});
+
 app.use("/login", function(req, res) {
   console.log("proxying login...>");
    req.url = `${req.baseUrl}${req.url}`;

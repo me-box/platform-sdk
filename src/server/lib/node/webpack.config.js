@@ -15,7 +15,12 @@ module.exports = {
         "react": "React",
   },
 
-  plugins: [new webpack.optimize.UglifyJsPlugin()],
+  plugins: [
+              new webpack.optimize.UglifyJsPlugin(),
+              new webpack.DefinePlugin({'process.env': {
+                  'NODE_ENV': JSON.stringify('production')
+              }})
+            ],
   
   module: {
     rules: [
@@ -30,4 +35,6 @@ module.exports = {
       }
     ]
   },
+
+  
 };

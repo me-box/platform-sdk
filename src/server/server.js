@@ -5,13 +5,12 @@ import connectredis from 'connect-redis';
 //import connectmongostore from 'connect-mongostore';
 import bodyparser from 'body-parser';
 import config from './config';
-import mongoose from 'mongoose';
 import initPassport from './strategies';
 const RedisStore 	 = connectredis(expressSession);
 
-//require('connect-mongostore')(express);
-mongoose.connect(config.mongo.url);
-//const MongoStore = connectmongostore(expressSession);
+//;
+
+//const MongoStore = require('connect-mongostore')(expressSession);
 
 let PORT = 8086
 
@@ -19,12 +18,18 @@ if (process.argv.length > 2){
 	PORT = parseInt(process.argv[2]);
 }
 
-let app = express();
+const app = express();
 
 //to support posts!
 app.use(bodyparser.urlencoded({extended:false, limit: '5mb'}));
 app.use(bodyparser.json({limit: '5mb'}));
 
+/*
+store: new RedisStore({
+                            host: config.redis.host,
+                            port: config.redis.port,
+                            disableTTL: true,
+                        }),*/
 
 app.use(expressSession(
                       {

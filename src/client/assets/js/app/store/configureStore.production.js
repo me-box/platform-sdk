@@ -1,13 +1,13 @@
-const {configureStore, register, unregisterAll, get} = storelib;
+/*const {configureStore, register, unregisterAll, get} = storelib;
 
 module.exports = {
    configureStore,
    register,
    unregisterAll,
    get
-}
+}*/
 
-/*import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import promiseMiddleware from 'redux-promise';
 import thunk from 'redux-thunk';
 import rootReducers from '../reducer';
@@ -43,4 +43,4 @@ export function unregisterAll(store){
   }
 
   store.replaceReducer(combineReducers(reducers));
-}*/
+}

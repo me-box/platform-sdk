@@ -38,9 +38,6 @@ export function updateRepeatUnits(id, event){
 
 
 export function setRepeat(id, event){
-	console.log("in set repeat");
-	console.log(id);
-	console.log(event.target.value);
 
 	return function (dispatch, getState) {
 		dispatch({

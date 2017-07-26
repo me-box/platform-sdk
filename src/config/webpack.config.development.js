@@ -25,7 +25,7 @@ module.exports = merge(config, {
   },
   externals: {
     "react" : "React",
-    "react-dom" : "ReactDOM",
+    "react-dom" : "ReactDOM"
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
