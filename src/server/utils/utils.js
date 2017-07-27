@@ -219,7 +219,7 @@ export function stopAndRemoveContainer(name){
 export function createTestContainer(image, name){
 	console.log(`creating test container ${image}, name: ${name}`);
 	return new Promise((resolve, reject)=>{
-		docker.createContainer({Image: image, PublishAllPorts:true, Binds: ["/tmp/app.webserver:/tmp/app.webserver"], Links: ["mock-datasource:mock-datasource"], Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  Labels: {'user':`${name}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ["npm", "start", "--", "--userDir", "/data"], name: `${name}-red`}, function (err, container) {
+		docker.createContainer({Image: image, PublishAllPorts:true, Links: ["mock-datasource:mock-datasource","databox-test-server:databox-test-server"], Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  Labels: {'user':`${name}`}, "ExposedPorts": {"1880/tcp": {}}, Cmd: ["npm", "start", "--", "--userDir", "/data"], name: `${name}-red`}, function (err, container) {
 			if (err){
 				console.log(err);
 				reject(err);

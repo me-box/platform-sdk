@@ -59,6 +59,11 @@ router.get('/scenes/', (req,res)=>{
 router.get('/images/', (req,res)=>{
   fs.readdir(path.join(ROOTDIR, '/images/'), (err, files) => {
       
+      if (!files || err){
+        res.send([]);
+        return;
+      }
+
       const images = files.filter((fileName)=>{
         return fileName.indexOf(".svg") != -1
       });
@@ -83,7 +88,6 @@ router.get('/images/', (req,res)=>{
 router.get('/images/:name', (req,res)=>{
    res.sendFile(path.join(ROOTDIR, '/images/' + req.params.name));
 });
-
 
 
 router.post('/image/add', function(req, res){

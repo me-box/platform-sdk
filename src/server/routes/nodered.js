@@ -6,8 +6,8 @@ import {matchLibraries, flatten, dedup, createTarFile, createDockerImage, create
 
 const router = express.Router();
 
-const _postFlows = function(port, data, username){
-	console.log(`connecting to localhost:${port}/flows`);
+const _postFlows = function(ip, port, data, username){
+	console.log(`connecting to ${ip}:${port}/flows`);
 
 	
 	//add in channelIDs here
@@ -21,7 +21,7 @@ const _postFlows = function(port, data, username){
 
 	return new Promise((resolve,reject)=>{
 		request
-				.post(`localhost:${port}/flows`)
+				.post(`${ip}:${port}/flows`)
 				.send(flows)
 				.set('Accept', 'application/json')
 				.type('json')
@@ -32,7 +32,6 @@ const _postFlows = function(port, data, username){
 					} else {
 						console.log("successfully installed new flows");
 						resolve(true);
-						
 					}
 				});
 	});
@@ -59,8 +58,10 @@ const _startContainer = function(container, flows, username){
 	return _waitForStart(container).then(function(){
 		return container.inspect(function (err, cdata) {
 			console.log("starting container!");
-			let port = cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort'];
-			return _postFlows(port, flows, username);
+			//let port = cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort'];
+			const port = 1880;
+            const ip = cdata.NetworkSettings.Networks.bridge.IPAddress;
+			return _postFlows(ip, port, flows, username);
 		});
 	});	
 }
@@ -132,8 +133,10 @@ const _createContainerFromStandardImage = function(username, flows){
 					console.log("container already ruinning...");
 					console.log(c);
 					//post flows to already running container
-					let port = c.Ports[0]['PublicPort'];
-					return _postFlows(port, flows, username);
+					//let port = c.Ports[0]['PublicPort'];
+					const ip = c.NetworkSettings.Networks.bridge.IPAddress;
+                    const port =  c.Ports[0].PrivatePort;
+					return _postFlows(ip, port, flows, username);
 				}
 			}
 		});	
