@@ -76,6 +76,8 @@ function start(config){
     res.redirect("/login");
   };
 
+  
+
   if(checkcredentials(config)){
     initPassport(app, config);
     addroutes(app,auth);
