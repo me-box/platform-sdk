@@ -1,6 +1,6 @@
 const config = {
-	root: 'http://databox.upintheclouds.org',
-    testurl: 'http://databoxtest.upintheclouds.org',	
+	root: 'localhost:8086',
+    testurl: 'localhost:9090',	
 }
 
 module.exports = config;

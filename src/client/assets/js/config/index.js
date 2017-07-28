@@ -1,6 +1,8 @@
+//fetch client config from server!!!
+
 const config = {
-	root: 'http://databox.upintheclouds.org',
-    testurl: 'http://databoxtest.upintheclouds.org',	
+	root: 'http://localhost:8086',
+    testurl: 'http://localhost:9090',		
 }
 
 export default config;

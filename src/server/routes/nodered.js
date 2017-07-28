@@ -1,6 +1,5 @@
 import express from 'express';
 import request from 'superagent';
-import config from '../config.js';
 import docker from '../utils/docker.js';
 import {matchLibraries, flatten, dedup, createTarFile, createDockerImage, createTestContainer, stopAndRemoveContainer} from '../utils/utils.js';
 
@@ -37,6 +36,9 @@ const _postFlows = function(ip, port, data, username){
 	});
 }
 
+/*  after a container has started it'll take a bit of time initing, after which we need to send it a flow file
+    the only way I can think of to be sure it is ready to receive this is to monitor the container stdout and
+    look for "Started Flows", and send the flow file a second after this */ 
 const _waitForStart = function(container){
 	return new Promise((resolve,reject)=>{
 		container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
@@ -53,6 +55,20 @@ const _waitForStart = function(container){
 	});
 }
 
+
+const _pullContainer  = function(name){
+	console.log("pulling container", name);
+
+	return docker.pull(name).then((stream, err)=>{
+		return new Promise((resolve, reject)=>{
+			if (err){
+				console.log("error!", err);
+				reject(err);
+			}
+			return docker.modem.followProgress(stream, ()=>{console.log("successfully pulled container");resolve()}, (event)=>{console.log(event)});
+		});
+	});
+}
 
 const _startContainer = function(container, flows, username){
 	return _waitForStart(container).then(function(){
@@ -75,14 +91,16 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
 
-	const dcommands = [...[`FROM databox/testred`, `ADD flows.json /data/flows.json`], ...libcommands]			
+	const dcommands = [...[`FROM tlodge/databox-red`, `ADD flows.json /data/flows.json`], ...libcommands]			
 	const dockerfile = dcommands.join("\n");
 	
 	console.log(dockerfile);
 	
 	const path = `tmp-${username}.tar.gz`;
-	
-	return stopAndRemoveContainer(`${username}-red`).then(()=>{
+
+	return _pullContainer("tlodge/databox-red:latest").then(()=>{
+		return stopAndRemoveContainer(`${username}-red`)
+	}).then(()=>{
 		return createTarFile(dockerfile, JSON.stringify(flows), path)
 	}).then((tarfile)=>{
 		console.log(`created tar file ${tarfile}`);
@@ -100,22 +118,26 @@ const _createContainerFromStandardImage = function(username, flows){
 	
 	const opts = {
 		filters : {
-						label: [`user=${username}`],
-						status: ['running', "exited"],			
+			label: [`user=${username}`],
+			status: ['running', "exited"],			
 		}
   	}	
 
 	return new Promise((resolve,reject)=>{
+
 		docker.listContainers(opts, function(err, containers) {
 			console.log(`Containers labeled user=${username} ${containers.length}`);
 		
 			//create a new container and start it, if it doesn't exist
 			if (containers.length <= 0){
 				console.log("OK - creating test container....");
-				return createTestContainer('databox/testred', username).then((container)=>{
+				return _pullContainer("tlodge/databox-red:latest").then(()=>{
+					return createTestContainer('tlodge/databox-red', username)
+				}).then((container)=>{
 					return _startContainer(container, flows, username);
 				});
-			}else{
+			}
+			else{
 				const c = containers[0];
 				//restart the container if it exists but is stopped
 				if (c.State === 'exited'){

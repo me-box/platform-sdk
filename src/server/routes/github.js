@@ -1,12 +1,11 @@
 import express from 'express';
 import request from 'superagent';
-import config from '../config.js';
 import fs from 'fs';
 import docker from '../utils/docker';
 import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries, writeTempFile, removeTempFile} from '../utils/utils';
 const router = express.Router();
 
-const _createCommit = function(user, repo, sha, filename, content, message, accessToken){
+const _createCommit = function(config, user, repo, sha, filename, content, message, accessToken){
 
 	return new Promise((resolve, reject)=>{
 		request
@@ -37,7 +36,7 @@ const _createCommit = function(user, repo, sha, filename, content, message, acce
 	});
 }
 
-const _createRepo = function(user, name, description, flows, manifest, commitmessage, accessToken){
+const _createRepo = function(config, user, name, description, flows, manifest, commitmessage, accessToken){
  	
 
 	return new Promise((resolve,reject)=>{
@@ -89,7 +88,9 @@ const _createRepo = function(user, name, description, flows, manifest, commitmes
    	 	return Promise.all([
 		 						Promise.resolve(repo),
 		 						
-		 						_addFile({	username: user.username,
+		 						_addFile({	
+		 									config:config,
+		 									username: user.username,
    											repo: repo.name, 
    											filename: 'flows.json',
    											email: user.email || `${user.username}@me-box.com`,
@@ -109,6 +110,7 @@ const _createRepo = function(user, name, description, flows, manifest, commitmes
 								Promise.resolve(repo.name),
 								Promise.resolve(values[1]),  
 								_addFile({
+										config: config,
 										username: user.username,
 										repo: repo.name, 
 										filename: 'manifest.json',
@@ -126,7 +128,7 @@ const _createRepo = function(user, name, description, flows, manifest, commitmes
 
 const _addFile = function(options){
 	
-	const {username, repo, filename, message, email, content, accessToken} = options;
+	const {config, username, repo, filename, message, email, content, accessToken} = options;
 
 	return new Promise((resolve, reject)=>{ 
 	  request
@@ -153,7 +155,7 @@ const _addFile = function(options){
    	})	
 }
 
-const _fetchFile = function(username, repoowner, accessToken, repo, filename){
+const _fetchFile = function(config, username, repoowner, accessToken, repo, filename){
 	
 	console.log(`{fetching file: ${filename}`);
 
@@ -187,7 +189,7 @@ const _fetchFile = function(username, repoowner, accessToken, repo, filename){
 	});
 }
 
-const _saveToAppStore = function(manifest){
+const _saveToAppStore = function(config,manifest){
 	console.log("saving to app store now");
 	console.log(`${config.appstore.URL}/app/post`);
 	
@@ -210,7 +212,7 @@ const _saveToAppStore = function(manifest){
   	});
 }
 
-const _generateManifest = function(user, reponame, app, packages, allowed){
+const _generateManifest = function(config,user, reponame, app, packages, allowed){
 	
 	const appname = app.name.startsWith(user.username) ? app.name : `${user.username}-${app.name}`;
 	
@@ -263,7 +265,7 @@ const _generateManifest = function(user, reponame, app, packages, allowed){
 }
 
 
-const _publish = function(user, reponame, app, packages, libraries, allowed, flows){
+const _publish = function(config, user, reponame, app, packages, libraries, allowed, flows){
 	
 	
 	console.log("PUBLISHING NOW WITH LIBRARIES");
@@ -297,7 +299,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 		console.log("-->building with dockerfile");
 		console.log(dockerfile);
 		
-		const manifest = _generateManifest(user, app.name, app, packages, allowed);
+		const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 		console.log("generated manifest");
 		console.log(manifest);
 
@@ -316,7 +318,7 @@ const _publish = function(user, reponame, app, packages, libraries, allowed, flo
 		console.log("saving to app store");
 		console.log(data);
 			
-		return _saveToAppStore(data).then(function(result){
+		return _saveToAppStore(config,data).then(function(result){
 			var path = `${user.username}-tmp.tar.gz`;
 			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
@@ -349,7 +351,7 @@ router.get('/repos/:user', function(req,res){
 		username = req.user.username;	
 	}
 	request
-   		.get(`${config.github.API}/users/${username}/repos`)
+   		.get(`${req.config.github.API}/users/${username}/repos`)
    		.set('Accept', 'application/json')
    		.set('Authorization', `token ${req.user.accessToken}`)
    		.end((err, data)=>{
@@ -380,7 +382,7 @@ router.get('/repos', function(req,res){
 	const user = req.user;
 	
 	request
-   		.get(`${config.github.API}/users/${user.username}/repos`)
+   		.get(`${req.config.github.API}/users/${user.username}/repos`)
    		.query({'per_page': 100, sort:'created', direction:'desc'})
    		
    		.set('Accept', 'application/json')
@@ -417,7 +419,7 @@ router.get('/flow', function(req,res){
 	const repo = req.query.repo;
 	const owner = req.query.username || user.username;
 	
-	return Promise.all([_fetchFile(user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(user.username, owner, user.accessToken, repo, 'manifest.json')]).then(function(values) {
+	return Promise.all([_fetchFile(req.config,user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'manifest.json')]).then(function(values) {
 		
         res.send({
         	result: 'success',
@@ -441,7 +443,7 @@ router.post('/repo/new', function(req,res){
 	var manifest    	= req.body.manifest || {};
 	var commitmessage 	= req.body.message || "first commit";
 	
-	return _createRepo(user, name, description, flows, manifest, commitmessage, req.user.accessToken).then(repo=>{
+	return _createRepo(req.config, user, name, description, flows, manifest, commitmessage, req.user.accessToken).then(repo=>{
 		return repo;
 	}).then((values)=>{
 		res.send({
@@ -467,8 +469,8 @@ router.post('/repo/update', function(req, res){
 	const sha = req.body.sha;
 	const message = req.body.message || "checkpoint commit";
 	
-	return _createCommit(user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then((data)=>{
-			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(user, repo, sha.manifest,  'manifest.json', manifestcontent, message, user.accessToken)])
+	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then((data)=>{
+			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config,user, repo, sha.manifest,  'manifest.json', manifestcontent, message, user.accessToken)])
 	}, (err)=>{
 			res.status(500).send({error: err});
 	}).then((values)=>{
@@ -522,12 +524,12 @@ router.post('/publish', function(req,res){
 		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
 		const message = commitmessage;
 		
-		return _createCommit(user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then((data)=>{
-			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(user, repo.name, repo.sha.manifest,  'manifest.json', manifestcontent, message, req.user.accessToken)])
+		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then((data)=>{
+			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest,  'manifest.json', manifestcontent, message, req.user.accessToken)])
 		}, (err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
-			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(user, repo.name, app, packages, libraries, allowed, JSON.stringify(flows))]);
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(req.config, user, repo.name, app, packages, libraries, allowed, JSON.stringify(flows))]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
@@ -545,9 +547,9 @@ router.post('/publish', function(req,res){
 	  	console.log("CREATING NEW REPO..");
 	  	const reponame =  app.name.startsWith("databox.") ? app.name.toLowerCase() : `databox.${app.name.toLowerCase()}`;	
 		console.log(reponame);
-		return _createRepo(user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
+		return _createRepo(req.config, user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
 			console.log(`publishing...${reponame}`);
-			return Promise.all([Promise.resolve(values), _publish(user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);
+			return Promise.all([Promise.resolve(values), _publish(req.config,user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{

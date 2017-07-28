@@ -1,10 +1,20 @@
 import passport  from 'passport';
 import passportGithub from 'passport-github';
-import User from './models/user';
-import config from './config';
 const GitHubStrategy = passportGithub.Strategy;
 
-export default function initPassport(app){
+export default function initPassport(app, config){
+	
+	
+	const {CLIENT_ID="", CLIENT_SECRET="", CALLBACK=""} = config.github;
+
+	
+	if (CLIENT_ID.trim() == "" || CLIENT_SECRET.trim() == "" || CALLBACK.trim() == ""){
+		return;
+	}
+	
+	console.log("initing passport");
+
+	var User = require('./models/user')(config.mongo.URL);
 
 	app.use(passport.initialize());
 	app.use(passport.session());

@@ -6,6 +6,8 @@ const router = express.Router();
 //need to explicity log this user out 
 router.get('/logout',  function(req,res){
 	
+	var User = require('./models/user')(req.config.mongo.URL);
+	
 	if (req.user){
 		User.findOne({ username: req.user.username}).remove().exec();
 	}
