@@ -222,7 +222,7 @@ export function createTestContainer(image, name){
 		docker.createContainer(
 								{	Image: image, 
 									PublishAllPorts:true, 
-									Links: ["mock-datasource:mock-datasource","databox-test-server:databox-test-server", "openface:openface"], 
+									Links: ["mock-datasource:mock-datasource","databox-test-server:databox-test-server", /*"openface:openface"*/], 
 									Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  
 									Labels: {'user':`${name}`}, 
 									ExposedPorts: {"1880/tcp": {}, "9000/tcp":{}, "8086/tcp":{}}, 
