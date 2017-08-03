@@ -225,10 +225,11 @@ function submissionResponse(data){
 	}
 }
 
-function receivedRepos(repos){
+function receivedRepos(data){
 	return {
 		type: nodeActionTypes.REPO_LIST_RETRIEVED,
-		repos,
+		repos: data.repos,
+    username: data.username,
 	}
 }
 
@@ -257,7 +258,7 @@ function requestRepos(){
 			  console.log(res.body);
 			  dispatch(networkActions.networkSuccess(`successfully received repos`));
 			  dispatch(receivedRepos(res.body));
-			  if (res.body && res.body.length > 0){
+			  if (res.body.repos && res.body.repos.length > 0){
 			 	 dispatch(toggleVisible());
 			  }
 			}

@@ -68,8 +68,10 @@ export default function reducer(state = initialState, action) {
 	  	);
 
 	  case nodeActionTypes.REPO_LIST_RETRIEVED:
+	   	console.log("repo lost retrieved", action);
 	  	return Object.assign({}, state, {
 	  		repos: action.repos || [],
+	  		currentuser: action.username,
 	  	});
 	  
 	  case nodeActionTypes.TOGGLE_SAVE_DIALOGUE:

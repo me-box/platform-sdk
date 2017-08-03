@@ -5,7 +5,6 @@ import Drawer from 'react-md/lib/Drawers';
 import Toolbar from 'react-md/lib/Toolbars';
 import Button from 'react-md/lib/Buttons';
 import { NAME, actionCreators as testActions, selector } from '../';
-import config from 'config';
 
 @connect(selector, (dispatch) => {
   return{
@@ -19,13 +18,13 @@ export default class TestManager extends Component {
 	} 
 	
 	componentDidMount(){
-		const {dispatch, id} = this.props;
+		this.props.actions.init();
 	}
 
 	render() {
 		
-		const {nodes, visible} = this.props;
-		
+		const {nodes, visible, testurl,username} = this.props;
+	
 		const iconstyle = {
             alignSelf: 'center',
             height: '4em',
@@ -46,7 +45,7 @@ export default class TestManager extends Component {
 							<div>
 								<div style={{margin:'auto', padding: 20}}>
 									<div>
-										<a href={`${config.testurl}/#/${node.type}`} target="_blank">
+										<a href={`${testurl}?username=${username}#/${node.type}`} target="_blank">
 											<div style={iconstyle}>
 												<i className={`fa ${node._def.icon} fa-fw fa-3x`}></i> 
 											</div>

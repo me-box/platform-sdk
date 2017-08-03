@@ -371,7 +371,7 @@ router.get('/repos/:user', function(req,res){
        				return repo.name.startsWith("databox.");
        			})
        			
-     			res.send(repos);
+     			res.send({username,repos});
        		}
    		})
 });
@@ -406,7 +406,7 @@ router.get('/repos', function(req,res){
        				return repo.name.startsWith("databox.");
        			});
        			
-       			res.send(repos);
+       			res.send({username:req.user.username,repos});
        		}
    		})
 });
@@ -513,9 +513,7 @@ router.post('/publish', function(req,res){
 		return acc;
 	},[])));
 	
-	
-	console.log("REPO IS");
-	console.log(repo);
+
 	
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
 		

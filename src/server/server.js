@@ -109,9 +109,14 @@ function start(config){
   app.get('/', function(req,res){
     
     if (!checkcredentials(config)){
-      res.redirect('/login');
+      res.redirect('/settings');
       return;
     }
+    
+    if (!req.isAuthenticated()){
+      res.redirect('/login');
+    }
+
     console.log("should be logged in here!");
     res.render('index');  
 
@@ -119,6 +124,11 @@ function start(config){
 
   app.get('/settings', function(req,res){
     res.render('settings', {config:JSON.stringify(config.github || {},null,4)});
+  });
+
+  app.get('/settings/testurl', function(req,res){
+    console.log("seen a request for testurl!");
+    res.send({testurl:config.testserver.URL})
   });
 
   console.log(`listening on port ${PORT}`)

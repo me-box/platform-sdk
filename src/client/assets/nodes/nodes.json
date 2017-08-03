@@ -3,11 +3,13 @@
 				
 				
 				{"name":"timer", "file":"inputs/inject/index"}, 
+				{"name":"webcam", "file":"datastores/webcam/index"},
 				{"name":"bulbs-in", "file":"datastores/bulbs/index"},
 				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
 				{"name":"twitter", "file":"datastores/twitter/index"},
 				{"name":"speech", "file":"datastores/speech/index"},
+				{"name":"openface", "file":"processors/openface/index"},
 				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"extract", "file":"processors/extract/index"},
 				{"name":"chartify", "file":"processors/chartify/index"},

@@ -11,9 +11,12 @@ const TOGGLE_VISIBLE	= 'iot.red/test/TOGGLE_VISIBLE';
 const SET_VISIBLE		= 'iot.red/test/SET_VISIBLE';
 const DEPLOY 			= 'iot.red/test/DEPLOY';
 const MOUSE_UP 			= 'iot.red/test/MOUSE_UP';
+const RECEIVED_TESTURL = 'iot.red/test/RECEIVED_TESTURL';
+
 
 const initialState = {
 	visible:false,
+	testurl: "",
 }
  
 export default function reducer(state = initialState, action) {
@@ -21,19 +24,28 @@ export default function reducer(state = initialState, action) {
   	switch (action.type) {
 
 	  case  TOGGLE_VISIBLE:
-	    	return Object.assign({}, state, {
+	    	return {
+	    		...state, 
 	    		visible:!state.visible,
-	    	});
+	    	};
 	  
 	  case  SET_VISIBLE:
-	    	return Object.assign({}, state, {
+	    	return {
+	    		...state,
 	    		visible:true
-	    	});
+	    	};
 
 	  case MOUSE_UP:
-	  		return Object.assign({}, state, {
+	  		return {
+	  			...state, 
 	    		visible:false
-	    	});
+	    	};
+
+	  case RECEIVED_TESTURL:
+	  		return {
+	  			...state,
+	  			testurl: action.testurl,
+	  		}
 
 	  default:
 	    return state;
@@ -108,6 +120,26 @@ export function test(){
 	}
 }
 
+function init(){
+	return function (dispatch, getState) {
+		if (getState()[NAME].testurl.trim() === ""){
+			console.log("requesting testurl");
+			request
+		  		.get(`${config.root}/settings/testurl`)
+		  		.set('Accept', 'application/json')
+		  		.end(function(err, res){
+		  			
+		  			const {testurl=""} = res.body;
+		  			
+		  			dispatch({
+		  				type: RECEIVED_TESTURL,
+		  				testurl
+		  			})
+		  		});
+		}
+	}
+}
+
 function setVisible(){
 	return {
 		type: SET_VISIBLE
@@ -128,16 +160,26 @@ function mouseUp(){
 
 const visible = (state) => state[NAME].visible;
 
+const username = (state)=> {
+	console.log(JSON.stringify(state.repos, null, 4));
+	return state.repos.currentuser;
+}
+
 const nodes = (state) => {
 	return nodesWithTestOutputs(Object.keys(state.nodes.nodesById).map(k=>state.nodes.nodesById[k]));
 }
 
+const testurl = (state) => state[NAME].testurl;
+
 export const selector = createStructuredSelector({
 	nodes,
 	visible,
+	testurl,
+	username,
 });
 
 export const actionCreators = {
+	init,
 	test,
 	toggleVisible,
 	mouseUp,
