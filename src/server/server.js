@@ -14,6 +14,7 @@ fetch().then((config)=>{
 });
 
 function checkcredentials(config){
+  console.log("checking credentials for ", JSON.stringify(config,null,4));
   const {CLIENT_ID, CLIENT_SECRET, CALLBACK} = config.github;
   return (CLIENT_ID.trim()!="" && CLIENT_SECRET.trim()!="" && CALLBACK.trim()!="");
 }
@@ -67,8 +68,10 @@ function start(config){
   
   const auth = (req, res, next) => {
     
+    console.log("checking is req is authenticated");
+    console.log(req.user, req.isAuthenticated());
+
     if (req.isAuthenticated()){
-      console.log("nice -- authenticated!!");
       req.config = config;
       return  next(null);
     }
@@ -77,30 +80,12 @@ function start(config){
   };
 
   
-
   if(checkcredentials(config)){
     initPassport(app, config);
     addroutes(app,auth);
   }
 
-  
-
   app.get('/login', function(req,res){
-
-    if (!checkcredentials(config)){
-      return fetch().then((c)=>{ //re-check to see if config has changed
-        config = c;
-        if (!checkcredentials(c)){
-          console.log("redirecting to settings...");
-           res.redirect("/settings");
-           return;
-        }else{
-          console.log("ok settings is ok, so initing passport!");
-          initPassport(app, c);
-          addroutes(app,auth);
-        }
-      })
-    }
     res.render('login');  
   });
 
@@ -109,25 +94,29 @@ function start(config){
   app.get('/', function(req,res){
     
     if (!checkcredentials(config)){
+      console.log("credentials are empty, so redirecting to settings")
       res.redirect('/settings');
       return;
     }
     
     if (!req.isAuthenticated()){
-      res.redirect('/login');
+      res.redirect("/login");
+      return;
     }
 
-    console.log("should be logged in here!");
     res.render('index');  
 
   });
 
   app.get('/settings', function(req,res){
-    res.render('settings', {config:JSON.stringify(config.github || {},null,4)});
+      if (checkcredentials(config)){
+         res.render('settings', {title:"great, you have updated your config settings", config:"[secret]"});
+      }else{
+        res.render('settings', {title:"Nearly there - you just need set your github settings", config:JSON.stringify(config.github || {},null,4)});
+      }
   });
 
   app.get('/settings/testurl', function(req,res){
-    console.log("seen a request for testurl!");
     res.send({testurl:config.testserver.URL})
   });
 

@@ -378,7 +378,7 @@ router.get('/repos/:user', function(req,res){
 
 //list all apps owned by this user
 router.get('/repos', function(req,res){
-	
+	console.log("getting repos with accessToken", req.user.accessToken);
 	const user = req.user;
 	
 	request

@@ -10,8 +10,7 @@
   	<div class="container">
   		
   		<div>
-  			<h2> Nearly there - you just need set your github settings </h2>	
-  		
+  			<h2> <%= title %> </h2>	
   		</div>
 
   		<div class="row">
@@ -27,7 +26,21 @@
   		</div>
 
   		<div class="row">
-			once you have updated the settings file,<a href="/">try again</a>
+			Register your new github app at <a href="https://github.com/settings/developers">https://github.com/settings/developers</a>
+		</div>
+
+		<div class="row">
+		 	Use the callback url shown above (or change hostname accordingly). Then run:
+		</div>
+		
+		<div class="row">
+		 	<pre>
+				<code> docker-compose restart databox-sdk </code>
+			</pre>
+  		</div>
+
+  		<div class="row">
+  			Then go <a href="/">here</a>
   		</div>
   	</div>
   
