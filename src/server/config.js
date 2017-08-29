@@ -5,7 +5,8 @@ export function fetch(){
 
         fs.readFile("./conf/settings.json", 'utf8', function(err, data){
                 if (err){
-                        return write(JSON.stringify(defaultsettings(),null,4));
+                    console.log("am here ---->>>>> ");
+                    return write(JSON.stringify(defaultsettings(),null,4));
                 }
                 try{
                         const settings = JSON.parse(data);
@@ -20,11 +21,15 @@ export function fetch(){
 
 export function write(file){
         return new Promise((resolve, reject)=>{
-                fs.writeFile("./conf/settings.json", file, function(err) {
+                fs.mkdir("./conf", function(){
+
+                    fs.writeFile("./conf/settings.json", file, function(err) {
                         if (err){
-                              reject(JSON.parse(file));
+                            console.log("hmmm error writing conf/settings.json")
+                            reject(JSON.parse(file));
                         }
                         resolve(JSON.parse(file));
+                    });
                 });
         });   
 }

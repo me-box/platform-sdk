@@ -7,9 +7,13 @@ import {fetch} from './config';
 import initPassport from './strategies';
 const RedisStore 	 = connectredis(expressSession);
 
+console.log("starting server");
+
 fetch().then((config)=>{
+  console.log("ok here!")
   start(config);
 }, (err)=>{
+  console.log("ok am here!!");
   console.log("error reading config!", err);
 });
 
@@ -36,6 +40,7 @@ function start(config){
 
   if (process.argv.length > 2){
     PORT = parseInt(process.argv[2]);
+    console.log("set port to", PORT);
   }
 
   const app = express();
