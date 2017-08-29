@@ -1,12 +1,13 @@
 import fs from 'fs';
 
-export function fetch(){
+export function fetch(options={}){
+
    return new Promise((resolve, reject)=>{
 
         fs.readFile("./conf/settings.json", 'utf8', function(err, data){
                 if (err){
                     console.log("am here ---->>>>> ");
-                    return write(JSON.stringify(defaultsettings(),null,4));
+                    return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(),null,4));
                 }
                 try{
                         const settings = JSON.parse(data);
@@ -32,6 +33,44 @@ export function write(file){
                     });
                 });
         });   
+}
+
+export function defaultdevsettings(){        
+        return {
+
+                "secret": "asdaksgdsahgdhsagd ahjsgdjhsg",
+
+                "github": {
+                        "CLIENT_ID": "",
+                        "CLIENT_SECRET": "",
+                        "CALLBACK": "http://localhost:8086/auth/github/callback",
+                        "API": "https://api.github.com",
+                        "RAW_URL": "https://raw.githubusercontent.com",
+                        "URL": "https://github.com"
+                },
+
+                "appstore": {
+                        "URL": "http://localhost:8091"
+                },
+
+                "registry": {
+                        "URL": "localhost:5000"
+                },
+
+                "mongo": {
+                        "URL" : "mongodb://localhost:27017"
+                },
+
+                "redis": {
+                        "host": "localhost",
+                        "port": 6379
+                },
+
+                "testserver": {
+                        "URL": "http://localhost:9090"
+                }
+
+        }
 }
 
 export function defaultsettings(){        

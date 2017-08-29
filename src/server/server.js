@@ -5,11 +5,17 @@ import connectredis from 'connect-redis';
 import bodyparser from 'body-parser';
 import {fetch} from './config';
 import initPassport from './strategies';
+import minimist from 'minimist';
+
 const RedisStore 	 = connectredis(expressSession);
+const argv = minimist(process.argv.slice(2));
 
-console.log("starting server");
 
-fetch().then((config)=>{
+const PORT = argv.port || 8086;
+const dev = argv.dev || false;
+console.log("set port to", PORT);
+
+fetch({dev}).then((config)=>{
   console.log("ok here!")
   start(config);
 }, (err)=>{
@@ -24,7 +30,7 @@ function checkcredentials(config){
 }
 
 function addroutes(app, auth){
- 
+  console.log("adding routes!");
   app.use('/auth', require('./routes/auth'));
   app.use('/github', auth, require('./routes/github'));
   app.use('/nodered', auth, require('./routes/nodered'));
@@ -35,13 +41,6 @@ function addroutes(app, auth){
 function start(config){
 
   console.log("starting with config", JSON.stringify(config, null, 4));
-
-  let PORT = 8086
-
-  if (process.argv.length > 2){
-    PORT = parseInt(process.argv[2]);
-    console.log("set port to", PORT);
-  }
 
   const app = express();
 
@@ -98,11 +97,15 @@ function start(config){
 
   app.get('/', function(req,res){
     
+    console.log("in root route!");
+
     if (!checkcredentials(config)){
       console.log("credentials are empty, so redirecting to settings")
       res.redirect('/settings');
       return;
     }
+
+    console.log("ok creds are fine!!");
     
     if (!req.isAuthenticated()){
       res.redirect("/login");

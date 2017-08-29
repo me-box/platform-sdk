@@ -5,15 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon --ignore 'flow*.flow' --exec babel-node server.js",
     "pm": "pm2 start server.js --name editor --interpreter ./node_modules/.bin/babel-node",
     "start": "nodemon --ignore 'flow*.flow' --exec babel-node server.js",
-    "dev": "nodemon --ignore 'flow*.flow' --exec babel-node server.js 9000",
+    "dev": "npm run compose && nodemon --ignore 'flow*.flow' --exec babel-node server.js --port 9000 --dev",
     "base": "docker build --no-cache -t databox-sdk-base -f Dockerfile.base . && docker tag databox-sdk-base tlodge/databox-sdk-base && docker push tlodge/databox-sdk-base",
     "build": "webpack --progress",
     "docker": "docker build --no-cache -t databox-sdk .",
     "release": "docker tag databox-sdk tlodge/databox-sdk && docker push tlodge/databox-sdk",
-    "deploy": "npm run build && npm run docker && npm run release"
+    "deploy": "npm run build && npm run docker && npm run release",
+    "compose": "docker-compose up -d"
   },
   "author": "Tom Lodge",
   "license": "MIT",

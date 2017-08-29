@@ -119,6 +119,17 @@ app.use("/login", function(req, res) {
     });
 });
 
+app.use("/settings", function(req, res) {
+  console.log("proxying settings...>");
+   req.url = `${req.baseUrl}${req.url}`;
+    apiProxy.web(req, res, {
+      target: {
+        port: 9000,
+        host: "localhost"
+      }
+    });
+});
+
 app.use("/js/code.js", function(req, res) {
   console.log("proxying code ", req.url);
   res.sendFile(path.join(__dirname, './server/static/js/code.js'));

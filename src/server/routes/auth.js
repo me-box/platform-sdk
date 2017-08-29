@@ -12,10 +12,7 @@ router.get('/logout',  function(req,res){
 	//}
 	
 	req.logout();
-	
-	req.session.destroy(function(err){
-		res.redirect("/");
-	});
+
 });
   
 router.get('/github', passport.authenticate('github', { scope: 'public_repo' }));

@@ -1,0 +1,37 @@
+redis:
+  image:
+    tlodge/databox-redis
+  ports:
+    - "6379:6379"
+  container_name:
+    redis
+
+mongo:
+  image:
+    tlodge/mongo
+  ports:
+    - "27017:27017"
+  command:
+    /usr/bin/mongod --dbpath /data/mongo --smallfiles
+  container_name:
+    mongo
+
+appserver:
+  image:
+    tlodge/databox-app-server
+  ports:
+    - "8091:8091"
+  links:
+    - mongo
+  command:
+    /root/start.sh
+  container_name:
+    app-server
+
+mock-datasource:
+  image:
+    tlodge/databox-datasource-mock
+  command:
+    /root/start.sh
+  container_name:
+    mock-datasource
