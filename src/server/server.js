@@ -15,7 +15,7 @@ const PORT = argv.port || 8086;
 const dev = argv.dev || false;
 console.log("set port to", PORT);
 
-fetch({dev}).then((config)=>{
+fetch({dev:true}).then((config)=>{
   console.log("ok here!")
   start(config);
 }, (err)=>{

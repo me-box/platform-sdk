@@ -70,8 +70,11 @@ export default class Mapper extends Component {
       this.renderMappings= this.renderMappings.bind(this);
       this.renderCanvas= this.renderCanvas.bind(this);
       this.renderObjects = this.renderObjects.bind(this);
+      this.renderBirthDeath = this.renderBirthDeath.bind(this);
+
       this.showAttributes= this.showAttributes.bind(this)
       this.showMappings= this.showMappings.bind(this);
+      this.showBirthDeath = this.showBirthDeath.bind(this);
       this.showCanvas= this.showCanvas.bind(this);
       this.showTree= this.showTree.bind(this);
   }
@@ -223,25 +226,6 @@ export default class Mapper extends Component {
      return <Death inputs={inputs} nid={nid} path={path}/>
   }
 
-
-  /*shouldComponentUpdate(nextProps, nextState){
-    return true;
-     //first check to see if nothing has been selected, in which case only re-render if mapping has changed
-     if (!this.props[CANVASNAME].selected && !nextProps[CANVASNAME].selected){
-         console.log(`updating: ${this.props[NAME] !== nextProps[NAME]}`)
-         return  this.props[NAME] !== nextProps[NAME] 
-     }
-     //otherwise check to see if previously selected template != current selected template
-     else if (this.props[CANVASNAME].selected !== nextProps[CANVASNAME].selected){
-        return true;
-     }
-     else{
-        const {[CANVASNAME]:{selected:{path}}} = this.props;
-        const tId = path[path.length-1];
-        return this.props[CANVASNAME].templatesById[tId] !=  nextProps[CANVASNAME].templatesById[tId] || this.props[NAME] !== nextProps[NAME]     
-     }
-  }*/
-
   renderProperties(){
       const { activeTabIndex } = this.state;
       const {[CANVASNAME]:{templatesById, selected:{path}}, nid} = this.props; 
@@ -261,8 +245,6 @@ export default class Mapper extends Component {
   renderMappings(){
     const {[NAME]:{selectedMapping, transformers}, nid} = this.props;
     return <div>
-                {/*this.renderBirthOptions()*/}
-                {/*this.renderDeathOptions()*/}
                 {this.renderMapper()}
                 {this.renderTransformers()}
                 {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}     
@@ -273,6 +255,13 @@ export default class Mapper extends Component {
     return <Flex align="center" justify="center">
               <Box auto p={1}>canvas</Box> 
             </Flex>
+  }
+
+  renderBirthDeath(){
+    return  <div>
+              {this.renderBirthOptions()}
+              {this.renderDeathOptions()}
+            </div>
   }
 
   
@@ -299,16 +288,19 @@ export default class Mapper extends Component {
             </div>
   }
 
+  showBirthDeath(){
+    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:false, treeSelected:false, birthDeathSelected:true});
+  }
   showAttributes(){
-    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:true, treeSelected:false});
+    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:true, treeSelected:false, birthDeathSelected:false});
   }
 
   showMappings(){
-    this.setState({canvasSelected:false, mappingsSelected:true, attributesSelected:false, treeSelected:false});
+    this.setState({canvasSelected:false, mappingsSelected:true, attributesSelected:false, treeSelected:false, birthDeathSelected:false});
   }
 
   showCanvas(){
-    this.setState({canvasSelected:true, mappingsSelected:false, attributesSelected:false, treeSelected:false});
+    this.setState({canvasSelected:true, mappingsSelected:false, attributesSelected:false, treeSelected:false, birthDeathSelected:false});
   }
 
   showTree(){
@@ -318,9 +310,7 @@ export default class Mapper extends Component {
   render() {
    
     const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h, nid} = this.props;
-    //const {propertiesExpanded, objectsExpanded, mappingsExpanded, mapperExpanded, birthExpanded, deathExpanded} = this.state;
-
-    const {attributesSelected, mappingsSelected, canvasSelected, treeSelected} = this.state;
+    const {attributesSelected, mappingsSelected, canvasSelected, treeSelected, birthDeathSelected} = this.state;
 
     if (!selected)
         return null;
@@ -339,6 +329,7 @@ export default class Mapper extends Component {
                 <Flex flexColumn={true}>
                   <Flex align="center" style={{background:"#535353", color:"#fff"}}>
                     <Box auto p={1} onClick={this.showAttributes}> attributes </Box>
+                    <Box auto p={1} onClick={this.showBirthDeath}> lifetime </Box>
                     <Box auto p={1} onClick={this.showMappings}> mappings </Box>
                     <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
                   </Flex>
@@ -346,6 +337,7 @@ export default class Mapper extends Component {
                   {attributesSelected && this.renderAttributes()}
                   {mappingsSelected && this.renderMappings()}
                   {canvasSelected && this.renderCanvas()}
+                  {birthDeathSelected && this.renderBirthDeath()}
                 </Flex>
               </div>
             </div>    

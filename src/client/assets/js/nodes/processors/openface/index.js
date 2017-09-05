@@ -38,6 +38,29 @@ const config = {
                         description: "container object",
                         properties: {
                             name: {type:'string', description: "a name assigned to this node"}, 
+                            payload: {
+                                    type:'object', 
+                                    description: "an identity and location of face as a point", 
+                                    properties: {
+                                        name: {
+                                            type: "string",
+                                            description: "an identity (or tag (e.g. '0', '1', '2'...) if unknown) assigned to this face"
+                                        },
+                                        confidence:{
+                                            type: "number",
+                                            description: "confidence value for face prediction"
+                                        },
+                                        point : {
+                                            type: "object",
+                                            description: "the location of the face on the image (as % values)",
+                                            properties:{
+                                                cx: {type:"number", description: "% left of screen for center x of point"},
+                                                cy: {type:"number", description: "% top of screen for center y of point"},
+                                                r: {type:"number", description: "radius of point (circling face) as % height of screen"}
+                                            }
+                                        }
+                                    }
+                            }
                         }
                     }
                 }

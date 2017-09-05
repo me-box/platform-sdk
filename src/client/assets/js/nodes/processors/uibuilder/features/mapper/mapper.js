@@ -267,7 +267,7 @@ function subscribeMappings(id){
 				const onData = (mapping, data, count)=>{
 					console.log("data",data);
 					
-					const {live: {nodesByKey, nodesById}, canvas: {templatesById}, mapper:{transformers}} = getState();
+					const {live: {nodesByKey, nodesById}, canvas: {templatesById}, mapper:{transformers}, editor:{screen}} = getState();
 					const {mappingId, from: {key},  to:{property}} = mapping;
 
 					const template = templatesById[mapping.to.path[mapping.to.path.length-1]];
@@ -288,10 +288,11 @@ function subscribeMappings(id){
 					if (remove){
 						dispatch(liveActions.removeNode(id, node.id, mapping.to.path, enterKey));
 					}else if (shouldenter){
+						console.log("in should enter", screen);
 						const transformer = transformers[mappingId] || defaultCode(key,property);
-						const transform   = Function(key, "node", "i", transformer);	
+						const transform   = Function(key, "node", "i", "w", "h", transformer);	
 						//TODO: do we need id here?
-						dispatch(fn(mapping.to.path,property,transform(value, node, count), enterKey, Date.now(), count));
+						dispatch(fn(mapping.to.path,property,transform(value, node, count, screen.w, screen.h), enterKey, Date.now(), count));
 					}
 				}
 				_listeners.push(_subscribe(mappings[i], onData));

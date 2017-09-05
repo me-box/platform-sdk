@@ -216,17 +216,21 @@ export function stopAndRemoveContainer(name){
 	});
 }
 
+/*
+ note we open port 9123  to open a websocket to receive video from the client when 
+ a webcam is used and 8096 is the (docker mapped) port that serves up the webcam page
+*/
 export function createTestContainer(image, name){
 	console.log(`creating test container ${image}, name: ${name}`);
 	return new Promise((resolve, reject)=>{
 		docker.createContainer(
 								{	Image: image, 
 									PublishAllPorts:true, 
-									Links: ["mock-datasource:mock-datasource","databox-test-server:databox-test-server", /*"openface:openface"*/], 
+									Links: ["mock-datasource:mock-datasource","databox-test-server:databox-test-server", "openface:openface"], 
 									Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  
 									Labels: {'user':`${name}`}, 
-									ExposedPorts: {"1880/tcp": {}, "9000/tcp":{}, "8086/tcp":{}}, 
-									PortBindings: { "9000/tcp": [{ "HostPort": "9000" }] }, 
+									ExposedPorts: {"1880/tcp": {}, "9123/tcp":{}, "8096/tcp":{}}, 
+									PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
 									Cmd: ["npm", "start", "--", "--userDir", "/data"], 
 									name: `${name}-red`
 								}, 
@@ -238,7 +242,7 @@ export function createTestContainer(image, name){
 			
 				container.start({}, function (err, data) {
 					if (err){
-						console.log("error!");
+						console.log("error starting container",err);
 						reject(err);
 					}else{
 						resolve(container);

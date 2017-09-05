@@ -88,7 +88,6 @@ const loadNodes = (json)=>{
 
    json.nodes.forEach((node)=>{
       const n = require(`../../nodes/${node.file}.js`);
-      console.log("-->I have node", n);
       nodes.push({component:n.default.node, name: n.default.type, def: n.default.def, reducer: n.default.reducer});
    });    
 

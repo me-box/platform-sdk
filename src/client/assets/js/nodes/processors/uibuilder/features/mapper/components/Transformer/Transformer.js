@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import Dialog from 'react-md/lib/Dialogs';
-import TextField from 'react-md/lib/TextFields';
-
+import Textarea from 'components/form/Textarea';
 import {schemaLookup, defaultCode} from 'nodes/processors/uibuilder/utils';
 
 
@@ -12,8 +11,14 @@ export default class Transformer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {buffer:props.transformer || null}
+    this.codeChange = this.codeChange.bind(this);
   }
   
+
+  codeChange = (id, e)=>{
+    this.setState({buffer:e.target.value});
+  };
+
   closeDialog = () => {
     this.props.closeDialog();
   };
@@ -27,8 +32,11 @@ export default class Transformer extends PureComponent {
     
     const defaultcode = defaultCode(key,property);
 
-    return <TextField
-              id="function"
+    
+    return <Textarea id="function" value={this.state.buffer || defaultcode} onChange={this.codeChange} />
+    /*return <TextField rows={4}/>
+
+             id="function"
               placeholder={defaultcode}
               block
               rows={4}
@@ -38,7 +46,7 @@ export default class Transformer extends PureComponent {
                                 this.setState({buffer:e})
                             }
                         }
-            />
+            />*/
   }
 
  
@@ -87,7 +95,7 @@ export default class Transformer extends PureComponent {
           }]}
         >
           <div>
-            <strong>({from.key}:{ftype},node:Node, i:number)->{ttype}</strong>
+            <strong>(id:string,{from.key}:{ftype},node:Node, i:number, w:number, h:number)->{ttype}</strong>
             {this.renderTransformer(from.key, to.property)}   
           </div>
         </Dialog>

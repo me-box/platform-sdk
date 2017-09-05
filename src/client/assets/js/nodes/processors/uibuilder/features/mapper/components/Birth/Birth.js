@@ -6,7 +6,8 @@ import { selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {resolvePath} from 'nodes/processors/uibuilder/utils';
-import TextField from 'react-md/lib/TextFields';
+//import TextField from 'react-md/lib/TextFields';
+import Textarea from 'components/form/Textarea';
 import Button from 'react-md/lib/Buttons/Button';
 
 const _wraplookup = (key,sourcepath,fnstr)=>{
@@ -56,6 +57,7 @@ export default class Birth extends PureComponent {
           
                               
     return <Flex flexColumn={true}>
+
                   {srcs}
                   {schema}
             </Flex>
@@ -74,28 +76,33 @@ export default class Birth extends PureComponent {
     const schemas = inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{});
                               
     return <Flex flexColumn={true}>
-                  //enter textfield function
-                  <TextField
-                    id="enterfunction"
-                    block
-                    rows={4}
-                    value={this.state.bufferenter || `return true`} 
-                    onChange={(e)=>{
-                                      this.setState({bufferenter:e})
+                  
+                  <div className="info">
+                      The key that will belong to the new item (i.e. every different key will map to a new item)
+                  </div>
+                  <Textarea
+                    id="enterkey"
+                    value={this.state.bufferkey || `return "root"`} 
+                    onChange={(id,e)=>{
+                                      this.setState({bufferkey:e.target.value})
                                   }
                               }
                   />
 
-                  <TextField
+                  <div className="info">
+                    The function that will determine whether the key is created or not.  This function will be passed in the mapping data
+                  </div>
+                  
+                  <Textarea
                     id="enterfunction"
-                    block
-                    rows={4}
-                    value={this.state.bufferkey || `return "root"`} 
-                    onChange={(e)=>{
-                                      this.setState({bufferkey:e})
+                    value={this.state.bufferenter || `return true`} 
+                    onChange={(id,e)=>{
+                                      this.setState({bufferenter:e.target.value})
                                   }
-                              }
+                    }
                   />
+
+                  
 
                   <Button flat label="submit" onClick={()=>{
                       this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
@@ -112,6 +119,7 @@ export default class Birth extends PureComponent {
 
     return (
       <div>
+        <div className="title"> birth options </div>
         <ul>
           <li onClick={this._selectType.bind(null, "static")}>
               <strong> static </strong>

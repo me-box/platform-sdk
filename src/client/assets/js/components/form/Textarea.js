@@ -10,9 +10,13 @@ class Textarea extends React.Component {
             value: value,
             onChange: onChange.bind(this, id),
         }
-
+        const style = {
+        	width: '100%',
+    		border: 'none',
+    		boxShadow: 'none'
+        }
 		return( 
-			  <textarea {...props}></textarea>
+			  <textarea {...props} style={style}></textarea>
 		);
 	}
 }

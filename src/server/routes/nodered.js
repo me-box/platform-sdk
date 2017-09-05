@@ -2,8 +2,13 @@ import express from 'express';
 import request from 'superagent';
 import docker from '../utils/docker.js';
 import {matchLibraries, flatten, dedup, createTarFile, createDockerImage, createTestContainer, stopAndRemoveContainer} from '../utils/utils.js';
-
+import minimist from 'minimist';
 const router = express.Router();
+
+const argv = minimist(process.argv.slice(2));
+const DEVMODE = argv.dev || false;
+
+
 
 const _postFlows = function(ip, port, data, username){
 	console.log(`connecting to ${ip}:${port}/flows`);
@@ -11,9 +16,9 @@ const _postFlows = function(ip, port, data, username){
 	
 	//add in channelIDs here
 	const flows = data.map((node)=>{
-			const outputtypes = ["app", "debugger", "bulbsout", "pipstaprint"];		
-			const modifier = outputtypes.indexOf(node.type) != -1 ? {appId: username} : {}; //inject the appID
-			return Object.assign({}, node, modifier);
+		const outputtypes = ["app", "debugger", "bulbsout", "pipstaprint"];		
+		const modifier = outputtypes.indexOf(node.type) != -1 ? {appId: username} : {}; //inject the appID
+		return Object.assign({}, node, modifier);
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
@@ -62,7 +67,7 @@ const _pullContainer  = function(name){
 	return docker.pull(name).then((stream, err)=>{
 		return new Promise((resolve, reject)=>{
 			if (err){
-				console.log("error!", err);
+				console.log("error pulling container!", err);
 				reject(err);
 			}
 			return docker.modem.followProgress(stream, ()=>{console.log("successfully pulled container");resolve()}, (event)=>{console.log(event)});
@@ -70,16 +75,61 @@ const _pullContainer  = function(name){
 	});
 }
 
-const _startContainer = function(container, flows, username){
-	return _waitForStart(container).then(function(){
-		return container.inspect(function (err, cdata) {
-			console.log("starting container!");
-			//let port = cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort'];
-			const port = 1880;
-            const ip = cdata.NetworkSettings.Networks.bridge.IPAddress;
-			return _postFlows(ip, port, flows, username);
-		});
-	});	
+const _fetchAddr = function(cdata){
+	if (DEVMODE){
+		return {
+			ip: "127.0.0.1",
+			port: cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort']
+		}
+	}
+	return {
+		ip: cdata.NetworkSettings.Networks.bridge.IPAddress,
+		port: 1880
+	}
+}
+
+const _fetchRunningAddr = function(c){
+	if (DEVMODE){
+		return {
+			
+			ip: "127.0.0.1",
+			
+			port: c.Ports.reduce((acc, obj)=>{
+				if (obj.PrivatePort == 1880)
+					acc = obj.PublicPort;
+				return acc;
+			},0)
+		}
+	}
+	return {
+		ip: c.NetworkSettings.Networks.bridge.IPAddress,
+		port: c.Ports[0].PrivatePort,
+	} 
+}
+
+var _inspect = function(container){
+ 	return new Promise((resolve, reject)=>{
+ 		container.inspect((err, cdata)=>{
+        	if (err){
+        		reject(err);
+        	}else{
+        		resolve(cdata);
+        	}
+        })
+ 	});
+}
+
+var _startContainer = function(container, flows, username){
+    return _waitForStart(container).then(function(){
+        return _inspect(container);
+    }).then((cdata)=>{
+    	console.log("starting container, devmode is ", DEVMODE);
+		const {ip, port} = _fetchAddr(cdata);
+		return _postFlows(ip, port, flows, username);
+    }, (err)=>{
+    	console.log(err);
+    	throw err;
+    });
 }
 
 const _createNewImageAndContainer = function(libraries, username, flows){
@@ -114,6 +164,64 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	});
 }
 
+/*var _name = function(container){
+	if (container["Names"]){
+		return container["Names"][0].split("\/").slice(-1)[0];
+	}
+}
+
+var _addr = function(container){
+	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks.bridge){
+		return container.NetworkSettings.Networks.bridge.IPAddress || "";
+	}
+	return "";
+}
+
+var _ports = function(container){
+	return (container.Ports || []).reduce((acc, obj)=>{
+		if (obj.PublicPort){
+			acc.push(obj.PublicPort);
+		}
+		return acc;
+	},[]);
+}*/
+
+const _listContainers = function(options={}){
+	return new Promise((resolve,reject)=>{
+		docker.listContainers(options, function(err, containers) {
+			if (err){
+				reject(containers);
+			}else{
+				resolve(containers);
+
+				/*.map((c)=>{
+					return {
+						id: c["Id"],
+						name: _name(c),  
+						status: c["Status"],
+						state: c["State"],
+						ip: _addr(c),
+						ports: _ports(c)
+					}
+				}));*/
+			}
+		});
+	});
+}
+
+const _restart = function(container){
+	return new Promise((resolve,reject)=>{
+		container.restart({}, function(err, data){
+			if (err){
+				console.log(err);
+				reject(err);
+			}else{
+				resolve(data);
+			}		
+		});
+	});
+}
+
 const _createContainerFromStandardImage = function(username, flows){
 	
 	const opts = {
@@ -123,16 +231,18 @@ const _createContainerFromStandardImage = function(username, flows){
 		}
   	}	
 
-	return new Promise((resolve,reject)=>{
-
-		docker.listContainers(opts, function(err, containers) {
+	return _listContainers(opts).then((containers)=>{
+    		return containers;
+    	}, (err)=>{
+    		return err;
+    	}).then((containers)=>{
 			console.log(`Containers labeled user=${username} ${containers.length}`);
 		
 			//create a new container and start it, if it doesn't exist
 			if (containers.length <= 0){
 				console.log("OK - creating test container....");
 				return _pullContainer("tlodge/databox-red:latest").then(()=>{
-					return createTestContainer('tlodge/databox-red', username)
+					return createTestContainer('tlodge/databox-red', username);
 				}).then((container)=>{
 					return _startContainer(container, flows, username);
 				});
@@ -143,34 +253,27 @@ const _createContainerFromStandardImage = function(username, flows){
 				if (c.State === 'exited'){
 					console.log("restarting container!!");
 					const container = docker.getContainer(c.Id);
-					container.restart({}, function(err, data){
-						if (err){
-							console.log(err);
-							return reject(err);
-						}else{
-							return _startContainer(container, flows, username);
-						}		
+					return _restart(container).then((cdata)=>{
+						return _startContainer(container, flows, username);
+					}, (err)=>{
+						return err;
 					});
 				}else{
 					console.log("container already ruinning...");
 					console.log(c);
-					//post flows to already running container
-					//let port = c.Ports[0]['PublicPort'];
-					const ip = c.NetworkSettings.Networks.bridge.IPAddress;
-                    const port =  c.Ports[0].PrivatePort;
+					const {ip, port} = _fetchRunningAddr(c);
+
 					return _postFlows(ip, port, flows, username);
 				}
 			}
 		});	
-	});
+	
 }
 
 router.post('/flows', function(req, res){
 	
 	const flows = req.body;
-	console.log("OK SEEN FLOWS");
-	console.log(req.body);
-
+	
 	const libraries = dedup(flatten(req.body.reduce((acc, node)=>{
 		if (node.type === "dbfunction"){
 			acc = [...acc, matchLibraries(node.func)];
@@ -194,10 +297,6 @@ router.post('/flows', function(req, res){
 			res.status(500).send({error:err});
 		});
 	}	
-	
-	//remove this and re-instate commented code for prod
-	//_postFlows(1880, flows, 'tlodge');
-	
 });
 
 module.exports = router;

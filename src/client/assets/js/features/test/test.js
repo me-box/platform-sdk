@@ -123,7 +123,7 @@ export function test(){
 function init(){
 	return function (dispatch, getState) {
 		if (getState()[NAME].testurl.trim() === ""){
-			console.log("requesting testurl");
+			
 			request
 		  		.get(`${config.root}/settings/testurl`)
 		  		.set('Accept', 'application/json')
@@ -161,7 +161,6 @@ function mouseUp(){
 const visible = (state) => state[NAME].visible;
 
 const username = (state)=> {
-	console.log(JSON.stringify(state.repos, null, 4));
 	return state.repos.currentuser;
 }
 

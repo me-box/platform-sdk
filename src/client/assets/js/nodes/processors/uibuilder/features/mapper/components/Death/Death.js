@@ -6,7 +6,7 @@ import { selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {resolvePath} from 'nodes/processors/uibuilder/utils';
-import TextField from 'react-md/lib/TextFields';
+import Textarea from 'components/form/Textarea';
 import Button from 'react-md/lib/Buttons/Button';
 
 const _wraplookup = (key,sourcepath,fnstr)=>{
@@ -48,14 +48,12 @@ export default class Death extends PureComponent {
     console.log("passing in value");
     console.log(bufferexit);
 
-                                                                               
-    return <Flex flexColumn={true}>      
-              <TextField
+    return <Flex flexColumn={true}>   
+              <div className="title"> death options </div>   
+              <Textarea
                 id="exitfunction"
-                block
-                rows={4}
                 value={bufferexit} 
-                onChange={(e)=>{this.setState({bufferexit:e})}}
+                onChange={(id,e)=>{this.setState({bufferexit:e.target.value})}}
               />
               <Button flat label="submit" onClick={()=>{this.props.actions.updateTemplateAttribute(nid, path, "exitFn", exitFn)}}>submit</Button>
             </Flex>

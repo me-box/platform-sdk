@@ -33,7 +33,7 @@ const config = {
                 description: "the container object",
                 properties:{
                     name: {type:'string', description: "a name assigned to this webcam"}, 
-                    image: {type: 'binary', description: "a webcam image"},
+                    dataURL: {type: 'string', description: "a string containing a representation of the image in the format specified by the type parameter"},
                 },
             }
         }
