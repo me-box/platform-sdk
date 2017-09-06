@@ -27,7 +27,7 @@ const MOVE_UP                    = 'uibuilder/canvas/MOVE_UP';
 const MOVE_DOWN                  = 'uibuilder/canvas/MOVE_DOWN';
 
 // This will be used in our root reducer and selectors
-export const NAME = 'uibuilder/canvas';
+export const NAME = 'uibuilder_canvas';
 
 let _x =0, _y=0;
 

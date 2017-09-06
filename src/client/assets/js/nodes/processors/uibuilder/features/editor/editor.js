@@ -17,7 +17,7 @@ const SET_SCENES = 'uibuilder/editor/SET_SCENES';
 
 // This will be used in our root reducer and selectors
 
-export const NAME = 'uibuilder/editor';
+export const NAME = 'uibuilder_editor';
 
 // Define the initial state for `shapes` module
 

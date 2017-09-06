@@ -25,7 +25,14 @@ export default class Birth extends PureComponent {
   
   constructor(props) {
     super(props);
-    this.state = { sourceId: null, type:"static", selected:null, bufferenter:null, bufferkey:null}; 
+    const {enterFn} = props.template;
+
+    this.state = { 
+        sourceId: null, 
+        type:"static", 
+        selected:null, 
+    }
+
     this._selectSource = this._selectSource.bind(this);
     this._selectType = this._selectType.bind(this);
   }
@@ -42,17 +49,21 @@ export default class Birth extends PureComponent {
 
  
     const schemas = inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{});
-    
+    const datakey = this.props.template.enterFn ? this.props.template.enterFn.datakey : null;
 
-    const schema =   <Schema schema={schemas} onSelect={(key,sourcepath)=>{
+
+    const schema =   <Schema schema={schemas} selected={datakey} onSelect={(key,sourcepath)=>{
         //cannot have closures (so can serialise) so have to insert lookup function (mapping path,key to data value) here;
+        
         const keybody = _wraplookup(key, sourcepath, "return lookup(data)");
         
-
         this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
-                                                                      enter:  {params:["data","index"], body: "return true"},
-                                                                      key:    {params:["data", "index"], body: keybody}
-                                                                    });
+                                                                              datakey: {key,path:sourcepath},
+                                                                              enter:  {params:["data","index"], body: "return true"},
+                                                                              key:    {params:["data", "index"], body: keybody}
+                                                                          });
+
+
     }}/>
           
                               
@@ -65,9 +76,13 @@ export default class Birth extends PureComponent {
 
  renderFunction() {
  
-    const {inputs, nid, path} = this.props;
+    const {inputs, nid, path, node, template} = this.props;
     const {selected} = this.state;
-    
+    const datakey = template.enterFn ? template.enterFn.datakey : false;
+
+    const fn = template.enterFn ? template.enterFn.enter.body || "return true" : "return true";
+    const key  = template.enterFn ? template.enterFn.key.body   || `return "root"` : `return "root"`;
+
     const srcs = inputs.map((input) => {
         const name = input.name.trim() === "" ? input.label : input.name;
         return <Box key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
@@ -82,9 +97,12 @@ export default class Birth extends PureComponent {
                   </div>
                   <Textarea
                     id="enterkey"
-                    value={this.state.bufferkey || `return "root"`} 
+                    value={ datakey ? `return "root"` : key } 
                     onChange={(id,e)=>{
-                                      this.setState({bufferkey:e.target.value})
+                                      this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
+                                            key:  {params:["data","index"],  body: e.target.value},
+                                            enter:    {params:["data", "index"], body: datakey ? "" : template.enterFn.enter.body || ""},
+                                      }); 
                                   }
                               }
                   />
@@ -95,35 +113,32 @@ export default class Birth extends PureComponent {
                   
                   <Textarea
                     id="enterfunction"
-                    value={this.state.bufferenter || `return true`} 
+                    value={ datakey ? `return true` : fn} 
                     onChange={(id,e)=>{
-                                      this.setState({bufferenter:e.target.value})
-                                  }
+                                     this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
+                                            key:  {params:["data","index"],  body: datakey ? "" : template.enterFn.key.body || "" },
+                                            enter:    {params:["data", "index"], body: e.target.value},
+                                      }); 
+                              }
                     }
                   />
 
                   
 
-                  <Button flat label="submit" onClick={()=>{
-                      this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
-                                                                        enter:  {params:["data","index"], body: this.state.bufferenter || `return "true"`},
-                                                                        key:    {params:["data", "index"], body: this.state.bufferkey || `return "root"`},
-                      }); 
-                  }}>submit</Button>
+                 
         
             </Flex>
  }
 
+
  render() {
     const {type} = this.state;
+    
 
     return (
       <div>
         <div className="title"> birth options </div>
         <ul>
-          <li onClick={this._selectType.bind(null, "static")}>
-              <strong> static </strong>
-          </li>
           <li onClick={this._selectType.bind(null, "key")}>
             <strong> bind to data key </strong>
             {type==="key" && this.renderKeys()}

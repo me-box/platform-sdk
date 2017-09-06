@@ -7,10 +7,11 @@ class Textfield extends React.Component {
 
 	render() {
 		
-		const {value, name, onChange, icon, style={}} = this.props;
+		const {value, name, onChange, icon, style={width: '100%',border: 'none', boxShadow: 'none'}} = this.props;
 		const id = this.props.id || name;
 		
 		let label;
+		
 		
 		const props = {
             value: value,

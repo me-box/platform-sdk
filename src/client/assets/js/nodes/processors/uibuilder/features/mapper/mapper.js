@@ -19,7 +19,7 @@ const CREATED_ENTER_SUBSCRIPTION=  'uibuilder/mapper/CREATED_ENTER_SUBSCRIPTION'
 const CLEAR_STATE =  'uibuilder/mapper/CLEAR_STATE';
 
 // This will be used in our root reducer and selectors
-export const NAME = 'uibuilder/mapper';
+export const NAME = 'uibuilder_mapper';
 
 // Define the initial state for `shapes` module
 
@@ -265,7 +265,6 @@ function subscribeMappings(id){
 			if (fn){
 
 				const onData = (mapping, data, count)=>{
-					console.log("data",data);
 					
 					const {live: {nodesByKey, nodesById}, canvas: {templatesById}, mapper:{transformers}, editor:{screen}} = getState();
 					const {mappingId, from: {key},  to:{property}} = mapping;
@@ -288,11 +287,10 @@ function subscribeMappings(id){
 					if (remove){
 						dispatch(liveActions.removeNode(id, node.id, mapping.to.path, enterKey));
 					}else if (shouldenter){
-						console.log("in should enter", screen);
 						const transformer = transformers[mappingId] || defaultCode(key,property);
-						const transform   = Function(key, "node", "i", "w", "h", transformer);	
+						const transform   = Function("id", key, "node", "i", "w", "h", transformer);	
 						//TODO: do we need id here?
-						dispatch(fn(mapping.to.path,property,transform(value, node, count, screen.w, screen.h), enterKey, Date.now(), count));
+						dispatch(fn(mapping.to.path,property,transform(enterKey||"root", value, node, count, screen.w, screen.h), enterKey, Date.now(), count));
 					}
 				}
 				_listeners.push(_subscribe(mappings[i], onData));
@@ -433,12 +431,23 @@ const mapper  = (state,ownProps) => state[ownProps.nid][NAME];
 //const sources = (state,ownProps) => state[SOURCENAME];
 const canvas = (state,ownProps) => state[ownProps.nid][CANVASNAME];
 
+const template = (state, ownProps)=> {
+	
+	if (state[ownProps.nid][CANVASNAME].selected){
+		if (state[ownProps.nid][CANVASNAME].selected.path){
+			if (state[ownProps.nid][CANVASNAME].selected.path.length > 0){
+				const templateId = state[ownProps.nid][CANVASNAME].selected.path[state[ownProps.nid][CANVASNAME].selected.path.length-1];
+				return state[ownProps.nid][CANVASNAME].templatesById[templateId];
+			}
+		}
+	}
+	return null;
+}
+
 export const selector = createStructuredSelector({
   [NAME]: mapper,
-  // sources,
-
-  //TODO :surely this should be pulled in in the componnet?
   [CANVASNAME]: canvas,
+  template,
 });
 
 export const actionCreators = {
