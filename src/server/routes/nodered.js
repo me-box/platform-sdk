@@ -22,7 +22,7 @@ const _postFlows = function(ip, port, data, username){
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
-
+    console.log("flows:", JSON.stringify(flows,null,4));
 	return new Promise((resolve,reject)=>{
 		request
 				.post(`${ip}:${port}/flows`)

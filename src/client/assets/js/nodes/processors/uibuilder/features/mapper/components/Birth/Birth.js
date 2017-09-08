@@ -101,7 +101,7 @@ export default class Birth extends PureComponent {
                     onChange={(id,e)=>{
                                       this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
                                             key:  {params:["data","index"],  body: e.target.value},
-                                            enter:    {params:["data", "index"], body: datakey ? "" : template.enterFn.enter.body || ""},
+                                            enter:    {params:["data", "index"], body: datakey ? "" : template.enterFn ? template.enterFn.enter.body : `return "root"`},
                                       }); 
                                   }
                               }
@@ -116,7 +116,7 @@ export default class Birth extends PureComponent {
                     value={ datakey ? `return true` : fn} 
                     onChange={(id,e)=>{
                                      this.props.actions.updateTemplateAttribute(nid, path, "enterFn", {
-                                            key:  {params:["data","index"],  body: datakey ? "" : template.enterFn.key.body || "" },
+                                            key:  {params:["data","index"],  body: datakey ? "" : template.enterFn? template.enterFn.key.body : "return true" },
                                             enter:    {params:["data", "index"], body: e.target.value},
                                       }); 
                               }
