@@ -159,18 +159,22 @@ export function createDockerImage(tarfile, tag){
 
 
 export function uploadImageToRegistry(tag, registry){
-	return new Promise((resolve, reject)=>{
-		var image = docker.getImage(tag);
-		image.push({
-			registry : registry
-		}, function(err, data) {
-			data.pipe(process.stdout);
-			if (err){
-				reject(err)
-			}
-			resolve();
+	if (registry && registry.trim() != ""){
+		return new Promise((resolve, reject)=>{
+			var image = docker.getImage(tag);
+			image.push({
+				registry : registry
+			}, function(err, data) {
+				data.pipe(process.stdout);
+				if (err){
+					reject(err)
+				}
+				resolve();
+			});
 		});
-	});
+	}else{
+		resolve();
+	}
 }
 
 export function stopAndRemoveContainer(name){
