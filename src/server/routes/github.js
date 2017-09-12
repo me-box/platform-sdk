@@ -4,6 +4,59 @@ import fs from 'fs';
 import docker from '../utils/docker';
 import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries, writeTempFile, removeTempFile} from '../utils/utils';
 const router = express.Router();
+const agent = request.agent();
+const network = "bridge";
+
+//TODO: check if container is tagged instead, as this is a less ambiguous way of retrieving the required container
+const _fetchDockerIP = function(containerName){
+	
+	console.log(`retrieving docker ip for container ${containerName}`);
+
+	return new Promise((resolve,reject)=>{
+		docker.listContainers({}, function(err, containers) {
+			if (err){
+				console.log("error listing containers!!");
+				reject(containers);
+			}else{
+				const ip = containers.reduce((acc, c)=>{
+					if (_name(c).indexOf(containerName) !== -1){
+						//console.log("found container!!!");
+						return _addr(c);
+					}
+					return acc;
+				},"127.0.0.1");
+				console.log("RETURNING IP", ip);
+				resolve(ip);
+			}
+		});
+	});
+	
+}
+
+var _name = function(container){
+	try{
+		if (container["Names"]){
+			return container["Names"][0].split("\/").slice(-1)[0];
+		}else{
+			return "";
+		}
+	}catch(err){
+		console.log("error getting name for container", container);
+		return "";
+	}
+}
+
+var _addr = function(container){
+	//console.log("GETTING THE ADDRESS OF THE CONTAINER", JSON.stringify(container,null,4));
+	//databox_databox-cm-app-server-net
+	//ingress
+	console.log("retrieving addr for", container);
+	
+	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks[network]){
+		return container.NetworkSettings.Networks[network].IPAddress || "";
+	}
+	return "127.0.0.1";
+}
 
 const _createCommit = function(config, user, repo, sha, filename, content, message, accessToken){
 
@@ -189,27 +242,61 @@ const _fetchFile = function(config, username, repoowner, accessToken, repo, file
 	});
 }
 
+const _wait = (storeurl)=> { 
+	return new Promise((resolve,reject)=>{
+		function get () {
+			console.log(`calling ${storeurl}`);
+			agent.get(`http://${storeurl}`, (error,response,body)=>{
+                if(error) {
+                        console.log("[seeding manifest] waiting for appstore", error);
+                        setTimeout(get,4000);
+                } else {
+					resolve();
+				}
+			});
+		}
+		setTimeout(get,2000);
+	});
+}
+
 const _saveToAppStore = function(config,manifest){
-	console.log("saving to app store now");
-	console.log(`${config.appstore.URL}/app/post`);
+	console.log("saving to app store with manifest", manifest);
 	
-	return new Promise((resolve, reject)=>{
-		request
-  			.post(`${config.appstore.URL}/app/post`)
-  			.send(manifest)
-  			.set('Accept', 'application/json')
-  			.type('form')
-  			.end(function(err, res){
-  				if (err){
-  					console.log(err);
-  					reject(err);
-  				}else{
-  					console.log("DONE!");
-  					console.log(res.body);
-          			resolve(res.body);
-  	 			}
-  	 		})	
-  	});
+	//if no appstore url specified, assume a dockerised one running and retrieve docker ip
+	if (!config.appstore || (config.appstore.URL || "").trim() === ""){
+		console.log("fetching docker ip for databox_app-server");
+		return _fetchDockerIP("databox_app-server").then((ip)=>{
+			console.log("url to post to:", ip);
+			return _postToAppStore(`${ip}:8181`, manifest);
+		});
+	}
+	else{
+		return _postToAppStore(`${config.appstore.URL}`, manifest);
+	}
+}
+
+const _postToAppStore = function(storeurl, manifest){
+
+	console.log("POSTING TO APP STORE", `${storeurl}/app/post`);
+	return _wait(storeurl).then(()=>{
+		return new Promise((resolve, reject)=>{
+			agent
+	  			.post(`http://${storeurl}/app/post`)
+	  			.send(manifest)
+	  			.set('Accept', 'application/json')
+	  			.type('form')
+	  			.end(function(err, res){
+	  				if (err){
+	  					console.log("error posting to app store", err);
+	  					reject(err);
+	  				}else{
+	  					console.log("DONE!");
+	  					console.log(res.body);
+	          			resolve(res.body);
+	  	 			}
+	  	 		})	
+	  	});
+	});
 }
 
 const _generateManifest = function(config,user, reponame, app, packages, allowed){
@@ -282,8 +369,7 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 		
 		//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
 		const dcommands = [
-							`FROM ${config.registry.URL}/databox/red`,
-							`RUN echo ${Date.now()}`,
+							`FROM tlodge/databox-sdk-red:latest`,
 							`ADD flows.json /data/flows.json`,
 							'LABEL databox.type="app"',
 							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
@@ -324,8 +410,11 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 		},(err)=>{
 			reject("could not save to app store!");
 		}).then(function(tarfile){
+			
 			const appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
-			return createDockerImage(tarfile, `${config.registry.URL}/${appname}`);
+			//${config.registry.URL}/
+			return createDockerImage(tarfile, `${appname}`);
+			
 		},(err)=>{
 			reject("could not create tar file");
 		}).then(function(tag){

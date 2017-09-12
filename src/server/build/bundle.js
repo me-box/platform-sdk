@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -105,10 +105,16 @@ module.exports = require("passport");
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("superagent");
+module.exports = require("minimist");
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("superagent");
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -195,6 +201,7 @@ var _addEntry = function _addEntry(pack, name, file) {
 	return new Promise(function (resolve, reject) {
 		pack.entry({ name: name }, file, function (err) {
 			if (err) {
+				console.log("error adding entry!", err);
 				reject(err);
 			} else {
 				resolve(true);
@@ -205,8 +212,6 @@ var _addEntry = function _addEntry(pack, name, file) {
 
 function createTarFile(dockerfile, flowfile, path) {
 
-	console.log("cerating tar file with flowfile");
-	console.log(flowfile);
 	var tarball = _fs2.default.createWriteStream(path);
 	var gzip = _zlib2.default.createGzip();
 	var pack = _tarStream2.default.pack();
@@ -214,14 +219,19 @@ function createTarFile(dockerfile, flowfile, path) {
 	return _addEntry(pack, "Dockerfile", dockerfile).then(function () {
 		return _addEntry(pack, "flows.json", flowfile);
 	}).then(function () {
+
 		pack.finalize();
 
 		var stream = pack.pipe(gzip).pipe(tarball);
+
 		return new Promise(function (resolve, reject) {
+
 			stream.on('finish', function (err) {
 				if (err) {
+					console.log("error creating tar file", err);
 					reject(err);
 				} else {
+					console.log("successfully created tar file", path);
 					resolve(path);
 				}
 			});
@@ -300,17 +310,24 @@ function createDockerImage(tarfile, tag) {
 }
 
 function uploadImageToRegistry(tag, registry) {
+
 	return new Promise(function (resolve, reject) {
-		var image = _docker2.default.getImage(tag);
-		image.push({
-			registry: registry
-		}, function (err, data) {
-			data.pipe(process.stdout);
-			if (err) {
-				reject(err);
-			}
+		if (registry && registry.trim() !== "") {
+			console.log("uploading to registry", registry);
+
+			var image = _docker2.default.getImage(tag);
+			image.push({
+				registry: registry
+			}, function (err, data) {
+				data.pipe(process.stdout);
+				if (err) {
+					reject(err);
+				}
+				resolve();
+			});
+		} else {
 			resolve();
-		});
+		}
 	});
 }
 
@@ -355,16 +372,21 @@ function stopAndRemoveContainer(name) {
 	});
 }
 
-function createTestContainer(image, name) {
+/*
+ note we open port 9123  to open a websocket to receive video from the client when 
+ a webcam is used and 8096 is the (docker mapped) port that serves up the webcam page
+*/
+function createTestContainer(image, name, network) {
 	console.log('creating test container ' + image + ', name: ' + name);
 	return new Promise(function (resolve, reject) {
 		_docker2.default.createContainer({ Image: image,
 			PublishAllPorts: true,
-			Links: ["mock-datasource:mock-datasource", "databox-test-server:databox-test-server"],
+			Links: ["mock-datasource:mock-datasource", "databox-test-server:databox-test-server", "openface:openface"],
 			Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],
+			//HostConfig: {NetworkMode: network},
 			Labels: { 'user': '' + name },
-			ExposedPorts: { "1880/tcp": {}, "9000/tcp": {}, "8086/tcp": {} },
-			PortBindings: { "9000/tcp": [{ "HostPort": "9000" }] },
+			ExposedPorts: { "1880/tcp": {}, "9123/tcp": {}, "8096/tcp": {} },
+			PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] },
 			Cmd: ["npm", "start", "--", "--userDir", "/data"],
 			name: name + '-red'
 		}, function (err, container) {
@@ -375,7 +397,7 @@ function createTestContainer(image, name) {
 
 				container.start({}, function (err, data) {
 					if (err) {
-						console.log("error!");
+						console.log("error starting container", err);
 						reject(err);
 					} else {
 						resolve(container);
@@ -412,20 +434,20 @@ function removeTempFile(fileName) {
 }
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(7);
+module.exports = __webpack_require__(8);
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _http = __webpack_require__(8);
+var _http = __webpack_require__(9);
 
 var _http2 = _interopRequireDefault(_http);
 
@@ -433,25 +455,25 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _expressSession = __webpack_require__(9);
+var _expressSession = __webpack_require__(10);
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _connectRedis = __webpack_require__(10);
+var _connectRedis = __webpack_require__(11);
 
 var _connectRedis2 = _interopRequireDefault(_connectRedis);
 
-var _bodyParser = __webpack_require__(11);
+var _bodyParser = __webpack_require__(12);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(12);
+var _config = __webpack_require__(13);
 
-var _strategies = __webpack_require__(13);
+var _strategies = __webpack_require__(14);
 
 var _strategies2 = _interopRequireDefault(_strategies);
 
-var _minimist = __webpack_require__(17);
+var _minimist = __webpack_require__(4);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
@@ -464,7 +486,7 @@ var PORT = argv.port || 8086;
 var dev = argv.dev || false;
 console.log("set port to", PORT);
 
-(0, _config.fetch)({ dev: dev }).then(function (config) {
+(0, _config.fetch)({ dev: true }).then(function (config) {
   console.log("ok here!");
   start(config);
 }, function (err) {
@@ -582,31 +604,31 @@ function start(config) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("connect-redis");
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -740,7 +762,7 @@ function defaultsettings() {
 }
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -755,7 +777,7 @@ var _passport = __webpack_require__(3);
 
 var _passport2 = _interopRequireDefault(_passport);
 
-var _passportGithub = __webpack_require__(14);
+var _passportGithub = __webpack_require__(15);
 
 var _passportGithub2 = _interopRequireDefault(_passportGithub);
 
@@ -779,7 +801,7 @@ function initPassport(app, config) {
 
 	console.log("initing passport");
 
-	var User = __webpack_require__(15)(config.mongo.URL);
+	var User = __webpack_require__(16)(config.mongo.URL);
 
 	app.use(_passport2.default.initialize());
 	app.use(_passport2.default.session());
@@ -801,7 +823,13 @@ function initPassport(app, config) {
 					return cb(err, user);
 				});
 			} else {
-				return cb(null, user);
+				//MUST update here - incase the token has changed
+				console.log("updating token");
+				var conditions = { accessToken: accessToken };
+				User.update({ githubId: profile.id }, { $set: { accessToken: accessToken } }, function (err, u) {
+					console.log("done!!", u);
+					return cb(null, user);
+				});
 			}
 		});
 	}));
@@ -819,19 +847,19 @@ function initPassport(app, config) {
 }
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-github");
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _mongoose = __webpack_require__(16);
+var _mongoose = __webpack_require__(17);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -850,16 +878,10 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose");
-
-/***/ }),
 /* 17 */
 /***/ (function(module, exports) {
 
-module.exports = require("minimist");
+module.exports = require("mongoose");
 
 /***/ }),
 /* 18 */
@@ -912,7 +934,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(4);
+var _superagent = __webpack_require__(5);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -924,13 +946,65 @@ var _docker = __webpack_require__(2);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(5);
+var _utils = __webpack_require__(6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var router = _express2.default.Router();
+var agent = _superagent2.default.agent();
+var network = "bridge";
+
+//TODO: check if container is tagged instead, as this is a less ambiguous way of retrieving the required container
+var _fetchDockerIP = function _fetchDockerIP(containerName) {
+
+	console.log('retrieving docker ip for container ' + containerName);
+
+	return new Promise(function (resolve, reject) {
+		_docker2.default.listContainers({}, function (err, containers) {
+			if (err) {
+				console.log("error listing containers!!");
+				reject(containers);
+			} else {
+				var ip = containers.reduce(function (acc, c) {
+					if (_name(c).indexOf(containerName) !== -1) {
+						//console.log("found container!!!");
+						return _addr(c);
+					}
+					return acc;
+				}, "127.0.0.1");
+				console.log("RETURNING IP", ip);
+				resolve(ip);
+			}
+		});
+	});
+};
+
+var _name = function _name(container) {
+	try {
+		if (container["Names"]) {
+			return container["Names"][0].split("\/").slice(-1)[0];
+		} else {
+			return "";
+		}
+	} catch (err) {
+		console.log("error getting name for container", container);
+		return "";
+	}
+};
+
+var _addr = function _addr(container) {
+	//console.log("GETTING THE ADDRESS OF THE CONTAINER", JSON.stringify(container,null,4));
+	//databox_databox-cm-app-server-net
+	//ingress
+	console.log("retrieving addr for", container);
+
+	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks[network]) {
+		return container.NetworkSettings.Networks[network].IPAddress || "";
+	}
+	return "127.0.0.1";
+};
 
 var _createCommit = function _createCommit(config, user, repo, sha, filename, content, message, accessToken) {
 
@@ -1086,20 +1160,53 @@ var _fetchFile = function _fetchFile(config, username, repoowner, accessToken, r
 	});
 };
 
-var _saveToAppStore = function _saveToAppStore(config, manifest) {
-	console.log("saving to app store now");
-	console.log(config.appstore.URL + '/app/post');
-
+var _wait = function _wait(storeurl) {
 	return new Promise(function (resolve, reject) {
-		_superagent2.default.post(config.appstore.URL + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
-			if (err) {
-				console.log(err);
-				reject(err);
-			} else {
-				console.log("DONE!");
-				console.log(res.body);
-				resolve(res.body);
-			}
+		function get() {
+			console.log('calling ' + storeurl);
+			agent.get('http://' + storeurl, function (error, response, body) {
+				if (error) {
+					console.log("[seeding manifest] waiting for appstore", error);
+					setTimeout(get, 4000);
+				} else {
+					resolve();
+				}
+			});
+		}
+		setTimeout(get, 2000);
+	});
+};
+
+var _saveToAppStore = function _saveToAppStore(config, manifest) {
+	console.log("saving to app store with manifest", manifest);
+
+	//if no appstore url specified, assume a dockerised one running and retrieve docker ip
+	if (!config.appstore || (config.appstore.URL || "").trim() === "") {
+		console.log("fetching docker ip for databox_app-server");
+		return _fetchDockerIP("databox_app-server").then(function (ip) {
+			console.log("url to post to:", ip);
+			return _postToAppStore(ip + ':8181', manifest);
+		});
+	} else {
+		return _postToAppStore('' + config.appstore.URL, manifest);
+	}
+};
+
+var _postToAppStore = function _postToAppStore(storeurl, manifest) {
+
+	console.log("POSTING TO APP STORE", storeurl + '/app/post');
+	return _wait(storeurl).then(function () {
+		return new Promise(function (resolve, reject) {
+			agent.post('http://' + storeurl + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
+				if (err) {
+					console.log("error posting to app store", err);
+					reject(err);
+				} else {
+					console.log("DONE!");
+					console.log(res.body);
+					resolve(res.body);
+				}
+			});
 		});
 	});
 };
@@ -1172,7 +1279,7 @@ var _publish = function _publish(config, user, reponame, app, packages, librarie
 		});
 
 		//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-		var dcommands = ['FROM ' + config.registry.URL + '/databox/red', 'RUN echo ' + Date.now(), 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/manifest.json"'];
+		var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/manifest.json"'];
 
 		var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
 
@@ -1206,8 +1313,10 @@ var _publish = function _publish(config, user, reponame, app, packages, librarie
 		}, function (err) {
 			reject("could not save to app store!");
 		}).then(function (tarfile) {
+
 			var appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : user.username.toLowerCase() + '-' + app.name.toLowerCase();
-			return (0, _utils.createDockerImage)(tarfile, config.registry.URL + '/' + appname);
+			//${config.registry.URL}/
+			return (0, _utils.createDockerImage)(tarfile, '' + appname);
 		}, function (err) {
 			reject("could not create tar file");
 		}).then(function (tag) {
@@ -1463,7 +1572,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(4);
+var _superagent = __webpack_require__(5);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -1471,13 +1580,21 @@ var _docker = __webpack_require__(2);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(5);
+var _utils = __webpack_require__(6);
+
+var _minimist = __webpack_require__(4);
+
+var _minimist2 = _interopRequireDefault(_minimist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var router = _express2.default.Router();
+
+var argv = (0, _minimist2.default)(process.argv.slice(2));
+var DEVMODE = argv.dev || false;
+var network = "bridge";
 
 var _postFlows = function _postFlows(ip, port, data, username) {
 	console.log('connecting to ' + ip + ':' + port + '/flows');
@@ -1490,7 +1607,7 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
-
+	console.log("flows:", JSON.stringify(flows, null, 4));
 	return new Promise(function (resolve, reject) {
 		_superagent2.default.post(ip + ':' + port + '/flows').send(flows).set('Accept', 'application/json').type('json').end(function (err, result) {
 			if (err) {
@@ -1529,7 +1646,7 @@ var _pullContainer = function _pullContainer(name) {
 	return _docker2.default.pull(name).then(function (stream, err) {
 		return new Promise(function (resolve, reject) {
 			if (err) {
-				console.log("error!", err);
+				console.log("error pulling container!", err);
 				reject(err);
 			}
 			return _docker2.default.modem.followProgress(stream, function () {
@@ -1541,15 +1658,68 @@ var _pullContainer = function _pullContainer(name) {
 	});
 };
 
+var _fetchAddr = function _fetchAddr(cdata) {
+	if (DEVMODE) {
+		return {
+			ip: "127.0.0.1",
+			port: cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort']
+		};
+	}
+	return {
+		ip: cdata.NetworkSettings.Networks[network].IPAddress,
+		port: 1880
+	};
+};
+
+var _fetchRunningAddr = function _fetchRunningAddr(c) {
+	console.log("FETCHING RUNNING ADDR");
+
+	if (DEVMODE) {
+		console.log("in dev mode!");
+		return {
+
+			ip: "127.0.0.1",
+
+			port: c.Ports.reduce(function (acc, obj) {
+				if (obj.PrivatePort == 1880) acc = obj.PublicPort;
+				return acc;
+			}, 0)
+		};
+	}
+	console.log("ok getting ip, port from", c);
+
+	return {
+		ip: c.NetworkSettings.Networks[network].IPAddress,
+		port: c.Ports[0].PrivatePort
+	};
+};
+
+var _inspect = function _inspect(container) {
+	return new Promise(function (resolve, reject) {
+		container.inspect(function (err, cdata) {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(cdata);
+			}
+		});
+	});
+};
+
 var _startContainer = function _startContainer(container, flows, username) {
 	return _waitForStart(container).then(function () {
-		return container.inspect(function (err, cdata) {
-			console.log("starting container!");
-			//let port = cdata['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort'];
-			var port = 1880;
-			var ip = cdata.NetworkSettings.Networks.bridge.IPAddress;
-			return _postFlows(ip, port, flows, username);
-		});
+		return _inspect(container);
+	}).then(function (cdata) {
+		console.log("starting container, devmode is ", DEVMODE);
+
+		var _fetchAddr2 = _fetchAddr(cdata),
+		    ip = _fetchAddr2.ip,
+		    port = _fetchAddr2.port;
+
+		return _postFlows(ip, port, flows, username);
+	}, function (err) {
+		console.log(err);
+		throw err;
 	});
 };
 
@@ -1577,10 +1747,70 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 		return (0, _utils.createDockerImage)(tarfile, username + '-testimage');
 	}).then(function (image) {
 		console.log("creating test container!");
-		return (0, _utils.createTestContainer)(image, username);
+		return (0, _utils.createTestContainer)(image, username, network);
 	}).then(function (container) {
 		console.log("successfully created container");
 		return _startContainer(container, flows, username);
+	});
+};
+
+/*var _name = function(container){
+	if (container["Names"]){
+		return container["Names"][0].split("\/").slice(-1)[0];
+	}
+}
+
+var _addr = function(container){
+	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks.bridge){
+		return container.NetworkSettings.Networks.bridge.IPAddress || "";
+	}
+	return "";
+}
+
+var _ports = function(container){
+	return (container.Ports || []).reduce((acc, obj)=>{
+		if (obj.PublicPort){
+			acc.push(obj.PublicPort);
+		}
+		return acc;
+	},[]);
+}*/
+
+var _listContainers = function _listContainers() {
+	var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	return new Promise(function (resolve, reject) {
+		_docker2.default.listContainers(options, function (err, containers) {
+			if (err) {
+				reject(containers);
+			} else {
+				resolve(containers);
+
+				/*.map((c)=>{
+    	return {
+    		id: c["Id"],
+    		name: _name(c),  
+    		status: c["Status"],
+    		state: c["State"],
+    		ip: _addr(c),
+    		ports: _ports(c)
+    	}
+    }));*/
+			}
+		});
+	});
+};
+
+var _restart = function _restart(container) {
+	return new Promise(function (resolve, reject) {
+		container.restart({}, function (err, data) {
+			if (err) {
+				console.log(err);
+				reject(err);
+			} else {
+				resolve(data);
+			}
+		});
 	});
 };
 
@@ -1593,52 +1823,50 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 		}
 	};
 
-	return new Promise(function (resolve, reject) {
+	return _listContainers(opts).then(function (containers) {
+		return containers;
+	}, function (err) {
+		return err;
+	}).then(function (containers) {
+		console.log('Containers labeled user=' + username + ' ' + containers.length);
 
-		_docker2.default.listContainers(opts, function (err, containers) {
-			console.log('Containers labeled user=' + username + ' ' + containers.length);
-
-			//create a new container and start it, if it doesn't exist
-			if (containers.length <= 0) {
-				console.log("OK - creating test container....");
-				return _pullContainer("tlodge/databox-red:latest").then(function () {
-					return (0, _utils.createTestContainer)('tlodge/databox-red', username);
-				}).then(function (container) {
+		//create a new container and start it, if it doesn't exist
+		if (containers.length <= 0) {
+			console.log("OK - creating test container....");
+			return _pullContainer("tlodge/databox-red:latest").then(function () {
+				return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
+			}).then(function (container) {
+				return _startContainer(container, flows, username);
+			});
+		} else {
+			var c = containers[0];
+			//restart the container if it exists but is stopped
+			if (c.State === 'exited') {
+				console.log("restarting container!!");
+				var container = _docker2.default.getContainer(c.Id);
+				return _restart(container).then(function (cdata) {
 					return _startContainer(container, flows, username);
+				}, function (err) {
+					return err;
 				});
 			} else {
-				var c = containers[0];
-				//restart the container if it exists but is stopped
-				if (c.State === 'exited') {
-					console.log("restarting container!!");
-					var container = _docker2.default.getContainer(c.Id);
-					container.restart({}, function (err, data) {
-						if (err) {
-							console.log(err);
-							return reject(err);
-						} else {
-							return _startContainer(container, flows, username);
-						}
-					});
-				} else {
-					console.log("container already ruinning...");
-					console.log(c);
-					//post flows to already running container
-					//let port = c.Ports[0]['PublicPort'];
-					var ip = c.NetworkSettings.Networks.bridge.IPAddress;
-					var port = c.Ports[0].PrivatePort;
-					return _postFlows(ip, port, flows, username);
-				}
+				console.log("container already ruinning...");
+				console.log(c);
+
+				var _fetchRunningAddr2 = _fetchRunningAddr(c),
+				    ip = _fetchRunningAddr2.ip,
+				    port = _fetchRunningAddr2.port;
+
+				console.log("posting new flows to", ip, port);
+				return _postFlows(ip, port, flows, username);
 			}
-		});
+		}
 	});
 };
 
 router.post('/flows', function (req, res) {
 
 	var flows = req.body;
-	console.log("OK SEEN FLOWS");
-	console.log(req.body);
 
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(req.body.reduce(function (acc, node) {
 		if (node.type === "dbfunction") {
@@ -1662,9 +1890,6 @@ router.post('/flows', function (req, res) {
 			res.status(500).send({ error: err });
 		});
 	}
-
-	//remove this and re-instate commented code for prod
-	//_postFlows(1880, flows, 'tlodge');
 });
 
 module.exports = router;

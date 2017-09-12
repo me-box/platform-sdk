@@ -14,9 +14,9 @@ const argv = minimist(process.argv.slice(2));
 const PORT = argv.port || 8086;
 const dev = argv.dev || false;
 console.log("set port to", PORT);
+console.log("dev mode ", dev);
 
-fetch({dev:true}).then((config)=>{
-  console.log("ok here!")
+fetch({dev:dev}).then((config)=>{
   start(config);
 }, (err)=>{
   console.log("ok am here!!");
@@ -39,8 +39,6 @@ function addroutes(app, auth){
 }
 
 function start(config){
-
-  console.log("starting with config", JSON.stringify(config, null, 4));
 
   const app = express();
 
@@ -71,9 +69,6 @@ function start(config){
   var server = http.createServer(app);
   
   const auth = (req, res, next) => {
-    
-    console.log("checking is req is authenticated");
-    console.log(req.user, req.isAuthenticated());
 
     if (req.isAuthenticated()){
       req.config = config;
@@ -97,15 +92,11 @@ function start(config){
 
   app.get('/', function(req,res){
     
-    console.log("in root route!");
-
     if (!checkcredentials(config)){
       console.log("credentials are empty, so redirecting to settings")
       res.redirect('/settings');
       return;
     }
-
-    console.log("ok creds are fine!!");
     
     if (!req.isAuthenticated()){
       res.redirect("/login");

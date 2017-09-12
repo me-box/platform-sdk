@@ -25,22 +25,34 @@
 			</pre>
   		</div>
 
-  		<div class="row">
-			Register your new github app at <a href="https://github.com/settings/developers">https://github.com/settings/developers</a>
+  	<div class="row">
+			 <p>Register your new github app at <p>
+       <p><a href="https://github.com/settings/developers">https://github.com/settings/developers</a></p>
 		</div>
 
 		<div class="row">
-		 	Use the callback url shown above (or change hostname accordingly). Then run:
+		 	<p>Use the callback url shown above (CALLBACK) (or change hostname accordingly).  You'll be given a Client ID and Client Secret.  Put these in the [dockermount]/sdk/settings.json then restart the sdk.  Then to restart the sdk, if you are running as part of the databox repo, then run:</p>
 		</div>
 		
-		<div class="row">
+    <div class="row">
+      <pre>
+        <code> ./startDatabox.sh sdk </code>
+      </pre>
+    </div>
+  
+    <div class="row">
+      <p> else if you are running from the databox-sdk.yml repo then run:</p>
+    </div>
+
+    <div class="row">
 		 	<pre>
 				<code> docker-compose restart databox-sdk </code>
 			</pre>
-  		</div>
+  	</div>
 
-  		<div class="row">
-  			Then go <a href="/">here</a>
+  	<div class="row">
+  			Then go 
+        <p><a href="/">here</a></p>
   		</div>
   	</div>
   

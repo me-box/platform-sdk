@@ -6,7 +6,6 @@ export function fetch(options={}){
 
         fs.readFile("./conf/settings.json", 'utf8', function(err, data){
                 if (err){
-                    console.log("am here ---->>>>> ");
                     return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(),null,4));
                 }
                 try{

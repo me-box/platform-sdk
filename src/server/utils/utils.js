@@ -51,6 +51,7 @@ const _addEntry = function(pack, name, file){
 	return new Promise((resolve, reject)=>{
 		pack.entry({name: name}, file, function(err){
 			if (err){
+				console.log("error adding entry!", err);
 				reject(err);
 			}	
 			else{
@@ -61,10 +62,8 @@ const _addEntry = function(pack, name, file){
 }
 
 export function createTarFile(dockerfile, flowfile, path){
-
-	console.log("cerating tar file with flowfile");
-	console.log(flowfile);
-	var tarball = fs.createWriteStream(path);
+	
+	const tarball = fs.createWriteStream(path);
 	const gzip   = zlib.createGzip();
 	const pack   = tar.pack();
 		
@@ -72,14 +71,22 @@ export function createTarFile(dockerfile, flowfile, path){
 		return _addEntry(pack, "flows.json", flowfile)
 	})
 	.then(()=>{
+		
+
 		pack.finalize();
-	
+		
+
 		const stream = pack.pipe(gzip).pipe(tarball);
+		
 		return new Promise((resolve,reject)=>{
+			
+
 			stream.on('finish', function (err) {
 				if(err){
+					console.log("error creating tar file", err);
 					reject(err);
 				}else{
+					console.log("successfully created tar file",path);
 					resolve(path);
 				}
 			});	
@@ -159,8 +166,11 @@ export function createDockerImage(tarfile, tag){
 
 
 export function uploadImageToRegistry(tag, registry){
-	if (registry && registry.trim() != ""){
-		return new Promise((resolve, reject)=>{
+	
+	return new Promise((resolve, reject)=>{
+		if (registry && registry.trim() !== ""){
+			console.log("uploading to registry", registry);
+		
 			var image = docker.getImage(tag);
 			image.push({
 				registry : registry
@@ -171,10 +181,12 @@ export function uploadImageToRegistry(tag, registry){
 				}
 				resolve();
 			});
-		});
-	}else{
-		resolve();
-	}
+		
+		}
+		else{
+			resolve();
+		}
+	});
 }
 
 export function stopAndRemoveContainer(name){
@@ -224,7 +236,7 @@ export function stopAndRemoveContainer(name){
  note we open port 9123  to open a websocket to receive video from the client when 
  a webcam is used and 8096 is the (docker mapped) port that serves up the webcam page
 */
-export function createTestContainer(image, name){
+export function createTestContainer(image, name, network){
 	console.log(`creating test container ${image}, name: ${name}`);
 	return new Promise((resolve, reject)=>{
 		docker.createContainer(
@@ -232,6 +244,7 @@ export function createTestContainer(image, name){
 									PublishAllPorts:true, 
 									Links: ["mock-datasource:mock-datasource","databox-test-server:databox-test-server", "openface:openface"], 
 									Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  
+									//HostConfig: {NetworkMode: network},
 									Labels: {'user':`${name}`}, 
 									ExposedPorts: {"1880/tcp": {}, "9123/tcp":{}, "8096/tcp":{}}, 
 									PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 

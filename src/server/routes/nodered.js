@@ -7,7 +7,7 @@ const router = express.Router();
 
 const argv = minimist(process.argv.slice(2));
 const DEVMODE = argv.dev || false;
-
+const network = "bridge";
 
 
 const _postFlows = function(ip, port, data, username){
@@ -83,13 +83,16 @@ const _fetchAddr = function(cdata){
 		}
 	}
 	return {
-		ip: cdata.NetworkSettings.Networks.bridge.IPAddress,
+		ip: cdata.NetworkSettings.Networks[network].IPAddress,
 		port: 1880
 	}
 }
 
 const _fetchRunningAddr = function(c){
+	console.log("FETCHING RUNNING ADDR");
+
 	if (DEVMODE){
+		console.log("in dev mode!");
 		return {
 			
 			ip: "127.0.0.1",
@@ -101,8 +104,10 @@ const _fetchRunningAddr = function(c){
 			},0)
 		}
 	}
-	return {
-		ip: c.NetworkSettings.Networks.bridge.IPAddress,
+	console.log("ok getting ip, port from", c);
+
+	return {	
+		ip: c.NetworkSettings.Networks[network].IPAddress,
 		port: c.Ports[0].PrivatePort,
 	} 
 }
@@ -157,7 +162,7 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 		return createDockerImage(tarfile, `${username}-testimage`);
 	}).then((image)=>{
 		console.log("creating test container!");
-		return createTestContainer(image, username)
+		return createTestContainer(image, username, network)
 	}).then((container)=>{
 		console.log("successfully created container");
 		return _startContainer(container, flows, username);
@@ -242,7 +247,7 @@ const _createContainerFromStandardImage = function(username, flows){
 			if (containers.length <= 0){
 				console.log("OK - creating test container....");
 				return _pullContainer("tlodge/databox-red:latest").then(()=>{
-					return createTestContainer('tlodge/databox-red', username);
+					return createTestContainer('tlodge/databox-red', username, network);
 				}).then((container)=>{
 					return _startContainer(container, flows, username);
 				});
@@ -262,7 +267,7 @@ const _createContainerFromStandardImage = function(username, flows){
 					console.log("container already ruinning...");
 					console.log(c);
 					const {ip, port} = _fetchRunningAddr(c);
-
+					console.log("posting new flows to", ip, port);
 					return _postFlows(ip, port, flows, username);
 				}
 			}
