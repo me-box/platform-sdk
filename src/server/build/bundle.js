@@ -381,7 +381,7 @@ function createTestContainer(image, name, network) {
 	return new Promise(function (resolve, reject) {
 		_docker2.default.createContainer({ Image: image,
 			PublishAllPorts: true,
-			Links: ["mock-datasource:mock-datasource", "databox-test-server:databox-test-server", "openface:openface"],
+			Links: ["mock-datasource:mock-datasource", "databox-test-server:databox-test-server" /*, "openface:openface"*/],
 			Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],
 			//HostConfig: {NetworkMode: network},
 			Labels: { 'user': '' + name },
