@@ -485,9 +485,9 @@ var argv = (0, _minimist2.default)(process.argv.slice(2));
 var PORT = argv.port || 8086;
 var dev = argv.dev || false;
 console.log("set port to", PORT);
+console.log("dev mode ", dev);
 
-(0, _config.fetch)({ dev: true }).then(function (config) {
-  console.log("ok here!");
+(0, _config.fetch)({ dev: dev }).then(function (config) {
   start(config);
 }, function (err) {
   console.log("ok am here!!");
@@ -514,8 +514,6 @@ function addroutes(app, auth) {
 }
 
 function start(config) {
-
-  console.log("starting with config", JSON.stringify(config, null, 4));
 
   var app = (0, _express2.default)();
 
@@ -545,9 +543,6 @@ function start(config) {
 
   var auth = function auth(req, res, next) {
 
-    console.log("checking is req is authenticated");
-    console.log(req.user, req.isAuthenticated());
-
     if (req.isAuthenticated()) {
       req.config = config;
       return next(null);
@@ -569,15 +564,11 @@ function start(config) {
 
   app.get('/', function (req, res) {
 
-    console.log("in root route!");
-
     if (!checkcredentials(config)) {
       console.log("credentials are empty, so redirecting to settings");
       res.redirect('/settings');
       return;
     }
-
-    console.log("ok creds are fine!!");
 
     if (!req.isAuthenticated()) {
       res.redirect("/login");
@@ -656,7 +647,6 @@ function fetch() {
 
                 _fs2.default.readFile("./conf/settings.json", 'utf8', function (err, data) {
                         if (err) {
-                                console.log("am here ---->>>>> ");
                                 return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4));
                         }
                         try {
