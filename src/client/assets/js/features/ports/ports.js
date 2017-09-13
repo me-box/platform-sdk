@@ -3,6 +3,7 @@ import {OUTPUT_WIDTH} from 'constants/ViewConstants';
 import {actionConstants as portActionTypes} from './constants';
 import {actionConstants as nodeActionTypes}from "features/nodes/constants";
 
+const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 const {NODE_MOUSE_DOWN} = nodeActionTypes;
 
 export const NAME = 'ports';
@@ -146,7 +147,7 @@ export default function reducer(state = initialState, action) {
 	    		offset: {x: action.node.x+(action.node.w/2), y: action.node.y},
 	    	})
 
-	    case portActionTypes.MOUSE_UP:
+	    case FOREIGN_MOUSE_UP:
 	    	return Object.assign({}, state, {
 	    		output: null
 	    	})
@@ -238,12 +239,6 @@ function mouseMove(x,y){
   }
 }
 
-function mouseUp(){
-    return {
-      type: portActionTypes.MOUSE_UP,
-    }
-}
-
 function deleteTab(id){
 	
     return {
@@ -284,7 +279,6 @@ export const actionCreators = {
   portMouseDown,
   portMouseOver,
   mouseMove,
-  mouseUp,
   deleteTab,
   receiveFlows,
 };

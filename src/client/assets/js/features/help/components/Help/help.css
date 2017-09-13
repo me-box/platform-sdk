@@ -1,0 +1,71 @@
+#help{
+	position: absolute;
+	bottom: 25px;
+	background: white;
+	box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);
+	border-top: 1px solid #d3d3d3;
+	overflow-y: auto;
+	height: 300px;
+	padding: 7px;
+	display: block;
+}
+
+#help.closed {
+	display:none;
+}
+
+#help ul.menu, #help .menu li{
+	list-style-type: none;
+	display: inline;
+	margin-right: 15px;
+	text-transform: uppercase;
+	color: #303030;
+	padding-bottom: 3px;
+	text-rendering: optimizeLegibility;
+}
+
+#help .menu li.selected{
+	border-bottom: 3px solid;
+}
+
+#help .menu li.name{
+
+font-weight: bold;
+    color: grey;
+}
+
+#help .content {
+	padding: 15px 0px 10px 0px;
+	background: white;
+}
+
+#help .flexcolumn > div {
+ 	min-height: 25px;  
+}
+
+#help .schemadescription {
+	padding: 7px;
+}
+
+#help  .flexrow > .header {
+	
+   	border-top:  1px solid #b6b6b6;
+   
+}
+
+#help .flexrow > .headertitle{
+	border-top:  1px solid #b6b6b6;
+	display: -webkit-flex;
+	display: flex;
+	 -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 118px;
+   	border-right:  1px solid #b6b6b6;
+   	border-left:  1px solid #b6b6b6;
+   	background: #f2f2f2;
+   	font-size: 0.75em;    
+}
+
+.flexrow > .headertitle {
+   	text-transform: uppercase;  
+}

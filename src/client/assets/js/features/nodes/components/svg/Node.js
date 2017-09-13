@@ -26,16 +26,18 @@ export default class Node extends Component {
 		super(props);	
         this._nodeMouseDown = this._nodeMouseDown.bind(this);
         this._nodeDoubleClicked= this._nodeDoubleClicked.bind(this);
+        this._nodeMouseUp = this._nodeMouseUp.bind(this);
 	}
 
     shouldComponentUpdate(nextProps, nextState){
-        return this.props.node != nextProps.node;
+        return this.props.node != nextProps.node || this.props.selectedId != nextProps.selectedId;
     }
 
     render(){
 
         const {id, node, selectedId}  = this.props;
        
+
         const mainrectclass= className({
             node: true,
             unknown: node.type == "unknown",
@@ -48,6 +50,7 @@ export default class Node extends Component {
 		 	width: node.w,
         	height: node.h,
 			onMouseDown: this._nodeMouseDown.bind(null,node.id),
+            onMouseUp: this._nodeMouseUp.bind(null, node.id),
 			fillOpacity: 0,
 		}
 		const clickrect =  <rect {...clickrectprops}></rect>
@@ -99,6 +102,14 @@ export default class Node extends Component {
                     
                 </g>
         
+    }
+
+    _nodeMouseUp(id, e){
+        console.log("seen a NODE mouse up");
+        e.stopPropagation();
+        e.preventDefault();
+
+        this.props.actions.nodeMouseUp(id); 
     }
 
     _nodeMouseDown(id){

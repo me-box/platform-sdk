@@ -578,13 +578,6 @@ function toggleVisible(){
 	}
 }
 
-function mouseUp(){
-	return {
-		type: nodeActionTypes.MOUSE_UP,
-	}
-}
-
-
 export const actionCreators = {
  	browseNewUser,
 	browsingNameChanged,
@@ -598,5 +591,4 @@ export const actionCreators = {
   publish,
 	toggleSaveDialogue,
 	toggleVisible,
-	mouseUp,
 };

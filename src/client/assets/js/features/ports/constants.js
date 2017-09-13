@@ -7,6 +7,5 @@ export const actionConstants = {
  CLEAR_LINKS		: 'iot.red/ports/CLEAR_LINKS',
  PORT_MOUSE_OVER  	: 'iot.red/ports/PORT_MOUSE_OVER',
  PORT_MOUSE_DOWN  	: 'iot.red/ports/PORT_MOUSE_DOWN',
- MOUSE_UP  			: 'iot.red/ports/MOUSE_UP',
  MOUSE_MOVE 		: 'iot.red/ports/MOUSE_MOVE',
 }

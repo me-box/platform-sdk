@@ -5,6 +5,7 @@ import {actionConstants as portActionTypes} from "features/ports/constants";
 export const NAME = 'nodes';
 
 const {LINK_SELECTED} = portActionTypes;
+const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 
 function _configureNode(current, changes){
   
@@ -92,6 +93,7 @@ export default function reducer(state = initialState, action) {
      
     case LINK_SELECTED:
     case nodeActionTypes.NODE_DESELECTED:
+    case FOREIGN_MOUSE_UP:
     	return Object.assign({}, state, {
     		selectedId: null,
     	});
@@ -126,7 +128,8 @@ export default function reducer(state = initialState, action) {
                     acc[key] = state.nodesById[key];
                 }
                 return acc;
-          },{})
+          },{}),
+          selectedId:null
       });
 
 	   //set up the editing buffer by copying all saved properties from defaults into it.

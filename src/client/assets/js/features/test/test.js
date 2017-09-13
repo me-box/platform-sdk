@@ -13,6 +13,7 @@ const DEPLOY 			= 'iot.red/test/DEPLOY';
 const MOUSE_UP 			= 'iot.red/test/MOUSE_UP';
 const RECEIVED_TESTURL = 'iot.red/test/RECEIVED_TESTURL';
 
+const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 
 const initialState = {
 	visible:false,
@@ -35,7 +36,7 @@ export default function reducer(state = initialState, action) {
 	    		visible:true
 	    	};
 
-	  case MOUSE_UP:
+	  case FOREIGN_MOUSE_UP:
 	  		return {
 	  			...state, 
 	    		visible:false
@@ -152,11 +153,6 @@ function toggleVisible(){
 	}
 }
 
-function mouseUp(){
-	return {
-		type: MOUSE_UP
-	}
-}
 
 const visible = (state) => state[NAME].visible;
 
@@ -181,5 +177,4 @@ export const actionCreators = {
 	init,
 	test,
 	toggleVisible,
-	mouseUp,
 }

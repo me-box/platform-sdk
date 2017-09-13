@@ -270,7 +270,8 @@ function mouseMove(x,y){
   }
 }
 
-function mouseUp(){
+function nodeMouseUp(){
+  console.log("SEEN A MOUSE UP!!!");
     return {
       type:nodeActionTypes.MOUSE_UP,
     }
@@ -306,12 +307,13 @@ export const actionCreators = {
   updateSchema,
   updateDescription,
   nodeMouseDown,
+  nodeMouseUp,
   nodeDoubleClicked,
   nodeConfigureOk,
   nodeConfigureCancel,
   deleteTab,
   mouseMove,
-  mouseUp,
+  //mouseUp,
   nodeDelete,
   nodeDeselected,
   receiveFlows,

@@ -116,6 +116,7 @@ export default class NodeEditor extends React.Component {
 		super(props);
 		this.state = {showhelp:false};
 		this._toggleInfo = this._toggleInfo.bind(this);
+		this._onMouseUp = this._onMouseUp.bind(this);
 	}
 
 	//shouldComponentUpdate(nextProps, nextState){
@@ -270,22 +271,31 @@ export default class NodeEditor extends React.Component {
 	}
 
 	render(){
+		console.log("NICE _ AM IN NODE EDITOR EENDER!!");
 		const {name, w, h} = this.props;
 		const {showhelp} = this.state;
 
 		const close = this.props.actions.nodeConfigureOk;
 		//const info  = <Button icon onClick={this._toggleInfo}>info_outline</Button>;
 		//nav={info}
-		return  <Dialogue 
-					title={`configure ${name}`} 
-					close={close} 
-					ok={this.props.actions.nodeConfigureOk} 
-					cancel={this.props.actions.nodeConfigureCancel}
-					>
-					{showhelp && this.renderHelp()}
-					{this.renderInputsAndOutputs()}
-					{this.props.children}
-				</Dialogue>
+
+		return  <div onMouseUp={this._onMouseUp}>
+					<Dialogue 
+						title={`configure ${name}`} 
+						close={close} 
+						ok={this.props.actions.nodeConfigureOk} 
+						cancel={this.props.actions.nodeConfigureCancel}
+						>
+						{showhelp && this.renderHelp()}
+						{this.renderInputsAndOutputs()}
+						{this.props.children}
+					</Dialogue>
+				</div>
+	}
+
+	_onMouseUp(e){
+		console.log("nice - seen an onmouse up in dialogue!!!");
+		e.stopPropagation();
 	}
 
 	_toggleInfo(){

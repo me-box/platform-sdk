@@ -2,12 +2,11 @@ import { createStructuredSelector } from 'reselect';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from 'constants/ViewConstants';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as portActions} from 'features/ports';
-import {actionCreators as testActions} from 'features/test';
-import {actionCreators as repoActions} from 'features/repos/actions';
+
 
 const MOUSE_MOVE = 'iot.red/mouse/MOUSE_MOVE';
 const MOUSE_SCROLL =  'iot.red/mouse/MOUSE_SCROLL';
-
+const MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 export const NAME = 'mouse';
 
 const initialState = {
@@ -37,19 +36,24 @@ function mouseMove(x0,y0){
         const x = x0 + MOUSE_X_OFFSET;
         const y = y0 + MOUSE_Y_OFFSET + getState().mouse.top;
 
-        //dispatch({type:MOUSE_MOVE, x, y});
         dispatch(nodeActions.mouseMove(x,y));
         dispatch(portActions.mouseMove(x,y));
     }
 }
 
+//better that it just dispatches single event that reducers listen on!
+
 export function mouseUp(){
-    return function(dispatch,getState){
-        dispatch(nodeActions.mouseUp());
-        dispatch(portActions.mouseUp());
-        dispatch(testActions.mouseUp());
-        dispatch(repoActions.mouseUp());
-    } 
+    console.log("mouse -- seen a mouse up");
+    return {
+      type: MOUSE_UP,
+    }
+    /*return function(dispatch,getState){
+        dispatch(mouseActions.mouseUp());
+        //dispatch(portActions.mouseUp());
+        //dispatch(testActions.mouseUp());
+        //dispatch(repoActions.mouseUp());
+    } */
 }
 
 export function scroll(top){

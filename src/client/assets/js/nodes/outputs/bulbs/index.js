@@ -29,34 +29,22 @@ const config = {
     
     	const _descriptions = [		
     							{
-    								type: "set-bulb-on", 
-    								description: "set the bulb on",
-    								properties: {
-    									payload: {
-											type: "string",
-											description: "<i>on</i> or <i>off</i>",
-										}
-									}
+                                    key: "type",
+                                    value: "set-bulb-on",
+    								type: "string", 
+    								description: "<i>on</i> or <i>off</i>",
 								},
 								{
-    								type: "set-bulb-hue", 
-    								description: "set the bulb hue",
-    								properties: {
-    									payload: {
-											type: "number",
-											description: "a hue value (0-360)",
-										}
-									}
+                                    key: "type",
+                                    value: "set-bulb-hue",
+    								type: "number", 
+    								description: "a hue value (0-360)",
 								},
 								{
-    								type: "set-bulb-bri", 
-    								description: "set the bulb brightness",
-    								properties: {
-    									payload: {
-											type: "number",
-											description: "a brightness value (0-255)",
-										}
-									}
+                                    key: "type",
+                                    value: "set-bulb-brightness",
+    								type: "number", 
+    								description: "a brightness value (0-255)",
 								},
 												
 		];
@@ -68,7 +56,7 @@ const config = {
 				description: "the container object",
 				properties:{
 					type: 	{type:'string', description: "one of either \'set-bulb-on\', \'set-bulb-hue\', \'set-bulb-brightness\'", enum: ["set-bulb-on", "set-bulb-hue", "set-bulb-brightness"]},
-    				payload: {type: 'object', description: `'type' dependent`, oneOf:_descriptions.map((item)=>{
+    				payload: {type: 'oneof', description: `'type' dependent`, oneOf:_descriptions.map((item)=>{
     					return item;
     				})}
     			},

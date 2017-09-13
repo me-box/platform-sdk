@@ -10,6 +10,7 @@ import repos, {NAME as repoName} from 'features/repos';
 import test, {NAME as testName} from 'features/test';
 import network, {NAME as networkName} from 'features/network';
 import driver, {NAME as driverName} from 'features/driver';
+import help, {NAME as helpName} from 'features/help';
 
 export default {
   routing,
@@ -22,5 +23,6 @@ export default {
   [repoName]: repos,
   [testName]: test,
   [networkName]: network,
+  [helpName] : help,
   [driverName]: driver,
 };

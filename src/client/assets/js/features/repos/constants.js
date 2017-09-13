@@ -13,5 +13,4 @@ export const actionConstants = {
 	REQUEST_FLOWS : 'iot.red/repos/REQUEST_FLOWS',
 	TOGGLE_VISIBLE:  'iot.red/repos/TOGGLE_VISIBLE',
 	TOGGLE_SAVE_DIALOGUE: 'iot.red/repos/TOGGLE_SAVE_DIALOGUE',
-	MOUSE_UP: 'iot.red/repos/MOUSE_UP'
 }	

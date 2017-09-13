@@ -728,11 +728,11 @@ function defaultsettings() {
                 },
 
                 "appstore": {
-                        "URL": "http://app-server:8091"
+                        "URL": ""
                 },
 
                 "registry": {
-                        "URL": "registry:5000"
+                        "URL": ""
                 },
 
                 "mongo": {

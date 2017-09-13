@@ -23,7 +23,9 @@ const initialState = {
 	repos:[],
 	visible:false,
 }
- 
+
+const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
+
 export default function reducer(state = initialState, action) {
   	switch (action.type) {
 	  
@@ -68,7 +70,6 @@ export default function reducer(state = initialState, action) {
 	  	);
 
 	  case nodeActionTypes.REPO_LIST_RETRIEVED:
-	   	console.log("repo lost retrieved", action);
 	  	return Object.assign({}, state, {
 	  		repos: action.repos || [],
 	  		currentuser: action.username,
@@ -84,7 +85,7 @@ export default function reducer(state = initialState, action) {
 	    		visible:!state.visible,
 	    	});
 	  
-	  case  nodeActionTypes.MOUSE_UP:
+	  case  FOREIGN_MOUSE_UP:
 	    	return Object.assign({}, state, {
 	    		visible:false,
 	    	});
