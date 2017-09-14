@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { actionCreators as helpActions, selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Drawer from 'react-md/lib/Drawers';
 import {PALETTE_WIDTH} from 'constants/ViewConstants';
 import './help.css';
 import cx from 'classnames';
 import Schema from '../Schema';
+
 
 @connect(selector, (dispatch) => {
   return{
@@ -15,19 +15,25 @@ import Schema from '../Schema';
 })
 
 export default class Help extends Component {
-	
+
+	state = {
+		category: "description",
+		dragging: false,
+		currentY: 0,
+		currentHeight: 300,
+	}	
+
 	constructor(props){
 		super(props);
 		this.renderMenu = this.renderMenu.bind(this);
 		this.renderContent = this.renderContent.bind(this);
 		this.renderMenuItem = this.renderMenuItem.bind(this);
-		this.state = {category:"description"};
+		this.onDrag = this.onDrag.bind(this);
+		this.onDrop = this.onDrop.bind(this);
+		this.startDrag = this.startDrag.bind(this);
+		//this.state = {category:"description"};
 	}
 
-
-	componentDidMount(){
-		this.state = {category:"description"};
-	}
 	
 	renderMenuItem(item){
 		
@@ -98,24 +104,60 @@ export default class Help extends Component {
 		}
 	}
 
+	startDrag(e){
+		const {clientY} = e;
+		e.stopPropagation();
+		console.log("starting dragging!!")
+		this.setState({dragging:true, currentY:clientY})
+	}
+
+	onDrop(e){
+		e.stopPropagation();
+		console.log("stopping dragging!!")
+		this.setState({dragging:false})
+	}
+
+	onDrag(e){
+		e.stopPropagation();
+		const {clientY} = e;
+		if (this.state.dragging){
+			this.setState({currentHeight: this.state.currentHeight + (this.state.currentY-clientY)});
+			this.setState({currentY : clientY});
+
+		}
+		
+	}
+
 	render(){
+
 		const {visible, w} = this.props;
+		console.log(this.state.currentHeight);
 		const style ={
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,
 			visible: visible,
+			height: this.state.currentHeight,
 		}
 		const className = cx({
 			closed: !visible
 		});
 
+		
 
-
-		return 	<div style={style} id="help" className={className}>
-					{this.renderMenu()}
-					<div className="content">
-						{this.renderContent()}
+		return 		<div draggable="true" 
+						onMouseDown={this.startDrag}
+						onMouseUp={this.onDrop} 
+						onMouseMove={this.onDrag}
+						style={style} 
+						id="help" 
+						className={className}>
+						
+						{this.renderMenu()}
+						
+						<div className="content">
+							{this.renderContent()}
+						</div>
 					</div>
-				</div>
+			
 	}
 }

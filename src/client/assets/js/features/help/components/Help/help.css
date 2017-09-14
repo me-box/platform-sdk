@@ -5,7 +5,6 @@
 	box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);
 	border-top: 1px solid #d3d3d3;
 	overflow-y: auto;
-	height: 300px;
 	padding: 7px;
 	display: block;
 }
@@ -68,4 +67,12 @@ font-weight: bold;
 
 .flexrow > .headertitle {
    	text-transform: uppercase;  
+}
+
+.objectoneoftitle{
+	background: #2196F3;
+	border: none;
+	color: white;
+    font-weight: normal;
+    text-align: center;
 }

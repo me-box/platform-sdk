@@ -30,6 +30,8 @@ const config = {
       {
         type: "object",
         description: "format for gauge chart",
+        key: "type",
+        value: "gauge",
         properties: {
           options: {
             type: "object",
@@ -86,6 +88,8 @@ const config = {
       {
         type: "object",
         description: "format for bar chart",
+        key: "type",
+        value: "chart",
         properties: {
           options: {
             type: "object",
@@ -153,6 +157,8 @@ const config = {
       {
         type: "object",
         description: "format for text",
+        key: "type",
+        value: "text",
         properties: {
           values: {
             type: "string",
@@ -163,6 +169,8 @@ const config = {
       {
         type: "object",
         description: "format for list",
+        key: "type",
+        value: "list",
         properties: {
           values: {
             type: "object",
@@ -206,7 +214,7 @@ const config = {
             enum: ["text", "gauge", "bar", "list"]
           },
           payload: {
-            type: 'object',
+            type: 'oneof',
             description: 'the message payload',
             oneOf: _descriptions.map((item) => {
               return item;

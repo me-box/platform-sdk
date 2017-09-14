@@ -9,7 +9,7 @@ const _oneof = function(schema, id, selectedid){
 	
 		if (item.type === "object"){
 			if (item.properties){
-				tail = _payload(item.properties, id, selectedid)
+				tail = _oneofpayload(item, id, selectedid)
 			}
 		}
 		else if (item.type === "oneof"){
@@ -20,25 +20,32 @@ const _oneof = function(schema, id, selectedid){
 		}
 		else{
 			//perhaps have a different format primitive for oneof items?
-			tail = _formatprimitive(item,`${item.key}=${item.value}`,id, selectedid);
+			const style = {
+				background: '#2196F3',
+				border: 'none',
+				color: 'white',
+				fontWeight: 'normal'
+			}
+			tail = _formatprimitive(item,`if ${item.key}=${item.value}`,id,selectedid, style);
 		}
 									
-		return 	<div key={i}>
-					<div className="flexcolumn">
-						<div>
-							<div className="flexcolumn">
-								{tail}
+		return 		<div key={i}>
+						<div className="flexcolumn">
+							<div>
+								<div className="flexcolumn">
+									{tail}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				
 	});
 };
 
-const _formatprimitive = function(item,key,id,selectedid){
+const _formatprimitive = function(item,key,id,selectedid, attributestyle={}){
 	return <div key={key}>
 				<div className="flexrow">
-					<div className="attributetitle">
+					<div className="attributetitle" style={attributestyle}>
 						<div className="centered">
 							<strong>{key}</strong>
 						</div>
@@ -83,7 +90,30 @@ const _formatobject = function(item,key,id,selectedid){
 				
 }
 
+const _oneofpayload = function(item, id, selectedid){
+	
+	const schema = item.properties;
 
+	if (!schema)
+		return null;
+
+	const items = Object.keys(schema).map((key,i)=>{
+		const item = schema[key];
+		if (item.type === "object" || item.type=="oneof"){
+			return _formatobject(item,key,id, selectedid); 
+		}			
+		return _formatprimitive(item,key,id, selectedid);
+	});
+
+	return 	<div className="flexcolumn">
+				<div className="objectoneoftitle">
+					<div className="centered">
+					{`if ${item.key}=${item.value}`}
+					</div>
+				</div>
+				{items}
+			</div>
+};
 
 const _payload = function(schema, id, selectedid){
 	
