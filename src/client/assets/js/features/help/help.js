@@ -30,7 +30,7 @@ const node = (state) => {
 	return state.nodes.selectedId ? state.nodes.nodesById[state.nodes.selectedId] : null;
 }
 
-const visible = (state) => state.nodes.selectedId;
+const visible = (state) =>  state.nodes.selectedId && !state.nodes.configuringId;
 
 export const selector = createStructuredSelector({
   visible,

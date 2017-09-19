@@ -16,6 +16,23 @@
     text-align: center;
 }
 
+#mapper .flexrow > .title {
+    text-transform: uppercase;
+    color: black;
+}
+
+#mapper .flexrow > .title, #mapper .flexrow > .attributetitle {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: 118px;
+    border-right: 1px solid #b6b6b6;
+    border-left: 1px solid #b6b6b6;
+    background: #f2f2f2;
+    font-size: 0.75em;
+}
+
 #mapper .info{
 	padding: 7px;
 }

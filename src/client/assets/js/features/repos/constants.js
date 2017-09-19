@@ -13,4 +13,7 @@ export const actionConstants = {
 	REQUEST_FLOWS : 'iot.red/repos/REQUEST_FLOWS',
 	TOGGLE_VISIBLE:  'iot.red/repos/TOGGLE_VISIBLE',
 	TOGGLE_SAVE_DIALOGUE: 'iot.red/repos/TOGGLE_SAVE_DIALOGUE',
+
+	RECEIVE_EXAMPLES  : 'iot.red/repos/RECEIVE_EXAMPLES',
+
 }	

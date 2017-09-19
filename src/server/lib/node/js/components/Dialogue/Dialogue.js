@@ -3,6 +3,7 @@ import {NODE_EDITOR_PADDING, PALETTE_WIDTH, TOOLBAR_HEIGHT} from '../../constant
 //import Toolbar from 'react-md/lib/Toolbars';
 import './dialogue.scss';
 //import Button  from 'react-md/lib/Buttons';
+import Toolbar from '../Toolbar';
 
 class Dialogue extends React.Component {
 
@@ -19,19 +20,9 @@ class Dialogue extends React.Component {
 			border: '1px solid #d3d3d3',
 		}
 
-	
-		//const close = <Button icon onClick={this.props.close}>close</Button>;
-		/*<Toolbar
-			      			colored
-			      			title={this.props.title}
-			        		actions={close}
-			        		nav={this.props.nav}
-			        		className="md-divider-border md-divider-border--bottom"
-		/>*/
-
 		return  <div>
 					<div className="sdkdialogue" style={dialoguestyle}>
-
+						<Toolbar title={this.props.title}/>
 						
 						
 						{this.props.children}

@@ -374,11 +374,9 @@ function savePressed(){
   				'allowed-combinations': getState().workspace.grid,
   			}
 		}
-		
-		console.log("submitting");
-		console.log(submission);
 
-	    request
+
+	 request
   			.post(`${config.root}/github/repo/new`)
   			.send(submission)
   			.set('Accept', 'application/json')
@@ -554,9 +552,7 @@ function fetchFlow(store, repo){
             
             //create all of the flows
             dispatch(receiveFlows(flows, store, lookup.bind(this,getState().palette.types)));  //bind the lookup function to the current set of node types
-          
-          	console.log("DISPATCHING RECEIEVD MANIFEST!!!");
-          	console.log(manifest);
+     
 
             //create the manifest - this will be picked up by the workspace.
             dispatch(receiveManifest(manifest));
@@ -578,6 +574,68 @@ function toggleVisible(){
 	}
 }
 
+function fetchExample(store, repoName, repoOwner){
+  
+  return function (dispatch, getState) {
+
+    dispatch(requestFlows());
+   
+    request
+          .get(`${config.root}/github/flow/`)
+          .query({repo:repoName, username:repoOwner})
+          .set('Accept', 'application/json')
+          .type('json')
+          .end(function(err, res){
+            if (err){
+              console.log(err);
+              dispatch(receiveFlowsError(err));
+            }else{
+
+              const flows   = res.body.flows.content;
+              const manifest  = res.body.manifest.content;
+              
+            
+              dispatch(tabActions.receiveTabs(flows.filter((node)=>{
+                return node.type === "tab"
+              })));
+            
+              dispatch(receivedSHA(repoName,null));
+              //create all of the flows
+              dispatch(receiveFlows(flows, store, lookup.bind(this,getState().palette.types)));  //bind the lookup function to the current set of node types
+          
+              dispatch(receiveManifest(manifest));
+            }
+          });   
+    }
+}
+
+
+
+
+function fetchExamples(){
+  
+  console.log(`${config.root}/examples/examples.json`);
+
+  return function(dispatch){
+        request
+          .get(`${config.root}/examples/examples.json`)
+          .set('Accept', 'application/json')
+          .type('json')
+          .end(function(err, res){
+            if (err){
+              console.log(err);
+              dispatch(receiveFlowsError(err));
+            }else{
+              console.log(res.body);
+              dispatch({
+                  type: nodeActionTypes.RECEIVE_EXAMPLES,
+                  repos: res.body.repos
+              });
+            }
+          });  
+  }
+}
+
 export const actionCreators = {
  	browseNewUser,
 	browsingNameChanged,
@@ -591,4 +649,7 @@ export const actionCreators = {
   publish,
 	toggleSaveDialogue,
 	toggleVisible,
+  receivedSHA,
+  fetchExample,
+  fetchExamples,
 };

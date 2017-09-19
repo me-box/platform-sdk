@@ -13,9 +13,10 @@ function initBoxes(){
     const {w,h} = _initialDimensions();
     
     return [
-        [{name: "one"}, {name: "two"}, {name: "three"} ]
+        []
     ];
-                                                                             
+            
+    //{name: "one"}, {name: "two"}, {name: "three"}                                                                  
 }
 
 function appendbox(boxes, moving){
@@ -35,23 +36,25 @@ function appendbox(boxes, moving){
 
 function removebox(boxes, moving){
 
-    return  boxes.map((row, rowindex)=>{
-    	if (rowindex === moving.fromrow){
+    return boxes.map((row, rowindex)=>{
+        if (rowindex === moving.fromrow){
     		return [...row.slice(0,moving.fromcol), ...row.slice(moving.fromcol+1)]
     	}
     	return row;
-    }).filter((row)=>{ //remove any rows with an empty array
-    	return row.length > 0;
     });
-	
-	return boxes;
 }
 
 function layoutboxes(state){
-	if (state.moving && (state.moving.torow != state.moving.fromrow || state.moving.tocol != state.moving.fromcol)){
-		return appendbox(removebox(state.boxes, state.moving), state.moving);
+    
+    const boxes     = state.moving.torow == -1 ? [[], ...state.boxes] : state.boxes;
+    const moving    = state.moving.torow == -1 ? {...state.moving, torow: 0, fromrow:state.moving.fromrow+1, tocol:0} : state.moving;
+
+	if (moving && (moving.torow != moving.fromrow || moving.tocol != moving.fromcol)){
+		return appendbox(removebox(boxes, moving), moving).filter((row)=>{ //remove any rows with an empty array
+            return row.length > 0;
+        });
 	}
-	return state.boxes;
+	return boxes;
 }
 
 function _getboxbyid(id, boxes){
@@ -95,6 +98,7 @@ function boxes (state, action){
 
         case MOUSE_UP:
             //reconcile the positions of the boxes
+            console.log("--> SEEEN A MOUSE UP!!!!!!!!!!!!!");
            return layoutboxes(state);
 
         default:

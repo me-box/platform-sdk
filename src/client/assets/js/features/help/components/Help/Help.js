@@ -107,13 +107,11 @@ export default class Help extends Component {
 	startDrag(e){
 		const {clientY} = e;
 		e.stopPropagation();
-		console.log("starting dragging!!")
 		this.setState({dragging:true, currentY:clientY})
 	}
 
 	onDrop(e){
 		e.stopPropagation();
-		console.log("stopping dragging!!")
 		this.setState({dragging:false})
 	}
 
@@ -130,8 +128,10 @@ export default class Help extends Component {
 
 	render(){
 
+		console.log("help rpone atre", this.props);
+
 		const {visible, w} = this.props;
-		console.log(this.state.currentHeight);
+		
 		const style ={
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,

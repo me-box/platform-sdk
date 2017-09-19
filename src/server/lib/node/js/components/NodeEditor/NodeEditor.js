@@ -193,7 +193,7 @@ export default class NodeEditor extends React.Component {
 
 	renderInputs(){
 		const {inputs=[], values, updateNode} = this.props;
-		console.log("in render inputs", inputs);
+		
 
 		const inputdescription = inputs.map((node,i)=>{
 				
@@ -271,7 +271,7 @@ export default class NodeEditor extends React.Component {
 	}
 
 	render(){
-		console.log("NICE _ AM IN NODE EDITOR EENDER!!");
+		
 		const {name, w, h} = this.props;
 		const {showhelp} = this.state;
 
@@ -294,7 +294,7 @@ export default class NodeEditor extends React.Component {
 	}
 
 	_onMouseUp(e){
-		console.log("nice - seen an onmouse up in dialogue!!!");
+		
 		e.stopPropagation();
 	}
 
@@ -326,8 +326,7 @@ class Schema extends React.Component {
 			display: 'flex'
 		}
 	
-		console.log("in schema with", JSON.stringify(schema,null,4));
-
+		
 		const payload = schema.type === "object" ? _payload(schema.properties, id, selectedid) : _formatprimitive(schema,"",id, selectedid);
 
 		

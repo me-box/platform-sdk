@@ -22,6 +22,7 @@ const initialState = {
 	savedialogue: false,
 	repos:[],
 	visible:false,
+	examples: [],
 }
 
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
@@ -68,6 +69,12 @@ export default function reducer(state = initialState, action) {
 	  					tosave: Object.assign({}, state.tosave, {description:action.description})
 	  				}
 	  	);
+
+	  case nodeActionTypes.RECEIVE_EXAMPLES:
+			return {
+                ...state, 
+                examples:action.repos
+      		}
 
 	  case nodeActionTypes.REPO_LIST_RETRIEVED:
 	  	return Object.assign({}, state, {

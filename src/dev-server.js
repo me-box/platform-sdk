@@ -119,6 +119,17 @@ app.use("/login", function(req, res) {
     });
 });
 
+app.use("/repo", function(req, res) {
+  console.log("proxying repo!...>");
+   req.url = `${req.baseUrl}${req.url}`;
+    apiProxy.web(req, res, {
+      target: {
+        port: 9000,
+        host: "localhost"
+      }
+    });
+});
+
 app.use("/settings", function(req, res) {
   console.log("proxying settings...>");
    req.url = `${req.baseUrl}${req.url}`;

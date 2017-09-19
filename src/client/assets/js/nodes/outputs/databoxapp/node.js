@@ -43,7 +43,7 @@ function _findnameforbox(id, inputs){
 	
 	for (let i = 0; i < inputs.length; i++){
 		if (inputs[i].id === id){
-			return inputs[i].name && inputs[i].name.trim() != "" ? inputs[i].name : id; 		
+			return inputs[i].name && inputs[i].name.trim() != "" ? inputs[i].name : `${inputs[i].type} (${inputs[i].id})`; 		
 		}
 	}
 	return id;
@@ -89,7 +89,11 @@ function _convertlayout(layout, inputs){
 }
 
 function _convertinputs(inputs){
-	 return [inputs.map((input)=>{return {id: input.id, name: input.name && input.name.trim() != "" ? input.name: input.id}})];
+	 
+	 return [inputs.map((input)=>{
+	 	const label = input.name && input.name.trim() != "" ? input.name : `${input.type} (${input.id})`;
+	 	return {id: input.id, name: label}
+	 })];
 }
 
 
@@ -106,12 +110,12 @@ export default class Node extends Component {
 	  }
 	  
 	  componentDidMount(){
-        console.log(this);
+       
         const {node, inputs=[]} = this.props;
        
     	
-	  	//const boxes = _convertlayout(node.layout, inputs) || _convertinputs(inputs);
-		//this._actions.initLayout(boxes);
+	  	const boxes = _convertlayout(node.layout, inputs) || _convertinputs(inputs);
+		this._actions.initLayout(boxes);
 	  }
       
       render() {
@@ -164,7 +168,7 @@ export default class Node extends Component {
        		overflow: 'hidden',
     	}
         
-        return 	<div className="flexcolumn">
+        return 	<div  {...mouseprops} className="flexcolumn">
           				<div>
           					<div className="flexrow">
 								<div className="title">	
@@ -181,7 +185,7 @@ export default class Node extends Component {
 						<div>
 							<div className="flexrow" style={fixedheight}>
 								<div>
-									<div {...mouseprops} style={mousestyle}>
+									<div style={mousestyle}>
 										<LayoutManager {...layoutprops}/>
 									</div>
 								</div>

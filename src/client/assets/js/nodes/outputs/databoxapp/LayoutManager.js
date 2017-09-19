@@ -40,9 +40,7 @@ class LayoutManager extends Component {
       }, 0)
 
       const boxh = h/MAXROWS;
-      console.log("in layout manager with boxes");
-      console.log(boxes);
-
+      
       const b = boxes.map((row, i)=>{
           //const box = boxes[key];
           

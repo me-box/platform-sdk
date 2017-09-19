@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -86,7 +86,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _dockerode = __webpack_require__(20);
+var _dockerode = __webpack_require__(21);
 
 var _dockerode2 = _interopRequireDefault(_dockerode);
 
@@ -115,6 +115,12 @@ module.exports = require("superagent");
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -134,7 +140,7 @@ exports.createTestContainer = createTestContainer;
 exports.writeTempFile = writeTempFile;
 exports.removeTempFile = removeTempFile;
 
-var _zlib = __webpack_require__(21);
+var _zlib = __webpack_require__(22);
 
 var _zlib2 = _interopRequireDefault(_zlib);
 
@@ -142,7 +148,7 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _tarStream = __webpack_require__(22);
+var _tarStream = __webpack_require__(23);
 
 var _tarStream2 = _interopRequireDefault(_tarStream);
 
@@ -434,20 +440,20 @@ function removeTempFile(fileName) {
 }
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(8);
+module.exports = __webpack_require__(9);
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _http = __webpack_require__(9);
+var _http = __webpack_require__(10);
 
 var _http2 = _interopRequireDefault(_http);
 
@@ -455,21 +461,21 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _expressSession = __webpack_require__(10);
+var _expressSession = __webpack_require__(11);
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _connectRedis = __webpack_require__(11);
+var _connectRedis = __webpack_require__(12);
 
 var _connectRedis2 = _interopRequireDefault(_connectRedis);
 
-var _bodyParser = __webpack_require__(12);
+var _bodyParser = __webpack_require__(13);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(13);
+var _config = __webpack_require__(14);
 
-var _strategies = __webpack_require__(14);
+var _strategies = __webpack_require__(15);
 
 var _strategies2 = _interopRequireDefault(_strategies);
 
@@ -506,11 +512,11 @@ function checkcredentials(config) {
 
 function addroutes(app, auth) {
   console.log("adding routes!");
-  app.use('/auth', __webpack_require__(18));
-  app.use('/github', auth, __webpack_require__(19));
-  app.use('/nodered', auth, __webpack_require__(23));
-  app.use('/samples', auth, __webpack_require__(24));
-  app.use('/uibuilder', auth, __webpack_require__(25));
+  app.use('/auth', __webpack_require__(19));
+  app.use('/github', auth, __webpack_require__(20));
+  app.use('/nodered', auth, __webpack_require__(24));
+  app.use('/samples', auth, __webpack_require__(25));
+  app.use('/uibuilder', auth, __webpack_require__(26));
 }
 
 function start(config) {
@@ -595,31 +601,31 @@ function start(config) {
 }
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("connect-redis");
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -752,7 +758,7 @@ function defaultsettings() {
 }
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -767,7 +773,7 @@ var _passport = __webpack_require__(3);
 
 var _passport2 = _interopRequireDefault(_passport);
 
-var _passportGithub = __webpack_require__(15);
+var _passportGithub = __webpack_require__(16);
 
 var _passportGithub2 = _interopRequireDefault(_passportGithub);
 
@@ -791,7 +797,7 @@ function initPassport(app, config) {
 
 	console.log("initing passport");
 
-	var User = __webpack_require__(16)(config.mongo.URL);
+	var User = __webpack_require__(17)(config.mongo.URL);
 
 	app.use(_passport2.default.initialize());
 	app.use(_passport2.default.session());
@@ -837,19 +843,19 @@ function initPassport(app, config) {
 }
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-github");
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _mongoose = __webpack_require__(17);
+var _mongoose = __webpack_require__(18);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -868,13 +874,13 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -914,7 +920,7 @@ router.get('/github/callback', _passport2.default.authenticate('github', { failu
 module.exports = router;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -932,11 +938,15 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _path = __webpack_require__(6);
+
+var _path2 = _interopRequireDefault(_path);
+
 var _docker = __webpack_require__(2);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(6);
+var _utils = __webpack_require__(7);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1534,25 +1544,25 @@ router.post('/publish', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("dockerode");
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("tar-stream");
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1570,7 +1580,7 @@ var _docker = __webpack_require__(2);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(6);
+var _utils = __webpack_require__(7);
 
 var _minimist = __webpack_require__(4);
 
@@ -1885,7 +1895,7 @@ router.post('/flows', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1943,7 +1953,7 @@ router.get('/:sensor', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1957,7 +1967,7 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = __webpack_require__(26);
+var _path = __webpack_require__(6);
 
 var _path2 = _interopRequireDefault(_path);
 
@@ -2073,12 +2083,6 @@ router.post('/image/add', function (req, res) {
 
 module.exports = router;
 /* WEBPACK VAR INJECTION */}.call(exports, "/"))
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-module.exports = require("path");
 
 /***/ }),
 /* 27 */

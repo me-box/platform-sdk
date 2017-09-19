@@ -1,6 +1,7 @@
 import express from 'express';
 import request from 'superagent';
 import fs from 'fs';
+import path from 'path';
 import docker from '../utils/docker';
 import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries, writeTempFile, removeTempFile} from '../utils/utils';
 const router = express.Router();

@@ -77,29 +77,6 @@ export default class Properties extends Component {
                 {this.renderStyle()}
               </div>
              
-      /*return (
-                <Flex>
-                     <TabsContainer onTabChange={this._handleTabChange} activeTabIndex={activeTabIndex} panelClassName="md-grid" colored>
-                        <Tabs tabId="tab">
-                          <Tab label="attributes">
-                            <div className="md-cell md-cell--12">{this.renderAttributes()}</div>
-                          </Tab>
-                          <Tab label="style">
-                            <CSSTransitionGroup
-                              component="div"
-                              className="md-cell md-cell--12"
-                              transitionName="md-cross-fade"
-                              transitionEnterTimeout={300}
-                              transitionLeave={false}
-                            >
-                               {this.renderStyle()}
-                            </CSSTransitionGroup>
-                          </Tab>
-                        </Tabs>
-
-                      </TabsContainer>
-                </Flex>
-              );*/
   }
 
   _updateStyle(key, value){

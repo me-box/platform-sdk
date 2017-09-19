@@ -13,8 +13,10 @@ import {actionCreators as repoActions} from 'features/repos/actions';
 import {actionCreators as workspaceActions} from 'features/workspace';
 import {actionCreators as testActions} from 'features/test';
 import {actionCreators as paletteActions} from 'features/palette';
+import {actionCreators as exampleActions} from 'features/examples';
 
 import RepoManager from 'features/repos/components/RepoManager';
+import ExampleManager from 'features/examples/components/ExampleManager';
 import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
 import Help from 'features/help/components/Help';
@@ -31,6 +33,7 @@ import Help from 'features/help/components/Help';
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
               togglePublisher: bindActionCreators(workspaceActions.toggleVisible, dispatch),
+              toggleExamples: bindActionCreators(exampleActions.toggleVisible, dispatch),
               test: bindActionCreators(testActions.test, dispatch),
 
               }
@@ -69,6 +72,7 @@ export default class Editor extends Component {
       requestRepos: this.props.actions.requestRepos,
       toggleSaveDialogue: this.props.actions.toggleSaveDialogue,
       togglePublisher: this.props.actions.togglePublisher,
+      toggleExamples: this.props.actions.toggleExamples,
       test: this.props.actions.test,
     } 
 
@@ -85,6 +89,7 @@ export default class Editor extends Component {
           <NetworkStatus/>
           <RepoManager h={h-TOOLBAR_HEIGHT}/>
           <TestManager h={h-TOOLBAR_HEIGHT}/>
+          <ExampleManager h={h-TOOLBAR_HEIGHT}/>}
           <Help h={h-TOOLBAR_HEIGHT} w={w} />
 	    	</div>);
     }

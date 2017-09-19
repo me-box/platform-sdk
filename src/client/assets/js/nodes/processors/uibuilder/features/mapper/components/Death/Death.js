@@ -45,9 +45,8 @@ export default class Death extends PureComponent {
    
     const schemas = inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{});
 
-    return <Flex flexColumn={true}>   
-              <div className="title"> death options </div>   
-                <div className="info">
+    /*
+    <div className="info">
                     A timeout period after which, if there is no data for this key, the object is deleted
                 </div>
                 <Textfield
@@ -55,7 +54,10 @@ export default class Death extends PureComponent {
                   value={timeexit} 
                   onChange={(id,e)=>{this.setState({timeexit:e.target.value})}}
                 />
-
+   */
+    return <Flex flexColumn={true}>   
+              <div className="title"> death options </div>   
+                
                 <div className="info">
                     A function evaluated at the next receipt of data, return true to delete, false otherwise 
                 </div>

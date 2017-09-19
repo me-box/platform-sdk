@@ -11,6 +11,7 @@ import test, {NAME as testName} from 'features/test';
 import network, {NAME as networkName} from 'features/network';
 import driver, {NAME as driverName} from 'features/driver';
 import help, {NAME as helpName} from 'features/help';
+import examples, {NAME as examplesName} from 'features/examples';
 
 export default {
   routing,
@@ -25,4 +26,5 @@ export default {
   [networkName]: network,
   [helpName] : help,
   [driverName]: driver,
+  [examplesName]: examples,
 };
