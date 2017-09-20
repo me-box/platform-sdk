@@ -255,12 +255,12 @@ function requestRepos(){
 			  console.log(err);
 			  dispatch(networkActions.networkError(`failed to fetch repo list`));
 			}else{
-			  console.log(res.body);
+        const data = res.body || [];
 			  dispatch(networkActions.networkSuccess(`successfully received repos`));
-			  dispatch(receivedRepos(res.body));
-			  if (res.body.repos && res.body.repos.length > 0){
-			 	 dispatch(toggleVisible());
-			  }
+			  dispatch(receivedRepos(data));
+        if (data.repos && data.repos.length > 0){
+            dispatch(toggleVisible());
+        }
 			}
 		 });
 	}
@@ -527,8 +527,7 @@ function fetchFlow(store, repo){
             console.log(err);
             dispatch(receiveFlowsError(err));
           }else{
-          	console.log("=====>ok got ");
-          	console.log(res.body);
+          
 
             const flows   = res.body.flows.content;
             const manifest  = res.body.manifest.content;
@@ -576,6 +575,8 @@ function toggleVisible(){
 
 function fetchExample(store, repoName, repoOwner){
   
+  console.log("in fetch example", repoName, repoOwner);
+
   return function (dispatch, getState) {
 
     dispatch(requestFlows());
@@ -626,11 +627,12 @@ function fetchExamples(){
               console.log(err);
               dispatch(receiveFlowsError(err));
             }else{
-              console.log(res.body);
-              dispatch({
+              if (res.body){
+                dispatch({
                   type: nodeActionTypes.RECEIVE_EXAMPLES,
                   repos: res.body.repos
-              });
+                });
+              }
             }
           });  
   }

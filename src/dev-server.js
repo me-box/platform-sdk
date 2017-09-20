@@ -62,9 +62,10 @@ app.use("/nodered/*", function(req, res) {
     });
 });
 
-app.use("/samples/*", function(req, res) {
-  console.log("proxying samples...>");
-    req.url = `${req.baseUrl}${req.url}`;
+app.use("/examples/*", function(req, res) {
+  
+    req.url = `${req.baseUrl}${req.url}`.replace(/\/$/, "");
+    console.log("proxying examples: ", req.url);
     apiProxy.web(req, res, {
       target: {
         port: 9000,
@@ -141,25 +142,24 @@ app.use("/settings", function(req, res) {
     });
 });
 
+app.use("/images/*", function(req, res) {
+  
+   req.url = `${req.baseUrl}${req.url}`.replace(/\/$/, "");
+   console.log("proxying images", req.url);
+
+    apiProxy.web(req, res, {
+      target: {
+        port: 9000,
+        host: "localhost"
+      }
+    });
+});
+
 app.use("/js/code.js", function(req, res) {
   console.log("proxying code ", req.url);
   res.sendFile(path.join(__dirname, './server/static/js/code.js'));
 });
 
-app.use("/images/editor.svg", function(req, res) {
-  console.log("proxying editor ", req.url);
-  res.sendFile(path.join(__dirname, './server/static/images/editor.svg'));
-});
-
-app.use("/images/createapp.svg", function(req, res) {
-  console.log("proxying createapp ", req.url);
-  res.sendFile(path.join(__dirname, './server/static/images/createapp.svg'));
-});
-
-app.use("/images/createdriver.svg", function(req, res) {
-  console.log("proxying createdriver ", req.url);
-  res.sendFile(path.join(__dirname, './server/static/images/createdriver.svg'));
-});
 
 app.get("/nodes/nodes.json", (req,res)=>{
   res.sendFile(path.join(__dirname, './client/assets/nodes/nodes.json'));

@@ -1,12 +1,17 @@
 #help{
 	position: absolute;
-	bottom: 0px;
 	background: white;
 	box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);
 	border-top: 1px solid #d3d3d3;
 	overflow-y: auto;
 	padding: 7px;
 	display: block;
+	 bottom:0px;
+}
+
+.inner{
+	position: relative;
+	height: auto; 
 }
 
 #help.closed {

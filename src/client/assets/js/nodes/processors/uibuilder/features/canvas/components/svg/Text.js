@@ -37,7 +37,7 @@ export default class Text extends Component {
 		const _style = camelise(style);
 
 		return 	<g transform={this.props.transform}>
-			 		<text textAnchor="middle" x={x} y={y} style={_style} onClick={this._onSelect} onMouseDown={this._onMouseDown}>{text}</text>
+			 		<text textAnchor="middle" x={x} y={y} style={_style} onClick={this._templateSelected} onMouseDown={this._onMouseDown}>{text}</text>
 			 	</g>
 	}
 

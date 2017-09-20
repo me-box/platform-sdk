@@ -128,36 +128,38 @@ export default class Help extends Component {
 
 	render(){
 
-		console.log("help rpone atre", this.props);
-
 		const {visible, w} = this.props;
-		
+		console.log(window.scrollY);
+
 		const style ={
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,
 			visible: visible,
-			height: this.state.currentHeight,
+			minHeight: this.state.currentHeight,
 		}
 		const className = cx({
 			closed: !visible
 		});
 
 		
+		
 
-		return 		<div draggable="true" 
-						onMouseDown={this.startDrag}
-						onMouseUp={this.onDrop} 
-						onMouseMove={this.onDrag}
-						style={style} 
-						id="help" 
-						className={className}>
-						
-						{this.renderMenu()}
-						
-						<div className="content">
-							{this.renderContent()}
+		return 		<div>
+						<div className="inner">
+							<div draggable="true" 
+							onMouseDown={this.startDrag}
+							onMouseUp={this.onDrop} 
+							onMouseMove={this.onDrag}
+							style={style} 
+							id="help" 
+							className={className}>
+							
+								{this.renderMenu()}
+								<div className="content">{this.renderContent()}</div>
+							</div>
 						</div>
 					</div>
+
 			
 	}
 }
