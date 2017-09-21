@@ -72,14 +72,15 @@ export default class Editor extends Component {
       const {nid} = this.props;
       var rx = /INPUT|SELECT|TEXTAREA/i;
       console.log(e.target.tagName);
-      e.preventDefault();
-      e.stopPropagation();
+      //e.preventDefault();
+      //e.stopPropagation();
       if( e.which == 8 ){ // 8 == backspace
             
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
                 
                 this.props.actions.deletePressed(nid);
                 e.preventDefault();
+                e.stopPropagation();
             }
       }
     }

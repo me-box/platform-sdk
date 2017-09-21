@@ -57,7 +57,7 @@ const _formatprimitive = function(item,key,id,selectedid, attributestyle={}){
 					</div>
 					<div style={{borderRight: '1px solid #b6b6b6'}}>
 						<div className="schemadescription">
-							<div dangerouslySetInnerHTML={{__html: item.description.replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
+							<div dangerouslySetInnerHTML={{__html: (item.description || "").replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
 						</div>
 					</div>
 				</div>

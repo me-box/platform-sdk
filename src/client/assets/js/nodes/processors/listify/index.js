@@ -66,6 +66,7 @@ const config = {
         properties: {
           payload: {
             type: "object",
+            description: "the payload object",
             properties: {
               id: {
                 type: "string",
@@ -73,6 +74,7 @@ const config = {
               },
               values: {
                 type: "object",
+                description: "the container object",
                 properties: {
                   key: {
                     type: "any",

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { actionCreators as mapperActions, viewConstants, selector, NAME } from '../..';
 import { actionCreators as shapeActions, NAME as CANVASNAME } from 'nodes/processors/uibuilder/features/canvas/';
 import cx from 'classnames';
-
+import Button from 'react-md/lib/Buttons';
 //import { actionCreators as sourceActions } from 'features/sources';
 
 import Schema from "../Schema";
@@ -242,10 +242,15 @@ export default class Mapper extends Component {
 
         const templateName = templatesById[id].label;
 
-        return <Flex key={i}>
-                    <Box col={11} onClick={this.props.actions.selectMapping.bind(null,nid,item)} >{`${sourceName}:${item.from.key}`}->{`${templateName}:${item.to.property}`}</Box>
-                    <Box col={1} onClick={this.props.actions.removeMapping.bind(null,nid,item.mappingId)}><strong>x</strong></Box>
-                </Flex>
+        return <div key={i} style={{marginBottom:2, borderLeft:"3px solid #5f9ea0"}}>
+                  <Flex>
+                    <Box className="tfrom" mcol={10} onClick={this.props.actions.selectMapping.bind(null,nid,item)}>{`${sourceName}:${item.from.key}`}</Box>
+                    <Box col={2} className="tclose"><Button icon onClick={this.props.actions.removeMapping.bind(null,nid,item.mappingId)}>close</Button></Box>
+                  </Flex>
+                  <Flex>
+                    <Box className="tto" col={12} onClick={this.props.actions.selectMapping.bind(null,nid,item)}> {`${templateName}:${item.to.property}`}</Box>  
+                  </Flex>
+                </div>
     })
    
   }

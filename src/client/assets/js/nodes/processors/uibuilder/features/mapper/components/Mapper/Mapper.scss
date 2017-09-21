@@ -83,4 +83,31 @@
     padding: 15px;
     background: rgb(48, 48, 48);
     color: white;
+    margin-top:5px;
+}
+
+#mapper .tfrom{
+    text-align: center;
+    background: white;
+    width:100%;
+    padding: 8px;
+}
+
+#mapper .tto{
+    text-align: center;
+    background: white;
+    width: 100%;
+    padding: 8px;
+}
+
+#mapper .tclose{
+    background: white;
+    width: 100%;
+}
+
+#mapper .typestring{
+    margin-bottom: 5px;
+    background: #5f9ea0;
+    color: white;
+    padding: 7px;
 }

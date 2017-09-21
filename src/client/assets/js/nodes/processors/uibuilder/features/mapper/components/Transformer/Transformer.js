@@ -31,22 +31,8 @@ export default class Transformer extends PureComponent {
   renderTransformer(key, property){
     
     const defaultcode = defaultCode(key,property);
-
-    
     return <Textarea id="function" value={this.state.buffer || defaultcode} onChange={this.codeChange} />
-    /*return <TextField rows={4}/>
-
-             id="function"
-              placeholder={defaultcode}
-              block
-              rows={4}
-              value={this.state.buffer || defaultcode} 
-              onChange={(e)=>{
-                            
-                                this.setState({buffer:e})
-                            }
-                        }
-            />*/
+    
   }
 
  
@@ -95,8 +81,11 @@ export default class Transformer extends PureComponent {
           }]}
         >
           <div>
-            <strong>(id:string,{from.key}:{ftype},node:Node, i:number, w:number, h:number)->{ttype}</strong>
-            {this.renderTransformer(from.key, to.property)}   
+              <div className="typestring">
+                <strong>id</strong>:string,<strong>{from.key}</strong>:{ftype}, <strong>node</strong>:Node, <strong>i</strong>:number, <strong>w</strong>:number, <strong>h</strong>:number)-><strong>{ttype}</strong></div>
+               <div style={{padding:10}}>
+                  {this.renderTransformer(from.key, to.property)}   
+                </div>
           </div>
         </Dialog>
       </div>

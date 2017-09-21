@@ -77,6 +77,12 @@ module.exports = require("fs");
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+module.exports = require("minimist");
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -96,16 +102,10 @@ var docker = new _dockerode2.default({ socketPath: '/var/run/docker.sock' });
 exports.default = docker;
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = require("passport");
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("minimist");
+module.exports = require("passport");
 
 /***/ }),
 /* 5 */
@@ -152,7 +152,7 @@ var _tarStream = __webpack_require__(23);
 
 var _tarStream2 = _interopRequireDefault(_tarStream);
 
-var _docker = __webpack_require__(2);
+var _docker = __webpack_require__(3);
 
 var _docker2 = _interopRequireDefault(_docker);
 
@@ -479,7 +479,7 @@ var _strategies = __webpack_require__(15);
 
 var _strategies2 = _interopRequireDefault(_strategies);
 
-var _minimist = __webpack_require__(4);
+var _minimist = __webpack_require__(2);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
@@ -769,7 +769,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = initPassport;
 
-var _passport = __webpack_require__(3);
+var _passport = __webpack_require__(4);
 
 var _passport2 = _interopRequireDefault(_passport);
 
@@ -890,7 +890,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _passport = __webpack_require__(3);
+var _passport = __webpack_require__(4);
 
 var _passport2 = _interopRequireDefault(_passport);
 
@@ -942,7 +942,7 @@ var _path = __webpack_require__(6);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _docker = __webpack_require__(2);
+var _docker = __webpack_require__(3);
 
 var _docker2 = _interopRequireDefault(_docker);
 
@@ -1576,13 +1576,13 @@ var _superagent = __webpack_require__(5);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
-var _docker = __webpack_require__(2);
+var _docker = __webpack_require__(3);
 
 var _docker2 = _interopRequireDefault(_docker);
 
 var _utils = __webpack_require__(7);
 
-var _minimist = __webpack_require__(4);
+var _minimist = __webpack_require__(2);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
@@ -1971,14 +1971,18 @@ var _path = __webpack_require__(6);
 
 var _path2 = _interopRequireDefault(_path);
 
+var _minimist = __webpack_require__(2);
+
+var _minimist2 = _interopRequireDefault(_minimist);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Promise = __webpack_require__(27);
 Promise.promisifyAll(_fs2.default);
-
+var argv = (0, _minimist2.default)(process.argv.slice(2));
 var router = _express2.default.Router();
 
-var ROOTDIR = _path2.default.join(__dirname, '/static/uibuilder/');
+var ROOTDIR = argv.dev ? _path2.default.join(__dirname, '../static/uibuilder/') : _path2.default.join(__dirname, '/static/uibuilder/');
 
 router.post('/scene/add', function (req, res) {
   var DIRECTORY = _path2.default.join(ROOTDIR, '/scenes/');
