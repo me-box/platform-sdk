@@ -11,7 +11,7 @@ export default class Attributes extends Component {
   	  render(){
 
   	  	const items = this.props.attributes.map((item,i)=>{
-  	  		return <Box key={i} onClick={this.props.onSelect.bind(null,item)}>{item}</Box>
+  	  		return <Box className="toattr" key={i} onClick={this.props.onSelect.bind(null,item)}>{item}</Box>
   	  	});
 
 

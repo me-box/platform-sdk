@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators as mapperActions, viewConstants, selector, NAME } from '../..';
 import { actionCreators as shapeActions, NAME as CANVASNAME } from 'nodes/processors/uibuilder/features/canvas/';
+import cx from 'classnames';
+
 //import { actionCreators as sourceActions } from 'features/sources';
 
 import Schema from "../Schema";
@@ -79,37 +81,23 @@ export default class Mapper extends Component {
       this.showTree= this.showTree.bind(this);
   }
 
-  renderInputs(){
-    const {inputs, nid} = this.props;
-    const {selected} = this.state;
-    
-    const srcs = inputs.map((input) => {
-        const name = input.name.trim() === "" ? input.label : input.name;
-        return <Box key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
-    });
-
-    const schema = selected != null ? <Schema {
-                                                ...{
-                                                      schema: inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{}),
-                                                      onSelect: this.props.actions.mapFrom.bind(null, nid, selected) 
-                                                    }
-                                              }
-                                    />: null;
-    
-    return <Flex flexColumn={true}>
-                  {srcs}
-                  {schema}
-            </Flex>
-
-  }
+ 
 
   renderTemplate(templateId, path, selectedPath){
       
       const {[CANVASNAME]:{templatesById}} = this.props;
       const template = templatesById[templateId];
 
+      const itemstyle={
+        padding: 5,
+        borderBottom: '1px solid #b6b6b6',
+        borderLeft: '1px solid #b6b6b6',
+        borderRight: '1px solid #b6b6b6',
+        color: '#303030',
+        background: 'white',
+      }
       return <div key={templateId}>
-                  <li onClick={this._toggleSelected.bind(null, [...path, template.id], template.type, selectedPath)}>
+                  <li style={itemstyle} onClick={this._toggleSelected.bind(null, [...path, template.id], template.type, selectedPath)}>
                       {`${template.label} (${template.type})`}
                   </li>
                   {template.type === "group" && _shouldExpand(template.id,selectedPath) && this.renderTree(template.children, [...path, template.id], selectedPath)}
@@ -120,6 +108,46 @@ export default class Mapper extends Component {
       return templates.map((id)=>{
           return <ul key={id}>{this.renderTemplate(id, [...path], selectedPath)}</ul>;
       }).reverse();
+  }
+
+  renderInputs(){
+
+    console.log("ok props are", this.props);
+
+    const {inputs, nid, [NAME]:{from}} = this.props;
+    const {selected} = this.state;
+    
+    console.log("selected is", selected);
+
+    const srcs = inputs.map((input) => {
+        const name = input.name.trim() === "" ? input.label : input.name;
+        const cname = cx({
+          sourceName: true,
+          selected: selected === input.id,
+        });
+        return <Box className={cname} key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
+    });
+
+    const schemaprops = {
+
+        schema: inputs.reduce((acc, input)=>{
+                                                return (input.id === selected) ? input.schema.output : acc;
+                                            },{}),
+
+        onSelect: this.props.actions.mapFrom.bind(null, nid, selected),
+
+        selected: from,
+    }
+
+    const schema = selected != null ? <Schema {...schemaprops}/>: null;
+  
+
+    return <Flex flexColumn={true}>
+                  <Box className="mappersrc">sources</Box>
+                  {srcs}
+                  {schema}
+            </Flex>
+
   }
 
 
@@ -156,6 +184,7 @@ export default class Mapper extends Component {
                                                       }
                                       /> : null;
     return  <Flex flexColumn={true}>
+                <Box className="mapperattr">attributes</Box>
                 {attrs}
                 {style}
                 {transforms}
@@ -171,10 +200,18 @@ export default class Mapper extends Component {
       if (!path || path.lnegth <= 0)
         return null;
 
-      const template = templatesById[path[path.length-1]]
+      const template = templatesById[path[path.length-1]];
+      
+      const headingstyle = {
+        fontWeight: 'bolder',
+        textAlign: 'center',
+        padding: 15,
+        background: '#303030',
+        color: 'white',
+      }
 
-      return  <Box>
-                <div style={{paddingBottom:7, fontWeight:"bold"}}>{template.label}</div>
+      return  <Box style={{background:'white'}}>
+                <div className="mapperHeading">{template.label}</div>
                 <Flex>
                     <Box col={6}>{this.renderInputs()}</Box>
                     <Box col={6}>{this.renderComponents()}</Box>
@@ -243,6 +280,7 @@ export default class Mapper extends Component {
     const {[NAME]:{selectedMapping, transformers}, nid} = this.props;
     return <div>
                 {this.renderMapper()}
+                <div className="mapperHeading">transformers</div>
                 {this.renderTransformers()}
                 {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}     
           </div>
@@ -321,16 +359,18 @@ export default class Mapper extends Component {
         overflow:'auto',
     }
 
+    // <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
     return <div id="mapper">
               <div style={mapperstyle}>
-                <Flex flexColumn={true}>
+                
+                  {this.renderObjects()}
+                  <Flex flexColumn={true}>
                   <Flex align="center" style={{background:"#535353", color:"#fff"}}>
                     <Box auto p={1} onClick={this.showAttributes}> attributes </Box>
                     <Box auto p={1} onClick={this.showBirthDeath}> lifetime </Box>
                     <Box auto p={1} onClick={this.showMappings}> mappings </Box>
-                    <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
+                   
                   </Flex>
-                  {this.renderObjects()}
                   {attributesSelected && this.renderAttributes()}
                   {mappingsSelected && this.renderMappings()}
                   {canvasSelected && this.renderCanvas()}

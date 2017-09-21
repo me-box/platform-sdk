@@ -4,7 +4,7 @@ import { Flex,Box } from 'reflexbox';
 
 const indent = (path)=>{
 	return path.reduce((acc, obj)=>{
-		return "----"+acc;
+		return `»» ${acc}`;
 	},"")
 }
 
@@ -36,9 +36,11 @@ export default class Schema extends Component {
   	  }
 
   	  renderNode(key, path, type){
-          const {selected} = this.props;
-          
-         const style = {};
+         const {selected} = this.props;
+         
+         const style = {
+            
+         };
 
           if (selected && selected.key === key){
               if (selected.path.length === path.length){
@@ -46,29 +48,25 @@ export default class Schema extends Component {
                     return acc && item === path[i]; 
                  },true)
                  style.fontWeight = "bold";
+                 style.textTransform = "uppercase";
               }
           }
-          return <Box style={style} key={`${Math.random()}`} onClick={this.props.onSelect.bind(null,key,path,type)}>{indent(path)}{key}</Box>
+          return <Box className="sourceattr" style={style} key={`${path.join()}${key}`} onClick={this.props.onSelect.bind(null,key,path,type)}>{indent(path)}{key}</Box>
   	  }
 
   	  render(){
-          const {schema, selected} = this.props;
-          //console.log("selected is ", selected);
-  	  	  //const items = Object.keys(this.props.schema).map((key,i)=>{
-  	  	  //	const schema = this.props.schema[key];
+          const {schema} = this.props;
+          
   	  		const key = "";
   	  		if (schema.type === "object"){
   	  				return <Flex flexColumn={true}>
-  	  					{this.renderNode(key,[], schema)}
+  	  					{/*this.renderNode(key,[], schema)*/}
   	  					{this.renderTree([], schema.properties)}
   	  				</Flex>
   	  		}
   	  		else{
   	  			return this.renderNode(key, [], schema.type);
   	  		}
-  	  
-      	//});
-
-  	  	//return <Flex flexColumn={true}>{items}</Flex>
+  	 
   	  }
 }

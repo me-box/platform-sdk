@@ -1957,7 +1957,7 @@ module.exports = router;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(__dirname) {
+
 
 var _express = __webpack_require__(0);
 
@@ -1978,7 +1978,7 @@ Promise.promisifyAll(_fs2.default);
 
 var router = _express2.default.Router();
 
-var ROOTDIR = _path2.default.join(__dirname, '../static/uibuilder/');
+var ROOTDIR = _path2.default.join(__dirname, '/static/uibuilder/');
 
 router.post('/scene/add', function (req, res) {
   var DIRECTORY = _path2.default.join(ROOTDIR, '/scenes/');
@@ -2029,9 +2029,13 @@ router.get('/scenes/', function (req, res) {
 
 //just dev, so blocking read of images dir
 router.get('/images/', function (req, res) {
+
+  console.log("reading images from ", _path2.default.join(ROOTDIR, '/images/'));
+
   _fs2.default.readdir(_path2.default.join(ROOTDIR, '/images/'), function (err, files) {
 
     if (!files || err) {
+      console.log(err);
       res.send([]);
       return;
     }
@@ -2051,7 +2055,7 @@ router.get('/images/', function (req, res) {
         body: contents
       };
     });
-
+    console.log("sending data", data);
     res.send(data);
   });
 });
@@ -2082,7 +2086,6 @@ router.post('/image/add', function (req, res) {
 });
 
 module.exports = router;
-/* WEBPACK VAR INJECTION */}.call(exports, "/"))
 
 /***/ }),
 /* 27 */

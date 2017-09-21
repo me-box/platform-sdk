@@ -1,12 +1,14 @@
 import express from 'express';
 import fs from 'fs';
 import path  from 'path';
+import minimist from 'minimist';
+
 const  Promise = require('bluebird');
 Promise.promisifyAll(fs);
-
+const argv = minimist(process.argv.slice(2));
 const router = express.Router();
 
-const ROOTDIR = path.join(__dirname, `../static/uibuilder/`);
+const ROOTDIR = argv.dev ? path.join(__dirname, `../static/uibuilder/`) : path.join(__dirname, `/static/uibuilder/`);
 
 router.post('/scene/add', function(req, res){
   const DIRECTORY = path.join(ROOTDIR, '/scenes/');
@@ -57,9 +59,13 @@ router.get('/scenes/', (req,res)=>{
 
 //just dev, so blocking read of images dir
 router.get('/images/', (req,res)=>{
+ 
+  console.log("reading images from ", path.join(ROOTDIR, '/images/'));
+
   fs.readdir(path.join(ROOTDIR, '/images/'), (err, files) => {
       
       if (!files || err){
+        console.log(err);
         res.send([]);
         return;
       }
@@ -80,7 +86,7 @@ router.get('/images/', (req,res)=>{
               body: contents,
           }
       });
-
+      console.log("sending data", data);
       res.send(data);
   });
 });

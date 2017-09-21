@@ -36,3 +36,51 @@
 #mapper .info{
 	padding: 7px;
 }
+
+#mapper .mappersrc{
+    padding: 7px;
+    font-weight: bolder;
+    color: white;
+    background: #535353;
+     text-align : center;
+}
+
+#mapper .mapperattr{
+    padding: 7px;
+    font-weight: bolder;
+    color: white;
+    background: #535353;
+    text-align : center;
+    border-left: 2px solid white;
+}
+
+#mapper .sourceName{
+    padding: 5px;
+    color: white;  
+    background:#5f9ea0;
+    border-bottom: 1px solid #8dbebf;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.sourceattr {
+    background: white;
+    padding: 4px;
+}
+
+.toattr {
+    background: white;
+    padding: 4px;
+}
+
+#mapper .sourceName.selected{
+    font-weight: bolder;
+}
+
+#mapper .mapperHeading {
+    font-weight: bolder;
+    text-align: center;
+    padding: 15px;
+    background: rgb(48, 48, 48);
+    color: white;
+}
