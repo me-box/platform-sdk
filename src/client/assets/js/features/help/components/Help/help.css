@@ -10,8 +10,8 @@
 }
 
 .inner{
-	position: relative;
-	height: auto; 
+	
+	
 }
 
 #help.closed {
@@ -80,4 +80,35 @@ font-weight: bold;
 	color: white;
     font-weight: normal;
     text-align: center;
+}
+
+
+
+#help .table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-align: left;
+}
+
+#help .table.table-striped tbody tr:nth-of-type(odd) {
+  background: #f8f9fa;
+}
+
+#help .table.table-hover tbody tr:hover {
+  background: #f0f1f4;
+}
+
+#help .table tbody tr.active,
+#help .table.table-striped tbody tr.active {
+  background: #f0f1f4;
+}
+
+#help .table td,
+#help .table th {
+  border-bottom: .05rem solid #e7e9ed;
+  padding: .6rem .4rem;
+}
+
+#help .table th {
+  border-bottom-width: .1rem;
 }

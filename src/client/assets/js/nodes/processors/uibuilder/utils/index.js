@@ -272,6 +272,11 @@ function _group(x:number, y:number, children){
 	}
 }
 
+
+function _strokewidth(str=""){
+	return Math.round(`${str}`.replace("px", ""));
+}
+
 const commands = ['M','m','L','l', 'H', 'h', 'V', 'v', 'C', 'c','S', 's', 'Q', 'q', 'T', 't', 'A', 'a', 'Z', 'z'];
 
 export function convertToJson(nodeList){
@@ -431,11 +436,12 @@ export function convertToJson(nodeList){
 
 export function circleBounds(item){
 
+  const sw = _strokewidth(item.style["stroke-width"]);
   return {
       x: item.cx- item.r,
       y: item.cy-item.r,
-      width: item.r*2,
-      height: item.r*2
+      width: item.r*2 + sw,
+      height: item.r*2 + sw,
   }
 }
 
@@ -449,11 +455,12 @@ export function lineBounds(item){
 }
 
 export function ellipseBounds(item){
+	const sw = _strokewidth(item.style["stroke-width"]);
   return {
       x: item.cx - item.rx,
       y: item.cy - item.ry,
-      width: item.rx*2,
-      height: item.ry*2
+      width: item.rx*2 + sw,
+      height: item.ry*2 + sw,
   }
 }
 
@@ -482,7 +489,7 @@ export function pathBounds(item){
 
   var path = document.createElementNS("http://www.w3.org/2000/svg", 'path');
   path.setAttribute("d", item.d);
-
+  const sw = _strokewidth(item.style["stroke-width"]);
   const pathLength = path.getTotalLength();
   const precision = 8;
 
@@ -501,7 +508,7 @@ export function pathBounds(item){
   }
 
 
-  return {x: minx, y: miny, width: maxx-minx, height: maxy-miny};
+  return {x: minx, y: miny, width: (maxx-minx)+sw, height: (maxy-miny)+sw};
 }
 
 

@@ -1,5 +1,68 @@
 import Node from "./node";
 
+ const _luxvalues = [
+    {
+      value: "0.0001",
+      description: "Moonless, overcast night sky (starlight)"
+    },
+    {
+      value: "0.002",
+      description: "Moonless clear night sky with airglow"
+    },
+    {
+      value: "0.05–0.36",
+      description: "Full moon on a clear night"
+    },
+    {
+      value: "3.4",
+      description: "Dark limit of civil twilight under a clear sky"
+    },
+    {
+      value: "20-50",
+      description: "Public areas with dark surroundings"
+    },
+    {
+      value: "50",
+      description: "Family living room lights"
+    },
+    {
+      value: "80",
+      description: "Office building hallway/toilet lighting"
+    },
+    {
+      value: "100",
+      description: "Very dark overcast day"
+    },
+    {
+      value: "320-500",
+      description: "Office lighting"
+    },
+    {
+      value: "400",
+      description: "Sunrise or sunset on a clear day"
+    },
+    {
+      value: "1000",
+      description: "Overcast day"
+    },
+    {
+      value: "10000-25000",
+      description: "Full daylight"
+    },
+    {
+      value: "32000-100000",
+      description: "Direct sunlight"
+    }
+]
+
+const _rows = _luxvalues.reduce((acc, lux)=>{
+    return `${acc}<tr><td>${lux.value}</td><td>${lux.description}</td></tr>`;
+
+},"");
+
+const luxtable = `<table class="table table-striped table-hover"><thead><tr><th>description</th><th>lux value</th></tr></thead><tbody>${_rows}</tbody></table>`;
+
+
 const config = {
   
   category: 'datastores',
@@ -268,6 +331,7 @@ const config = {
           };
 
         default:
+
           return {
 
             name: {
@@ -296,7 +360,7 @@ const config = {
                 },
                 value: {
                   type: 'number',
-                  description: 'ambient light in lux captured by a phone camera'
+                  description: `Measures the ambient light level (illumination) in lux captured by a device camera (0-100000) (see description to get an indication what the values mean)`
                 },
               }
             }
@@ -333,7 +397,10 @@ const config = {
       switch (subtype) {
 
         case 'light':
-          return `${chosen} <p> This will return the ambient light in lux captured by a phone camera.</p>`;
+         
+
+          return `${chosen} <p> Measures the ambient light level (illumination) in lux captured by a device camera. </p><p> The following is an indication of typical values</p>${luxtable}`;
+        
         case 'bluetooth':
           return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 

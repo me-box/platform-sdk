@@ -135,7 +135,7 @@ export default class Help extends Component {
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,
 			visible: visible,
-			minHeight: this.state.currentHeight,
+			height: this.state.currentHeight,
 		}
 		const className = cx({
 			closed: !visible
