@@ -29,7 +29,7 @@ export default class Properties extends Component {
   
   renderAttributes(){
 
-      const { template }       = this.props;
+      const { template ={}}       = this.props;
       const ignore = ["id", "style", "type", "children", "enterFn", "exitFn"];
      
       const form = Object.keys(template).filter((key)=>ignore.indexOf(key)==-1).map((key,i)=>{
@@ -51,8 +51,9 @@ export default class Properties extends Component {
   renderStyle(){
       
       
-      const { template: {style}, updateStyle } = this.props;
-      
+      const { template={}, updateStyle } = this.props;
+      const {style={}} = template;
+
       const form = Object.keys(style).map((key,i)=>{
           const props = { 
             value: style[key],
@@ -70,8 +71,6 @@ export default class Properties extends Component {
                 
 
   render(){ 
-      const { activeTabIndex} = this.state;
-      const {template:{style}} = this.props;
       return <div>
                 {this.renderAttributes()}
                 {this.renderStyle()}

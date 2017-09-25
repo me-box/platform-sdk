@@ -120,7 +120,6 @@ function deploy(){
 		dispatch(editorActions.showTestSidebar());
 	
 		if (nodesWithTestOutputs(getState().nodes.nodes).length <= 0){
-			console.log("not dispatching a test - no outputs that can be tested");
 			return;
 		}
 		
@@ -133,20 +132,11 @@ function deploy(){
 			
 			const modifier = node.type === "app" ? {appId: channelId} : {}; //inject the appID
 			const n = Object.assign({}, convertNode(node, getState().ports.links), modifier);
-			if (n.type==="app"){
-				console.log("app to deploy is");
-				console.log(n);
-			}
 			return n;
 		});
 		
 		
 		const tabs = getState().tabs.tabs;
-		
-		
-		console.log([...tabs, ...jsonnodes]);
-		console.log(`DEPLOYING TO ${config.root}/nodered/flows`);
-		
 		
 	    request
   			.post(`${config.root}/nodered/flows`)
@@ -162,7 +152,7 @@ function deploy(){
   					dispatch(deployError(err));
   				}else{
   					//TODO: make sure server responds!
-  					console.log("**** GOT RESPONSE!!*****");
+  					
           			dispatch(deployResponse(res.body));
           			
   	 			}

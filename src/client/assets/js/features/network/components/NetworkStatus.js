@@ -16,8 +16,7 @@ export default class NetworkStatus extends Component {
 	render() {
 		
 		const {network:{status}} = this.props;
-		console.log("in network status with");
-		console.log(status);
+		
 		
 		const style ={
 			position: 'absolute',

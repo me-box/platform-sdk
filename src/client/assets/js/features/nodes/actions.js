@@ -11,7 +11,7 @@ import {register,unregisterAll} from 'app/store/configureStore';
 function loadNode({store,component,node,reducer}){
   return function(dispatch, getState){
       
-      console.log("loading node!");
+     
 
       const _node = Object.assign({},node, {schema: _schema(node), description:_description(node._def)});
       
@@ -79,7 +79,7 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     const y = y0 + MOUSE_Y_OFFSET + getState().mouse.top + NODE_WIDTH/2;
 
     if (x < 0){
-      console.log("failed to drop node!");
+     
       return;
     }
 
@@ -271,7 +271,7 @@ function mouseMove(x,y){
 }
 
 function nodeMouseUp(){
-  console.log("SEEN A MOUSE UP!!!");
+ 
     return {
       type:nodeActionTypes.MOUSE_UP,
     }

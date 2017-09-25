@@ -6,6 +6,8 @@ import { selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {resolvePath} from 'nodes/processors/uibuilder/utils';
+import cx from 'classnames';
+
 //import TextField from 'react-md/lib/TextFields';
 import Textarea from 'components/form/Textarea';
 import Button from 'react-md/lib/Buttons/Button';
@@ -42,9 +44,15 @@ export default class Birth extends PureComponent {
     const {inputs, nid, path} = this.props;
     const {selected} = this.state;
     
+    
+
     const srcs = inputs.map((input) => {
+        const cname = cx({
+              sourceName: true,
+              selected: selected === input.id,
+        });
         const name = input.name.trim() === "" ? input.label : input.name;
-        return <Box key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
+        return <Box className={cname} key={input.id} onClick={()=>{this.setState({selected: input.id})}}>{name}</Box>
     });
 
  
@@ -134,22 +142,38 @@ export default class Birth extends PureComponent {
  render() {
     const {type} = this.state;
     
+    const keyclass = cx({
+      subselect: true,
+      selected : type==="key"
+    });
 
-    return (
-      <div>
-        <div className="title"> birth options </div>
+    const fnclass = cx({
+      subselect: true,
+       selected : type==="function"
+    });
+
+    /*<div>
+        
         <ul>
           <li onClick={this._selectType.bind(null, "key")}>
-            <strong> bind to data key </strong>
+            <div className={keyclass}> bind to data key </div>
             {type==="key" && this.renderKeys()}
           </li>
            <li onClick={this._selectType.bind(null, "function")}>
-            <strong> bind to data function </strong>
+              <div className={fnclass}> bind to data function </div>
              {type==="function" && this.renderFunction()}
           </li>
         </ul>
-      </div>
-    );
+      </div>*/
+    return (<div>
+              <div className="mapperHeading">birth options</div>    
+              <Flex align="center" style={{background:"#5f9ea0", color:"#fff"}}>
+                    <Box auto p={1} onClick={this._selectType.bind(null, "key")} style={{fontWeight: type==="key" ? 'bold' : 'normal'}}> bind to key </Box>
+                    <Box auto p={1} onClick={this._selectType.bind(null, "function")}   style={{fontWeight: type==="function" ? 'bold' : 'normal'}}> bind to function </Box>   
+              </Flex>
+              {type==="key" && this.renderKeys()}
+              {type==="function" && this.renderFunction()}
+            </div>);
   }
 
 

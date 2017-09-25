@@ -6,7 +6,7 @@
 	overflow-y: auto;
 	padding: 7px;
 	display: block;
-	 bottom:0px;
+	bottom:0px;
 }
 
 .inner{
@@ -47,17 +47,17 @@ font-weight: bold;
  	min-height: 25px;  
 }
 
-#help .schemadescription {
+.schemadescription {
 	padding: 7px;
 }
 
-#help  .flexrow > .header {
+.flexrow > .header {
 	
    	border-top:  1px solid #b6b6b6;
    
 }
 
-#help .flexrow > .headertitle{
+.flexrow > .headertitle{
 	border-top:  1px solid #b6b6b6;
 	display: -webkit-flex;
 	display: flex;
@@ -84,31 +84,31 @@ font-weight: bold;
 
 
 
-#help .table {
+.table {
   border-collapse: collapse;
   border-spacing: 0;
   text-align: left;
 }
 
-#help .table.table-striped tbody tr:nth-of-type(odd) {
+.table.table-striped tbody tr:nth-of-type(odd) {
   background: #f8f9fa;
 }
 
-#help .table.table-hover tbody tr:hover {
+.table.table-hover tbody tr:hover {
   background: #f0f1f4;
 }
 
-#help .table tbody tr.active,
-#help .table.table-striped tbody tr.active {
+.table tbody tr.active,
+.table.table-striped tbody tr.active {
   background: #f0f1f4;
 }
 
-#help .table td,
-#help .table th {
+.table td,
+.table th {
   border-bottom: .05rem solid #e7e9ed;
   padding: .6rem .4rem;
 }
 
-#help .table th {
+.table th {
   border-bottom-width: .1rem;
 }

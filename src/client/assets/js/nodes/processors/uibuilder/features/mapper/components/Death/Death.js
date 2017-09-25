@@ -56,8 +56,7 @@ export default class Death extends PureComponent {
                 />
    */
     return <Flex flexColumn={true}>   
-              <div className="title"> death options </div>   
-                
+                <div className="mapperHeading">death options</div>
                 <div className="info">
                     A function evaluated at the next receipt of data, return true to delete, false otherwise 
                 </div>

@@ -133,7 +133,7 @@ export default class Schema extends Component {
 
 	render(){
 
-		const {schema=null, id, selectedid} = this.props;
+		const {schema=null, id="", selectedid=""} = this.props;
 
 		if (!schema || (Object.keys(schema).length === 0 && schema.constructor === Object)) 
 			return null;

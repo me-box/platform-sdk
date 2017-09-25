@@ -105,7 +105,7 @@ export default class Node extends Component {
     }
 
     _nodeMouseUp(id, e){
-        console.log("seen a NODE mouse up");
+        
         e.stopPropagation();
         e.preventDefault();
 

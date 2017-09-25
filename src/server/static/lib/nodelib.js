@@ -5014,9 +5014,25 @@ var Dialogue = function (_React$Component) {
 				border: '1px solid #d3d3d3'
 			};
 
-			return React.createElement(
+			var fullwidth = {
+				width: "100%",
+				height: "100%",
+				position: 'absolute',
+				background: 'rgba(255,255,255,0.9)',
+				top: 0,
+				left: 0
+				//const close = <Button icon onClick={this.props.close}>close</Button>;
+				/*<Toolbar
+    	      			colored
+    	      			title={this.props.title}
+    	        		actions={close}
+    	        		nav={this.props.nav}
+    	        		className="md-divider-border md-divider-border--bottom"
+    />*/
+
+			};return React.createElement(
 				'div',
-				null,
+				{ style: fullwidth },
 				React.createElement(
 					'div',
 					{ className: 'sdkdialogue', style: dialoguestyle },

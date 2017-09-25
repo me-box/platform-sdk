@@ -129,8 +129,7 @@ export default class Help extends Component {
 	render(){
 
 		const {visible, w} = this.props;
-		console.log(window.scrollY);
-
+		
 		const style ={
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,

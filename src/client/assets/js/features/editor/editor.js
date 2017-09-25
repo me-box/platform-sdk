@@ -129,6 +129,11 @@ function deletePressed() {
 
   return function(dispatch, getState) {
       
+   	//don't do anything if delete is pressed when configuring a node
+   	if (getState().nodes.configuringId){
+   		return;
+   	}
+
     const node = getState().nodes.selectedId;
 	const link = getState().ports.selectedId;
 	

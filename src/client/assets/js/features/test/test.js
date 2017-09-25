@@ -68,7 +68,7 @@ export function test(){
 		//don't bother deploying if there are no outputs that can be tested (i.e. node.type == "debugger" or node.type === "app"
 	
 		if (nodesWithTestOutputs(nodes).length <= 0){
-			console.log("not dispatching a test - no outputs that can be tested");
+			
 			return;
 		}
 		
@@ -79,10 +79,7 @@ export function test(){
 			const modifier = node.type === "app" ? {appId: channelId} : {}; //inject the appID
 			const n = Object.assign({}, convertNode(node, ports), modifier);
 
-			if (n.type==="app"){
-				console.log("app to deploy is");
-				console.log(n);
-			}
+			
 			return n;
 		});
 		
@@ -94,10 +91,7 @@ export function test(){
               type: 'tab'
           }                                                     
     	});
-		console.log([...tabs, ...jsonnodes]);
-		console.log(`DEPLOYING TO ${config.root}/nodered/flows`);
-		
-		
+	
 	    request
   			.post(`${config.root}/nodered/flows`)
   			.send([
@@ -112,8 +106,7 @@ export function test(){
   					//dispatch(deployError(err));
   				}else{
   					//TODO: make sure server responds!
-  					console.log("**** GOT RESPONSE!!*****");
-          			console.log(res.body);
+  				
           			//dispatch(deployResponse(res.body));
           			
   	 			}

@@ -9,8 +9,7 @@ const ItemTypes = {
 const nodeSource = {
 
   beginDrag(props) {
-    console.log("in begin drag with props");
-    console.log(props);
+   
 
     return {
       handleDrop: props.handleDrop

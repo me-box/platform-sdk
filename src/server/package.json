@@ -8,6 +8,7 @@
     "pm": "pm2 start server.js --name editor --interpreter ./node_modules/.bin/babel-node",
     "start": "nodemon --ignore 'flow*.flow' --exec babel-node server.js",
     "dev": "npm run compose && nodemon --ignore 'flow*.flow' --exec babel-node server.js --port 9000 --dev",
+    "stop": "docker-compose stop && docker-compose rm -f",
     "base": "docker build --no-cache -t databox-sdk-base -f Dockerfile.base . && docker tag databox-sdk-base tlodge/databox-sdk-base && docker push tlodge/databox-sdk-base",
     "build": "webpack --progress",
     "docker": "docker build --no-cache -t databox-sdk .",

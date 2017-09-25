@@ -143,8 +143,7 @@ function requestCode(){
 
     _injectScript(`${config.root}/lib/testbulb.js`)
     .then(() => {
-        console.log('Script loaded!');
-        console.log(testbulb);
+       
         dispatch({
           type: LOAD_NODE,
           node:{component:testbulb.node, name: testbulb.type, def: testbulb.def, reducer:testbulb.reducer},

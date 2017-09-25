@@ -25,7 +25,7 @@ export default class Schema extends Component {
   	  			const _schema= schema[key];
   	  			if (_schema.type === "object"){
   	  				return	<Flex key={i} flexColumn={true}>
-  	  					{this.renderNode(key,path, _schema)}
+  	  					{this.renderNode(key,path, _schema.type)}
   	  					{this.renderTree([...path,key], _schema.properties)}
   	  				</Flex> 
   	  			}
@@ -56,7 +56,7 @@ export default class Schema extends Component {
 
   	  render(){
           const {schema} = this.props;
-          
+         
   	  		const key = "";
   	  		if (schema.type === "object"){
   	  				return <Flex flexColumn={true}>

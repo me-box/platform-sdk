@@ -64,7 +64,7 @@ export default class RepoManager extends Component {
 					 				id: "browsingname",
 					 				placeholder: "user repo",
 									onChange:(property, event)=>{
-										console.log(event.target.value);
+										
 	                  					browsingNameChanged(event.target.value);
 	              					}
 								}

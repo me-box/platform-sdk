@@ -41,8 +41,7 @@ export default function reducer(state = initialState, action) {
 	switch (action.type) {
 
 		case portActionTypes.LINK_SELECTED:
-			console.log("link selected:");
-			console.log(action.link);
+			
 			return Object.assign({}, state, {selectedId: action.link});
 		
 		case NODE_MOUSE_DOWN:
@@ -210,7 +209,7 @@ function portMouseOver(node,portType,portIndex,e){
 } 
 
 function linkDelete(link){
-	console.log("seen a link delete!!");
+	
 
 	return {
 		type: portActionTypes.DELETE_LINK,

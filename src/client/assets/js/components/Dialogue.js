@@ -7,7 +7,7 @@ import Button  from 'react-md/lib/Buttons';
 class Dialogue extends React.Component {
 
 	render(){
-
+		console.log("am rendeing the dialogu!!");
 		const dialoguestyle = {
 			position: 'absolute',
 			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING) + PALETTE_WIDTH}px)`,
@@ -19,10 +19,17 @@ class Dialogue extends React.Component {
 			border: '1px solid #d3d3d3',
 		}
 
+		const fullwidth = {
+			width: "100%",
+			height: "100%",
+			position: 'absolute',
+			background: 'rgba(255,255,255,0.9)',
+		}
+
 	
 		const close = <Button icon onClick={this.props.close}>close</Button>;
 		
-		return  <div>
+		return  <div style={fullwidth}>
 					<div className="sdkdialogue" style={dialoguestyle}>
 
 						<Toolbar

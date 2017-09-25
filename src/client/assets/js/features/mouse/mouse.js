@@ -44,7 +44,7 @@ function mouseMove(x0,y0){
 //better that it just dispatches single event that reducers listen on!
 
 export function mouseUp(){
-    console.log("mouse -- seen a mouse up");
+    
     return {
       type: MOUSE_UP,
     }

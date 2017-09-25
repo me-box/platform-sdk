@@ -166,7 +166,7 @@ function browseNewUser(){
 			  console.log(err);
 			  dispatch(networkActions.networkError(`failed to fetch repo list`));
 			}else{
-			  console.log(res.body);
+			
 			  dispatch(networkActions.networkSuccess(`successfully received repos`));
 			  dispatch(receivedRepos(res.body));
 			  dispatch(setCurrentUser(githubuser));
@@ -446,8 +446,7 @@ function publish(){
       
     dispatch(networkActions.networkAccess(`publishing app ${name}`));
       
-    console.log("PUBLISHING");
-    console.log(data.manifest);
+   
 
     request
         .post(`${config.root}/github/publish`)
@@ -456,11 +455,11 @@ function publish(){
         .type('json')
         .end(function(err, res){
           if (err){
-            console.log("DISPATCHING NETWORK ERRRIR!");
+           
             console.log(err);
             dispatch(networkActions.networkError(err.message));
           }else{
-            console.log("DISPATCHING NETWORK SUCCESS!!!");
+           
             dispatch(networkActions.networkSuccess('successfully published app!'));
                 //dispatch(submissionSuccess(res.body));
             dispatch(receivedSHA(res.body.repo, res.body.sha));
@@ -575,7 +574,7 @@ function toggleVisible(){
 
 function fetchExample(store, repoName, repoOwner){
   
-  console.log("in fetch example", repoName, repoOwner);
+
 
   return function (dispatch, getState) {
 
@@ -615,7 +614,7 @@ function fetchExample(store, repoName, repoOwner){
 
 function fetchExamples(){
   
-  console.log(`${config.root}/examples/examples.json`);
+
 
   return function(dispatch){
         request

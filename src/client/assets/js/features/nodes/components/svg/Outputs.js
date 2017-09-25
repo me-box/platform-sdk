@@ -46,8 +46,7 @@ class Outputs extends Component {
 
 	  const selected = (output && output.node.id === d.id && output.sourcePort == i);
 	
-	  //console.log(`checking drawing port id ${output.node.id} against d.id ${d.id} and portIndex ${output.portIndex} against ${i} : ${selected}`); 
-      	
+	 	
       
       return  <g className="port_output" {...gprops}>
                 <circle className="port" {...portprops}></circle>

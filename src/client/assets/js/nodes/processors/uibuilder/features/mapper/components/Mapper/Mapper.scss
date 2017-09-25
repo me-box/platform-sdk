@@ -1,7 +1,4 @@
 #mapper{
-	position: absolute;
-	right: 0px;
-    z-index: 99999;
     box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 4px;
     background: #445662;
     width: 250px;
@@ -37,12 +34,23 @@
 	padding: 7px;
 }
 
+#mapper .strong{
+    font-weight: bolder;
+}
+
+#mapper .functionDetail{
+    width: 100%;
+    padding: 10px;
+    background: #535353;
+    color: white;
+}
+
 #mapper .mappersrc{
     padding: 7px;
     font-weight: bolder;
     color: white;
     background: #535353;
-     text-align : center;
+    text-align : center;
 }
 
 #mapper .mapperattr{
@@ -57,10 +65,14 @@
 #mapper .sourceName{
     padding: 5px;
     color: white;  
-    background:#5f9ea0;
+    background:#667793;
     border-bottom: 1px solid #8dbebf;
     text-align: center;
     margin-top: 2px;
+}
+
+#mapper .sourceName.selected{
+    font-weight: bolder;
 }
 
 .sourceattr {
@@ -73,17 +85,37 @@
     padding: 4px;
 }
 
-#mapper .sourceName.selected{
+#mapper .subselect{
+    background: white;
+    color: black;
+    font-weight: bolder;
+    padding: 7px;
+}
+
+#mapper .subselect.selected{
+    border-left: 3px solid #5f9ea0;
+}
+
+#mapper .treeNode{
+    padding: 5px;
+    border-bottom: 1px solid #b6b6b6;
+    border-left: 1px solid #b6b6b6;
+    border-right: 1px solid #b6b6b6;
+    color: #303030;
+    background: white;
+}
+
+#mapper .treeNode.selected{
     font-weight: bolder;
 }
 
 #mapper .mapperHeading {
     font-weight: bolder;
     text-align: center;
-    padding: 15px;
+    padding: 10px;
     background: rgb(48, 48, 48);
     color: white;
-    margin-top:5px;
+
 }
 
 #mapper .tfrom{
