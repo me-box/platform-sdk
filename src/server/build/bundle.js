@@ -218,6 +218,8 @@ var _addEntry = function _addEntry(pack, name, file) {
 
 function createTarFile(dockerfile, flowfile, path) {
 
+	console.log("creating tar file", path);
+
 	var tarball = _fs2.default.createWriteStream(path);
 	var gzip = _zlib2.default.createGzip();
 	var pack = _tarStream2.default.pack();
@@ -511,7 +513,6 @@ function checkcredentials(config) {
 }
 
 function addroutes(app, auth) {
-  console.log("adding routes!");
   app.use('/auth', __webpack_require__(19));
   app.use('/github', auth, __webpack_require__(20));
   app.use('/nodered', auth, __webpack_require__(24));
@@ -1274,6 +1275,25 @@ var _generateManifest = function _generateManifest(config, user, reponame, app, 
 	};
 };
 
+var _pull = function _pull(repo) {
+	return new Promise(function (resolve, reject) {
+		_docker2.default.pull(repo, function (err, stream) {
+			_docker2.default.modem.followProgress(stream, onFinished, onProgress);
+
+			function onFinished(err, output) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(output);
+				}
+			}
+			function onProgress(event) {
+				console.log(event);
+			}
+		});
+	});
+};
+
 var _publish = function _publish(config, user, reponame, app, packages, libraries, allowed, flows) {
 
 	console.log("PUBLISHING NOW WITH LIBRARIES");
@@ -1281,53 +1301,42 @@ var _publish = function _publish(config, user, reponame, app, packages, librarie
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
+		return _pull("tlodge/databox-sdk-red:latest").then(function () {
 
+			var manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
-		var libcommands = libraries.map(function (library) {
-			return 'RUN cd /data/nodes/databox && npm install --save ' + library;
-		});
+			var data = {
+				manifest: JSON.stringify(manifest),
 
-		//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-		var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/manifest.json"'];
+				poster: JSON.stringify({
+					username: user.username
+				}),
 
-		var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
+				postDate: JSON.stringify(new Date().toISOString()),
 
-		var dockerfile = [].concat(dcommands, _toConsumableArray(libcommands), startcommands).join("\n");
+				queries: JSON.stringify(0)
+			};
+			return _saveToAppStore(config, data);
+		}).then(function (result) {
+			var libcommands = libraries.map(function (library) {
+				return 'RUN cd /data/nodes/databox && npm install --save ' + library;
+			});
 
-		console.log("-->building with dockerfile");
-		console.log(dockerfile);
+			//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
+			var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/manifest.json"'];
 
-		var manifest = _generateManifest(config, user, app.name, app, packages, allowed);
-		console.log("generated manifest");
-		console.log(manifest);
+			var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
 
-		var data = {
-			manifest: JSON.stringify(manifest),
-
-			poster: JSON.stringify({
-				username: user.username
-			}),
-
-			postDate: JSON.stringify(new Date().toISOString()),
-
-			queries: JSON.stringify(0)
-		};
-
-		console.log("saving to app store");
-		console.log(data);
-
-		return _saveToAppStore(config, data).then(function (result) {
+			var dockerfile = [].concat(dcommands, _toConsumableArray(libcommands), startcommands).join("\n");
 			var path = user.username + '-tmp.tar.gz';
 			return (0, _utils.createTarFile)(dockerfile, flows, path);
 		}, function (err) {
 			reject("could not save to app store!");
 		}).then(function (tarfile) {
-
 			var appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : user.username.toLowerCase() + '-' + app.name.toLowerCase();
-			//${config.registry.URL}/
 			return (0, _utils.createDockerImage)(tarfile, '' + appname);
 		}, function (err) {
-			reject("could not create tar file");
+			reject("could not create tar file", err);
 		}).then(function (tag) {
 			return (0, _utils.uploadImageToRegistry)(tag, '' + config.registry.URL);
 		}, function (err) {

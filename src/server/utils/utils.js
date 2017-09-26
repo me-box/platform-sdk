@@ -63,6 +63,8 @@ const _addEntry = function(pack, name, file){
 
 export function createTarFile(dockerfile, flowfile, path){
 	
+	console.log("creating tar file", path);
+
 	const tarball = fs.createWriteStream(path);
 	const gzip   = zlib.createGzip();
 	const pack   = tar.pack();

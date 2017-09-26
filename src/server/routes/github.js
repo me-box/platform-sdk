@@ -392,6 +392,22 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 		//create a new docker file
 		return _pull("tlodge/databox-sdk-red:latest").then(()=>{
 
+			const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
+
+			const data = {
+				manifest: JSON.stringify(manifest),
+								
+				poster: JSON.stringify({
+					username: user.username,
+				}),
+								
+				postDate:  JSON.stringify((new Date()).toISOString()),
+								
+				queries: JSON.stringify(0),
+			}; 
+			return _saveToAppStore(config,data);
+		
+		}).then((result)=>{
 			const libcommands = libraries.map((library)=>{
 				return `RUN cd /data/nodes/databox && npm install --save ${library}`
 			});
@@ -411,21 +427,6 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 			];
 			
 			const dockerfile = [...dcommands, ...libcommands, ...startcommands].join("\n");
-			const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
-			const data = {
-							manifest: JSON.stringify(manifest),
-											
-							poster: JSON.stringify({
-								username: user.username,
-							}),
-											
-							postDate:  JSON.stringify((new Date()).toISOString()),
-											
-							queries: JSON.stringify(0),
-			}; 
-			return _saveToAppStore(config,data);
-		
-		}).then(function(result){
 			const path = `${user.username}-tmp.tar.gz`;
 			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
@@ -434,7 +435,7 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 			const appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
 			return createDockerImage(tarfile, `${appname}`);	
 		},(err)=>{
-			reject("could not create tar file");
+			reject("could not create tar file", err);
 		}).then(function(tag){
 			return uploadImageToRegistry(tag, `${config.registry.URL}`);
 		},(err)=>{
