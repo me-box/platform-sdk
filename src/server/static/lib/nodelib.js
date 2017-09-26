@@ -4596,7 +4596,7 @@ var NodeEditor = (_dec = (0, _reactRedux.connect)(function (state, ownProps) {
 		key: '_onMouseUp',
 		value: function _onMouseUp(e) {
 
-			e.stopPropagation();
+			//e.stopPropagation();
 		}
 	}, {
 		key: '_toggleInfo',

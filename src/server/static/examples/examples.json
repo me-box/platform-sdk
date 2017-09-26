@@ -3,19 +3,12 @@
 
         {
             "username":"tlodge", 
-            "name":"databox.osmonlist2",
-            "description":"testing whether can publish now in dev mode",
+            "name":"databox.tutorial-light-gauge",
+            "description":"databox light gauge tutorial",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
-            "url":"https://api.github.com/repos/tlodge/databox.osmonlist2"
-        },
-        {
-            "username":"tlodge", 
-            "name":"databox.osmonlist",
-            "description":"testing whether can publish now in dev mode",
-            "updated":"2017-09-11T08:54:50Z",
-            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
-            "url":"https://api.github.com/repos/tlodge/databox.osmonlist"
+            "url":"https://api.github.com/repos/tlodge/databox.tutorial-light-gauge"
         }
+       
     ]
 }

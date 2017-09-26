@@ -6,7 +6,7 @@ import docker from '../utils/docker';
 import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry, matchLibraries, writeTempFile, removeTempFile} from '../utils/utils';
 const router = express.Router();
 const agent = request.agent();
-const network = "bridge";
+const networks= ["databox_default", "bridge"];
 
 //TODO: check if container is tagged instead, as this is a less ambiguous way of retrieving the required container
 const _fetchDockerIP = function(containerName){
@@ -53,9 +53,18 @@ var _addr = function(container){
 	//ingress
 	console.log("retrieving addr for", container);
 	
-	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks[network]){
-		return container.NetworkSettings.Networks[network].IPAddress || "";
+	if (container.NetworkSettings && container.NetworkSettings.Networks){
+		const net = networks.find((network)=>{
+			return container.NetworkSettings.Networks[network];
+		});
+
+		console.log("found ip addr for network", net);
+	
+		if (net){
+			return container.NetworkSettings.Networks[net].IPAddress || "127.0.0.1";
+		}
 	}
+	
 	return "127.0.0.1";
 }
 
@@ -353,6 +362,26 @@ const _generateManifest = function(config,user, reponame, app, packages, allowed
 }
 
 
+const _pull = function(repo){
+	return new Promise((resolve, reject)=>{
+		docker.pull(repo, function (err, stream) {
+  			docker.modem.followProgress(stream, onFinished, onProgress);
+
+			function onFinished(err, output) {
+			   if (err){
+			   		reject(err);
+			   }else{
+			   		resolve(output);
+			   }
+			}
+			function onProgress(event) {
+				console.log(event);
+			}
+  			
+		});
+	})
+}
+
 const _publish = function(config, user, reponame, app, packages, libraries, allowed, flows){
 	
 	
@@ -361,61 +390,49 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
-		
+		return _pull("tlodge/databox-sdk-red:latest").then(()=>{
 
-		const libcommands = libraries.map((library)=>{
-							return `RUN cd /data/nodes/databox && npm install --save ${library}`
-						});
-		
-		
-		//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-		const dcommands = [
-							`FROM tlodge/databox-sdk-red:latest`,
-							`ADD flows.json /data/flows.json`,
-							'LABEL databox.type="app"',
-							`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
-					   ];	
-	
-		const startcommands = [
-							"EXPOSE 8080",
-							"CMD /root/start.sh"
-		];
-		
-		const dockerfile = [...dcommands, ...libcommands, ...startcommands].join("\n");
-	
-		console.log("-->building with dockerfile");
-		console.log(dockerfile);
-		
-		const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
-		console.log("generated manifest");
-		console.log(manifest);
+			const libcommands = libraries.map((library)=>{
+				return `RUN cd /data/nodes/databox && npm install --save ${library}`
+			});
 
-		const data = {
-						manifest: JSON.stringify(manifest),
-										
-						poster: JSON.stringify({
-							username: user.username,
-						}),
-										
-						postDate:  JSON.stringify((new Date()).toISOString()),
-										
-						queries: JSON.stringify(0),
-		}; 
+
+			//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
+			const dcommands = [
+								`FROM tlodge/databox-sdk-red:latest`,
+								`ADD flows.json /data/flows.json`,
+								'LABEL databox.type="app"',
+								`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
+						   ];	
 		
-		console.log("saving to app store");
-		console.log(data);
+			const startcommands = [
+								"EXPOSE 8080",
+								"CMD /root/start.sh"
+			];
 			
-		return _saveToAppStore(config,data).then(function(result){
-			var path = `${user.username}-tmp.tar.gz`;
+			const dockerfile = [...dcommands, ...libcommands, ...startcommands].join("\n");
+			const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
+			const data = {
+							manifest: JSON.stringify(manifest),
+											
+							poster: JSON.stringify({
+								username: user.username,
+							}),
+											
+							postDate:  JSON.stringify((new Date()).toISOString()),
+											
+							queries: JSON.stringify(0),
+			}; 
+			return _saveToAppStore(config,data);
+		
+		}).then(function(result){
+			const path = `${user.username}-tmp.tar.gz`;
 			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
 			reject("could not save to app store!");
 		}).then(function(tarfile){
-			
 			const appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
-			//${config.registry.URL}/
-			return createDockerImage(tarfile, `${appname}`);
-			
+			return createDockerImage(tarfile, `${appname}`);	
 		},(err)=>{
 			reject("could not create tar file");
 		}).then(function(tag){
@@ -427,8 +444,8 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 		}, (err)=>{
 			reject('could not upload to registry');
 		});
-	});
-};
+	});		
+}
 
 
 //list all apps owned by this user

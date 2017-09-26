@@ -954,7 +954,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var router = _express2.default.Router();
 var agent = _superagent2.default.agent();
-var network = "bridge";
+var networks = ["databox_default", "bridge"];
 
 //TODO: check if container is tagged instead, as this is a less ambiguous way of retrieving the required container
 var _fetchDockerIP = function _fetchDockerIP(containerName) {
@@ -1000,9 +1000,18 @@ var _addr = function _addr(container) {
 	//ingress
 	console.log("retrieving addr for", container);
 
-	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks[network]) {
-		return container.NetworkSettings.Networks[network].IPAddress || "";
+	if (container.NetworkSettings && container.NetworkSettings.Networks) {
+		var net = networks.find(function (network) {
+			return container.NetworkSettings.Networks[network];
+		});
+
+		console.log("found ip addr for network", net);
+
+		if (net) {
+			return container.NetworkSettings.Networks[net].IPAddress || "127.0.0.1";
+		}
 	}
+
 	return "127.0.0.1";
 };
 

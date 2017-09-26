@@ -30,7 +30,6 @@ function checkcredentials(config){
 }
 
 function addroutes(app, auth){
-  console.log("adding routes!");
   app.use('/auth', require('./routes/auth'));
   app.use('/github', auth, require('./routes/github'));
   app.use('/nodered', auth, require('./routes/nodered'));
@@ -121,7 +120,7 @@ function start(config){
 
   console.log(`listening on port ${PORT}`)
   server.listen(PORT);
-
+  
 }
 
 

@@ -295,7 +295,7 @@ export default class NodeEditor extends React.Component {
 
 	_onMouseUp(e){
 		
-		e.stopPropagation();
+		//e.stopPropagation();
 	}
 
 	_toggleInfo(){
