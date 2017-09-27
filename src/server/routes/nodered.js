@@ -56,9 +56,11 @@ const _waitForStart = function(container){
 	return new Promise((resolve,reject)=>{
 		container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
     		stream.on('data', function(line) {
+    			console.log(line.toString());
     			if (line.toString().indexOf("Started flows") != -1){
     				console.log("container ready for flows");
     				setTimeout(()=>{
+    					console.log("posting flows");
     					resolve(true);	
     				},1000);
     			}
@@ -132,7 +134,8 @@ var _inspect = function(container){
 }
 
 var _startContainer = function(container, flows, username){
-    return _waitForStart(container).then(function(){
+    return _waitForStart(container).then(()=>{
+    	console.log("container has started!");
         return _inspect(container);
     }).then((cdata)=>{
     	console.log("starting container, devmode is ", DEVMODE);
