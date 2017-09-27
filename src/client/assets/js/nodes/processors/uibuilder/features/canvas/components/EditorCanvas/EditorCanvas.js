@@ -104,7 +104,7 @@ class EditorCanvas extends Component {
         this.setOffset(left,top-40); // name field=40
       }
       
-      if (templates.length <= 0 && od===null){
+      if (templates.length <= 0 || od===null){
         const dim = _canvasdim(w,h,this.state.aspect);
         this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
       }

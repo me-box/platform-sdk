@@ -263,6 +263,7 @@ function deleteTab(id){
 }
 
 function mouseMove(x,y){
+  
   return {
      type: nodeActionTypes.MOUSE_MOVE,
      x,

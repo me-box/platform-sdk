@@ -17,34 +17,43 @@ const _oneof = function(schema, id, selectedid){
 	
 		if (item.type === "object"){
 			if (item.properties){
-				tail = _payload(item.properties, id, selectedid)
+				tail = _oneofpayload(item, id, selectedid)
 			}
+		}
+		else if (item.type === "oneof"){
+
 			if (item.oneOf){
 				tail = _oneof(item.oneOf, id, selectedid)
 			}
-		}else{
-			tail = _formatprimitive(item,i,id, selectedid);
+		}
+		else{
+			//perhaps have a different format primitive for oneof items?
+			const style = {
+				background: '#2196F3',
+				border: 'none',
+				color: 'white',
+				fontWeight: 'normal'
+			}
+			tail = _formatprimitive(item,`if ${item.key}=${item.value}`,id,selectedid, style);
 		}
 									
-		return 	<div key={i}>
-					<div className="flexcolumn">
-						<div>
-							<div className="centered"><strong>{item.description}</strong></div>
-						</div>
-						<div>
-							<div className="flexcolumn">
-								{tail}
+		return 		<div key={i}>
+						<div className="flexcolumn">
+							<div>
+								<div className="flexcolumn">
+									{tail}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				
 	});
 };
 
-const _formatprimitive = function(item,key,id,selectedid){
+const _formatprimitive = function(item,key,id,selectedid, attributestyle={}){
 	return <div key={key}>
 				<div className="flexrow">
-					<div className="attributetitle">
+					<div className="attributetitle" style={attributestyle}>
 						<div className="centered">
 							<strong>{key}</strong>
 						</div>
@@ -55,8 +64,8 @@ const _formatprimitive = function(item,key,id,selectedid){
 						</div>
 					</div>
 					<div style={{borderRight: '1px solid #b6b6b6'}}>
-						<div className="centered">
-							<div dangerouslySetInnerHTML={{__html: item.description.replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
+						<div className="schemadescription">
+							<div dangerouslySetInnerHTML={{__html: (item.description || "").replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
 						</div>
 					</div>
 				</div>
@@ -89,7 +98,30 @@ const _formatobject = function(item,key,id,selectedid){
 				
 }
 
+const _oneofpayload = function(item, id, selectedid){
+	
+	const schema = item.properties;
 
+	if (!schema)
+		return null;
+
+	const items = Object.keys(schema).map((key,i)=>{
+		const item = schema[key];
+		if (item.type === "object" || item.type=="oneof"){
+			return _formatobject(item,key,id, selectedid); 
+		}			
+		return _formatprimitive(item,key,id, selectedid);
+	});
+
+	return 	<div className="flexcolumn">
+				<div className="objectoneoftitle">
+					<div className="centered">
+					{`if ${item.key}=${item.value}`}
+					</div>
+				</div>
+				{items}
+			</div>
+};
 
 const _payload = function(schema, id, selectedid){
 	
@@ -98,7 +130,7 @@ const _payload = function(schema, id, selectedid){
 
 	return Object.keys(schema).map((key,i)=>{
 		const item = schema[key];
-		if (item.type === "object"){
+		if (item.type === "object" || item.type=="oneof"){
 			return _formatobject(item,key,id, selectedid); 
 		}			
 		return _formatprimitive(item,key,id, selectedid);
@@ -261,7 +293,7 @@ export default class NodeEditor extends React.Component {
 						<div className="flexcolumn">
 							<div className="noborder" style={{background:'#424242', color: 'white'}} onClick={toggleOutputs}>
 								<div className="centered" >
-									there are {outputs.length} recipients of data from this function {outputtogglemsg}
+									there are {outputs.length} recipients of data from this function ({outputtogglemsg})
 								</div>
 							</div>
 							{this.props.values.showoutputs && outputdescription}
@@ -308,6 +340,8 @@ export default class NodeEditor extends React.Component {
 class Schema extends React.Component {
 
 	render(){
+
+	
 
 		const {schema, id, selectedid} = this.props;
 

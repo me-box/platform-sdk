@@ -106,9 +106,7 @@ export default function reducer(state=initialState, action = {}) {
             }
         });
 
-        console.log("newTemplatesById is", newTemplatesById);
-        console.log("so templates is", [...coretemplates, ...newTemplatesById.map(t=>t.id)]);
-        console.log("templatesById is ", [...coretemplatesById,...newTemplatesById]);
+        
 
         return {
             ...state,

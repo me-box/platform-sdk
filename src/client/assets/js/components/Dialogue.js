@@ -10,7 +10,7 @@ class Dialogue extends React.Component {
 		console.log("am rendeing the dialogu!!");
 		const dialoguestyle = {
 			position: 'absolute',
-			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING) + PALETTE_WIDTH}px)`,
+			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING)}px)`,
 			top: NODE_EDITOR_PADDING, 
 			left: NODE_EDITOR_PADDING, 
 			background: 'white',
@@ -22,8 +22,10 @@ class Dialogue extends React.Component {
 		const fullwidth = {
 			width: "100%",
 			height: "100%",
-			position: 'absolute',
+			position: "fixed",
 			background: 'rgba(255,255,255,0.9)',
+			top: 0,
+			left: 0,
 		}
 
 	

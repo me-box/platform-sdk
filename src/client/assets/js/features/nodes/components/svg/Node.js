@@ -104,10 +104,12 @@ export default class Node extends Component {
         
     }
 
+
+
     _nodeMouseUp(id, e){
         
         e.stopPropagation();
-        e.preventDefault();
+        //e.preventDefault();
 
         this.props.actions.nodeMouseUp(id); 
     }

@@ -42,12 +42,19 @@ class NodeCanvas extends Component {
 
   constructor(props){
   	super(props);
+
+    this.state = {mousePressed: false};
   	this._onMouseMove = this._onMouseMove.bind(this);
   	this._onScroll = this._onScroll.bind(this);
-  
-  	this.mouseMove = bindActionCreators(mouseActions.mouseMove, this.props.dispatch);
+    this._onMouseDown = this._onMouseDown.bind(this);
+  	this._onMouseUp = this._onMouseUp.bind(this);
+
+    this.mouseMove = bindActionCreators(mouseActions.mouseMove, this.props.dispatch);
+    this.mouseDown = bindActionCreators(mouseActions.mouseDown, this.props.dispatch);
   	this.mouseUp   = bindActionCreators(mouseActions.mouseUp, this.props.dispatch);
-  	
+    
+ 
+
     /*this.scroll = bindActionCreators(MouseActions.scroll, this.props.dispatch);
   	this.linkSelected = bindActionCreators(linkSelected, this.props.dispatch);*/
   }
@@ -83,7 +90,7 @@ class NodeCanvas extends Component {
       height: h,
     }
 
-    return  connectDropTarget(<div id="chart" onMouseMove={this._onMouseMove} onMouseUp={this.mouseUp} style={chartstyle}>
+    return  connectDropTarget(<div id="chart" onMouseMove={this._onMouseMove} onMouseUp={this._onMouseUp} onMouseDown={this._onMouseDown}  style={chartstyle}>
                <svg id="svgchart" width={w} height={h}>
                   {_links}
                   {_nodes}
@@ -91,58 +98,6 @@ class NodeCanvas extends Component {
                {_configs}
             </div> ); 
   }
-
-
-    /*const { w,h,nodes, selectedNode, selectedLink, links, item, itemType, currentOffset, isDragging, dispatch } = this.props;
-    
-    let chartstyle = {
-    	top: 35,
-    	width:'100%',
-    }
-    let d3nodes = nodes.map((node)=>{
-    	const d3nodeprops = {
-    		key: node.id,
-        	selected: selectedNode ? selectedNode.id == node.id : false,
-    		d: node,
-    		...bindActionCreators(NodeMouseActions, dispatch),
-    	}
-    	return <D3Node {...d3nodeprops}/>
-    })
-    let connectors = links.map((link, i)=>{
-    	let selected = false;
-    	
-    	if (this.props.selectedLink){
-    		if (this.props.selectedLink.source.id === link.source.id && this.props.selectedLink.target.id === link.target.id){
-    			selected = true;
-    		}
-    	}
-    	const linkprops = {
-    		key: `${i}${link.source.id}${link.target.id}`,
-    		source: link.source,
-    		target: link.target,
-    		onClick: this.linkSelected.bind(this, link),
-    		selected: selected,
-    		sourcePort: link.sourcePort,
-    	}
-    	return <Link{...linkprops} />
-    })
-    const chartprops = {
-    	onMouseMove: this._onMouseMove,
-    	onMouseUp: this.mouseUp,
-    }
-	
-    
-    return <div id="chart"  style={chartstyle} onScroll={this._onScroll}>
-   				
-    			<div {...chartprops} width={w} height={h}>
-    			<svg id="svgchart" width={w} height={h}>
-    				{connectors}
-    				{d3nodes}
-    			</svg>
-    			</div>
-    	   </div>
-    
-  }*/
   
   _onScroll(e){
   	this.scroll(e.target.scrollTop);
@@ -150,9 +105,24 @@ class NodeCanvas extends Component {
   
   _onMouseMove(e){
     const {clientX, clientY} = e;
-    this.mouseMove(clientX,clientY);
+    //only ever interested in the mouse move event if dragging!
+    if (this.state.mousePressed){
+      this.mouseMove(clientX,clientY);
+    }
   }
 
+  
+  //maybe check on mouse out??
+
+  _onMouseDown(e){
+    this.setState({mousePressed:true});
+    this.mouseDown(e);
+  }
+
+  _onMouseUp(e){
+    this.setState({mousePressed:false});
+    this.mouseUp(e);
+  }
 }
 
 const getTab = (state) => state.workspace.current;

@@ -17,7 +17,7 @@ import NotFoundView from 'components/NotFound';
 
 export default (
   <Route path="/" component={App}>
-  	<IndexRoute component={Menu} />   
+  	<IndexRoute component={Editor} />   
   	<Route path="/menu" component={Menu} />
     <Route path="/app" component={Editor} />
     

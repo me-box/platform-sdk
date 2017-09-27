@@ -17,17 +17,18 @@ export default class Node extends React.Component {
 	   componentDidMount(){
 	   		//reset these as inputs may have changed. Could only do this if the inputs have changed, but then would need to keep track
 	   		//of previous version in reducer
-	   		this.props.updateNode("xtype", []);
-	   		this.props.updateNode("ytype", []);
+	   		//this.props.updateNode("xtype", []);
+	   		//this.props.updateNode("ytype", []);
 	   		
-	  	 	if (this.props.values.subtype){
+	  	 	//if (this.props.values.subtype){
 	   			//this.props.updateOutputSchema(this.props.values.subtype);
-	   		}
+	   		//}
 	   }
 		
        render() {
         
           //inputschemas would be nice?
+          console.log("rendering chart with props", this.props);
 
           const {node, inputs=[], values={}, updateNode, help={}} = this.props;
 
@@ -62,10 +63,10 @@ export default class Node extends React.Component {
           	
           	const {schema:{output}} = input;
 
-          	if (output && output.msg){
-          		if (output.msg.properties){
-          			if (output.msg.properties.payload){
-          				schema = output.msg.properties.payload.properties;		
+          	if (output){
+          		if (output.properties){
+          			if (output.properties.payload){
+          				schema = output.properties.payload.properties;		
           			}
           		}
           	} 	

@@ -1615,6 +1615,8 @@ var DEVMODE = argv.dev || false;
 var network = "bridge";
 
 var _postFlows = function _postFlows(ip, port, data, username) {
+	var attempts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+
 	console.log('connecting to ' + ip + ':' + port + '/flows');
 
 	//add in channelIDs here
@@ -1625,11 +1627,19 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
-	console.log("flows:", JSON.stringify(flows, null, 4));
+	//console.log("flows:", JSON.stringify(flows,null,4));
 	return new Promise(function (resolve, reject) {
+		if (attempts > 5) {
+			reject();
+		}
 		_superagent2.default.post(ip + ':' + port + '/flows').send(flows).set('Accept', 'application/json').type('json').end(function (err, result) {
 			if (err) {
-				console.log(err);
+				console.log("eror posting new flows", err);
+				setTimeout(function () {
+					attempts += 1;
+					console.log("retrying ", attempts);
+					_postFlows(ip, port, data, username, attempts);
+				}, 1000);
 				reject(err);
 			} else {
 				console.log("successfully installed new flows");
@@ -1647,9 +1657,8 @@ var _waitForStart = function _waitForStart(container) {
 		container.attach({ stream: true, stdout: true, stderr: true }, function (err, stream) {
 			stream.on('data', function (line) {
 				if (line.toString().indexOf("Started flows") != -1) {
-					console.log("started container");
+					console.log("container ready for flows");
 					setTimeout(function () {
-						console.log("sending flows");
 						resolve(true);
 					}, 1000);
 				}

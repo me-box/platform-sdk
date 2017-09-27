@@ -35,14 +35,21 @@ const config = {
             return acc; 
         },{});
 
-        return {
-                    output: {
-                        type: "object",
-                        description: "container object",
-                        properties: {
-                            name: {type:'string', description: "a name assigned to this node"}, 
-                            id:  {type:'string', description: "the node id: [id]"},
-                            msg: {
+        console.log("*** payload schema is", payload);
+
+        console.log({
+                        output: {
+                            type: "object",
+                            description: "container object",
+                            properties: {
+                                name: {type:"string", description: "a name assigned to this node"}, 
+                                id:  {type:"string", description: "the node id: [id]"},
+                                payload : {
+                                                type:"object", 
+                                                description:"extracted attributes", 
+                                                properties: payload
+                                }
+                            /*msg: {
                                 type: "object",
                                 description: "the container object",
                                 properties: {
@@ -52,7 +59,35 @@ const config = {
                                         properties: payload,
                                     }
                                 }
+                            }*/
                             }
+                        }
+                    });
+
+
+        return {
+                    output: {
+                        type: "object",
+                        description: "container object",
+                        properties: {
+                            name: {type:'string', description: "a name assigned to this node"}, 
+                            id:  {type:'string', description: "the node id: [id]"},
+                             payload : {
+                                                type:"object", 
+                                                description:"extracted attributes", 
+                                                properties: payload
+                                }
+                            /*msg: {
+                                type: "object",
+                                description: "the container object",
+                                properties: {
+                                    payload: {
+                                        type: "object",
+                                        description: "the message payload",
+                                        properties: payload,
+                                    }
+                                }
+                            }*/
                         }
                     }
                 }

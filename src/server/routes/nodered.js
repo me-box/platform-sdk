@@ -10,7 +10,7 @@ const DEVMODE = argv.dev || false;
 const network = "bridge";
 
 
-const _postFlows = function(ip, port, data, username){
+const _postFlows = function(ip, port, data, username, attempts=0){
 	console.log(`connecting to ${ip}:${port}/flows`);
 
 	
@@ -22,8 +22,11 @@ const _postFlows = function(ip, port, data, username){
 	});
 	//REMOVE THIS TO -- PUT IN TO TEST!
 	//port = 1880;
-    console.log("flows:", JSON.stringify(flows,null,4));
+    //console.log("flows:", JSON.stringify(flows,null,4));
 	return new Promise((resolve,reject)=>{
+		if (attempts > 5){
+			reject()
+		}
 		request
 				.post(`${ip}:${port}/flows`)
 				.send(flows)
@@ -31,7 +34,12 @@ const _postFlows = function(ip, port, data, username){
 				.type('json')
 				.end((err, result)=>{
 					if (err) {
-						console.log(err);
+						console.log("eror posting new flows", err);
+						setTimeout(()=>{
+							attempts += 1;
+							console.log("retrying ", attempts);
+							_postFlows(ip, port, data, username, attempts);
+						},1000);
 						reject(err);
 					} else {
 						console.log("successfully installed new flows");
@@ -49,9 +57,8 @@ const _waitForStart = function(container){
 		container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
     		stream.on('data', function(line) {
     			if (line.toString().indexOf("Started flows") != -1){
-    				console.log("started container");
-    				setTimeout(function(){
-    					console.log("sending flows");
+    				console.log("container ready for flows");
+    				setTimeout(()=>{
     					resolve(true);	
     				},1000);
     			}

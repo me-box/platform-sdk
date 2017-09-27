@@ -69,21 +69,24 @@ function _codeForInput(data){
 
 //creates the var assignment
 export function codeFromSchema(data, type){	
+	console.log("generating code for schema", data, " type", type);
+
 	if (type==="input"){
-		return Object.keys(data).reduce((lines, key)=>{
-		
-			switch (data[key].type){
+		//return Object.keys(data).reduce((lines, key)=>{
+		//	console.log("looking at data", data[key]);		
+			const lines = [];
+			switch (data.type){
 				case "object":
-					lines.push(_descriptionforobject(data[key]));
-					lines.push(_codeforschema("msg", data[key].properties));
-					lines.push(_subschema(key, data[key].properties));
+					lines.push(_descriptionforobject(data));
+					lines.push(_codeforschema("msg", data.properties));
+					lines.push(_subschema("msg", data.properties));
 					break;
 				
 				default:
-					lines.push(`const ${key}=msg.${key}`); 
+					lines.push(`const ${key}=msg.${key} `); 
 			}	
-			return lines;
-		},[]).join("");	
+			return lines.join(" ");
+		//},[]).join(" ");	
 	}
 	else if (type==="output"){
 		return `return ${_codeForInput(data)}`;

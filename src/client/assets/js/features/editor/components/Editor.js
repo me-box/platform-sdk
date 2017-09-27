@@ -61,6 +61,23 @@ export default class Editor extends Component {
       window.removeEventListener('resize', this._handleResize);
       window.removeEventListener('keydown', this._handleKeyDown);
   }
+  /*
+  return (<div onKeyDown={this._keyPress}> 
+          <Toolbar {...toolbarprops}/>
+          
+          <DragDropContainer>
+           <div id="main-container" className="sidebar-closed">
+              <Palette />
+              <Workspace/>
+              {publishervisible && <Publisher/>}
+           </div>
+          </DragDropContainer>
+          <NetworkStatus/>
+          <RepoManager h={h-TOOLBAR_HEIGHT}/>
+          <TestManager h={h-TOOLBAR_HEIGHT}/>
+          <ExampleManager h={h-TOOLBAR_HEIGHT}/>}
+          <Help h={h-TOOLBAR_HEIGHT} w={w} />
+        </div>);*/
 
   render() {
 
@@ -76,23 +93,23 @@ export default class Editor extends Component {
       test: this.props.actions.test,
     } 
 
-   	return (<div onKeyDown={this._keyPress}> 
+    return (<div onKeyDown={this._keyPress}> 
           <Toolbar {...toolbarprops}/>
           
           <DragDropContainer>
-	    		 <div id="main-container" className="sidebar-closed">
-	    				<Palette />
+           <div id="main-container" className="sidebar-closed">
+              <Palette />
               <Workspace/>
               {publishervisible && <Publisher/>}
-	    		 </div>
+           </div>
           </DragDropContainer>
           <NetworkStatus/>
           <RepoManager h={h-TOOLBAR_HEIGHT}/>
           <TestManager h={h-TOOLBAR_HEIGHT}/>
-          <ExampleManager h={h-TOOLBAR_HEIGHT}/>}
+          <ExampleManager h={h-TOOLBAR_HEIGHT}/>
           <Help h={h-TOOLBAR_HEIGHT} w={w} />
-	    	</div>);
-    }
+        </div>)
+  }
 
 
     _handleKeyDown(e) {

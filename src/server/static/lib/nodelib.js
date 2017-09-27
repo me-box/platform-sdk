@@ -4166,13 +4166,22 @@ var _oneof = function _oneof(schema, id, selectedid) {
 
 		if (item.type === "object") {
 			if (item.properties) {
-				tail = _payload(item.properties, id, selectedid);
+				tail = _oneofpayload(item, id, selectedid);
 			}
+		} else if (item.type === "oneof") {
+
 			if (item.oneOf) {
 				tail = _oneof(item.oneOf, id, selectedid);
 			}
 		} else {
-			tail = _formatprimitive(item, i, id, selectedid);
+			//perhaps have a different format primitive for oneof items?
+			var style = {
+				background: '#2196F3',
+				border: 'none',
+				color: 'white',
+				fontWeight: 'normal'
+			};
+			tail = _formatprimitive(item, 'if ' + item.key + '=' + item.value, id, selectedid, style);
 		}
 
 		return React.createElement(
@@ -4181,19 +4190,6 @@ var _oneof = function _oneof(schema, id, selectedid) {
 			React.createElement(
 				'div',
 				{ className: 'flexcolumn' },
-				React.createElement(
-					'div',
-					null,
-					React.createElement(
-						'div',
-						{ className: 'centered' },
-						React.createElement(
-							'strong',
-							null,
-							item.description
-						)
-					)
-				),
 				React.createElement(
 					'div',
 					null,
@@ -4209,6 +4205,8 @@ var _oneof = function _oneof(schema, id, selectedid) {
 };
 
 var _formatprimitive = function _formatprimitive(item, key, id, selectedid) {
+	var attributestyle = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+
 	return React.createElement(
 		'div',
 		{ key: key },
@@ -4217,7 +4215,7 @@ var _formatprimitive = function _formatprimitive(item, key, id, selectedid) {
 			{ className: 'flexrow' },
 			React.createElement(
 				'div',
-				{ className: 'attributetitle' },
+				{ className: 'attributetitle', style: attributestyle },
 				React.createElement(
 					'div',
 					{ className: 'centered' },
@@ -4242,8 +4240,8 @@ var _formatprimitive = function _formatprimitive(item, key, id, selectedid) {
 				{ style: { borderRight: '1px solid #b6b6b6' } },
 				React.createElement(
 					'div',
-					{ className: 'centered' },
-					React.createElement('div', { dangerouslySetInnerHTML: { __html: item.description.replace("[id]", id).replace("[selectedid]", selectedid) } })
+					{ className: 'schemadescription' },
+					React.createElement('div', { dangerouslySetInnerHTML: { __html: (item.description || "").replace("[id]", id).replace("[selectedid]", selectedid) } })
 				)
 			)
 		)
@@ -4293,13 +4291,43 @@ var _formatobject = function _formatobject(item, key, id, selectedid) {
 	);
 };
 
+var _oneofpayload = function _oneofpayload(item, id, selectedid) {
+
+	var schema = item.properties;
+
+	if (!schema) return null;
+
+	var items = Object.keys(schema).map(function (key, i) {
+		var item = schema[key];
+		if (item.type === "object" || item.type == "oneof") {
+			return _formatobject(item, key, id, selectedid);
+		}
+		return _formatprimitive(item, key, id, selectedid);
+	});
+
+	return React.createElement(
+		'div',
+		{ className: 'flexcolumn' },
+		React.createElement(
+			'div',
+			{ className: 'objectoneoftitle' },
+			React.createElement(
+				'div',
+				{ className: 'centered' },
+				'if ' + item.key + '=' + item.value
+			)
+		),
+		items
+	);
+};
+
 var _payload = function _payload(schema, id, selectedid) {
 
 	if (!schema) return null;
 
 	return Object.keys(schema).map(function (key, i) {
 		var item = schema[key];
-		if (item.type === "object") {
+		if (item.type === "object" || item.type == "oneof") {
 			return _formatobject(item, key, id, selectedid);
 		}
 		return _formatprimitive(item, key, id, selectedid);
@@ -4552,8 +4580,9 @@ var NodeEditor = (_dec = (0, _reactRedux.connect)(function (state, ownProps) {
 								{ className: 'centered' },
 								'there are ',
 								outputs.length,
-								' recipients of data from this function ',
-								outputtogglemsg
+								' recipients of data from this function (',
+								outputtogglemsg,
+								')'
 							)
 						),
 						this.props.values.showoutputs && outputdescription
