@@ -220,12 +220,14 @@ export function stopAndRemoveContainer(name){
 				console.log("container stopped!");
 				if (err){
 					reject(err);
+					return;
 				}
 				containerToStop.remove((err, data)=>{
 					if (err){
 						reject(err);
+					}else{
+						resolve(true);
 					}
-					resolve(true);
 				});
 			});			
 		});

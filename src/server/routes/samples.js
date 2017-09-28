@@ -6,8 +6,7 @@ const router = express.Router();
 router.get('/:sensor', function(req, res){
 
 	const sensor 	= req.params.sensor;
-	console.log("received request for sensor");
-	console.log(sensor);
+
 	
 	if (!sensor){
 		res.send({success:false, error: "no sensor provided"});

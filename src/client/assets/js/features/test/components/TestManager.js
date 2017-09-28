@@ -23,7 +23,7 @@ export default class TestManager extends Component {
 
 	render() {
 		
-		const {nodes, visible, testurl,username} = this.props;
+		const {nodes, visible, testurl,username, deploying, deployError} = this.props;
 	
 		const iconstyle = {
             alignSelf: 'center',
@@ -36,16 +36,19 @@ export default class TestManager extends Component {
             textAlign: 'center',
             boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.9), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
             color:'white',
+            opacity: deploying || deployError ? 0.2 : 1,
         }
 		
 
+
 		const links = nodes.map((node,i)=>{
+			const url = deploying || deployError ? "#" : `${testurl}?username=${username}#/${node.type}`
 			return <div key={i}>
 						<div className="flexrow">
 							<div>
 								<div style={{margin:'auto', padding: 20}}>
 									<div>
-										<a href={`${testurl}?username=${username}#/${node.type}`} target="_blank">
+										<a href={url} target="_blank">
 											<div style={iconstyle}>
 												<i className={`fa ${node._def.icon} fa-fw fa-3x`}></i> 
 											</div>

@@ -431,19 +431,23 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
 			reject("could not save to app store!");
+			return;
 		}).then(function(tarfile){
 			const appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
 			return createDockerImage(tarfile, `${appname}`);	
 		},(err)=>{
 			reject("could not create tar file", err);
+			return;
 		}).then(function(tag){
 			return uploadImageToRegistry(tag, `${config.registry.URL}`);
 		},(err)=>{
 			reject('could not create docker image');
+			return;
 		}).then(()=>{
 			resolve();
 		}, (err)=>{
 			reject('could not upload to registry');
+			return;
 		});
 	});		
 }

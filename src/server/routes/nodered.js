@@ -24,28 +24,31 @@ const _postFlows = function(ip, port, data, username, attempts=0){
 	//port = 1880;
     //console.log("flows:", JSON.stringify(flows,null,4));
 	return new Promise((resolve,reject)=>{
+		
 		if (attempts > 5){
-			reject()
+			reject("sorry couldn't connect to the container!");
+			return;
 		}
+		
 		request
-				.post(`${ip}:${port}/flows`)
-				.send(flows)
-				.set('Accept', 'application/json')
-				.type('json')
-				.end((err, result)=>{
-					if (err) {
-						console.log("eror posting new flows", err);
-						setTimeout(()=>{
-							attempts += 1;
-							console.log("retrying ", attempts);
-							_postFlows(ip, port, data, username, attempts);
-						},1000);
-						reject(err);
-					} else {
-						console.log("successfully installed new flows");
-						resolve(true);
-					}
-				});
+			.post(`${ip}:${port}/flows`)
+			.send(flows)
+			.set('Accept', 'application/json')
+			.type('json')
+			.end((err, result)=>{
+				if (err) {
+					console.log("eror posting new flows", err);
+					setTimeout(()=>{
+						attempts += 1;
+						console.log("retrying ", attempts);
+						_postFlows(ip, port, data, username, attempts);
+					},1000);
+				} else {
+					console.log("successfully installed new flows");
+					resolve(true);
+				}
+			});
+		
 	});
 }
 
@@ -59,6 +62,7 @@ const _waitForStart = function(container){
     			console.log(line.toString());
     			if (line.toString().indexOf("Started flows") != -1){
     				console.log("container ready for flows");
+    				stream.destroy();
     				setTimeout(()=>{
     					console.log("posting flows");
     					resolve(true);	
@@ -78,8 +82,18 @@ const _pullContainer  = function(name){
 			if (err){
 				console.log("error pulling container!", err);
 				reject(err);
+				return;
 			}
-			return docker.modem.followProgress(stream, ()=>{console.log("successfully pulled container");resolve()}, (event)=>{console.log(event)});
+			const pulled = ()=>{
+				console.log("successfully pulled container");
+				resolve("complete!");
+			}
+
+			const pulling = (event)=>{
+				console.log(`[pulling]: ${event.toString()}`);
+			}
+
+			return docker.modem.followProgress(stream, pulled, pulling);
 		});
 	});
 }
@@ -237,6 +251,8 @@ const _restart = function(container){
 	});
 }
 
+//stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
+//the test web app responds to the client webpage before it has been given the details of the new app.
 const _createContainerFromStandardImage = function(username, flows){
 	
 	const opts = {
@@ -245,6 +261,14 @@ const _createContainerFromStandardImage = function(username, flows){
 			status: ['running', "exited"],			
 		}
   	}	
+
+  	/*return stopAndRemoveContainer(`${username}-red`).then(()=>{
+		return _pullContainer("tlodge/databox-red:latest")
+	}).then(()=>{	
+		return createTestContainer('tlodge/databox-red', username, network);
+	}).then((container)=>{
+		return _startContainer(container, flows, username);
+	});*/
 
 	return _listContainers(opts).then((containers)=>{
     		return containers;
@@ -264,6 +288,7 @@ const _createContainerFromStandardImage = function(username, flows){
 			}
 			else{
 				const c = containers[0];
+
 				//restart the container if it exists but is stopped
 				if (c.State === 'exited'){
 					console.log("restarting container!!");
@@ -297,7 +322,6 @@ router.post('/flows', function(req, res){
 	},[])));
 	
 	if (libraries.length > 0){
-		console.log("CREATING NEW IMAGE AND CONTAINER!!");
 		return _createNewImageAndContainer(libraries, req.user.username, flows).then((result)=>{
 			res.send({success:true});
 		}, (err)=>{
@@ -305,7 +329,6 @@ router.post('/flows', function(req, res){
 		});
 	}
 	else{
-		console.log("CREATING CONTAINER FROM STANDARD IMAGE!");
 		return _createContainerFromStandardImage(req.user.username, flows).then((result)=>{
 			res.send({success:true});
 		}, (err)=>{

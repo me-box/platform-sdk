@@ -3,6 +3,14 @@ import cx from 'classnames';
 import Textfield from 'components/form/Textfield';
 import {configNode} from 'utils/ReactDecorators';
 
+
+const _inputsHaveChanged = (i1,i2)=>{
+	if (i2.length <= i1.length){
+		return true;
+	}
+	return false;
+}
+
 @configNode()
 export default class Node extends React.Component {
 	   
@@ -17,8 +25,8 @@ export default class Node extends React.Component {
 	   componentDidMount(){
 	   		//reset these as inputs may have changed. Could only do this if the inputs have changed, but then would need to keep track
 	   		//of previous version in reducer
-	   		//this.props.updateNode("xtype", []);
-	   		//this.props.updateNode("ytype", []);
+	   		this.props.updateNode("xtype", []);
+	   		this.props.updateNode("ytype", []);
 	   		
 	  	 	//if (this.props.values.subtype){
 	   			//this.props.updateOutputSchema(this.props.values.subtype);

@@ -9,15 +9,21 @@ export const NAME = 'test';
 
 const TOGGLE_VISIBLE	= 'iot.red/test/TOGGLE_VISIBLE';
 const SET_VISIBLE		= 'iot.red/test/SET_VISIBLE';
-const DEPLOY 			= 'iot.red/test/DEPLOY';
+
 const MOUSE_UP 			= 'iot.red/test/MOUSE_UP';
-const RECEIVED_TESTURL = 'iot.red/test/RECEIVED_TESTURL';
+const RECEIVED_TESTURL  = 'iot.red/test/RECEIVED_TESTURL';
+
+const DEPLOYING 		= 'iot.red/test/DEPLOYING';
+const DEPLOYED		    = 'iot.red/test/DEPLOYED';
+const DEPLOY_ERROR		= 'iot.red/test/DEPLOY_ERROR';
 
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 
 const initialState = {
 	visible:false,
 	testurl: "",
+	deploying: false,
+	deployError: false,
 }
  
 export default function reducer(state = initialState, action) {
@@ -46,6 +52,26 @@ export default function reducer(state = initialState, action) {
 	  		return {
 	  			...state,
 	  			testurl: action.testurl,
+	  		}
+
+	  case DEPLOYING:
+			return {
+	  			...state,
+	  			deploying: true,
+	  		}
+
+	  case DEPLOYED:
+	  		return {
+	  			...state,
+	  			deploying:false,
+	  			deployError:false,
+	  		}
+
+	  case DEPLOY_ERROR:
+	  		return {
+	  			...state,
+	  			deploying:false,
+	  			deployError: true,
 	  		}
 
 	  default:
@@ -92,6 +118,8 @@ export function test(){
           }                                                     
     	});
 	
+		dispatch(deploying());
+
 	    request
   			.post(`${config.root}/nodered/flows`)
   			.send([
@@ -103,12 +131,12 @@ export function test(){
   			.end(function(err, res){
   				if (err){
   					console.log(err);
-  					//dispatch(deployError(err));
+  					dispatch(deployError());
   				}else{
   					//TODO: make sure server responds!
-  				
-          			//dispatch(deployResponse(res.body));
-          			
+  					
+          			dispatch(deployed());
+   
   	 			}
   	 		});		
 	}
@@ -131,6 +159,24 @@ function init(){
 		  			})
 		  		});
 		}
+	}
+}
+
+function deployed(){
+	return {
+		type: DEPLOYED
+	}
+}
+
+function deployError(){
+	return {
+		type: DEPLOY_ERROR
+	}
+}
+
+function deploying(){
+	return {
+		type: DEPLOYING
 	}
 }
 
@@ -159,11 +205,17 @@ const nodes = (state) => {
 
 const testurl = (state) => state[NAME].testurl;
 
+const _deploying = (state) => state[NAME].deploying;
+
+const _deployError = (state)=> state[NAME].deployError;
+
 export const selector = createStructuredSelector({
 	nodes,
 	visible,
 	testurl,
 	username,
+	deploying : _deploying,
+	deployError: _deployError,
 });
 
 export const actionCreators = {

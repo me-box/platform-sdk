@@ -8,7 +8,7 @@ const config = {
       value: ""
     },
     subtype: {
-      value: "set-plug-power"
+      value: "TP-SetPowerState"
     },
     value: {
       value: "on"
