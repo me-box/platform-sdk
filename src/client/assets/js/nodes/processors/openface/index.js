@@ -66,6 +66,13 @@ const config = {
                 }
     },
 
+    risk: (subtype="")=>{
+      return {
+          score: 5,
+          reason: "people can be identified through face recognition"
+      }        
+    },
+
     descriptionfn: (name)=>{
         return "gets identities and bounding boxes for faces";
     }

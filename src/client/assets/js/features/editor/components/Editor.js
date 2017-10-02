@@ -94,21 +94,20 @@ export default class Editor extends Component {
     } 
 
     return (<div onKeyDown={this._keyPress}> 
-          <Toolbar {...toolbarprops}/>
-          
-          <DragDropContainer>
-           <div id="main-container" className="sidebar-closed">
-              <Palette />
-              <Workspace/>
-              {publishervisible && <Publisher/>}
-           </div>
-          </DragDropContainer>
-          <NetworkStatus/>
-          <RepoManager h={h-TOOLBAR_HEIGHT}/>
-          <TestManager h={h-TOOLBAR_HEIGHT}/>
-          <ExampleManager h={h-TOOLBAR_HEIGHT}/>
-          <Help h={h-TOOLBAR_HEIGHT} w={w} />
-        </div>)
+              <DragDropContainer>
+               <div id="main-container" className="sidebar-closed">
+                  <Palette />
+                  <Workspace/>
+                  {publishervisible && <Publisher/>}
+               </div>
+              </DragDropContainer>
+              <NetworkStatus/>
+              <RepoManager h={h-TOOLBAR_HEIGHT}/>
+              <TestManager h={h-TOOLBAR_HEIGHT}/>
+              <ExampleManager h={h-TOOLBAR_HEIGHT}/>
+              <Help h={h-TOOLBAR_HEIGHT} w={w} />
+              <Toolbar {...toolbarprops}/>
+            </div>)
   }
 
 

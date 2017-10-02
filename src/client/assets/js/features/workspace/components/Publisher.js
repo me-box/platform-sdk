@@ -2,126 +2,90 @@ import React, {Component} from 'react';
 import {TOOLBAR_HEIGHT, PALETTE_WIDTH, SIDEBAR_WIDTH, WORKSPACE_FOOTER} from 'constants/ViewConstants';
 import cx from 'classnames';
 import { bindActionCreators } from 'redux';
-import { NAME, actionCreators as workspaceActions, selector } from '../';
-import { actionCreators as repoActions} from 'features/repos/actions';
+import { NAME, actionCreators as workspaceActions, selector  as workspaceSelector} from '../';
+import { selector as riskSelector } from 'features/risk';
 
+import { actionCreators as repoActions} from 'features/repos/actions';
 import { connect } from 'react-redux';
 import Textfield from 'components/form/Textfield';
 import Textarea from 'components/form/Textarea';
+import FontIcon from 'react-md/lib/FontIcons';
 
+const combiselector = (state)=>{	
+	return {
+		...workspaceSelector(state),
+		...riskSelector(state),
+	}
+}
 
-@connect(selector, (dispatch) => {
-  return{
-     actions: {...bindActionCreators(workspaceActions, dispatch),
-     		   publish: bindActionCreators(repoActions.publish, dispatch)
-     		}
-  	 }
+@connect(combiselector, (dispatch) => {
+  	return{
+     actions: 	{
+     				...bindActionCreators(workspaceActions, dispatch),
+     		   		publish: bindActionCreators(repoActions.publish, dispatch)
+     			}
+  	}
 })
 export default class Publisher extends Component {
 	
 	constructor(props){
         super(props);
+        this.renderDetails = this.renderDetails.bind(this);
+        this.renderRisk = this.renderRisk.bind(this);
     }
-	
-	render() {
-		
-		const {workspace:{app, grid}, packages, datastores, selectedPackage} = this.props;
-		
-		const style ={
-			position: 'absolute',
-			left: PALETTE_WIDTH, 
-			width: `calc(100vw - ${PALETTE_WIDTH}px)`,
-			height: `calc(100vh - ${TOOLBAR_HEIGHT+WORKSPACE_FOOTER}px)`,
-			background: '#fff',
-			overflowY: 'auto'
-		}
-	
-		const detailprops = {
-			updateAppDescription: this.props.actions.updateAppDescription,
-			updateAppName: this.props.actions.updateAppName,
-			updateAppTags: this.props.actions.updateAppTags,
-			app: app,
-			
-		}
-		
-		const packagesprops = {
-			packageSelected: this.props.actions.selectTab,
-			installSelected: this.props.actions.installSelected,
-			updatePackagePurpose: this.props.actions.updatePackagePurpose,
-			updatePackageBenefits: this.props.actions.updatePackageBenefits,
-			packages: packages,
-			datastores: datastores,
-			selected: selectedPackage,
-		}
-		
-		const combiprops = {
-			packages: packages,
-			grid: grid,
-			toggleGrid: this.props.actions.toggleGrid,
-		}
-		
-		const submitprops = {
-			submit: this.props.actions.publish,
-			cancel: this.props.actions.cancel,	
-		}
-		
-		let installstatus;
-		
-		if (status){
-			const statusprops = {
-				status: status,
-				left: PALETTE_WIDTH, 
-				width: `calc(100vw - ${PALETTE_WIDTH}px)`,
-				height: `calc(100vh - ${TOOLBAR_HEIGHT+WORKSPACE_FOOTER}px)`,
-			}
-			installstatus = <Status {...statusprops}/>	
-		}
-		
-		return( <div id="publisher" style={style}>
-                	<div className="flexcontainer">
-                		<Details {...detailprops} />
-                		<Packages {...packagesprops}/>
-        				<Combinations {...combiprops}/>   	
-        				<Submit {...submitprops}/>
-			    	</div>
-			    </div>
-		);
-	}
-	
-}
 
-class Details extends React.Component {
 
-	render(){
-	
-		const nameprops =  {	
-								value: 	this.props.app.name || "",
+    renderDetails(){
+
+    	const {workspace:{app}, selectedPackage} = this.props;
+
+    	const nameprops =  {	
+								value: 	app.name || "",
 				 				id: "name",
 								onChange:(property, event)=>{
-                  					this.props.updateAppName(event.target.value);
+                  					this.props.actions.updateAppName(event.target.value);
               					}
 							}
 		
 		const descriptionprops = {	
-									value: 	this.props.app.description || "",
+									value: 	app.description || "",
 				 					id: "description",
 									onChange:(property, event)=>{
-                  						this.props.updateAppDescription(event.target.value);
+                  						this.props.actions.updateAppDescription(event.target.value);
               						}
 								 }
 		
 		const tagprops =  {	
-								value: 	this.props.app.tags || "",
+								value: 	app.tags || "",
 				 				id: "tags",
 								onChange:(property, event)=>{
-                  					this.props.updateAppTags(event.target.value);
+                  					this.props.actions.updateAppTags(event.target.value);
               					}
 							}
-												 					
+		
+		const purposeprops = {	
+									value: 	selectedPackage.purpose,
+				 					id: "purpose",
+									onChange:(property, event)=>{
+                  						this.props.actions.updatePackagePurpose(event.target.value);
+              						}
+								 }
+		
+		const benefitsprops = {	
+									value: 	selectedPackage.benefits,
+				 					id: "benefits",
+									onChange:(property, event)=>{
+                  						this.props.actions.updatePackageBenefits(event.target.value);
+              						}
+								 }
+		
+
 		const nameinput = <Textfield {...nameprops}/>												
 		const descriptioninput = <Textarea {...descriptionprops}/>							
 		const taginput = <Textfield {...tagprops}/>	
-							  					
+		const purposeinput = <Textarea {...purposeprops}/>	
+		const benefitsinput = <Textarea {...benefitsprops}/>
+
 		return <div className="flexcolumn">
 			<div className="headerstyle">
 				<div className="centered"> app details </div>
@@ -158,123 +122,98 @@ class Details extends React.Component {
 					</div>
 					{taginput}
 				</div>
+			</div>
+			<div>	
+				<div className="flexrow">
+					<div className="title">
+						<div className="centered">
+							purpose
+						</div>
+					</div>
+					{purposeinput}
+				</div>
+			</div>		
+			<div>	
+				<div className="flexrow">
+					<div className="title">
+						<div className="centered">
+							benefits
+						</div>
+					</div>
+					{benefitsinput}
+				</div>
 			</div>	
 		</div>        				
-        				
-	}
-}
 
+    }
 
-class Packages extends React.Component {
-	
-					 
-	
-	render(){
-	
-		const packages = this.props.packages.map((pkg,i)=>{
-			
-			
-			const className = cx({
-				button: true,
-				selected: pkg.id ===  this.props.selected.id,
-			});
-			
-			return <div key={i}>
-						<div className="centered">
-							<div className={className} onClick={this.props.packageSelected.bind(this, pkg.id)}>{pkg.name}</div>
-						</div>
-					</div>
-		})
-		
-		const install = ["optional", "compulsory"].map((type,i)=>{
-			
-			const className = cx({
-				button: true,
-				selected: this.props.selected.install === type,
-			});
-			
-			return <div key={i}>
-						<div className="centered">
-							<div onClick={this.props.installSelected.bind(this, type)} className={className}>{type}</div>
-						</div>
-					</div>
-		});
-		
-		const datastores = (this.props.datastores || []).map((datastore,i)=>{		
+    renderRisk(){
+
+    	console.log(this.props);
+    	const {rating, risks} = this.props;
+
+    	const datastores = (this.props.datastores || []).map((datastore,i)=>{		
 			return <Node key={i} {...datastore}/>
 		});
 		
-		const purposeprops = {	
-									value: 	this.props.selected.purpose,
-				 					id: "purpose",
-									onChange:(property, event)=>{
-                  						this.props.updatePackagePurpose(event.target.value);
-              						}
-								 }
-												
-		const purposeinput = <Textarea {...purposeprops}/>	
-		
-		const benefitsprops = {	
-									value: 	this.props.selected.benefits,
-				 					id: "benefits",
-									onChange:(property, event)=>{
-                  						this.props.updatePackageBenefits(event.target.value);
-              						}
-								 }
-		const benefitsinput = <Textarea {...benefitsprops}/>		
-		
+
+		const riskItems = risks.map((r,i)=>{
+
+	        const iconclass = cx({
+	          fa: true,
+	          faFw: true,
+	          [r.icon]: true,
+	        });
+
+	        const iconStyle={
+	          alignSelf: 'center',
+	          height: '2em',
+	          width: '2em',
+	          background: r.color,
+	          lineHeight: '1.8em',
+	          textAlign: 'center',
+	          boxShadow: 'rgba(0, 0, 0, 0.9) 0px 3px 8px 0px, rgba(0, 0, 0, 0.09) 0px 6px 20px 0px',
+	          color: 'white'
+	        } 
+
+	        const score = [...Array(r.score)].map((i)=>{
+	            return <FontIcon key={i}>warning</FontIcon>
+	        });
+
+	        return  <div>
+		        		<div className="flexrow" key={i}>
+		                  <div className="riskItem">
+		                    <div style={iconStyle}>
+		                      <i className={iconclass}></i>
+		                    </div>
+		                  </div>
+		                  <div>
+		                    {r.reason}
+		                  </div>
+		                  <div>
+		                    {score}
+		                  </div>
+		                </div>
+	                </div>
+	    });
+
+
 		return <div className="flexcolumn">
 			
 					<div className="headerstyle">
-						<div className="centered"> packages </div>
+						<div className="centered"> risks </div>
 					</div>
-			
+					
 					<div>	
 						<div className="flexrow">
 							<div className="title">
 								<div className="centered">
-									package
+									risk breakdown
 								</div>
 							</div>
-							<div>
-								<div className="flexrow">
-									{packages}
-								</div>
+							<div className="flexcolumn">
+								{riskItems}
 							</div>
-						</div>
-					</div>	
-					<div>	
-						<div className="flexrow">
-							<div className="title">
-								<div className="centered">
-									purpose
-								</div>
-							</div>
-							{purposeinput}
-						</div>
-					</div>	
-					<div>	
-						<div className="flexrow">
-							<div className="title">
-								<div className="centered">
-									install
-								</div>
-							</div>
-							<div>
-								<div className="flexrow">
-									{install}
-								</div>
-							</div>
-						</div>
-					</div>	
-					<div>	
-						<div className="flexrow">
-							<div className="title">
-								<div className="centered">
-									datastores
-								</div>
-							</div>
-							{datastores}
 						</div>
 					</div>	
 					<div>	
@@ -286,110 +225,55 @@ class Packages extends React.Component {
 							</div>
 							<div>
 								<div className="centered">
-									This package is rated as <strong> MEDIUM </strong> risk
+									This app has a <strong>{rating}</strong> risk
 								</div>
 							</div>
-						</div>
-					</div>	
-					<div>	
-						<div className="flexrow">
-							<div className="title">
-								<div className="centered">
-									benefits
-								</div>
-							</div>
-							{benefitsinput}
 						</div>
 					</div>	
 				</div>
-		}
-}
-
-class Combinations extends React.Component {
-
-	constructor(props){
-        super(props);
-        this._toggleGrid = this._toggleGrid.bind(this);
     }
-    
-	render(){
 	
-		const style = {
-			color: '#777',
+	render() {
+		
+		const {workspace:{app, grid}, packages, datastores, selectedPackage} = this.props;
+		
+		const style ={
+			position: 'absolute',
+			left: PALETTE_WIDTH, 
+			width: `calc(100vw - ${PALETTE_WIDTH}px)`,
+			height: `calc(100vh - ${TOOLBAR_HEIGHT+WORKSPACE_FOOTER}px)`,
+			background: '#fff',
+			overflowY: 'auto'
 		}
 		
-		const header = this.props.packages.map((pkg, i)=>{
-			return <div key={i} className="header">
-						<div className="centered">{pkg.name}</div>
-					</div>
-		});
+		const submitprops = {
+			submit: this.props.actions.publish,
+			cancel: this.props.actions.cancel,	
+		}
 		
-		const rows = this.props.packages.map((pkg, i)=>{
-			const packagerows = this.props.packages.map((row, j)=>{
-			
-			    const permitted = this.props.grid.filter((item)=>{
-			    	return  (item[0] === pkg.id && item[1] === row.id) || (item[0] === row.id && item[1] === pkg.id)
-			    }).length <= 0;
-			    
-			    const compulsory = (pkg.install === "compulsory" || row.install === "compulsory");
-				
-				const cstyle ={
-					background: compulsory ? "#f3f3f3" : "#fff",
-				}
-				
-			    const className= cx({
-						'fa': true,
-						'fa-check': permitted || compulsory,
-						'fa-times': !permitted && !compulsory,
-						'fa-1x': true,
-						'fa-fw' : true,
-				});
+		let installstatus;
 		
-				if (i===j){
-					return <div key={j} className="disabled"></div>
-				}
-				return <div style={cstyle} onClick={this._toggleGrid.bind(this, pkg, row)} key={j}> 
-							<div className="centered"> 
-								<i style={style} className={className}></i>
-							</div> 
-						</div>
-			});
-			
-			return <div key={i}>
-						<div className="flexrow">
-							<div className="title">
-								<div className="centered">
-									{pkg.name}
-								</div>
-							</div>
-							{packagerows}
-						</div>
-					</div>
-		});
-		
-		return <div className="flexcolumn">                			
-					<div className="headerstyle">
-						<div className="centered"> permitted install combinations </div>
-					</div>
-			
-					<div>	
-						<div className="flexrow">
-							<div className="title"> </div>
-							{header}
-						</div>
-					</div>
-			
-					{rows}
-				</div>
-        				
+		if (status){
+			const statusprops = {
+				status: status,
+				left: PALETTE_WIDTH, 
+				width: `calc(100vw - ${PALETTE_WIDTH}px)`,
+				height: `calc(100vh - ${TOOLBAR_HEIGHT+WORKSPACE_FOOTER}px)`,
+			}
+			installstatus = <Status {...statusprops}/>	
+		}
+		 
+		return( <div id="publisher" style={style}>
+                	<div className="flexcontainer">
+                		{this.renderDetails()}
+                		{this.renderRisk()}
+        				<Submit {...submitprops}/>
+			    	</div>
+			    </div>
+		);
 	}
 	
-	_toggleGrid(pkga, pkgb){
-		if (pkga.install != "compulsory" && pkgb.install != "compulsory"){
-			this.props.toggleGrid(pkga.id, pkgb.id);
-		}
-	}
-}	
+}
 
 
 class Node extends React.Component {

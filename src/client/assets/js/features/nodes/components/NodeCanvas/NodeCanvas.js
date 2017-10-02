@@ -85,7 +85,7 @@ class NodeCanvas extends Component {
     })
     
     const chartstyle = {
-      top: 35,
+    
       width: w,
       height: h,
     }

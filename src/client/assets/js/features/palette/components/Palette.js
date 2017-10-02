@@ -78,6 +78,15 @@ export default class Palette extends Component {
             width: PALETTE_WIDTH,
         }
 
+        /*
+        <div id="palette-footer">
+                    <a className="palette-button" id="palette-collapse-all" href="#">
+                        <i className="fa fa-angle-double-up"></i>
+                    </a>
+                    <a className="palette-button" id="palette-expand-all" href="#">
+                        <i className="fa fa-angle-double-down"></i>
+                    </a>
+                </div>*/
 		return( 
 			<div id="palette">
         		<img src={""} className={spinnerClassname}/>
@@ -85,14 +94,7 @@ export default class Palette extends Component {
         		<div id="palette-container" className="palette-scroll" style={palettecontainerstyle}>
                      {_categories}
                 </div>
-        		<div id="palette-footer">
-            		<a className="palette-button" id="palette-collapse-all" href="#">
-            			<i className="fa fa-angle-double-up"></i>
-            		</a>
-            		<a className="palette-button" id="palette-expand-all" href="#">
-            			<i className="fa fa-angle-double-down"></i>
-            		</a>
-        		</div>
+        		
     		</div>
 		);
 	}

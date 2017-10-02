@@ -39,6 +39,13 @@ const config = {
         }
     },
 
+    risk: (subtype="")=>{
+        return {
+            score: 5,
+            reason: "this datastore provides access to webcam video"
+        }
+    },
+
     descriptionfn:(subtype)=>{
         return "a webcam";
     }   

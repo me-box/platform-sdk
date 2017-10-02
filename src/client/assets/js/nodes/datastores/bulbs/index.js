@@ -59,6 +59,36 @@ const config = {
         }
     },
 
+    risk: (subtype="bulb-on")=>{
+        switch(subtype){
+            case "bulb-on":
+                return {
+                    score: 2,
+                    reason: "knowing which bulbs are on or off could reveal information about room/household occupancy"
+                }
+
+            case "bulb-hue":
+                return {
+                    score: 1,
+                    reason: "little risk associated with revealing a bulb's hue value"
+                }
+
+            case "bulb-bri":
+                return {
+                    score: 1,
+                    reason: "little risk associated with revealing a bulb's brightness"
+                }
+
+            default: 
+                return {
+                    score: 0,
+                    reason: "unknown bulb subtype"
+                }
+
+        }   
+        
+    },
+
     descriptionfn:(subtype)=>{
         switch(subtype){
             case "bulb-on":

@@ -1,0 +1,26 @@
+#risk .riskItem {
+  width: 40px;
+  background: #303030;
+  color: white;
+  flex: 0 0 auto;
+  padding: 7px;
+  overflow: hidden;
+}
+
+#risk .riskOverview {
+  width: 250px;
+  background: white;
+  color: #303030;
+  padding: 7px 7px 7px 10px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  font-size: 0.8em;
+  overflow-y: auto;
+}
+
+#risk .riskValue {
+  height: 50px;
+  color: #666;
+  flex: 0 0 auto;
+  padding: 12px 7px 0px 7px;
+}

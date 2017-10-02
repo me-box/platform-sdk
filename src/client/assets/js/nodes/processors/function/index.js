@@ -47,6 +47,13 @@ const config = {
         }
         return {output:output}
     },
+
+    risk: (subtype="")=>{
+      return {
+          score: 4,
+          reason: "this app makes use of arbitrary code (i.e. javascript written in dbfunction)"
+      }        
+    },
 }
 
 export default {

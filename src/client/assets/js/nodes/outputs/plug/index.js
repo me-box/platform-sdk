@@ -19,6 +19,7 @@ const config = {
 
   icon: "fa-plug",
   unicode: '\uf1e6',
+
   label: function() {
     return this.name || "plugout";
   },
@@ -39,6 +40,13 @@ const config = {
     }
   },
 
+  risk:(subtype="")=>{
+     return {
+        score: 4,
+        reason: "this node can turn plugs on and off"
+     }
+  },
+
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
@@ -48,12 +56,6 @@ const config = {
 
 export default {
   type: "plugout",
-  def: Object.assign({
-    _: (id) => {
-      return id
-    }
-  }, config, {
-    nodetype: "plugout"
-  }),
+  def: Object.assign({_: id=>id}, config, {nodetype: "plugout"}),
   node: Node,
 }

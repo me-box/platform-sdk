@@ -32,6 +32,13 @@ const config = {
     },
     
     descriptionfn: ()=>"<p> This node allows you to create svg animations from input data </p>",
+
+    risk: (subtype="")=>{
+      return {
+          score: 0,
+          reason: "no risk in creating visualistions using uibuilder"
+      }        
+    },
 }
 
 export default {

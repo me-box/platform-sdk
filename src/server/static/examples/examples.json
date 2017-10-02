@@ -24,7 +24,16 @@
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
             "url":"https://api.github.com/repos/tlodge/databox.tutorial-on-off"
+        },
+        {
+            "username":"tlodge", 
+            "name":"databox.tutorial-shake-light",
+            "description":"shake a light on or off",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://api.github.com/repos/tlodge/databox.tutorial-shake-light"
         }
+        
        
     ]
 }

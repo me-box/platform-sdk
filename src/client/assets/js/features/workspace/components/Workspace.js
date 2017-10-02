@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {TOOLBAR_HEIGHT, PALETTE_WIDTH, SIDEBAR_WIDTH} from 'constants/ViewConstants';
 import cx from 'classnames';
-import { actionCreators as workspaceActions, selector } from '../';
+import { actionCreators as workspaceActions, selector as selector } from '../';
 
 @connect(selector, (dispatch) => {
   return{
@@ -95,33 +95,10 @@ export default class Workspace extends React.Component {
 				   </li>
 	
 		});
-		
-		return ( <div style={workspace}>
-					<ul id="workspace-tabs" className="red-ui-tabs">
-						{_tabs}
-					</ul>
-		    		<div id="workspace-add-tab" style={addTabStyle}>
-		    			<a id="btn-workspace-add-tab" onClick={this.props.actions.addTab}>
-		    				<i className="fa fa-plus"></i>
-		    			</a>
-		    		</div>
-		    		
-		    		<NodeCanvas {...this.props}/>
 
-		    		<div id="workspace-toolbar"></div>
-		    		<div id="workspace-footer">
-			            <a className="workspace-footer-button" id="btn-zoom-out" href="#">
-			            	<i className="fa fa-minus"></i>
-			            </a>
-			            <a className="workspace-footer-button" id="btn-zoom-zero" href="#">
-			            	<i className="fa fa-circle-o"></i>
-			            </a>
-			            <a className="workspace-footer-button" id="btn-zoom-in" href="#">
-			            	<i className="fa fa-plus"></i>
-			            </a>
-			        </div>
-			    </div>
-		);
+		return (<div style={workspace}>
+		    		<NodeCanvas {...this.props}/>
+			    </div>);
 	}
 	
 	

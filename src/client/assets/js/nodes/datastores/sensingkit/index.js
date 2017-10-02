@@ -378,6 +378,53 @@ const config = {
     }
   },
 
+  risk: (subtype="light")=>{
+    switch(subtype){
+    
+      case "bluetooth":
+        return {
+          score: 2,
+          reason: "bluetooth scans can reveal other devices in close proximity and could be used to fingerprint location",
+        }     
+
+      case "accelerometer":
+      case "linear-acceleration":
+      case "magnetometer":
+      case "gravity":
+      case "gyroscope":
+      case "rotation":
+        return {
+          score: 2,
+          reason: `the ${subtype} sensor can reveal information about the movement of a person carrying the device`,
+        }  
+
+      case "battery":
+        return {
+          score: 2,
+          reason: "the battery sensor can reveal limited information about a user's habits (i.e. when they charge their phone)",
+        } 
+
+      case "audio-level":
+        return {
+          score: 2,
+          reason: "the audio-level sensor can reveal how loud the environment is that a user is/was in"
+        } 
+      
+      case "light":
+        return {
+          score: 1,
+          reason: "assuming the camera on the device is uncovered, the light lux reading could give coarse grained information on the kind of environment a user is in (i.e. inside,outside) "
+        } 
+
+      default:
+        return {
+          score: 0,
+          reason: "unknown sensingkit subtype"
+        } 
+
+    }
+  },
+
   inputs: 0,
   outputs: 1,
 

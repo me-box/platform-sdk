@@ -33,10 +33,10 @@ export default class Node extends React.Component {
           }
           
           const valueprops = {
-				       options: [
-									{name: 'on', value: 'on'},
-					        {name: 'off', value: 'off'},
-					     ],
+				options: [
+					{name: 'on', value: 'on'},
+					{name: 'off', value: 'off'},
+				],
 					     
 				onSelect: (event)=>{
 					   updateNode("value", event.target.value);
@@ -45,9 +45,6 @@ export default class Node extends React.Component {
 				style: {width: '100%'},
 				value: values.value || "on",
 		  }
-			
-			
-        
           			  
 		  const nameinput = <div className="centered">
 								<Textfield {...nameprops}/>												

@@ -368,12 +368,14 @@ function stopAndRemoveContainer(name) {
 				console.log("container stopped!");
 				if (err) {
 					reject(err);
+					return;
 				}
 				containerToStop.remove(function (err, data) {
 					if (err) {
 						reject(err);
+					} else {
+						resolve(true);
 					}
-					resolve(true);
 				});
 			});
 		});
@@ -1332,19 +1334,23 @@ var _publish = function _publish(config, user, reponame, app, packages, librarie
 			return (0, _utils.createTarFile)(dockerfile, flows, path);
 		}, function (err) {
 			reject("could not save to app store!");
+			return;
 		}).then(function (tarfile) {
 			var appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : user.username.toLowerCase() + '-' + app.name.toLowerCase();
 			return (0, _utils.createDockerImage)(tarfile, '' + appname);
 		}, function (err) {
 			reject("could not create tar file", err);
+			return;
 		}).then(function (tag) {
 			return (0, _utils.uploadImageToRegistry)(tag, '' + config.registry.URL);
 		}, function (err) {
 			reject('could not create docker image');
+			return;
 		}).then(function () {
 			resolve();
 		}, function (err) {
 			reject('could not upload to registry');
+			return;
 		});
 	});
 };
@@ -1629,9 +1635,12 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 	//port = 1880;
 	//console.log("flows:", JSON.stringify(flows,null,4));
 	return new Promise(function (resolve, reject) {
+
 		if (attempts > 5) {
-			reject();
+			reject("sorry couldn't connect to the container!");
+			return;
 		}
+
 		_superagent2.default.post(ip + ':' + port + '/flows').send(flows).set('Accept', 'application/json').type('json').end(function (err, result) {
 			if (err) {
 				console.log("eror posting new flows", err);
@@ -1640,7 +1649,6 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 					console.log("retrying ", attempts);
 					_postFlows(ip, port, data, username, attempts);
 				}, 1000);
-				reject(err);
 			} else {
 				console.log("successfully installed new flows");
 				resolve(true);
@@ -1659,6 +1667,7 @@ var _waitForStart = function _waitForStart(container) {
 				console.log(line.toString());
 				if (line.toString().indexOf("Started flows") != -1) {
 					console.log("container ready for flows");
+					stream.destroy();
 					setTimeout(function () {
 						console.log("posting flows");
 						resolve(true);
@@ -1677,12 +1686,18 @@ var _pullContainer = function _pullContainer(name) {
 			if (err) {
 				console.log("error pulling container!", err);
 				reject(err);
+				return;
 			}
-			return _docker2.default.modem.followProgress(stream, function () {
-				console.log("successfully pulled container");resolve();
-			}, function (event) {
-				console.log(event);
-			});
+			var pulled = function pulled() {
+				console.log("successfully pulled container");
+				resolve("complete!");
+			};
+
+			var pulling = function pulling(event) {
+				console.log('[pulling]: ' + event.toString());
+			};
+
+			return _docker2.default.modem.followProgress(stream, pulled, pulling);
 		});
 	});
 };
@@ -1844,6 +1859,8 @@ var _restart = function _restart(container) {
 	});
 };
 
+//stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
+//the test web app responds to the client webpage before it has been given the details of the new app.
 var _createContainerFromStandardImage = function _createContainerFromStandardImage(username, flows) {
 
 	var opts = {
@@ -1851,9 +1868,16 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 			label: ['user=' + username],
 			status: ['running', "exited"]
 		}
-	};
 
-	return _listContainers(opts).then(function (containers) {
+		/*return stopAndRemoveContainer(`${username}-red`).then(()=>{
+  return _pullContainer("tlodge/databox-red:latest")
+  }).then(()=>{	
+  return createTestContainer('tlodge/databox-red', username, network);
+  }).then((container)=>{
+  return _startContainer(container, flows, username);
+  });*/
+
+	};return _listContainers(opts).then(function (containers) {
 		return containers;
 	}, function (err) {
 		return err;
@@ -1870,6 +1894,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 			});
 		} else {
 			var c = containers[0];
+
 			//restart the container if it exists but is stopped
 			if (c.State === 'exited') {
 				console.log("restarting container!!");
@@ -1906,14 +1931,12 @@ router.post('/flows', function (req, res) {
 	}, [])));
 
 	if (libraries.length > 0) {
-		console.log("CREATING NEW IMAGE AND CONTAINER!!");
 		return _createNewImageAndContainer(libraries, req.user.username, flows).then(function (result) {
 			res.send({ success: true });
 		}, function (err) {
 			res.status(500).send({ error: err });
 		});
 	} else {
-		console.log("CREATING CONTAINER FROM STANDARD IMAGE!");
 		return _createContainerFromStandardImage(req.user.username, flows).then(function (result) {
 			res.send({ success: true });
 		}, function (err) {
@@ -1946,8 +1969,6 @@ var router = _express2.default.Router();
 router.get('/:sensor', function (req, res) {
 
 	var sensor = req.params.sensor;
-	console.log("received request for sensor");
-	console.log(sensor);
 
 	if (!sensor) {
 		res.send({ success: false, error: "no sensor provided" });

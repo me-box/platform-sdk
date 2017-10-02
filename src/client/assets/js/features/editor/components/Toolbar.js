@@ -1,10 +1,14 @@
 import React, {Component} from 'react';
-import { connect } from 'react-redux';
+//import { connect } from 'react-redux';
 //import * as ToolbarActions from '../actions/ToolbarActions';
 //import {toggleSaveDialogue} from '../actions/RepoActions';
 //import config from '../config';
 import MDToolbar from 'react-md/lib/Toolbars';
 import Button from 'react-md/lib/Buttons';
+import Risk from 'features/risk/components/Risk';
+
+
+
 
 export default class Toolbar extends Component {
 
@@ -16,7 +20,7 @@ export default class Toolbar extends Component {
   render() {
   	
   		const actions = [
-  			
+  			<Risk />,
   			<Button flat label="logout" href="/auth/logout"/>,
   			<Button flat label="examples" onClick={this.props.toggleExamples}/>,
   			<Button flat label="load" onClick={this.props.requestRepos}/>,
@@ -33,3 +37,4 @@ export default class Toolbar extends Component {
           />
   }
 }
+

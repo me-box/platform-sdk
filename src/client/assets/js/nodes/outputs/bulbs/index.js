@@ -64,6 +64,36 @@ const config = {
     		}
 		}
     },
+
+    risk: (subtype="set-bulb-on")=>{
+        switch(subtype){
+            case "set-bulb-on":
+                return {
+                    score: 1,
+                    reason: "turning a bulb on or off presents a low risk"
+                }
+
+            case "set-bulb-hue":
+                return {
+                    score: 1,
+                    reason: "changing a bulb's hue presents a low risk"
+                }
+
+            case "set-bulb-bri":
+                return {
+                    score: 1,
+                    reason: "changing a bulb's brightness presents a low risk"
+                }
+
+            default: 
+                return {
+                    score: 0,
+                    reason: "unknown bulb subtype"
+                }
+
+        }   
+        
+    },
     
     labelStyle: function() { 
         return this.name?"node_label_italic":"";

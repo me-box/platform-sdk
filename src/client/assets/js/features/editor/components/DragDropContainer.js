@@ -6,7 +6,7 @@ class DragDropContainer extends Component {
   
   render(){
   	let style = {width:1000, height:1000, background:'green'}
-    return <div style={style}>
+    return <div >
  				{this.props.children}
     		</div>
   }

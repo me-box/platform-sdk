@@ -74,6 +74,35 @@ const config = {
 
   icon: "fa-terminal",
   unicode: '\uf120',
+  
+  risk: (subtype="loadavg1")=>{
+    console.log("subtype", subtype);
+      switch (subtype){
+
+        case "loadavg1":
+        case "loadavg5":
+        case "loadavg15":
+          console.log("1st beranche");
+          return {
+            score: 1,
+            reason: "no significant risk in exposing your device's system load"
+          }
+
+        case "freemem":
+        console.log("am here...");
+          return {
+            score: 5,
+            reason: "no significant risk in exposing your device's free RAM"
+          }
+
+        default:
+          return {
+            score: 0,
+            reason: "unknown osmonitor subtype"
+          }
+      }
+  },
+  
   label: function() {
     return this.name || "osmonitor";
   },

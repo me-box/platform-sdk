@@ -27,6 +27,13 @@ const config = {
 		}
 	},
 	
+	risk: (subtype="loadavg1")=>{
+      return {
+        score: 0,
+        reason: "a debug node only runs in the test environment"
+      }
+  	},
+
 	icon: "fa-bug",
 	unicode: '\uf188 ',     
 	label: function() {     

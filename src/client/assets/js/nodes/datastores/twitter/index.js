@@ -46,6 +46,13 @@ const config =  {
         		}
         	}
         },
+
+        risk: (subtype="twitterHashTagStream")=>{  
+          return {
+            score: 2,
+            reason: "this datastore will have access to your public and protected tweets "
+          }
+        },
         
         icon: "fa-twitter",
         unicode: '\uf099',     

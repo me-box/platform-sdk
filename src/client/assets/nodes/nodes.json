@@ -8,7 +8,7 @@
 				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
 				{"name":"twitter", "file":"datastores/twitter/index"},
-				{"name":"speech", "file":"datastores/speech/index"},
+		
 				{"name":"openface", "file":"processors/openface/index"},
 				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"extract", "file":"processors/extract/index"},
@@ -18,9 +18,8 @@
 			 	{"name":"uibuilder", "file":"processors/uibuilder/index"},
 
 				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
-				
 				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
-				
+				{"name":"plugout", "file":"outputs/plug/index"},
 				{"name":"debugger", "file":"debug/debugger/index"}
 			 ]
 }

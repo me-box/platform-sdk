@@ -91,6 +91,13 @@ const config = {
     }
   },
 
+  risk: (subtype="")=>{
+      return {
+          score: 0,
+          reason: "no risk in formatting data into a list"
+      }        
+  },
+
   descriptionfn: () => "<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to <code> {keys:Array, rows: Array[]} </code> which is the form expected for the list view of the companion app </p>",
 
   labelStyle: function() {
