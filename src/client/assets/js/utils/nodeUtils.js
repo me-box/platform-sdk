@@ -28,10 +28,6 @@ export function addViewProperties(node){
 }
 
 export function convertNode(n, links=[]) {
-
-    console.log("converting node");
-    console.log(n);
-    console.log(links);
     
     var node = {};
     node.id = n.id;

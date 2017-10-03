@@ -45,16 +45,6 @@ export default class Death extends PureComponent {
    
     const schemas = inputs.reduce((acc, input)=>{return (input.id === selected) ? input.schema.output : acc;},{});
 
-    /*
-    <div className="info">
-                    A timeout period after which, if there is no data for this key, the object is deleted
-                </div>
-                <Textfield
-                  id="exittime"
-                  value={timeexit} 
-                  onChange={(id,e)=>{this.setState({timeexit:e.target.value})}}
-                />
-   */
     return <Flex flexColumn={true}>   
                 <div className="mapperHeading">death options</div>
                 <div className="info">
@@ -65,7 +55,7 @@ export default class Death extends PureComponent {
                   value={fn} 
                   onChange={(id,e)=>{
                         console.log("updating exit fn!!");
-                        this.props.actions.updateTemplateAttribute(nid, path, "exitFn", {params:["data", "index"], body:e.target.value});
+                        this.props.actions.updateTemplateAttribute(nid, path, "exitFn", {params:["data", "index", "node"], body:e.target.value});
                   }}
                 />
              

@@ -259,6 +259,12 @@ const config = {
     }
   },
 
+  risk: (subtype="")=>{
+      return {
+          score: 0,
+          reason: "no risk with formatting data for a chart"
+      }        
+  },
 
   descriptionfn: () => "<p> This node will take in datastore data from any datastore that creates number data and display it as a chart.  Currently the two supported types of chart are <strong> bar charts </strong> and a <strong> gauge </strong> </p>",
 

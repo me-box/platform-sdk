@@ -15,9 +15,9 @@ const initialState = {
 	browsingname:"", 
 	currentuser:"", 
 	tosave : {
-					name: "", 
-					commit: "", 
-					description: ""
+		name: "", 
+		commit: "", 
+		description: ""
 	}, 
 	savedialogue: false,
 	repos:[],
@@ -26,6 +26,7 @@ const initialState = {
 }
 
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
+const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
 
 export default function reducer(state = initialState, action) {
   	switch (action.type) {
@@ -96,6 +97,17 @@ export default function reducer(state = initialState, action) {
 	    	return Object.assign({}, state, {
 	    		visible:false,
 	    	});
+
+	  case FOREIGN_CLEAR:
+	  		return {
+	  					...state,
+	  					loaded: {name:"", sha:{}},
+	  					tosave : {
+							name: "", 
+							commit: "", 
+							description: ""
+						}
+					} 
 
 	  default:
 

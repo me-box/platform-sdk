@@ -87,6 +87,6 @@ export default class ExampleManager extends Component {
 	}
 
 	_load(name, username){
-		this.props.actions.fetchExample(this.context.store, name, username);
+		this.props.actions.fetchExample(name, username);
 	}
 }

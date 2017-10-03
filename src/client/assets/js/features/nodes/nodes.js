@@ -7,6 +7,7 @@ export const NAME = 'nodes';
 const {LINK_SELECTED} = portActionTypes;
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 
+
 function _configureNode(current, changes){
   
   let _n = Object.assign({}, current, changes);
@@ -60,9 +61,9 @@ export default function reducer(state = initialState, action) {
           },{})
         })
 
-    case nodeActionTypes.NODE_CLEAR_ALL:{
-        return Object.assign({}, state, initialState);
-    }
+    case nodeActionTypes.NODE_CLEAR_ALL:
+        return initialState;
+    
 
     case nodeActionTypes.NODE_DROPPED:
         return Object.assign({}, state, {

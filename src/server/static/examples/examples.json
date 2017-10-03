@@ -1,6 +1,5 @@
 {
     "repos":[
-
         {
             "username":"tlodge", 
             "name":"databox.tutorial-monitor-chart",
@@ -8,6 +7,14 @@
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
             "url":"https://api.github.com/repos/tlodge/databox.tutorial-monitor-chart"
+        },
+        {
+            "username":"tlodge", 
+            "name":"databox.tutorial_accelerometer_trail",
+            "description":"accelerometer vapour trail",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://api.github.com/repos/tlodge/databox.tutorial_accelerometer_trail"
         },
         {
             "username":"tlodge", 
@@ -32,8 +39,6 @@
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
             "url":"https://api.github.com/repos/tlodge/databox.tutorial-shake-light"
-        }
-        
-       
+        } 
     ]
 }

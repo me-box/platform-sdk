@@ -40,10 +40,8 @@ const config = {
 
         try{
             output =  JSON.parse(outputdef);
-         
         }
         catch(err){
-           console.log("JSON parse error: setting output to {}")
         }
         return {output:output}
     },

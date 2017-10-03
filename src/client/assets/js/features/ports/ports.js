@@ -4,6 +4,7 @@ import {actionConstants as portActionTypes} from './constants';
 import {actionConstants as nodeActionTypes}from "features/nodes/constants";
 
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
+const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
 const {NODE_MOUSE_DOWN} = nodeActionTypes;
 
 export const NAME = 'ports';
@@ -170,6 +171,10 @@ export default function reducer(state = initialState, action) {
 		    	})
 	    	}
 	    	return state;
+
+
+	    case FOREIGN_CLEAR:
+	    	return initialState;
 
     	default:
     		return state;

@@ -33,7 +33,7 @@ function extractPackages(state){
     });
 }
 
-function extractNodes(newNodesObj, store, lookuptype){
+function extractNodes(newNodesObj, lookuptype){
 
   //var i;
   //var n;
@@ -475,16 +475,16 @@ function requestFlows() {
   }
 }
 
-function receiveFlows(data, store, lookuptypes){
+function receiveFlows(data, lookuptypes){
 
-  const {nodes, links} = extractNodes(data, store, lookuptypes);
+  const {nodes, links} = extractNodes(data, lookuptypes);
   
   return function(dispatch, getState){
   	//unregisterAll(store);
   	dispatch(portActions.clearLinks());
-  	dispatch(nodeActions.clearNodes(store));
+  	dispatch(nodeActions.clearNodes());
 
-  	dispatch(nodeActions.receiveFlows(store, nodes));
+  	dispatch(nodeActions.receiveFlows(nodes));
   	dispatch(portActions.receiveFlows(links));
   	
   	dispatch(toggleVisible());
@@ -508,7 +508,7 @@ function receiveFlowsError(){
   }
 }
 
-function fetchFlow(store, repo){
+function fetchFlow(repo){
   
   return function (dispatch, getState) {
 
@@ -549,7 +549,7 @@ function fetchFlow(store, repo){
             }
             
             //create all of the flows
-            dispatch(receiveFlows(flows, store, lookup.bind(this,getState().palette.types)));  //bind the lookup function to the current set of node types
+            dispatch(receiveFlows(flows, lookup.bind(this,getState().palette.types)));  //bind the lookup function to the current set of node types
      
 
             //create the manifest - this will be picked up by the workspace.
@@ -572,7 +572,7 @@ function toggleVisible(){
 	}
 }
 
-function fetchExample(store, repoName, repoOwner){
+function fetchExample(repoName, repoOwner){
   
 
 
@@ -601,7 +601,7 @@ function fetchExample(store, repoName, repoOwner){
             
               dispatch(receivedSHA(repoName,null));
               //create all of the flows
-              dispatch(receiveFlows(flows, store, lookup.bind(this,getState().palette.types)));  //bind the lookup function to the current set of node types
+              dispatch(receiveFlows(flows, lookup.bind(this,getState().palette.types)));  //bind the lookup function to the current set of node types
           
               dispatch(receiveManifest(manifest));
             }

@@ -36,8 +36,7 @@ export default class Node extends React.Component {
        render() {
         
           //inputschemas would be nice?
-          console.log("rendering chart with props", this.props);
-
+          
           const {node, inputs=[], values={}, updateNode, help={}} = this.props;
 
           console.log("have inputs: ");

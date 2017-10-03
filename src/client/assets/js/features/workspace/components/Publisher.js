@@ -32,6 +32,7 @@ export default class Publisher extends Component {
         super(props);
         this.renderDetails = this.renderDetails.bind(this);
         this.renderRisk = this.renderRisk.bind(this);
+        this.renderRating = this.renderRating.bind(this);
     }
 
 
@@ -147,10 +148,18 @@ export default class Publisher extends Component {
 
     }
 
+    renderRating(){
+    	const {rating} = this.props;
+    	const score =   [...Array(rating)].map((i)=>{
+	       return <FontIcon key={i}>security</FontIcon>
+	    });
+	    return <div>{score}</div>
+    }
+
     renderRisk(){
 
-    	console.log(this.props);
-    	const {rating, risks} = this.props;
+    	
+    	const { risks} = this.props;
 
     	const datastores = (this.props.datastores || []).map((datastore,i)=>{		
 			return <Node key={i} {...datastore}/>
@@ -177,20 +186,38 @@ export default class Publisher extends Component {
 	        } 
 
 	        const score = [...Array(r.score)].map((i)=>{
-	            return <FontIcon key={i}>warning</FontIcon>
+	            return <FontIcon key={i}>security</FontIcon>
 	        });
 
-	        return  <div>
+	        const riskItem = {
+				flex: "0 0 auto",
+				width: 50,
+				padding:7,
+	        }
+
+	        const riskReason ={
+	        	padding: 7,
+	        	border: 'none'
+	        }
+
+	        const riskScore = {
+	        	flex: "0 0 auto",
+	        	width: 150,
+	        	padding: 10,
+	        	border: 'none',
+	        }
+
+	        return  <div style={{border:'none'}}>
 		        		<div className="flexrow" key={i}>
-		                  <div className="riskItem">
+		                  <div style={riskItem}>
 		                    <div style={iconStyle}>
 		                      <i className={iconclass}></i>
 		                    </div>
 		                  </div>
-		                  <div>
+		                  <div style={riskReason}>
 		                    {r.reason}
 		                  </div>
-		                  <div>
+		                  <div style={riskScore}>
 		                    {score}
 		                  </div>
 		                </div>
@@ -220,12 +247,12 @@ export default class Publisher extends Component {
 						<div className="flexrow">
 							<div className="title">
 								<div className="centered">
-									risk
+									rating
 								</div>
 							</div>
 							<div>
 								<div className="centered">
-									This app has a <strong>{rating}</strong> risk
+									{this.renderRating()}
 								</div>
 							</div>
 						</div>

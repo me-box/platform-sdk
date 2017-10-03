@@ -24,7 +24,8 @@ const APP_TAGS_CHANGED = 'iot.red/tabs/APP_TAGS_CHANGED';
 
 //foreign actions
 const {RECEIVE_MANIFEST}	= repoConstants;
-
+const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
+	  
 export const NAME = 'workspace';
 
 
@@ -156,7 +157,9 @@ export default function reducer(state = initialState, action) {
 	  	 										currentId: tabs[0],
 	  	 									});
 	  
-
+  	  case FOREIGN_CLEAR:
+	    	return initialState;
+	  
 	  default:
 	    return state;
 	}

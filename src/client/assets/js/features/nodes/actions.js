@@ -5,10 +5,10 @@ import { NODE_WIDTH, MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from 'constants/ViewConstan
 import {getID, addViewProperties, lookup} from 'utils/nodeUtils';
 import {calculateTextWidth, toggleItem} from 'utils/utils';
 import {scopeify} from 'utils/scopeify';
-import {register,unregisterAll} from 'app/store/configureStore';
+import {register,unregister,unregisterAll} from 'app/store/configureStore';
 
 
-function loadNode({store,component,node,reducer}){
+function loadNode({component,node,reducer}){
   return function(dispatch, getState){
       
      
@@ -20,7 +20,7 @@ function loadNode({store,component,node,reducer}){
     
     
       if (reducer){
-        register(store, _node.id, scopeify(_node.id, reducer));
+        register(_node.id, scopeify(_node.id, reducer));
       }
 
       dispatch({type: nodeActionTypes.NODE_DROPPED, node:_node, config:{id: _node.id, fn:component}});
@@ -71,7 +71,7 @@ function _description(def){
   return def.descriptionfn ? def.descriptionfn() : {}
 }
 
-function dropNode({store, component, nt, def, reducer}, x0, y0){
+function dropNode({component, nt, def, reducer}, x0, y0){
   
   return function(dispatch, getState){
     //adjust x and y for offsets
@@ -115,7 +115,7 @@ function dropNode({store, component, nt, def, reducer}, x0, y0){
     //register this reducer and force nodeid to be passed in when state changes.  scopeify will ignore any actions that do not have this node's id as a parameter
     //this means that instances of the same node can transparently make use of the same action constants without a clash!.
     if (reducer){
-      register(store, node.id, scopeify(node.id, reducer));
+      register(node.id, scopeify(node.id, reducer));
     }
 
     //const elementprops = {
@@ -236,13 +236,15 @@ function nodeConfigureCancel(){
 }
 
 function nodeDelete(){
-    return {
-      type: nodeActionTypes.NODE_DELETE,
-    }
+    //TODO; delete registration!
+    return ((dispatch, getState)=>{
+      unregister(getState().nodes.selectedId);
+      dispatch({type: nodeActionTypes.NODE_DELETE});
+    });
 }
 
-function clearNodes(store){
-  unregisterAll(store);
+function clearNodes(){
+  unregisterAll();
   return {
       type: nodeActionTypes.NODE_CLEAR_ALL,
   }
@@ -280,14 +282,14 @@ function nodeMouseUp(){
 
 
 
-function receiveFlows(store, nodes){
+function receiveFlows(nodes){
   
   return ((dispatch, getState)=>{
     
       const lookuptype = lookup.bind(null,getState().palette.types)
       const _nodes = nodes.map((node)=>{
-          const {component,reducer} = lookuptype(node.type)
-         dispatch(loadNode({store, component, node, reducer}));
+         const {component,reducer} = lookuptype(node.type)
+         dispatch(loadNode({component, node, reducer}));
       });
   });
  

@@ -17,6 +17,7 @@ export default function samples(state = initialState, action) {
 	
   switch(action.type){
 
+ 
     case TOGGLE_VISIBLE:
       return {...state, visible: !state.visible}
         

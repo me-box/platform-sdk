@@ -3,7 +3,7 @@ import {actionCreators as workspaceActions} from 'features/workspace';
 import request  from 'superagent';
 import config from 'config';
 import {getID} from 'utils/nodeUtils';
-
+import {unregisterAll} from 'app/store/configureStore';
 
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as portActions} from 'features/ports';
@@ -14,6 +14,7 @@ const SIDEBAR_CLOSE  = 'iot.red/editor/SIDEBAR_CLOSE';
 const SHOW_TEST_SIDEBAR  = 'iot.red/editor/SHOW_TEST_SIDEBAR';
 const CLOSE_ALL = 'iot.red/editor/CLOSE_ALL';
 const WINDOW_RESIZED  = 'iot.red/editor/WINDOW_RESIZED';
+const CLEAR = 'iot.red/editor/CLEAR';
 
 export const NAME = 'editor';
 
@@ -101,6 +102,13 @@ function publisherCancel(){
 	}	
 }
 
+function clear(){
+	return function (dispatch, getState) {	
+		dispatch(nodeActions.clearNodes());
+		dispatch({type:CLEAR});
+	}
+}
+
 function logout(){
 	return function (dispatch, getState) {	
 		request
@@ -164,4 +172,5 @@ export const actionCreators = {
   closeAll,
   windowResize,
   deletePressed,
+  clear,
 };

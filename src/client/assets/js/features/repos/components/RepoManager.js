@@ -35,7 +35,7 @@ const LoadIcon = () => <FontIcon>cloud_download</FontIcon>;
      actions: bindActionCreators(repoActions, dispatch),
   }
 })
-@contextTypes({ store: React.PropTypes.object })
+
 export default class RepoManager extends Component {
 	
 	constructor(props){
@@ -195,6 +195,6 @@ export default class RepoManager extends Component {
 	}
 
 	_load(repo){
-		this.props.actions.fetchFlow(this.context.store, repo);
+		this.props.actions.fetchFlow(repo);
 	}
 }

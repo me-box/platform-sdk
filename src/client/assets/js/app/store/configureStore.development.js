@@ -16,6 +16,7 @@ import DevTools from '../DevTools';
 //const logger = createLogger();
 
 const middlewares = [promiseMiddleware, /*logger,*/ thunk, require('redux-immutable-state-invariant')()];
+let store;
 
 // By default we try to read the key from ?debug_session=<key> in the address bar
 const getDebugSessionKey = function () {
@@ -31,7 +32,7 @@ const enhancer = compose(
 );
 
 export  function configureStore(initialState) {
-  const store = createStore(combineReducers(rootReducers), initialState, enhancer);
+   store = createStore(combineReducers(rootReducers), initialState, enhancer);
 
   // Enable hot module replacement for reducers (requires Webpack or Browserify HMR to be enabled)
   if (module.hot) {
@@ -52,7 +53,7 @@ export  function configureStore(initialState) {
 }
 
 
-export function register(store, name, reducer){
+export function register(name, reducer){
 
   //NOTE THAT DEVTOOLS CAUSES OLD ACTIONS TO BE REPLAYED WHEN HOTRELOAD IS TRUE, WHICH CAN CAUSE STRANGE BEHAVIOUR
   //see: https://github.com/gaearon/redux-devtools/issues/167
@@ -69,7 +70,7 @@ export function register(store, name, reducer){
   store.replaceReducer(combineReducers(reducers));
 }
 
-export function unregisterAll(store){
+export function unregisterAll(){
   store.asyncReducers = {};
 
   const reducers = {
@@ -79,7 +80,7 @@ export function unregisterAll(store){
   store.replaceReducer(combineReducers(reducers));
 }
 
-export function unregister(store, name){
+export function unregister(name){
 
   if (store.asyncReducers[name]){
     delete store.asyncReducers[name];

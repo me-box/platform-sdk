@@ -10,7 +10,7 @@ import Node from "./node";
       description: "Moonless clear night sky with airglow"
     },
     {
-      value: "0.05–0.36",
+      value: "0.05 to 0.36",
       description: "Full moon on a clear night"
     },
     {
@@ -46,22 +46,50 @@ import Node from "./node";
       description: "Overcast day"
     },
     {
-      value: "10000-25000",
+      value: "10000 to 25000",
       description: "Full daylight"
     },
     {
-      value: "32000-100000",
+      value: "32000 to 100000",
       description: "Direct sunlight"
     }
-]
+];
 
-const _rows = _luxvalues.reduce((acc, lux)=>{
+const _luxrows = _luxvalues.reduce((acc, lux)=>{
     return `${acc}<tr><td>${lux.value}</td><td>${lux.description}</td></tr>`;
 
 },"");
 
-const luxtable = `<table class="table table-striped table-hover"><thead><tr><th>description</th><th>lux value</th></tr></thead><tbody>${_rows}</tbody></table>`;
+const luxtable = `<table class="table table-striped table-hover"><thead><tr><th>lux value</th><th>description</th></tr></thead><tbody>${_luxrows}</tbody></table>`;
 
+
+const _axisvalues = [
+    {
+      x: "-0.15 to 0.08",
+      y: "-0.09 to 0.08",
+      z: "10.10 to 10.99",
+      description: "at rest"
+    },
+    {
+      x: "-12.6 to 2.27",
+      y: "-5.95 to 7.70",
+      z: "3.1 to 11.70",
+      description: "walking"
+    },
+    {
+      x: "-38 to 38",
+      y: "-38 to 38",
+      z: "-38 to 38",
+      description: "vigorous shaking"
+    },
+];
+
+const _axisrows = _axisvalues.reduce((acc, axis)=>{
+    return `${acc}<tr><td>${axis.x}</td><td>${axis.y}</td><td>${axis.z}</td><td>${axis.description}</td></tr>`;
+
+},"");
+
+const axistable = `<table class="table table-striped table-hover"><thead><tr><th>x</th><th>y</th><th>z</th><th>description</th></tr></thead><tbody>${_axisrows}</tbody></table>`;
 
 const config = {
   
@@ -137,6 +165,50 @@ const config = {
 
 
         case "accelerometer":
+          return {
+
+            name: {
+              type: 'string',
+              description: 'the name of the node, defaults to \'sensingkit\''
+            },
+            id: {
+              type: 'string',
+              description: '<i>[id]</i>'
+            },
+            type: {
+              type: 'string',
+              description: '<i>sensingkit</i>'
+            },
+            subtype: {
+              type: 'string',
+              description: `<i>${subtype}</i>`
+            },
+
+            payload: {
+              type: 'object',
+              description: 'the message payload',
+              properties: {
+                ts: {
+                  type: 'time',
+                  description: 'a unix timestamp'
+                },
+                x: {
+                  type: 'number',
+                  description: 'the x axis value, vigorous shaking will range from (-38 to 38)'
+                },
+                y: {
+                  type: 'number',
+                  description: 'the y axis value, vigorous shaking will range from (-38 to 38)'
+                },
+                z: {
+                  type: 'number',
+                  description: 'the z axis value, vigorous shaking will range from (-38 to 38)'
+                },
+              }
+            }
+        };
+
+
         case "linear-acceleration":
         case "magnetometer":
         case "gravity":
@@ -452,6 +524,7 @@ const config = {
           return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 
         case 'accelerometer':
+          return `${chosen} <p>This will return the device ${subtype} data</p><p> The following is an indication of typical values</p>${axistable}`;
         case 'linear-acceleration':
         case 'magnetometer':
         case 'gravity':

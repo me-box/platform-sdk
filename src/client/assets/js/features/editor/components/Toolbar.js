@@ -22,6 +22,7 @@ export default class Toolbar extends Component {
   		const actions = [
   			<Risk />,
   			<Button flat label="logout" href="/auth/logout"/>,
+        <Button flat label="clear" onClick={this.props.clear}/>,
   			<Button flat label="examples" onClick={this.props.toggleExamples}/>,
   			<Button flat label="load" onClick={this.props.requestRepos}/>,
   			<Button flat label="save" onClick={this.props.toggleSaveDialogue}/>,

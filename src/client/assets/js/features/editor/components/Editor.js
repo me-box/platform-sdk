@@ -15,6 +15,7 @@ import {actionCreators as testActions} from 'features/test';
 import {actionCreators as paletteActions} from 'features/palette';
 import {actionCreators as exampleActions} from 'features/examples';
 
+
 import RepoManager from 'features/repos/components/RepoManager';
 import ExampleManager from 'features/examples/components/ExampleManager';
 import Publisher from 'features/workspace/components/Publisher';
@@ -29,6 +30,7 @@ import Help from 'features/help/components/Help';
   }, (dispatch) => {    
   return{
      actions:{...bindActionCreators(editorActions, dispatch), 
+              clear: bindActionCreators(editorActions.clear, dispatch),
               requestCode: bindActionCreators(paletteActions.requestCode, dispatch),
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
@@ -84,14 +86,9 @@ export default class Editor extends Component {
    
     const {editor:{screen:{w,h}}, publishervisible} = this.props;
 		
-    const toolbarprops = {
-      requestCode: this.props.actions.requestCode,
-      requestRepos: this.props.actions.requestRepos,
-      toggleSaveDialogue: this.props.actions.toggleSaveDialogue,
-      togglePublisher: this.props.actions.togglePublisher,
-      toggleExamples: this.props.actions.toggleExamples,
-      test: this.props.actions.test,
-    } 
+    const toolbarprops  = {
+        ...this.props.actions
+    }
 
     return (<div onKeyDown={this._keyPress}> 
               <DragDropContainer>

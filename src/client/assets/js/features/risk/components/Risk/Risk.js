@@ -24,7 +24,7 @@ export default class Risk extends Component {
      const {rating} = this.props;
 
      const score = [...Array(rating)].map((i)=>{
-        return <FontIcon key={i}>warning</FontIcon>
+        return <FontIcon key={i}>security</FontIcon>
      });
      
      return   <div style={{position: "fixed", top: 0, left: 178, height: 64}} onClick={()=>this.setState({visible:!this.state.visible})}>
@@ -58,7 +58,7 @@ export default class Risk extends Component {
         } 
 
         const score = [...Array(r.score)].map((i)=>{
-            return <FontIcon key={i}>warning</FontIcon>
+            return <FontIcon key={i}>security</FontIcon>
         });
 
         return  <div className="flexrow" key={i}>

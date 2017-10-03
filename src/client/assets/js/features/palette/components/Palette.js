@@ -14,7 +14,6 @@ import {contextTypes} from 'utils/ReactDecorators';
      actions: {...bindActionCreators(paletteActions, dispatch), ...bindActionCreators(nodeActions, dispatch)},
   }
 })
-@contextTypes({ store: React.PropTypes.object })
 export default class Palette extends Component {
 	
     constructor(props){
@@ -47,7 +46,7 @@ export default class Palette extends Component {
                     nt: node.name,
                     def: node.def,
                     reducer: node.reducer,
-                    handleDrop: this.props.actions.dropNode.bind(null, {store, component:node.component, nt:node.name, def:node.def, reducer:node.reducer}),
+                    handleDrop: this.props.actions.dropNode.bind(null, {component:node.component, nt:node.name, def:node.def, reducer:node.reducer}),
                 }
                 return <Node key={`i${node.name}`} {...nodeprops}/>
             });
