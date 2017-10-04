@@ -57,7 +57,8 @@ export function register(name, reducer){
 
   //NOTE THAT DEVTOOLS CAUSES OLD ACTIONS TO BE REPLAYED WHEN HOTRELOAD IS TRUE, WHICH CAN CAUSE STRANGE BEHAVIOUR
   //see: https://github.com/gaearon/redux-devtools/issues/167
-  
+
+
   store.asyncReducers = store.asyncReducers || {};
   store.asyncReducers[name] = reducer;  
 
@@ -71,6 +72,7 @@ export function register(name, reducer){
 }
 
 export function unregisterAll(){
+ 
   store.asyncReducers = {};
 
   const reducers = {
@@ -81,6 +83,8 @@ export function unregisterAll(){
 }
 
 export function unregister(name){
+  if (!store.asyncReducers)
+    return
 
   if (store.asyncReducers[name]){
     delete store.asyncReducers[name];

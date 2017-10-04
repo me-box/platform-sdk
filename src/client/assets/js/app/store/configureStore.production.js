@@ -27,7 +27,8 @@ export function configureStore(initialState) {
 }
 
 export function register(name, reducer){
-
+  if (!store)
+    return
   store.asyncReducers = store.asyncReducers || {};
   store.asyncReducers[name] = reducer;  
 
@@ -40,6 +41,9 @@ export function register(name, reducer){
 }
 
 export function unregisterAll(){
+  if (!store)
+    return
+
   store.asyncReducers = {};
 
   const reducers = {
@@ -50,6 +54,9 @@ export function unregisterAll(){
 }
 
 export function unregister(name){
+  
+   if (!store.asyncReducers)
+    return
 
   if (store.asyncReducers[name]){
     delete store.asyncReducers[name];
