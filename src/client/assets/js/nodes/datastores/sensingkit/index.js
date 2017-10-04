@@ -518,13 +518,13 @@ const config = {
         case 'light':
          
 
-          return `${chosen} <p> Measures the ambient light level (illumination) in lux captured by a device camera. </p><p> The following is an indication of typical values</p>${luxtable}`;
+          return `${chosen} <p> Measures the ambient light level (illumination) in lux captured by a device camera. The following is an indication of typical values</p>${luxtable}`;
         
         case 'bluetooth':
           return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 
         case 'accelerometer':
-          return `${chosen} <p>This will return the device ${subtype} data</p><p> The following is an indication of typical values</p>${axistable}`;
+          return `${chosen} <p>This will return the device ${subtype} data. The following is an indication of typical values</p>${axistable}`;
         case 'linear-acceleration':
         case 'magnetometer':
         case 'gravity':

@@ -90,7 +90,16 @@ export default class Help extends Component {
 
 	renderContent(){
 		const {node={}} = this.props;
-		const {description=""} = node || {};
+		
+		let description = "";
+
+		if (node){
+			if (node._def.descriptionfn){
+				description = node._def.descriptionfn(node.subtype);
+			}else{
+				description = node.description;
+			}
+		}
 
 		switch (this.state.category){
 			case "description":
