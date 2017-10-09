@@ -9,7 +9,6 @@
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
 				{"name":"twitter", "file":"datastores/twitter/index"},
 		
-				{"name":"openface", "file":"processors/openface/index"},
 				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"extract", "file":"processors/extract/index"},
 				{"name":"chartify", "file":"processors/chartify/index"},
@@ -17,6 +16,7 @@
 			 	{"name":"webify", "file":"processors/webify/index"},
 			 	{"name":"uibuilder", "file":"processors/uibuilder/index"},
 
+			 	{"name":"export", "file":"outputs/export/index"},
 				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
 				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
 				{"name":"plugout", "file":"outputs/plug/index"},

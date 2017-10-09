@@ -34,6 +34,7 @@ import Help from 'features/help/components/Help';
               requestCode: bindActionCreators(paletteActions.requestCode, dispatch),
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
+              toggleSaveAsDialogue: bindActionCreators(repoActions.toggleSaveAsDialogue, dispatch),
               togglePublisher: bindActionCreators(workspaceActions.toggleVisible, dispatch),
               toggleExamples: bindActionCreators(exampleActions.toggleVisible, dispatch),
               test: bindActionCreators(testActions.test, dispatch),

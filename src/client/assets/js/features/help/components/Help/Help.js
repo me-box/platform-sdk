@@ -30,6 +30,7 @@ export default class Help extends Component {
 		this.renderMenuItem = this.renderMenuItem.bind(this);
 		this.onDrag = this.onDrag.bind(this);
 		this.onDrop = this.onDrop.bind(this);
+		this.onExit = this.onExit.bind(this);
 		this.startDrag = this.startDrag.bind(this);
 		//this.state = {category:"description"};
 	}
@@ -114,17 +115,24 @@ export default class Help extends Component {
 	}
 
 	startDrag(e){
+	
 		const {clientY} = e;
 		e.stopPropagation();
 		this.setState({dragging:true, currentY:clientY})
 	}
 
 	onDrop(e){
+
 		e.stopPropagation();
 		this.setState({dragging:false})
 	}
 
+	onExit(e){
+		console.log("MOUSE EXITED!!");
+	}
+
 	onDrag(e){
+		
 		e.stopPropagation();
 		const {clientY} = e;
 		if (this.state.dragging){
@@ -157,6 +165,7 @@ export default class Help extends Component {
 							<div draggable="true" 
 							onMouseDown={this.startDrag}
 							onMouseUp={this.onDrop} 
+							onMouseLeave={this.onDrop}
 							onMouseMove={this.onDrag}
 							style={style} 
 							id="help" 

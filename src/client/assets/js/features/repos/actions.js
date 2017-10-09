@@ -11,6 +11,13 @@ import {actionCreators as tabActions} from 'features/workspace';
 import {actionCreators as appActions} from 'features/apps';
 
 
+
+const _whitelist = (nodes)=>{
+  return nodes.filter(n=>n.type==="export").reduce((acc,n)=>{
+      const _urls = n.urls ? n.urls.split(",") : [];
+      return [ ...acc, ..._urls]
+  },[]);
+}
 //TODO: lots of duplication here..
 function extractPackages(state){
     const nodesById =state.nodes.nodesById;
@@ -279,6 +286,7 @@ function commitPressed(){
 
 		const nodes = getState().nodes.nodesById;
 		const ports = getState().ports.linksById;
+    
 
     const tabs = getState().workspace.tabs.map((key)=>{    
           return{
@@ -292,8 +300,6 @@ function commitPressed(){
 			const node = nodes[key];
 			return Object.assign({}, convertNode(node, Object.keys(ports).map((k)=>ports[k])));
 		});
-		
-		
 		 
 		const data = { 
 			repo: repo.name, 
@@ -304,11 +310,13 @@ function commitPressed(){
   				app: Object.assign({}, app, {id: getID()}),
   				packages: extractPackages(getState()),
   				'allowed-combinations': grid,
+          'export-whitelist': _whitelist(jsonnodes),
   			},
 			
 			sha: {
 					flows:repo.sha.flows, 
 					manifest: repo.sha.manifest,
+          Dockerfile: repo.sha.Dockerfile,
 			},
 				
 			message: message || 'cp commit',
@@ -372,6 +380,7 @@ function savePressed(){
   				app: Object.assign({}, getState().workspace.app, {id: getID()}),
   				packages: extractPackages(getState()),
   				'allowed-combinations': getState().workspace.grid,
+          'export-whitelist': _whitelist(jsonnodes),
   			}
 		}
 
@@ -430,20 +439,17 @@ function publish(){
     const data = {
           
           repo : repo,
-          
           flows: flows,
-          
           manifest: {
-          
           app: Object.assign({}, getState().workspace.app),
-          
-
           packages: extractPackages(getState()),
-
           'allowed-combinations': getState().workspace.grid,
+          'export-whitelist': _whitelist(jsonnodes),
         }
     };
       
+
+
     dispatch(networkActions.networkAccess(`publishing app ${name}`));
       
    
@@ -537,12 +543,13 @@ function fetchFlow(repo){
             })));
             
             //update the sha of this repo
-            
-            if (res.body.flows.sha && res.body.manifest.sha){
+          
+            if (res.body.flows.sha && res.body.manifest.sha && res.body.Dockerfile.sha){
               dispatch(receivedSHA(repo,
                        {
                           flows: res.body.flows.sha,
-                          manifest: res.body.manifest.sha
+                          manifest: res.body.manifest.sha,
+                          Dockerfile: res.body.Dockerfile.sha,
                        }))
             }else{ //this repo came from another user's github account
               dispatch(receivedSHA(repo,null));
@@ -564,6 +571,12 @@ function toggleSaveDialogue(){
 	return {
 		type: nodeActionTypes.TOGGLE_SAVE_DIALOGUE,
 	}	
+}
+
+function toggleSaveAsDialogue(){
+  return {
+    type: nodeActionTypes.TOGGLE_SAVE_AS_DIALOGUE,
+  } 
 }
 
 function toggleVisible(){
@@ -649,6 +662,7 @@ export const actionCreators = {
 	requestRepos,
   publish,
 	toggleSaveDialogue,
+  toggleSaveAsDialogue,
 	toggleVisible,
   receivedSHA,
   fetchExample,

@@ -41,104 +41,127 @@ export default class RepoManager extends Component {
 	constructor(props){
 		super(props);
 		this._load = this._load.bind(this);
+		this.renderSaveDialogue = this.renderSaveDialogue.bind(this);
+		this.renderSaveAsDialogue = this.renderSaveAsDialogue.bind(this);
 	} 
 	
-	renderDialogue(){
+	renderSaveAsDialogue(){
 
-		const {repos: {loaded, browsingname, tosave: {name, description, commit}, savedialogue}} = this.props;
-		const {nameChanged, browsingNameChanged, descriptionChanged, commitChanged, savePressed, commitPressed, toggleSaveDialogue} = this.props.actions;
-		
-		if (savedialogue){
+		const {repos: {tosave: {name, description, commit}, saveasdialogue, savedialogue}} = this.props;
+		const {nameChanged, descriptionChanged, commitChanged, savePressed, toggleSaveAsDialogue, toggleSaveDialogue} = this.props.actions;
+		const onClose = saveasdialogue ? toggleSaveAsDialogue : toggleSaveDialogue;
 
-			const nameprops =  {	
-									value: 	name,
-					 				id: "name",
-									onChange:(property, event)=>{
-	                  					nameChanged(event.target.value);
-	              					}
+		const nameprops =  {	
+								value: 	name,
+				 				id: "name",
+								onChange:(property, event)=>{
+                  					nameChanged(event.target.value);
+              					}
 							}
-			
-			
-			const browsingnameprops =  {	
-									value: 	browsingname,
-					 				id: "browsingname",
-					 				placeholder: "user repo",
+
+		const descriptionprops = {	
+									value: 	description,
+				 					id: "description",
 									onChange:(property, event)=>{
-										
-	                  					browsingNameChanged(event.target.value);
-	              					}
-								}
-								
-			const descriptionprops = {	
-										value: 	description,
-					 					id: "description",
-										onChange:(property, event)=>{
-	                  						descriptionChanged(event.target.value);
-	              						}
-									 }
-				
-			const commitprops = {	
-										value: 	commit,
-					 					id: "commit",
-										onChange:(property, event)=>{
-	                  						commitChanged(event.target.value);
-	              						}
-									 }	
+                  						descriptionChanged(event.target.value);
+              						}
+								 }
 			
-			const nameinput = <div className="centered">
-								<Textfield {...nameprops}/>												
-							  </div>
+		const commitprops = {	
+									value: 	commit,
+				 					id: "commit",
+									onChange:(property, event)=>{
+                  						commitChanged(event.target.value);
+              						}
+								 }	
+
+		const nameinput = <div className="centered">
+							<Textfield {...nameprops}/>												
+						  </div>
+
+		const descriptioninput 	= <Textarea {...descriptionprops}/>												
+		const commitinput 		= <Textarea {...commitprops}/>			  							
 		
-		    const descriptioninput 	= <Textarea {...descriptionprops}/>												
-			const commitinput 		= <Textarea {...commitprops}/>		
-
-			let dialogueprops, dialoguecontent;
-
-			
-			if (!loaded || (!loaded.sha.flows && !loaded.sha.manifest)){
-				
-			    dialogueprops = {
-					cancel: toggleSaveDialogue,
-					ok: ()=>{savePressed(); toggleSaveDialogue()},
-					title: "create new repo",
-    			}
+		const dialogueprops = {
+			cancel: onClose,
+			ok: ()=>{savePressed(); onClose()},
+			title: "create new repo",
+    	}
     	
-				dialoguecontent = <Cells>
-										<div>
-											<div className="centered">
-												save as new repo
-											</div>
+		const dialoguecontent = <Cells>
+									<div>
+										<div className="centered">
+											save as new repo
 										</div>
-										<Cell title={"name"} content={nameinput}/>
-										<Cell title={"description"} content={descriptioninput}/>
-										<Cell title={"commit message"} content={commitinput}/>
-								  </Cells>
-			}else{
+									</div>
+									<Cell title={"name"} content={nameinput}/>
+									<Cell title={"description"} content={descriptioninput}/>
+									<Cell title={"commit message"} content={commitinput}/>
+								</Cells>
+
+		return 	<Dialogue {...dialogueprops}>
+					{dialoguecontent}
+				</Dialogue>
+	}
+
+	renderSaveDialogue(){
+
+		const {repos: {loaded, browsingname, tosave: {name, description, commit}}} = this.props;
+		const {nameChanged, descriptionChanged, commitChanged, savePressed, commitPressed, toggleSaveDialogue} = this.props.actions;
+		
+		if (!loaded || (!loaded.sha.flows && !loaded.sha.manifest)){
+			return this.renderSaveAsDialogue();
+		}
+
+		const nameprops =  {	
+								value: 	name,
+				 				id: "name",
+								onChange:(property, event)=>{
+                  					nameChanged(event.target.value);
+              					}
+						}
+							
+		const descriptionprops = {	
+									value: 	description,
+				 					id: "description",
+									onChange:(property, event)=>{
+                  						descriptionChanged(event.target.value);
+              						}
+								 }
 			
-				dialogueprops = {
-					cancel: toggleSaveDialogue,
-					ok: ()=>{commitPressed(); toggleSaveDialogue()},
-					title: "save update",
-    			}
+		const commitprops = {	
+									value: 	commit,
+				 					id: "commit",
+									onChange:(property, event)=>{
+                  						commitChanged(event.target.value);
+              						}
+								 }	
+		
+		const nameinput = <div className="centered">
+							<Textfield {...nameprops}/>												
+						  </div>
+		
+		const descriptioninput 	= <Textarea {...descriptionprops}/>												
+		const commitinput 		= <Textarea {...commitprops}/>		
+
+		const dialogueprops = {
+			cancel: toggleSaveDialogue,
+			ok: ()=>{commitPressed(); toggleSaveDialogue()},
+			title: "save update",
+    	};
     			
-				dialoguecontent = <Cells>
-										<div>
-											<div className="centered">
-												save
-											</div>
+		const dialoguecontent = <Cells>
+									<div>
+										<div className="centered">
+											save
 										</div>
-										<Cell title={"commit message"} content={commitinput}/>
-									</Cells>
-			}	
+									</div>
+									<Cell title={"commit message"} content={commitinput}/>
+								</Cells>
+			
 		
 	
-			return <Dialogue {...dialogueprops}>
-						{dialoguecontent}
-					</Dialogue>
-    	}
-
-    	return null;
-
+		return <Dialogue {...dialogueprops}>{dialoguecontent}</Dialogue>
 	}
 
 
@@ -147,7 +170,8 @@ export default class RepoManager extends Component {
 	}
 
 	render(){
-		const {repos:{repos, visible}} = this.props;
+		const {repos:{repos, visible, savedialogue, saveasdialogue}} = this.props;
+		const {toggleSaveAsDialogue} = this.props.actions;
 		const close = <Button icon onClick={this.props.actions.toggleVisible}>close</Button>;
 		let dialogue = null;
 
@@ -190,7 +214,8 @@ export default class RepoManager extends Component {
 	          				</List>
 	          				</div>
 	        		</Drawer>
-	        		{this.renderDialogue()}
+	        		{savedialogue && this.renderSaveDialogue()}
+	        		{saveasdialogue && this.renderSaveAsDialogue()}
 	        	</div>
 	}
 

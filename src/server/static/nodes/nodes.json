@@ -16,6 +16,7 @@
 			 	{"name":"webify", "file":"processors/webify/index"},
 			 	{"name":"uibuilder", "file":"processors/uibuilder/index"},
 
+			 	{"name":"export", "file":"outputs/export/index"},
 				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
 				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
 				{"name":"plugout", "file":"outputs/plug/index"},

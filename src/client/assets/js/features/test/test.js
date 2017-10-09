@@ -193,7 +193,7 @@ function toggleVisible(){
 }
 
 
-const visible = (state) => state[NAME].visible;
+const visible = (state) => state[NAME].visible && state.nodes.configuringId === null
 
 const username = (state)=> {
 	return state.repos.currentuser;

@@ -111,8 +111,9 @@ export default function reducer(state = initialState, action) {
       
 		case portActionTypes.PORT_MOUSE_OVER:
 			
-			if (state.output && (state.output.node.id != action.node.id) && action.portIndex == 0){
+			if (state.output && (state.output.node.id != action.node.id && action.node.inputs > 0) && action.portIndex == 0){
 				
+				console.log("TARGET IS", action.node);
 				const id = `${state.output.sourcePort}:${state.output.node.id}:${action.node.id}:${action.portIndex}`;
 
 				return Object.assign({}, state, {

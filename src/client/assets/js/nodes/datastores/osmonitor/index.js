@@ -24,9 +24,9 @@ const config = {
     const type = subtype || "loadavg1";
 
     const _descriptions = {
-      loadavg1: "a % value for the last minute system load",
-      loadavg5: "a % value for the last 5 minutes system load",
-      loadavg15: "a % value for the last 15 minutes system load",
+      loadavg1: "a load average value for the last minute",
+      loadavg5: "a load average value for the last 5 minutes",
+      loadavg15: "a load average value for the last 15 minutes",
       freemem: "free memory (bytes)",
     }
 
@@ -109,7 +109,7 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  descriptionfn: () => "<p>OS monitor of the databox, providing 1,5 and 15 minute load averages (percentages) and free memory (bytes)</p>",
+  descriptionfn: () => "<p>OS monitor of the databox, providing 1,5 and 15 minute load averages (a load average of 1.0 is 100% CPU utilisation on a single core machine) and free memory (bytes)</p>",
 }
 
 export default {

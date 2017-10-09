@@ -73,13 +73,17 @@ function _description(def){
 
 function dropNode({component, nt, def, reducer}, x0, y0){
   
+  
   return function(dispatch, getState){
+
+   
+
     //adjust x and y for offsets
     const x = x0 + MOUSE_X_OFFSET + NODE_WIDTH/2;
     const y = y0 + MOUSE_Y_OFFSET + getState().mouse.top + NODE_WIDTH/2;
+   
 
     if (x < 0){
-     
       return;
     }
 
@@ -87,7 +91,6 @@ function dropNode({component, nt, def, reducer}, x0, y0){
     
     const node = {
       id: getID(),
-      z:getState().workspace.currentId,
       type: nt,
       _def: _def,
       _: (id)=>{return id},
@@ -100,6 +103,7 @@ function dropNode({component, nt, def, reducer}, x0, y0){
       dirty: true,
       x: x, 
       y: y, 
+      z: getState().workspace.currentId,
     }
  
     //so old nodes that are loaded won't necessarily have the new defaults!
@@ -118,10 +122,6 @@ function dropNode({component, nt, def, reducer}, x0, y0){
       register(node.id, scopeify(node.id, reducer));
     }
 
-    //const elementprops = {
-    //    store: store,
-    //    id: node.id,
-    //}
       
     dispatch({type: nodeActionTypes.NODE_DROPPED, node, config:{id: node.id, fn:component}});
     

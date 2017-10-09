@@ -85,7 +85,7 @@ class NodeCanvas extends Component {
     })
     
     const chartstyle = {
-    
+      overflow: "hidden",
       width: w,
       height: h,
     }

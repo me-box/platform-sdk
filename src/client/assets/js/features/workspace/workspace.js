@@ -28,12 +28,25 @@ const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
 	  
 export const NAME = 'workspace';
 
+const _createNewTab = (id, name)=>{
+	return {
+		type: "tab",
+		id, 
+		name,
+		risks: "",
+		benefits: "",
+		purpose: "",
+		install: "optional",	
+	}
+}
+
+const initialTab = _createNewTab(getID(), "new package");
 
 const initialState = {
 	publishervisible: false,
-	currentId: null,
-	tabs: [],
-	tabsById : {},
+	currentId: initialTab.id,
+	tabs: [initialTab.id],
+	tabsById : {[initialTab.id]: initialTab},
 	grid:[], 
 	
 	app: {
@@ -158,24 +171,20 @@ export default function reducer(state = initialState, action) {
 	  	 									});
 	  
   	  case FOREIGN_CLEAR:
-	    	return initialState;
-	  
+  	  		return initialState;
+  	  		/*const tab = _createNewTab(getID(), "new package");
+	    	return {
+	    				...initialState,
+	  					tabs:	[tab.id],
+	  					tabsById: {[tab.id] : tab},
+	  					currentId: tab.id,
+	  				}*/
 	  default:
 	    return state;
 	}
 }
 
-const _createNewTab = (id, name)=>{
-	return {
-		type: "tab",
-		id, 
-		name,
-		risks: "",
-		benefits: "",
-		purpose: "",
-		install: "optional",	
-	}
-}
+
 
 
 function initApp(id){

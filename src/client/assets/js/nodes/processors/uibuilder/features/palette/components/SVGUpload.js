@@ -1,13 +1,9 @@
 import React, { PureComponent, PropTypes } from 'react';
 import cn from 'classnames';
 import isRequiredForA11y from 'react-prop-types/lib/isRequiredForA11y';
-
-import { TAB, SPACE, ENTER } from 'react-md/lib/constants/keyCodes';
-import captureNextEvent from 'react-md/lib/utils/EventUtils/captureNextEvent';
 import FontIcon from 'react-md/lib/FontIcons/FontIcon';
 import IconSeparator from 'react-md/lib/Helpers/IconSeparator';
-import AccessibleFakeInkedButton from 'react-md/lib/Helpers/AccessibleFakeInkedButton';
-
+import Button from 'react-md/lib/Buttons';
 /**
  * The `SVGUpload` component is used as simple styling for the `<input type="file" />`.
  * It will style the input as a raised button by default.
@@ -161,49 +157,12 @@ export default class SVGUpload extends PureComponent {
 
   constructor(props) {
     super(props);
-
     this.state = { hover: false, pressed: false };
-
-    this._blur = this._blur.bind(this);
     this._handleChange = this._handleChange.bind(this);
-    this._handleKeyUp = this._handleKeyUp.bind(this);
-    this._handleKeyDown = this._handleKeyDown.bind(this);
     this._handleMouseUp = this._handleMouseUp.bind(this);
     this._handleMouseDown = this._handleMouseDown.bind(this);
-    this._handleTouchEnd = this._handleTouchEnd.bind(this);
-    this._handleTouchStart = this._handleTouchStart.bind(this);
-    this._handleMouseOver = this._handleMouseOver.bind(this);
-    this._handleMouseLeave = this._handleMouseLeave.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.disabled && !nextProps.disabled && this.state.hover) {
-      this.setState({ hover: false });
-    }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // I honestly don't remember why this was implemented, but it was copied from the Button
-    // component
-    if (!this.state.pressed && nextState.pressed) {
-      this._timeout = setTimeout(() => {
-        this._timeout = null;
-        if (this._attemptedBlur) {
-          this._attemptedBlur = false;
-
-          this.setState({ pressed: false });
-        }
-      }, 450);
-    }
-  }
-
-  componentWillUnmount() {
-    if (this._timeout) {
-      clearTimeout(this._timeout);
-    }
-
-    window.removeEventListener('click', this._blur);
-  }
 
   _handleChange(e) {
     const { multiple, onChange } = this.props;
@@ -215,105 +174,28 @@ export default class SVGUpload extends PureComponent {
     }
   }
 
-  _blur() {
-    if (this.props.disabled) {
-      return;
-    }
-
-    if (this._timeout) {
-      this._attemptedBlur = true;
-    } else {
-      this.setState({ pressed: false });
-    }
-  }
 
   _handleMouseUp(e) {
     if (this.props.onMouseUp) {
       this.props.onMouseUp(e);
     }
-
-    this._blur();
   }
 
   _handleMouseDown(e) {
+
     if (this.props.onMouseDown) {
+      
       this.props.onMouseDown(e);
     }
 
-    if (!this.props.disabled) {
+    //if (!this.props.disabled) {
       this.setState({ pressed: true });
-    }
-  }
-
-  _handleTouchStart(e) {
-    if (this.props.onTouchStart) {
-      this.props.onTouchStart(e);
-    }
-
-    if (!this.props.disabled) {
-      this.setState({ pressed: true });
-    }
-  }
-
-  _handleTouchEnd(e) {
-    if (this.props.onTouchEnd) {
-      this.props.onTouchEnd(e);
-    }
-
-    this._blur();
-    captureNextEvent('mouseover');
-  }
-
-  _handleKeyUp(e) {
-    if (this.props.onKeyUp) {
-      this.props.onKeyUp(e);
-    }
-
-
-    if ((e.which || e.keyCode) === TAB) {
-      window.addEventListener('click', this._blur);
-      this.setState({ pressed: true });
-    }
-  }
-
-  _handleKeyDown(e) {
-    if (this.props.onKeyDown) {
-      this.props.onKeyDown(e);
-    }
-
-    const key = e.which || e.keyCode;
-
-    if (key === TAB) {
-      window.removeEventListener('click', this._blur);
-      this.setState({ pressed: false });
-    } else if (key === SPACE || key === ENTER) {
-      e.preventDefault();
-      e.target.click();
-    }
-  }
-
-  _handleMouseOver(e) {
-    if (this.props.onMouseOver) {
-      this.props.onMouseOver(e);
-    }
-
-    if (!this.props.disabled) {
-      this.setState({ hover: true });
-    }
-  }
-
-  _handleMouseLeave(e) {
-    if (this.props.onMouseLeave) {
-      this.props.onMouseLeave(e);
-    }
-
-    if (!this.props.disabled) {
-      this.setState({ hover: false });
-    }
+   // }
   }
 
   render() {
     const { hover, pressed } = this.state;
+    
     const {
       style,
       className,
@@ -342,16 +224,7 @@ export default class SVGUpload extends PureComponent {
 
     const icon = !iconClassName && !iconChildren
       ? null
-      : <FontIcon iconClassName={iconClassName}>{iconChildren}</FontIcon>;
-
-    const themeClassNames = !disabled && cn({
-      'md-text--theme-primary md-ink--primary': flat && primary,
-      'md-text--theme-secondary md-ink--secondary': flat && secondary,
-      'md-background--primary md-background--primary-hover': !flat && primary,
-      'md-background--secondary md-background--secondary-hover': !flat && secondary,
-      'md-btn--color-primary-active': flat && hover && primary,
-      'md-btn--color-secondary-active': flat && hover && secondary,
-    });
+      : <FontIcon onClick={this._handleMouseDown} iconClassName={iconClassName}>{iconChildren}</FontIcon>;
 
     let labelChildren = label;
     if (icon) {
@@ -364,31 +237,23 @@ export default class SVGUpload extends PureComponent {
         style={style}
         className={cn('md-inline-block md-file-input-container', className)}
       >
-        <AccessibleFakeInkedButton
+        <Button
           component="label"
-          htmlFor={id}
-          disabled={disabled}
-          onTouchStart={this._handleTouchStart}
-          onTouchEnd={this._handleTouchEnd}
-          onMouseDown={this._handleMouseDown}
-          onMouseUp={this._handleMouseUp}
-          onKeyDown={this._handleKeyDown}
-          onKeyUp={this._handleKeyUp}
-          onMouseOver={this._handleMouseOver}
-          onMouseLeave={this._handleMouseLeave}
+          htmlFor={id}        
+          onClick={this._handleMouseDown}
+          
           className={cn(`md-btn md-btn--raised`) }
           style={{textAlign:"center", paddingTop:4}}
         >
-        <div>{icon}</div>
-        </AccessibleFakeInkedButton>
+        <div style={{padding:7, color:"white", fontSize:"1.6em"}}>⇧</div>
+        </Button>
+
         <input
           ref="file"
           multiple={multiple}
-          disabled={disabled}
           id={id}
           accept={accept}
           type="file"
-          aria-hidden="true"
           className="md-file-input"
           onChange={this._handleChange}
         />

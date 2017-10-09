@@ -1,61 +1,7 @@
 import Node from "./node";
+import {luxvalues, axisvalues, teslavalues} from "./data";
 
- const _luxvalues = [
-    {
-      value: "0.0001",
-      description: "Moonless, overcast night sky (starlight)"
-    },
-    {
-      value: "0.002",
-      description: "Moonless clear night sky with airglow"
-    },
-    {
-      value: "0.05 to 0.36",
-      description: "Full moon on a clear night"
-    },
-    {
-      value: "3.4",
-      description: "Dark limit of civil twilight under a clear sky"
-    },
-    {
-      value: "20-50",
-      description: "Public areas with dark surroundings"
-    },
-    {
-      value: "50",
-      description: "Family living room lights"
-    },
-    {
-      value: "80",
-      description: "Office building hallway/toilet lighting"
-    },
-    {
-      value: "100",
-      description: "Very dark overcast day"
-    },
-    {
-      value: "320-500",
-      description: "Office lighting"
-    },
-    {
-      value: "400",
-      description: "Sunrise or sunset on a clear day"
-    },
-    {
-      value: "1000",
-      description: "Overcast day"
-    },
-    {
-      value: "10000 to 25000",
-      description: "Full daylight"
-    },
-    {
-      value: "32000 to 100000",
-      description: "Direct sunlight"
-    }
-];
-
-const _luxrows = _luxvalues.reduce((acc, lux)=>{
+const _luxrows = luxvalues.reduce((acc, lux)=>{
     return `${acc}<tr><td>${lux.value}</td><td>${lux.description}</td></tr>`;
 
 },"");
@@ -63,28 +9,14 @@ const _luxrows = _luxvalues.reduce((acc, lux)=>{
 const luxtable = `<table class="table table-striped table-hover"><thead><tr><th>lux value</th><th>description</th></tr></thead><tbody>${_luxrows}</tbody></table>`;
 
 
-const _axisvalues = [
-    {
-      x: "-0.15 to 0.08",
-      y: "-0.09 to 0.08",
-      z: "10.10 to 10.99",
-      description: "at rest"
-    },
-    {
-      x: "-12.6 to 2.27",
-      y: "-5.95 to 7.70",
-      z: "3.1 to 11.70",
-      description: "walking"
-    },
-    {
-      x: "-38 to 38",
-      y: "-38 to 38",
-      z: "-38 to 38",
-      description: "vigorous shaking"
-    },
-];
+const _teslarows = teslavalues.reduce((acc, tesla)=>{
+    return `${acc}<tr><td>${tesla.value}</td><td>${tesla.description}</td></tr>`;
 
-const _axisrows = _axisvalues.reduce((acc, axis)=>{
+},"");
+
+const teslatable = `<table class="table table-striped table-hover"><thead><tr><th>microtesla value</th><th>description</th></tr></thead><tbody>${_teslarows}</tbody></table>`;
+
+const _axisrows = axisvalues.reduce((acc, axis)=>{
     return `${acc}<tr><td>${axis.x}</td><td>${axis.y}</td><td>${axis.z}</td><td>${axis.description}</td></tr>`;
 
 },"");
@@ -518,15 +450,18 @@ const config = {
         case 'light':
          
 
-          return `${chosen} <p> Measures the ambient light level (illumination) in lux captured by a device camera. The following is an indication of typical values</p>${luxtable}`;
+          return `${chosen} <p> Measures the ambient light level (illumination) in lux captured by a device camera. The following is an indication of value ranges</p>${luxtable}`;
         
         case 'bluetooth':
           return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 
         case 'accelerometer':
-          return `${chosen} <p>This will return the device ${subtype} data. The following is an indication of typical values</p>${axistable}`;
-        case 'linear-acceleration':
+          return `${chosen} <p>This will return the device ${subtype} data. The following is an indication of value ranges</p>${axistable}`;
+      
         case 'magnetometer':
+           return `${chosen} <p> All values are in micro-Tesla (uT) and measure the ambient magnetic field in the X, Y and Z axis.The following is an indication of value ranges</p>${teslatable}`;
+        
+        case 'linear-acceleration':
         case 'gravity':
         case 'gyroscope':
         case 'rotation':

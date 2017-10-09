@@ -26,6 +26,7 @@ export default class Toolbar extends Component {
   			<Button flat label="examples" onClick={this.props.toggleExamples}/>,
   			<Button flat label="load" onClick={this.props.requestRepos}/>,
   			<Button flat label="save" onClick={this.props.toggleSaveDialogue}/>,
+        <Button flat label="save as" onClick={this.props.toggleSaveAsDialogue}/>,
   			<Button flat label="test" onClick={this.props.test}/>,
   			<Button flat label="publish" onClick={this.props.togglePublisher}/>
   		]

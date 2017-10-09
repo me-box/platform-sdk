@@ -20,6 +20,7 @@ const initialState = {
 		description: ""
 	}, 
 	savedialogue: false,
+	saveasdialogue: false,
 	repos:[],
 	visible:false,
 	examples: [],
@@ -86,6 +87,11 @@ export default function reducer(state = initialState, action) {
 	  case nodeActionTypes.TOGGLE_SAVE_DIALOGUE:
 			return Object.assign({}, state, {
 				savedialogue: !state.savedialogue,
+			});
+
+	  case nodeActionTypes.TOGGLE_SAVE_AS_DIALOGUE:
+			return Object.assign({}, state, {
+				saveasdialogue: !state.saveasdialogue,
 			});
 
 	  case  nodeActionTypes.TOGGLE_VISIBLE:
