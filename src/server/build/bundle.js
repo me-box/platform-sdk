@@ -318,18 +318,22 @@ function createDockerImage(tarfile, tag) {
 }
 
 function uploadImageToRegistry(tag, registry) {
+	console.log("** in upload image to registry **");
 
 	return new Promise(function (resolve, reject) {
 		if (registry && registry.trim() !== "") {
 			console.log("uploading to registry", registry);
-
+			console.log("getting image for", tag);
 			var image = _docker2.default.getImage(tag);
+
 			image.push({
 				registry: registry
 			}, function (err, data) {
 				data.pipe(process.stdout);
 				if (err) {
+					console.log("error uploading to registry", err);
 					reject(err);
+					return;
 				}
 				resolve();
 			});
@@ -500,12 +504,10 @@ console.log("dev mode ", dev);
 (0, _config.fetch)({ dev: dev }).then(function (config) {
   start(config);
 }, function (err) {
-  console.log("ok am here!!");
   console.log("error reading config!", err);
 });
 
 function checkcredentials(config) {
-  console.log("checking credentials for ", JSON.stringify(config, null, 4));
   var _config$github = config.github,
       CLIENT_ID = _config$github.CLIENT_ID,
       CLIENT_SECRET = _config$github.CLIENT_SECRET,
@@ -703,7 +705,7 @@ function defaultdevsettings() {
                 },
 
                 "registry": {
-                        "URL": "localhost:5000"
+                        "URL": ""
                 },
 
                 "mongo": {
@@ -725,7 +727,7 @@ function defaultdevsettings() {
 function defaultsettings() {
         return {
 
-                "secret": "asdaksgdsahgdhsagd ahjsgdjhsg",
+                "secret": "asjhgdsajhd6sa7d78as6s87adsakgdsadgaskdgsagdk",
 
                 "github": {
                         "CLIENT_ID": "",
@@ -798,8 +800,6 @@ function initPassport(app, config) {
 		return;
 	}
 
-	console.log("initing passport");
-
 	var User = __webpack_require__(17)(config.mongo.URL);
 
 	app.use(_passport2.default.initialize());
@@ -823,10 +823,8 @@ function initPassport(app, config) {
 				});
 			} else {
 				//MUST update here - incase the token has changed
-				console.log("updating token");
 				var conditions = { accessToken: accessToken };
 				User.update({ githubId: profile.id }, { $set: { accessToken: accessToken } }, function (err, u) {
-					console.log("done!!", u);
 					return cb(null, user);
 				});
 			}
@@ -1042,7 +1040,7 @@ var _createCommit = function _createCommit(config, user, repo, sha, filename, co
 	});
 };
 
-var _createRepo = function _createRepo(config, user, name, description, flows, manifest, commitmessage, accessToken) {
+var _createRepo = function _createRepo(config, user, name, description, flows, manifest, dockerfile, commitmessage, accessToken) {
 
 	return new Promise(function (resolve, reject) {
 
@@ -1055,18 +1053,12 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			"has_downloads": false
 		}).set('Authorization', 'token ' + accessToken).set('Accept', 'application/json').end(function (err, data) {
 			if (err) {
-				console.log('am here error creating repo!');
+				console.log('error creating repo', err);
 				reject(err);
+				return;
 			} else {
 
 				var result = data.body;
-
-				console.log({
-					name: result.name,
-					updated: result.updated_at,
-					icon: result.owner.avatar_url,
-					url: result.url
-				});
 
 				//give github time it needs to set up repo
 
@@ -1081,6 +1073,7 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			}
 		});
 	}).then(function (repo) {
+		console.log("successfully created repo", repo);
 
 		return Promise.all([Promise.resolve(repo), _addFile({
 			config: config,
@@ -1103,10 +1096,24 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			config: config,
 			username: user.username,
 			repo: repo.name,
-			filename: 'manifest.json',
+			filename: 'databox-manifest.json',
 			email: user.email || user.username + '@me-box.com',
 			message: commitmessage,
 			content: new Buffer(JSON.stringify(manifest)).toString('base64'),
+			accessToken: accessToken
+		})]);
+	}).then(function (values) {
+		var reponame = values[0];
+		console.log("creating dockerfile", dockerfile);
+
+		return Promise.all([Promise.resolve(reponame), Promise.resolve(values[1]), Promise.resolve(values[2]), _addFile({
+			config: config,
+			username: user.username,
+			repo: reponame,
+			filename: 'Dockerfile',
+			email: user.email || user.username + '@me-box.com',
+			message: commitmessage,
+			content: new Buffer(dockerfile).toString('base64'),
 			accessToken: accessToken
 		})]);
 	});
@@ -1133,10 +1140,9 @@ var _addFile = function _addFile(options) {
 			"content": content
 		}).set('Authorization', 'token ' + accessToken).set('Accept', 'application/json').end(function (err, res) {
 			if (err) {
-				console.log(err);
+				console.log("error adding file", err);
 				reject(err);
 			} else {
-				console.log(res.body);
 				resolve(Object.assign({}, res.body, { repo: repo }));
 			}
 		});
@@ -1154,12 +1160,12 @@ var _fetchFile = function _fetchFile(config, username, repoowner, accessToken, r
 			} else {
 
 				//only send back sha (used for future updates) if user that requested this repo is the owner
-				var jsonstr = new Buffer(data.body.content, 'base64').toString('ascii');
+				var str = new Buffer(data.body.content, 'base64').toString('ascii');
 				try {
 					if (username === repoowner) {
-						resolve({ content: JSON.parse(jsonstr), sha: data.body.sha });
+						resolve({ content: str, sha: data.body.sha });
 					} else {
-						resolve({ content: JSON.parse(jsonstr) });
+						resolve({ content: str });
 					}
 				} catch (error) {
 					console.log("error parsing JSON");
@@ -1173,15 +1179,17 @@ var _fetchFile = function _fetchFile(config, username, repoowner, accessToken, r
 };
 
 var _wait = function _wait(storeurl) {
+
 	return new Promise(function (resolve, reject) {
 		function get() {
-			console.log('calling ' + storeurl);
+			console.log('calling http://' + storeurl);
 			agent.get('http://' + storeurl, function (error, response, body) {
 				if (error) {
 					console.log("[seeding manifest] waiting for appstore", error);
 					setTimeout(get, 4000);
 				} else {
 					resolve();
+					return;
 				}
 			});
 		}
@@ -1190,7 +1198,7 @@ var _wait = function _wait(storeurl) {
 };
 
 var _saveToAppStore = function _saveToAppStore(config, manifest) {
-	console.log("saving to app store with manifest", manifest);
+	console.log("in save to app store with manifest", manifest);
 
 	//if no appstore url specified, assume a dockerised one running and retrieve docker ip
 	if (!config.appstore || (config.appstore.URL || "").trim() === "") {
@@ -1200,13 +1208,14 @@ var _saveToAppStore = function _saveToAppStore(config, manifest) {
 			return _postToAppStore(ip + ':8181', manifest);
 		});
 	} else {
-		return _postToAppStore('' + config.appstore.URL, manifest);
+		var _url = config.appstore.URL.replace("http:\/\/", "");
+		return _postToAppStore(_url, manifest);
 	}
 };
 
 var _postToAppStore = function _postToAppStore(storeurl, manifest) {
 
-	console.log("POSTING TO APP STORE", storeurl + '/app/post');
+	console.log("posting to app store", storeurl + '/app/post');
 	return _wait(storeurl).then(function () {
 		return new Promise(function (resolve, reject) {
 			agent.post('http://' + storeurl + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
@@ -1214,13 +1223,26 @@ var _postToAppStore = function _postToAppStore(storeurl, manifest) {
 					console.log("error posting to app store", err);
 					reject(err);
 				} else {
-					console.log("DONE!");
-					console.log(res.body);
+					console.log("successfully posted to app store", res.body);
 					resolve(res.body);
 				}
 			});
 		});
 	});
+};
+
+var _generateDockerfile = function _generateDockerfile(libraries, config, app) {
+
+	var libcommands = libraries.map(function (library) {
+		return 'RUN cd /data/nodes/databox && npm install --save ' + library;
+	});
+
+	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
+	var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/databox-manifest.json"'];
+
+	var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
+
+	return [].concat(dcommands, _toConsumableArray(libcommands), startcommands).join("\n");
 };
 
 var _generateManifest = function _generateManifest(config, user, reponame, app, packages, allowed) {
@@ -1296,10 +1318,7 @@ var _pull = function _pull(repo) {
 	});
 };
 
-var _publish = function _publish(config, user, reponame, app, packages, libraries, allowed, flows) {
-
-	console.log("PUBLISHING NOW WITH LIBRARIES");
-	console.log(libraries);
+var _publish = function _publish(config, user, app, packages, allowed, flows, dockerfile) {
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
@@ -1320,28 +1339,21 @@ var _publish = function _publish(config, user, reponame, app, packages, librarie
 			};
 			return _saveToAppStore(config, data);
 		}).then(function (result) {
-			var libcommands = libraries.map(function (library) {
-				return 'RUN cd /data/nodes/databox && npm install --save ' + library;
-			});
 
-			//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-			var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/manifest.json"'];
-
-			var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
-
-			var dockerfile = [].concat(dcommands, _toConsumableArray(libcommands), startcommands).join("\n");
 			var path = user.username + '-tmp.tar.gz';
 			return (0, _utils.createTarFile)(dockerfile, flows, path);
 		}, function (err) {
 			reject("could not save to app store!");
 			return;
 		}).then(function (tarfile) {
-			var appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : user.username.toLowerCase() + '-' + app.name.toLowerCase();
-			return (0, _utils.createDockerImage)(tarfile, '' + appname);
+			var _appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : user.username.toLowerCase() + '-' + app.name.toLowerCase();
+			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? config.registry.URL + '/' : "";
+			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname);
 		}, function (err) {
 			reject("could not create tar file", err);
 			return;
 		}).then(function (tag) {
+			console.log("tag is", tag);
 			return (0, _utils.uploadImageToRegistry)(tag, '' + config.registry.URL);
 		}, function (err) {
 			reject('could not create docker image');
@@ -1422,16 +1434,20 @@ router.get('/flow', function (req, res) {
 	var repo = req.query.repo;
 	var owner = req.query.username || user.username;
 
-	return Promise.all([_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'manifest.json')]).then(function (values) {
+	return Promise.all([_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'databox-manifest.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'Dockerfile')]).then(function (values) {
+
+		var flows = Object.assign({}, values[0], { content: JSON.parse(values[0].content) });
+		var manifest = Object.assign({}, values[1], { content: JSON.parse(values[1].content) });
 
 		res.send({
 			result: 'success',
-			flows: values[0],
-			manifest: values[1]
+			flows: flows,
+			manifest: manifest,
+			Dockerfile: values[2]
 		});
 	}, function (err) {
 		console.log(err);
-		res.status(500).send({ error: 'could not retrieve flows and manifest file' });
+		res.status(500).send({ error: 'could not retrieve flows, manifest and Dockerfile' });
 	});
 });
 
@@ -1439,14 +1455,18 @@ router.get('/flow', function (req, res) {
 
 router.post('/repo/new', function (req, res) {
 
+	console.log("in repo new");
+
 	var user = req.user;
 	var name = req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : 'databox.' + req.body.name.toLowerCase();
 	var description = req.body.description || "";
 	var flows = req.body.flows || [];
 	var manifest = req.body.manifest || {};
+	var dockerfile = '# ' + name + ' Dockerfile';
 	var commitmessage = req.body.message || "first commit";
 
-	return _createRepo(req.config, user, name, description, flows, manifest, commitmessage, req.user.accessToken).then(function (repo) {
+	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (repo) {
+		console.log("successfully created repo", repo);
 		return repo;
 	}).then(function (values) {
 		res.send({
@@ -1454,7 +1474,8 @@ router.post('/repo/new', function (req, res) {
 			repo: values[0],
 			sha: {
 				flows: values[1].content.sha,
-				manifest: values[2].content.sha
+				manifest: values[2].content.sha,
+				Dockerfile: values[3].content.sha
 			}
 		});
 	}, function (err) {
@@ -1467,15 +1488,30 @@ router.post('/repo/update', function (req, res) {
 
 	var user = req.user;
 	var repo = req.body.repo;
-	var flowscontent = new Buffer(JSON.stringify(req.body.flows)).toString('base64');
-	var manifestcontent = new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
 	var sha = req.body.sha;
+
+	console.log("in update with sha", sha);
+
 	var message = req.body.message || "checkpoint commit";
 
+	var libraries = (0, _utils.dedup)((0, _utils.flatten)(req.body.flows.reduce(function (acc, node) {
+		if (node.type === "dbfunction") {
+			acc = [].concat(_toConsumableArray(acc), [(0, _utils.matchLibraries)(node.func)]);
+		}
+		return acc;
+	}, [])));
+
+	var dockerfile = _generateDockerfile(libraries, req.config, req.body.manifest.app);
+	var flowscontent = new Buffer(JSON.stringify(req.body.flows)).toString('base64');
+	var manifestcontent = new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
+	var dockerfilecontent = new Buffer(dockerfile).toString('base64');
+
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then(function (data) {
-		return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo, sha.manifest, 'manifest.json', manifestcontent, message, user.accessToken)]);
+		return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo, sha.manifest, 'databox-manifest.json', manifestcontent, message, user.accessToken)]);
 	}, function (err) {
 		res.status(500).send({ error: err });
+	}).then(function (values) {
+		return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _createCommit(req.config, user, repo, sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, user.accessToken)]);
 	}).then(function (values) {
 
 		res.send({
@@ -1483,7 +1519,8 @@ router.post('/repo/update', function (req, res) {
 			repo: repo,
 			sha: {
 				flows: values[0],
-				manifest: values[1].body.content.sha
+				manifest: values[1],
+				Dockerfile: values[2].body.content.sha
 			}
 		});
 	}, function (err) {
@@ -1514,20 +1551,26 @@ router.post('/publish', function (req, res) {
 		return acc;
 	}, [])));
 
-	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest) {
+	var dockerfile = _generateDockerfile(libraries, req.config, app);
+
+	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile) {
 		//commit
 
-		console.log("COMMITTING!!!");
+		console.log("committing");
 		var flowcontent = new Buffer(JSON.stringify(flows)).toString('base64');
 		var manifestcontent = new Buffer(JSON.stringify(manifest)).toString('base64');
+		var dockerfilecontent = new Buffer(dockerfile).toString('base64');
+
 		var message = commitmessage;
 
 		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then(function (data) {
-			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest, 'manifest.json', manifestcontent, message, req.user.accessToken)]);
+			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken)]);
 		}, function (err) {
 			res.status(500).send({ error: err });
 		}).then(function (values) {
-			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(req.config, user, repo.name, app, packages, libraries, allowed, JSON.stringify(flows))]);
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken)]);
+		}).then(function (values) {
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1]), Promise.resolve(values[2].body.content.sha), _publish(req.config, user, app, packages, allowed, JSON.stringify(flows), dockerfile)]);
 		}, function (err) {
 			res.status(500).send({ error: err });
 		}).then(function (values) {
@@ -1536,29 +1579,31 @@ router.post('/publish', function (req, res) {
 				repo: repo.name,
 				sha: {
 					flows: values[0],
-					manifest: values[1]
+					manifest: values[1],
+					Dockerfile: values[2]
 				}
 			});
 		});
 	} else {
 		//create a new repo!
-		console.log("CREATING NEW REPO..");
+
 		var reponame = app.name.startsWith("databox.") ? app.name.toLowerCase() : 'databox.' + app.name.toLowerCase();
-		console.log(reponame);
-		return _createRepo(req.config, user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then(function (values) {
+
+		return _createRepo(req.config, user, reponame, app.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
 			console.log('publishing...' + reponame);
-			return Promise.all([Promise.resolve(values), _publish(req.config, user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);
+			return Promise.all([Promise.resolve(values), _publish(req.config, user, app, packages, allowed, JSON.stringify(flows), dockerfile)]);
 		}, function (err) {
 			res.status(500).send({ error: err });
 		}).then(function (values) {
 			var repodetails = values[0];
-			console.log("SENDING SUCCESS RESPONSE!");
+
 			res.send({
 				result: 'success',
 				repo: repodetails[0],
 				sha: {
 					flows: repodetails[1].content.sha,
-					manifest: repodetails[2].content.sha
+					manifest: repodetails[2].content.sha,
+					Dockerfile: repodetails[3].content.sha
 				}
 			});
 		});
@@ -1734,7 +1779,8 @@ var _fetchRunningAddr = function _fetchRunningAddr(c) {
 
 	return {
 		ip: c.NetworkSettings.Networks[network].IPAddress,
-		port: c.Ports[0].PrivatePort
+		port: 1880
+		//c.Ports[0].PrivatePort,
 	};
 };
 
@@ -1886,7 +1932,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 
 		//create a new container and start it, if it doesn't exist
 		if (containers.length <= 0) {
-			console.log("OK - creating test container....");
+			console.log("creating test container");
 			return _pullContainer("tlodge/databox-red:latest").then(function () {
 				return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
 			}).then(function (container) {
@@ -1897,7 +1943,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 
 			//restart the container if it exists but is stopped
 			if (c.State === 'exited') {
-				console.log("restarting container!!");
+				console.log("restarting container");
 				var container = _docker2.default.getContainer(c.Id);
 				return _restart(container).then(function (cdata) {
 					return _startContainer(container, flows, username);
@@ -1905,7 +1951,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 					return err;
 				});
 			} else {
-				console.log("container already ruinning...");
+				console.log("container already running");
 				console.log(c);
 
 				var _fetchRunningAddr2 = _fetchRunningAddr(c),

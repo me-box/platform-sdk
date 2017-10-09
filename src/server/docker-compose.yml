@@ -1,3 +1,9 @@
+#registry:
+#  restart: always
+#  image: registry:2
+#  ports:
+#    - 5000:5000
+
 redis:
   image:
     tlodge/databox-redis
@@ -32,7 +38,7 @@ mock-datasource:
   image:
     tlodge/databox-datasource-mock
   command:
-    /root/start.sh
+    node index.js
   container_name:
     mock-datasource
 

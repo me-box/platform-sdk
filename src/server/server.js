@@ -19,12 +19,10 @@ console.log("dev mode ", dev);
 fetch({dev:dev}).then((config)=>{
   start(config);
 }, (err)=>{
-  console.log("ok am here!!");
   console.log("error reading config!", err);
 });
 
 function checkcredentials(config){
-  console.log("checking credentials for ", JSON.stringify(config,null,4));
   const {CLIENT_ID, CLIENT_SECRET, CALLBACK} = config.github;
   return (CLIENT_ID.trim()!="" && CLIENT_SECRET.trim()!="" && CALLBACK.trim()!="");
 }

@@ -12,7 +12,7 @@
         "URL": "http://localhost:8091"
     },
     "registry": {
-        "URL": "localhost:5000"
+        "URL": ""
     },
     "mongo": {
         "URL": "mongodb://localhost:27017"

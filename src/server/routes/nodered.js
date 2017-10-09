@@ -131,7 +131,8 @@ const _fetchRunningAddr = function(c){
 
 	return {	
 		ip: c.NetworkSettings.Networks[network].IPAddress,
-		port: c.Ports[0].PrivatePort,
+		port: 1880, 
+		//c.Ports[0].PrivatePort,
 	} 
 }
 
@@ -279,7 +280,7 @@ const _createContainerFromStandardImage = function(username, flows){
 		
 			//create a new container and start it, if it doesn't exist
 			if (containers.length <= 0){
-				console.log("OK - creating test container....");
+				console.log("creating test container");
 				return _pullContainer("tlodge/databox-red:latest").then(()=>{
 					return createTestContainer('tlodge/databox-red', username, network);
 				}).then((container)=>{
@@ -291,7 +292,7 @@ const _createContainerFromStandardImage = function(username, flows){
 
 				//restart the container if it exists but is stopped
 				if (c.State === 'exited'){
-					console.log("restarting container!!");
+					console.log("restarting container");
 					const container = docker.getContainer(c.Id);
 					return _restart(container).then((cdata)=>{
 						return _startContainer(container, flows, username);
@@ -299,7 +300,7 @@ const _createContainerFromStandardImage = function(username, flows){
 						return err;
 					});
 				}else{
-					console.log("container already ruinning...");
+					console.log("container already running");
 					console.log(c);
 					const {ip, port} = _fetchRunningAddr(c);
 					console.log("posting new flows to", ip, port);

@@ -12,8 +12,7 @@ export default function initPassport(app, config){
 		return;
 	}
 	
-	console.log("initing passport");
-
+	
 	var User = require('./models/user')(config.mongo.URL);
 
 	app.use(passport.initialize());
@@ -39,10 +38,8 @@ export default function initPassport(app, config){
 							});
 						}else{
 							//MUST update here - incase the token has changed
-							console.log("updating token")
 							var conditions = {  accessToken: accessToken }
 							User.update({ githubId: profile.id }, { $set: { accessToken: accessToken }}, function(err, u){
-								console.log("done!!", u);
 								return cb(null, user);
 							});			
 						}

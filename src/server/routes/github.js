@@ -99,7 +99,7 @@ const _createCommit = function(config, user, repo, sha, filename, content, messa
 	});
 }
 
-const _createRepo = function(config, user, name, description, flows, manifest, commitmessage, accessToken){
+const _createRepo = function(config, user, name, description, flows, manifest, dockerfile, commitmessage, accessToken){
  	
 
 	return new Promise((resolve,reject)=>{
@@ -118,20 +118,14 @@ const _createRepo = function(config, user, name, description, flows, manifest, c
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
      			if (err) {
-       				console.log('am here error creating repo!');
+       				console.log('error creating repo', err);
        				reject(err);
+       				return;
      			} 
      			else {
      			 	
      			 	const result = data.body;
-     			 	
-     			 	console.log({
-       						name: result.name, 
-       						updated: result.updated_at, 
-       						icon:result.owner.avatar_url, 
-       						url:result.url
-       				});
-       				
+     			 	       				
      			 	//give github time it needs to set up repo
      			 	
      			 	setTimeout(
@@ -147,7 +141,8 @@ const _createRepo = function(config, user, name, description, flows, manifest, c
      			}
    			})
    	}).then((repo)=>{
-   
+   		console.log("successfully created repo", repo);
+
    	 	return Promise.all([
 		 						Promise.resolve(repo),
 		 						
@@ -160,7 +155,9 @@ const _createRepo = function(config, user, name, description, flows, manifest, c
    											message: commitmessage,
    											content: new Buffer(JSON.stringify(flows)).toString('base64'),
    											accessToken: accessToken,
-   								})
+   								}),
+
+
    							]);
 	}, (err)=>{
 		console.log(err);
@@ -176,10 +173,31 @@ const _createRepo = function(config, user, name, description, flows, manifest, c
 										config: config,
 										username: user.username,
 										repo: repo.name, 
-										filename: 'manifest.json',
+										filename: 'databox-manifest.json',
 										email: user.email || `${user.username}@me-box.com`,
 										message: commitmessage,
 										content: new Buffer(JSON.stringify(manifest)).toString('base64'),
+										accessToken: accessToken,
+								})
+   							]);
+		
+   		
+   	}).then( (values)=>{
+		const reponame = values[0];
+		console.log("creating dockerfile", dockerfile);
+
+		return Promise.all([
+								Promise.resolve(reponame),
+								Promise.resolve(values[1]),  
+								Promise.resolve(values[2]),  
+								_addFile({
+										config: config,
+										username: user.username,
+										repo: reponame, 
+										filename: 'Dockerfile',
+										email: user.email || `${user.username}@me-box.com`,
+										message: commitmessage,
+										content: new Buffer(dockerfile).toString('base64'),
 										accessToken: accessToken,
 								})
    							]);
@@ -208,10 +226,9 @@ const _addFile = function(options){
 			.set('Accept', 'application/json')
 			.end((err, res)=>{
 				if (err) {
-					console.log(err);
+					console.log("error adding file", err);
 					reject(err);
 				} else {
-					console.log(res.body);
 					resolve(Object.assign({},res.body, {repo:repo}));
 				}
 			})    					
@@ -234,12 +251,12 @@ const _fetchFile = function(config, username, repoowner, accessToken, repo, file
 				else {	
 				
 					//only send back sha (used for future updates) if user that requested this repo is the owner
-					const jsonstr = new Buffer(data.body.content, 'base64').toString('ascii')
+					const str = new Buffer(data.body.content, 'base64').toString('ascii')
 					try{
 						if (username === repoowner){
-							resolve({content: JSON.parse(jsonstr), sha: data.body.sha});
+							resolve({content: str, sha: data.body.sha});
 						}else{
-							resolve({content: JSON.parse(jsonstr)});
+							resolve({content: str});
 						}
 					}catch(error){
 						console.log("error parsing JSON");
@@ -253,15 +270,17 @@ const _fetchFile = function(config, username, repoowner, accessToken, repo, file
 }
 
 const _wait = (storeurl)=> { 
+	
 	return new Promise((resolve,reject)=>{
 		function get () {
-			console.log(`calling ${storeurl}`);
+			console.log(`calling http://${storeurl}`);
 			agent.get(`http://${storeurl}`, (error,response,body)=>{
                 if(error) {
-                        console.log("[seeding manifest] waiting for appstore", error);
-                        setTimeout(get,4000);
+                    console.log("[seeding manifest] waiting for appstore", error);
+                     setTimeout(get,4000);
                 } else {
 					resolve();
+					return;
 				}
 			});
 		}
@@ -270,8 +289,8 @@ const _wait = (storeurl)=> {
 }
 
 const _saveToAppStore = function(config,manifest){
-	console.log("saving to app store with manifest", manifest);
-	
+	console.log("in save to app store with manifest", manifest);
+
 	//if no appstore url specified, assume a dockerised one running and retrieve docker ip
 	if (!config.appstore || (config.appstore.URL || "").trim() === ""){
 		console.log("fetching docker ip for databox_app-server");
@@ -281,13 +300,14 @@ const _saveToAppStore = function(config,manifest){
 		});
 	}
 	else{
-		return _postToAppStore(`${config.appstore.URL}`, manifest);
+		const _url = config.appstore.URL.replace("http:\/\/", "");
+		return _postToAppStore(_url, manifest);
 	}
 }
 
 const _postToAppStore = function(storeurl, manifest){
 
-	console.log("POSTING TO APP STORE", `${storeurl}/app/post`);
+	console.log("posting to app store", `${storeurl}/app/post`);
 	return _wait(storeurl).then(()=>{
 		return new Promise((resolve, reject)=>{
 			agent
@@ -300,14 +320,38 @@ const _postToAppStore = function(storeurl, manifest){
 	  					console.log("error posting to app store", err);
 	  					reject(err);
 	  				}else{
-	  					console.log("DONE!");
-	  					console.log(res.body);
+	  					console.log("successfully posted to app store", res.body);
 	          			resolve(res.body);
 	  	 			}
 	  	 		})	
 	  	});
 	});
 }
+
+const _generateDockerfile = function(libraries, config, app){
+	
+	const libcommands = libraries.map((library)=>{
+		return `RUN cd /data/nodes/databox && npm install --save ${library}`
+	});
+
+
+	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
+	const dcommands = [
+						`FROM tlodge/databox-sdk-red:latest`,
+						`ADD flows.json /data/flows.json`,
+						'LABEL databox.type="app"',
+						`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/databox-manifest.json"`,
+	];	
+
+	const startcommands = [
+						"EXPOSE 8080",
+						"CMD /root/start.sh"
+	];
+	
+	return [...dcommands, ...libcommands, ...startcommands].join("\n");
+
+}
+
 
 const _generateManifest = function(config,user, reponame, app, packages, allowed){
 	
@@ -382,12 +426,9 @@ const _pull = function(repo){
 	})
 }
 
-const _publish = function(config, user, reponame, app, packages, libraries, allowed, flows){
-	
-	
-	console.log("PUBLISHING NOW WITH LIBRARIES");
-	console.log(libraries);
 
+const _publish = function(config, user, app, packages, allowed, flows, dockerfile){
+	
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		return _pull("tlodge/databox-sdk-red:latest").then(()=>{
@@ -408,37 +449,21 @@ const _publish = function(config, user, reponame, app, packages, libraries, allo
 			return _saveToAppStore(config,data);
 		
 		}).then((result)=>{
-			const libcommands = libraries.map((library)=>{
-				return `RUN cd /data/nodes/databox && npm install --save ${library}`
-			});
-
-
-			//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-			const dcommands = [
-								`FROM tlodge/databox-sdk-red:latest`,
-								`ADD flows.json /data/flows.json`,
-								'LABEL databox.type="app"',
-								`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/manifest.json"`,
-						   ];	
-		
-			const startcommands = [
-								"EXPOSE 8080",
-								"CMD /root/start.sh"
-			];
 			
-			const dockerfile = [...dcommands, ...libcommands, ...startcommands].join("\n");
 			const path = `${user.username}-tmp.tar.gz`;
 			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
 			reject("could not save to app store!");
 			return;
 		}).then(function(tarfile){
-			const appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
-			return createDockerImage(tarfile, `${appname}`);	
+			const _appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
+			const _tag 	   = config.registry.URL && config.registry.URL.trim() != "" ? `${config.registry.URL}/` : "";
+			return createDockerImage(tarfile, `${_tag}${_appname}`);	
 		},(err)=>{
 			reject("could not create tar file", err);
 			return;
 		}).then(function(tag){
+			console.log("tag is", tag);
 			return uploadImageToRegistry(tag, `${config.registry.URL}`);
 		},(err)=>{
 			reject('could not create docker image');
@@ -508,11 +533,11 @@ router.get('/repos', function(req,res){
      			const repos = data.body.map(function(repo){
        				
        				return {
-       							name: repo.name, 
-       							description: repo.description,
-       							updated: repo.updated_at, 
-       							icon:repo.owner.avatar_url, 
-       							url:repo.url, 
+						name: repo.name, 
+						description: repo.description,
+						updated: repo.updated_at, 
+						icon:repo.owner.avatar_url, 
+						url:repo.url, 
        				} 
        			}).filter(function(repo){
        				return repo.name.startsWith("databox.");
@@ -531,31 +556,45 @@ router.get('/flow', function(req,res){
 	const repo = req.query.repo;
 	const owner = req.query.username || user.username;
 	
-	return Promise.all([_fetchFile(req.config,user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'manifest.json')]).then(function(values) {
+	return Promise.all([
+							_fetchFile(req.config,user.username, owner, user.accessToken, repo, 'flows.json'), 
+							_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'databox-manifest.json'),
+							_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'Dockerfile')
+					]
+
+	).then(function(values) {
 		
+		const flows    = Object.assign({},values[0], {content:JSON.parse(values[0].content)});
+		const manifest = Object.assign({},values[1], {content:JSON.parse(values[1].content)});
+
         res.send({
         	result: 'success',
-        	flows: values[0],
-        	manifest: values[1],
+        	flows,
+        	manifest,
+        	Dockerfile: values[2],
         });
     }, (err)=>{
     	console.log(err);
-    	res.status(500).send({error:'could not retrieve flows and manifest file'});
+    	res.status(500).send({error:'could not retrieve flows, manifest and Dockerfile'});
     });
 });
 
 //create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new  flows.json / manifest.json file.
 
 router.post('/repo/new', function(req,res){
+	
+	console.log("in repo new");
 
 	var user 			= req.user;
 	var name 			= req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : `databox.${req.body.name.toLowerCase()}`;
 	var description 	= req.body.description || "";
 	var flows       	= req.body.flows 	|| [];
 	var manifest    	= req.body.manifest || {};
+	var dockerfile 		= `# ${name} Dockerfile`;
 	var commitmessage 	= req.body.message || "first commit";
 	
-	return _createRepo(req.config, user, name, description, flows, manifest, commitmessage, req.user.accessToken).then(repo=>{
+	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(repo=>{
+		console.log("successfully created repo", repo);
 		return repo;
 	}).then((values)=>{
 		res.send({
@@ -564,6 +603,7 @@ router.post('/repo/new', function(req,res){
 					sha:{
 						flows:    values[1].content.sha,
 						manifest: values[2].content.sha,
+						Dockerfile: values[3].content.sha,
 					}
 				});
 	}, (err)=>{
@@ -576,15 +616,37 @@ router.post('/repo/update', function(req, res){
 
 	const user = req.user;
 	const repo = req.body.repo;
-	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows)).toString('base64');
-	const manifestcontent 	= new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
 	const sha = req.body.sha;
+
+	console.log("in update with sha", sha);
+	
 	const message = req.body.message || "checkpoint commit";
 	
+	const libraries = dedup(flatten(req.body.flows.reduce((acc, node)=>{
+		if (node.type === "dbfunction"){
+			acc = [...acc, matchLibraries(node.func)];
+		}
+		return acc;
+	},[])));
+
+	const dockerfile 		= _generateDockerfile(libraries, req.config, req.body.manifest.app);
+	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows)).toString('base64');
+	const manifestcontent 	= new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
+	const dockerfilecontent = new Buffer(dockerfile).toString('base64');
+
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then((data)=>{
-			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config,user, repo, sha.manifest,  'manifest.json', manifestcontent, message, user.accessToken)])
+		return Promise.all([
+			Promise.resolve(data.body.content.sha), 
+			_createCommit(req.config,user, repo, sha.manifest,  'databox-manifest.json', manifestcontent, message, user.accessToken)
+		])
 	}, (err)=>{
-			res.status(500).send({error: err});
+		res.status(500).send({error: err});
+	}).then((values)=>{
+		return Promise.all([
+			Promise.resolve(values[0]), 
+			Promise.resolve(values[1].body.content.sha), 
+			_createCommit(req.config,user, repo, sha.Dockerfile,  'Dockerfile', dockerfilecontent, message, user.accessToken)
+		])
 	}).then((values)=>{
 	
 		res.send({
@@ -592,7 +654,8 @@ router.post('/repo/update', function(req, res){
        		repo: repo,
        		sha:{
        			flows: values[0],
-       			manifest: values[1].body.content.sha,
+       			manifest: values[1],
+       			Dockerfile: values[2].body.content.sha,
        		}
        	});
 	},(err)=>{
@@ -605,7 +668,7 @@ router.post('/repo/update', function(req, res){
 
 router.post('/publish', function(req,res){
 	
-	const user = req.user;
+	const user 		= req.user;
 	const repo 		= req.body.repo;
 	const manifest  = req.body.manifest;
 	const flows 	= req.body.flows;
@@ -616,6 +679,7 @@ router.post('/publish', function(req,res){
 	const description = manifest.app.description;
 	const commitmessage = 'publish commit';
 	
+
 	//first save the manifest and flows file - either create new repo or commit changes
 		
 	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
@@ -625,21 +689,37 @@ router.post('/publish', function(req,res){
 		return acc;
 	},[])));
 	
-
+	const dockerfile 		= _generateDockerfile(libraries, req.config, app);
 	
-	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest){ //commit
+	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile){ //commit
 		
-		console.log("COMMITTING!!!");
+		console.log("committing");
 		const flowcontent 		= new Buffer(JSON.stringify(flows)).toString('base64');
 		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
-		const message = commitmessage;
-		
+		const dockerfilecontent = new Buffer(dockerfile).toString('base64');
+
+		const message 			= commitmessage;
+
 		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then((data)=>{
-			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest,  'manifest.json', manifestcontent, message, req.user.accessToken)])
+			return Promise.all([
+									Promise.resolve(data.body.content.sha), 
+									_createCommit(req.config, user, repo.name, repo.sha.manifest,  'databox-manifest.json', manifestcontent, message, req.user.accessToken)
+							]);
 		}, (err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
-			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _publish(req.config, user, repo.name, app, packages, libraries, allowed, JSON.stringify(flows))]);
+			return Promise.all([
+				Promise.resolve(values[0]), 
+				Promise.resolve(values[1].body.content.sha), 
+				_createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken)
+			]);
+		}).then((values)=>{
+			return Promise.all([
+									Promise.resolve(values[0]), 
+									Promise.resolve(values[1]),
+									Promise.resolve(values[2].body.content.sha), 
+									_publish(req.config, user, app, packages, allowed, JSON.stringify(flows), dockerfile)
+								]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
@@ -649,28 +729,30 @@ router.post('/publish', function(req,res){
 				sha:{
 					flows:    values[0],
 					manifest: values[1],
+					Dockerfile: values[2],
 				}
 			});
 		});
 		
 	}else{ //create a new repo!
-	  	console.log("CREATING NEW REPO..");
+	 
 	  	const reponame =  app.name.startsWith("databox.") ? app.name.toLowerCase() : `databox.${app.name.toLowerCase()}`;	
-		console.log(reponame);
-		return _createRepo(req.config, user, reponame, app.description, flows, manifest, commitmessage, req.user.accessToken).then((values)=>{	
+		
+		return _createRepo(req.config, user, reponame, app.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then((values)=>{	
 			console.log(`publishing...${reponame}`);
-			return Promise.all([Promise.resolve(values), _publish(req.config,user, reponame, app, packages, libraries, allowed, JSON.stringify(flows))]);
+			return Promise.all([Promise.resolve(values), _publish(req.config,user, app, packages, allowed, JSON.stringify(flows), dockerfile)]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			const repodetails = values[0];
-			console.log("SENDING SUCCESS RESPONSE!");
+			
 			res.send({
 				result:'success', 
 				repo: repodetails[0], 
 				sha:{
 					flows:    repodetails[1].content.sha,
 					manifest: repodetails[2].content.sha,
+					Dockerfile: repodetails[3].content.sha,
 				}
 			});
 		});

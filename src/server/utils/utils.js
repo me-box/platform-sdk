@@ -168,18 +168,23 @@ export function createDockerImage(tarfile, tag){
 
 
 export function uploadImageToRegistry(tag, registry){
-	
+	console.log("** in upload image to registry **");
+
 	return new Promise((resolve, reject)=>{
 		if (registry && registry.trim() !== ""){
 			console.log("uploading to registry", registry);
-		
+			console.log("getting image for", tag);
 			var image = docker.getImage(tag);
+
+
 			image.push({
 				registry : registry
 			}, function(err, data) {
 				data.pipe(process.stdout);
 				if (err){
+					console.log("error uploading to registry", err);
 					reject(err)
+					return;
 				}
 				resolve();
 			});

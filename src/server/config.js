@@ -53,7 +53,7 @@ export function defaultdevsettings(){
                 },
 
                 "registry": {
-                        "URL": "localhost:5000"
+                        "URL": ""
                 },
 
                 "mongo": {
@@ -75,7 +75,7 @@ export function defaultdevsettings(){
 export function defaultsettings(){        
         return {
 
-                "secret": "asdaksgdsahgdhsagd ahjsgdjhsg",
+                "secret": "asjhgdsajhd6sa7d78as6s87adsakgdsadgaskdgsagdk",
 
                 "github": {
                         "CLIENT_ID": "",
