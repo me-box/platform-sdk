@@ -1809,10 +1809,6 @@ var _waitForStart = function _waitForStart(container, username) {
 			stream.on('data', function (line) {
 				var str = line.toString("utf-8", 8, line.length);
 
-				/*if (connected){
-        			client.sendMessage({type: "debug", channel:username, msg:str})
-    }*/
-
 				(0, _websocket.sendmessage)(username, "debug", { msg: str });
 
 				if (showonconsole) {
@@ -1831,7 +1827,7 @@ var _waitForStart = function _waitForStart(container, username) {
 	});
 };
 
-var _pullContainer = function _pullContainer(name) {
+var _pullContainer = function _pullContainer(name, username) {
 	console.log("pulling container", name);
 
 	return _docker2.default.pull(name).then(function (stream, err) {
@@ -1843,11 +1839,13 @@ var _pullContainer = function _pullContainer(name) {
 			}
 			var pulled = function pulled() {
 				console.log("successfully pulled container");
+				(0, _websocket.sendmessage)(username, "debug", { msg: "successfully pulled container" });
 				resolve("complete!");
 			};
 
 			var pulling = function pulling(event) {
 				console.log('[pulling]: ' + event.toString());
+				(0, _websocket.sendmessage)(username, "debug", { msg: '[pulling]: ' + JSON.stringify(event) });
 			};
 
 			return _docker2.default.modem.followProgress(stream, pulled, pulling);
@@ -1906,11 +1904,8 @@ var _inspect = function _inspect(container) {
 
 var _startContainer = function _startContainer(container, flows, username) {
 	return _waitForStart(container, username).then(function () {
-		console.log("container has started!");
 		return _inspect(container);
 	}).then(function (cdata) {
-		console.log("starting container, devmode is ", DEVMODE);
-
 		var _fetchAddr2 = _fetchAddr(cdata),
 		    ip = _fetchAddr2.ip,
 		    port = _fetchAddr2.port;
@@ -1926,6 +1921,8 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 	//need to create a new Image!
 	console.log("found external libraries, so creating new image!");
 
+	(0, _websocket.sendmessage)(username, "debug", { msg: "found external libraries, so creating new image!" });
+
 	var libcommands = libraries.map(function (library) {
 		return 'RUN cd /data/nodes/databox && npm install --save ' + library;
 	});
@@ -1937,7 +1934,7 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 
 	var path = 'tmp-' + username + '.tar.gz';
 
-	return _pullContainer("tlodge/databox-red:latest").then(function () {
+	return _pullContainer("tlodge/databox-red:latest", username).then(function () {
 		return (0, _utils.stopAndRemoveContainer)(username + '-red');
 	}).then(function () {
 		return (0, _utils.createTarFile)(dockerfile, JSON.stringify(flows), path);
@@ -2041,7 +2038,9 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 		//create a new container and start it, if it doesn't exist
 		if (containers.length <= 0) {
 			console.log("creating test container");
-			return _pullContainer("tlodge/databox-red:latest").then(function () {
+			(0, _websocket.sendmessage)(username, "debug", { msg: "creating test container" });
+
+			return _pullContainer("tlodge/databox-red:latest", username).then(function () {
 				return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
 			}).then(function (container) {
 				return _startContainer(container, flows, username);
@@ -2052,6 +2051,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 			//restart the container if it exists but is stopped
 			if (c.State === 'exited') {
 				console.log("restarting container");
+				(0, _websocket.sendmessage)(username, "debug", { msg: "restarting container" });
 				var container = _docker2.default.getContainer(c.Id);
 				return _restart(container).then(function (cdata) {
 					return _startContainer(container, flows, username);
@@ -2060,6 +2060,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 				});
 			} else {
 				console.log("container already running");
+				(0, _websocket.sendmessage)(username, "debug", { msg: "container already running" });
 				console.log(c);
 
 				var _fetchRunningAddr2 = _fetchRunningAddr(c),

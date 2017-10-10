@@ -100,10 +100,6 @@ const _waitForStart = function(container, username){
 	    		stream.on('data', function(line) {
 	    			const str =  line.toString("utf-8", 8, line.length);
 
-	    			/*if (connected){
-	           			client.sendMessage({type: "debug", channel:username, msg:str})
-	    			}*/
-
 	    			sendmessage(username, "debug", {msg:str});
 
 	        		if (showonconsole){
@@ -123,7 +119,7 @@ const _waitForStart = function(container, username){
 }
 
 
-const _pullContainer  = function(name){
+const _pullContainer  = function(name, username){
 	console.log("pulling container", name);
 
 	return docker.pull(name).then((stream, err)=>{
@@ -135,11 +131,13 @@ const _pullContainer  = function(name){
 			}
 			const pulled = ()=>{
 				console.log("successfully pulled container");
+				sendmessage(username, "debug", {msg:"successfully pulled container"});
 				resolve("complete!");
 			}
 
 			const pulling = (event)=>{
 				console.log(`[pulling]: ${event.toString()}`);
+				sendmessage(username, "debug", {msg:`[pulling]: ${JSON.stringify(event)}`});
 			}
 
 			return docker.modem.followProgress(stream, pulled, pulling);
@@ -199,10 +197,8 @@ var _inspect = function(container){
 
 var _startContainer = function(container, flows, username){
     return _waitForStart(container, username).then(()=>{
-    	console.log("container has started!");
         return _inspect(container);
     }).then((cdata)=>{
-    	console.log("starting container, devmode is ", DEVMODE);
 		const {ip, port} = _fetchAddr(cdata);
 		return _postFlows(ip, port, flows, username);
     }, (err)=>{
@@ -215,6 +211,7 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	//need to create a new Image!
 	console.log("found external libraries, so creating new image!");
 	
+	sendmessage(username, "debug", {msg:"found external libraries, so creating new image!"});
 	
 	const libcommands = libraries.map((library)=>{
 							return `RUN cd /data/nodes/databox && npm install --save ${library}`
@@ -227,7 +224,7 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	
 	const path = `tmp-${username}.tar.gz`;
 
-	return _pullContainer("tlodge/databox-red:latest").then(()=>{
+	return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
 		return stopAndRemoveContainer(`${username}-red`)
 	}).then(()=>{
 		return createTarFile(dockerfile, JSON.stringify(flows), path)
@@ -326,11 +323,13 @@ const _createContainerFromStandardImage = function(username, flows){
     		return err;
     	}).then((containers)=>{
 			console.log(`Containers labeled user=${username} ${containers.length}`);
-		
+			
 			//create a new container and start it, if it doesn't exist
 			if (containers.length <= 0){
 				console.log("creating test container");
-				return _pullContainer("tlodge/databox-red:latest").then(()=>{
+				sendmessage(username, "debug", {msg:"creating test container"});
+
+				return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
 					return createTestContainer('tlodge/databox-red', username, network);
 				}).then((container)=>{
 					return _startContainer(container, flows, username);
@@ -342,6 +341,7 @@ const _createContainerFromStandardImage = function(username, flows){
 				//restart the container if it exists but is stopped
 				if (c.State === 'exited'){
 					console.log("restarting container");
+					sendmessage(username, "debug", {msg:"restarting container"});
 					const container = docker.getContainer(c.Id);
 					return _restart(container).then((cdata)=>{
 						return _startContainer(container, flows, username);
@@ -350,6 +350,7 @@ const _createContainerFromStandardImage = function(username, flows){
 					});
 				}else{
 					console.log("container already running");
+					sendmessage(username, "debug", {msg:"container already running"});
 					console.log(c);
 					const {ip, port} = _fetchRunningAddr(c);
 					console.log("posting new flows to", ip, port);
