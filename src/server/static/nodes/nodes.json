@@ -3,7 +3,6 @@
 				
 				
 				{"name":"timer", "file":"inputs/inject/index"}, 
-				{"name":"webcam", "file":"datastores/webcam/index"},
 				{"name":"bulbs-in", "file":"datastores/bulbs/index"},
 				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},

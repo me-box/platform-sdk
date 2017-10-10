@@ -160,7 +160,11 @@ export default function reducer(state = initialState, action) {
 
 	  	 return Object.assign({}, state, 
 	  	 									{
-	  	 										app: action.manifest.app, 
+	  	 										app: {
+	  	 											name: action.manifest.name,
+	  	 											description: action.manifest.description, 
+	  	 											tags: (action.manifest.tags || []).join(","),
+	  	 										}, 
 	  	 										grid:action.manifest['allowed-combinations'],
 	  	 										tabs: tabs,
 	  	 										tabsById: action.manifest.packages.reduce((acc, t)=>{

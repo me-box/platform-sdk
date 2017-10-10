@@ -14,10 +14,81 @@ import {actionCreators as appActions} from 'features/apps';
 
 const _whitelist = (nodes)=>{
   return nodes.filter(n=>n.type==="export").reduce((acc,n)=>{
-      const _urls = n.urls ? n.urls.split(",") : [];
+      const _urls = (n.urls ? n.urls.split(",") : []).map((u)=>{
+         return {
+                    url:u, 
+                    description:`exports data to ${u}`
+                }
+      });
       return [ ...acc, ..._urls]
   },[]);
 }
+
+const _flatten = (arr)=>{
+  return arr.reduce((acc, row)=>{
+      return row.reduce((acc, src)=>{
+          acc.push(src);
+          return acc;
+      }, acc);
+  }, [])
+}
+
+const _generateManifest = (app, reponame, packages, nodes, username)=>{
+
+      const appname = app.name.startsWith(username) ? app.name : `${username}-${app.name}`;
+      reponame = reponame && reponame.trim() != ""  ? reponame : appname;
+      
+      return{
+
+          'manifest-version': 1,
+          name: appname,
+          version: "0.1.0",
+          description: app.description,
+          author: username,
+          licence: "MIT",
+          "databox-type": "app",
+          tags: app.tags ? app.tags.split(","): "",
+          homepage: `https://github.com/${username}/${reponame}`,
+          repository:{
+            type: 'git',
+            url: `git+https://github.com/${username}/${reponame}.git`
+          },
+          packages: packages.map((pkg)=>{
+            return {
+              id: pkg.id,
+              name: pkg.name,
+              purpose: pkg.purpose,
+              required: pkg.install === "compulsory",
+              datastores: Array.from(new Set([...pkg.datastores.map((d)=>{return d.id})])),
+              risk: pkg.risk,
+              benefits: pkg.benefits,
+            }
+          }),
+        
+          'allowed-combinations' : [],
+        
+          datasources: _flatten(packages.map((pkg)=>{
+            return pkg.datastores.map((d)=>{
+              return {
+                type: d.type,
+                required: true,
+                name: d.name || d.type,
+                clientid: d.id,
+                granularities: [],
+              }
+            });
+          })),
+
+          "network-permissions":[],
+
+          "resource-requirements":{},
+
+          volumes: [],
+
+          'export-whitelist': _whitelist(nodes),
+      } 
+}
+
 //TODO: lots of duplication here..
 function extractPackages(state){
     const nodesById =state.nodes.nodesById;
@@ -28,7 +99,7 @@ function extractPackages(state){
         const pkg = state.workspace.tabsById[tabId];
 
         return Object.assign({}, pkg, {datastores: nodes.filter((node)=>{
-          return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger")))
+          return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger" && node.type != "export")))
           }).map((node)=>{
               return {
                 id: node.id,
@@ -306,13 +377,8 @@ function commitPressed(){
 			
 			flows: [...tabs,...jsonnodes],
 			
-			manifest: {
-  				app: Object.assign({}, app, {id: getID()}),
-  				packages: extractPackages(getState()),
-  				'allowed-combinations': grid,
-          'export-whitelist': _whitelist(jsonnodes),
-  			},
-			
+			manifest: _generateManifest(app, getState().repos.loaded.name, extractPackages(getState()), jsonnodes, getState().repos.currentuser),
+
 			sha: {
 					flows:repo.sha.flows, 
 					manifest: repo.sha.manifest,
@@ -375,17 +441,13 @@ function savePressed(){
 			flows: [
   					...tabs,
   					...jsonnodes
-  			],
-  			manifest: {
-  				app: Object.assign({}, getState().workspace.app, {id: getID()}),
-  				packages: extractPackages(getState()),
-  				'allowed-combinations': getState().workspace.grid,
-          'export-whitelist': _whitelist(jsonnodes),
-  			}
+  		],
+
+      manifest: _generateManifest({...getState().workspace.app, id:getID()}, getState().repos.loaded.name, extractPackages(getState()), jsonnodes, getState().repos.currentuser),
 		}
 
 
-	 request
+    request
   			.post(`${config.root}/github/repo/new`)
   			.send(submission)
   			.set('Accept', 'application/json')
@@ -436,24 +498,14 @@ function publish(){
       
     const repo = getState().repos.loaded;
       
-    const data = {
-          
-          repo : repo,
-          flows: flows,
-          manifest: {
-          app: Object.assign({}, getState().workspace.app),
-          packages: extractPackages(getState()),
-          'allowed-combinations': getState().workspace.grid,
-          'export-whitelist': _whitelist(jsonnodes),
-        }
+    const data = {  
+      repo : repo,
+      flows: flows,
+      manifest: _generateManifest(getState().workspace.app, getState().repos.loaded.name, extractPackages(getState()), jsonnodes, getState().repos.currentuser)
     };
       
-
-
     dispatch(networkActions.networkAccess(`publishing app ${name}`));
       
-   
-
     request
         .post(`${config.root}/github/publish`)
         .send(data)

@@ -153,7 +153,7 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
    											filename: 'flows.json',
    											email: user.email || `${user.username}@me-box.com`,
    											message: commitmessage,
-   											content: new Buffer(JSON.stringify(flows)).toString('base64'),
+   											content: new Buffer(JSON.stringify(flows,null,4)).toString('base64'),
    											accessToken: accessToken,
    								}),
 
@@ -176,7 +176,7 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
 										filename: 'databox-manifest.json',
 										email: user.email || `${user.username}@me-box.com`,
 										message: commitmessage,
-										content: new Buffer(JSON.stringify(manifest)).toString('base64'),
+										content: new Buffer(JSON.stringify(manifest,null,4)).toString('base64'),
 										accessToken: accessToken,
 								})
    							]);
@@ -328,7 +328,7 @@ const _postToAppStore = function(storeurl, manifest){
 	});
 }
 
-const _generateDockerfile = function(libraries, config, app){
+const _generateDockerfile = function(libraries, config, name){
 	
 	const libcommands = libraries.map((library)=>{
 		return `RUN cd /data/nodes/databox && npm install --save ${library}`
@@ -340,7 +340,7 @@ const _generateDockerfile = function(libraries, config, app){
 						`FROM tlodge/databox-sdk-red:latest`,
 						`ADD flows.json /data/flows.json`,
 						'LABEL databox.type="app"',
-						`LABEL databox.manifestURL="${config.appstore.URL}/${app.name}/databox-manifest.json"`,
+						`LABEL databox.manifestURL="${config.appstore.URL}/${name}/databox-manifest.json"`,
 	];	
 
 	const startcommands = [
@@ -427,13 +427,13 @@ const _pull = function(repo){
 }
 
 
-const _publish = function(config, user, app, packages, allowed, flows, dockerfile){
+const _publish = function(config, user, manifest, flows, dockerfile){
 	
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		return _pull("tlodge/databox-sdk-red:latest").then(()=>{
 
-			const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
+			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
 			const data = {
 				manifest: JSON.stringify(manifest),
@@ -456,7 +456,7 @@ const _publish = function(config, user, app, packages, allowed, flows, dockerfil
 			reject("could not save to app store!");
 			return;
 		}).then(function(tarfile){
-			const _appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : `${user.username.toLowerCase()}-${app.name.toLowerCase()}`;
+			const _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : `${user.username.toLowerCase()}-${manifest.name.toLowerCase()}`;
 			const _tag 	   = config.registry.URL && config.registry.URL.trim() != "" ? `${config.registry.URL}/` : "";
 			return createDockerImage(tarfile, `${_tag}${_appname}`);	
 		},(err)=>{
@@ -593,6 +593,8 @@ router.post('/repo/new', function(req,res){
 	var dockerfile 		= `# ${name} Dockerfile`;
 	var commitmessage 	= req.body.message || "first commit";
 	
+	console.log("manifest", JSON.stringify(manifest,null,4));
+
 	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(repo=>{
 		console.log("successfully created repo", repo);
 		return repo;
@@ -614,12 +616,11 @@ router.post('/repo/new', function(req,res){
 
 router.post('/repo/update', function(req, res){
 
+	console.log("updating manifest", JSON.stringify(req.body.manifest,null,4));
 	const user = req.user;
 	const repo = req.body.repo;
 	const sha = req.body.sha;
 
-	console.log("in update with sha", sha);
-	
 	const message = req.body.message || "checkpoint commit";
 	
 	const libraries = dedup(flatten(req.body.flows.reduce((acc, node)=>{
@@ -629,9 +630,9 @@ router.post('/repo/update', function(req, res){
 		return acc;
 	},[])));
 
-	const dockerfile 		= _generateDockerfile(libraries, req.config, req.body.manifest.app);
-	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows)).toString('base64');
-	const manifestcontent 	= new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
+	const dockerfile 		= _generateDockerfile(libraries, req.config, req.body.manifest.name);
+	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows, null, 4)).toString('base64');
+	const manifestcontent 	= new Buffer(JSON.stringify(req.body.manifest, null, 4)).toString('base64');
 	const dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then((data)=>{
@@ -668,18 +669,18 @@ router.post('/repo/update', function(req, res){
 
 router.post('/publish', function(req,res){
 	
+	
+
 	const user 		= req.user;
 	const repo 		= req.body.repo;
 	const manifest  = req.body.manifest;
 	const flows 	= req.body.flows;
-	
-	const app = manifest.app;
 	const packages = manifest.packages;
 	const allowed = manifest['allowed-combinations'];
-	const description = manifest.app.description;
+	const description = manifest.description;
 	const commitmessage = 'publish commit';
 	
-
+	console.log("publishing manifest", JSON.stringify(manifest,null,4));
 	//first save the manifest and flows file - either create new repo or commit changes
 		
 	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
@@ -689,13 +690,13 @@ router.post('/publish', function(req,res){
 		return acc;
 	},[])));
 	
-	const dockerfile 		= _generateDockerfile(libraries, req.config, app);
+	const dockerfile 		= _generateDockerfile(libraries, req.config, manifest.name);
 	
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile){ //commit
 		
 		console.log("committing");
-		const flowcontent 		= new Buffer(JSON.stringify(flows)).toString('base64');
-		const manifestcontent 	= new Buffer(JSON.stringify(manifest)).toString('base64');
+		const flowcontent 		= new Buffer(JSON.stringify(flows,null,4)).toString('base64');
+		const manifestcontent 	= new Buffer(JSON.stringify(manifest,null,4)).toString('base64');
 		const dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 		const message 			= commitmessage;
@@ -718,7 +719,7 @@ router.post('/publish', function(req,res){
 									Promise.resolve(values[0]), 
 									Promise.resolve(values[1]),
 									Promise.resolve(values[2].body.content.sha), 
-									_publish(req.config, user, app, packages, allowed, JSON.stringify(flows), dockerfile)
+									_publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)
 								]);
 		},(err)=>{
 			res.status(500).send({error: err});
@@ -736,11 +737,10 @@ router.post('/publish', function(req,res){
 		
 	}else{ //create a new repo!
 	 
-	  	const reponame =  app.name.startsWith("databox.") ? app.name.toLowerCase() : `databox.${app.name.toLowerCase()}`;	
+	  	const reponame =  manifest.name.startsWith("databox.") ? manifest.name.toLowerCase() : `databox.${manifest.name.toLowerCase()}`;	
 		
-		return _createRepo(req.config, user, reponame, app.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then((values)=>{	
-			console.log(`publishing...${reponame}`);
-			return Promise.all([Promise.resolve(values), _publish(req.config,user, app, packages, allowed, JSON.stringify(flows), dockerfile)]);
+		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then((values)=>{	
+			return Promise.all([Promise.resolve(values), _publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)]);
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{

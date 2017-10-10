@@ -20,7 +20,6 @@ export default class Workspace extends React.Component {
     }
 
     componentDidMount(){
-    	 this.props.actions.addTab();
     }
 
     shouldComponentUpdate(nextProps, nextState){

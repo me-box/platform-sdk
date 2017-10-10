@@ -34,9 +34,19 @@ const config = {
 					urls: 	{type:'string', description: 'a comma separated list of urls you want to call'},
     				payload: {
                         type: 'object',
-                        description: 'the data you want to POST',
+                        description: 'message payload, containing the url (must be one in the whitelist) and the data to be sent',
                         properties:{
-                            any: {type: "any", description: "any object"}
+                            url: {type: "string", description: "the whitelisted url to send to"},
+                            data: {
+                                type: "object", 
+                                description: "the data that you wish to send along with the url",
+                                properties: {
+                                    any: {
+                                        type: "any", 
+                                        description: "any object"
+                                    }
+                                }
+                            }
                         }   
                     }
                 }

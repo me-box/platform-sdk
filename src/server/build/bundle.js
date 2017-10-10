@@ -1082,7 +1082,7 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			filename: 'flows.json',
 			email: user.email || user.username + '@me-box.com',
 			message: commitmessage,
-			content: new Buffer(JSON.stringify(flows)).toString('base64'),
+			content: new Buffer(JSON.stringify(flows, null, 4)).toString('base64'),
 			accessToken: accessToken
 		})]);
 	}, function (err) {
@@ -1099,7 +1099,7 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			filename: 'databox-manifest.json',
 			email: user.email || user.username + '@me-box.com',
 			message: commitmessage,
-			content: new Buffer(JSON.stringify(manifest)).toString('base64'),
+			content: new Buffer(JSON.stringify(manifest, null, 4)).toString('base64'),
 			accessToken: accessToken
 		})]);
 	}).then(function (values) {
@@ -1231,14 +1231,14 @@ var _postToAppStore = function _postToAppStore(storeurl, manifest) {
 	});
 };
 
-var _generateDockerfile = function _generateDockerfile(libraries, config, app) {
+var _generateDockerfile = function _generateDockerfile(libraries, config, name) {
 
 	var libcommands = libraries.map(function (library) {
 		return 'RUN cd /data/nodes/databox && npm install --save ' + library;
 	});
 
 	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-	var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + app.name + '/databox-manifest.json"'];
+	var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + name + '/databox-manifest.json"'];
 
 	var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
 
@@ -1318,13 +1318,13 @@ var _pull = function _pull(repo) {
 	});
 };
 
-var _publish = function _publish(config, user, app, packages, allowed, flows, dockerfile) {
+var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
 		return _pull("tlodge/databox-sdk-red:latest").then(function () {
 
-			var manifest = _generateManifest(config, user, app.name, app, packages, allowed);
+			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
 			var data = {
 				manifest: JSON.stringify(manifest),
@@ -1346,7 +1346,7 @@ var _publish = function _publish(config, user, app, packages, allowed, flows, do
 			reject("could not save to app store!");
 			return;
 		}).then(function (tarfile) {
-			var _appname = app.name.startsWith(user.username) ? app.name.toLowerCase() : user.username.toLowerCase() + '-' + app.name.toLowerCase();
+			var _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : user.username.toLowerCase() + '-' + manifest.name.toLowerCase();
 			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? config.registry.URL + '/' : "";
 			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname);
 		}, function (err) {
@@ -1465,6 +1465,8 @@ router.post('/repo/new', function (req, res) {
 	var dockerfile = '# ' + name + ' Dockerfile';
 	var commitmessage = req.body.message || "first commit";
 
+	console.log("manifest", JSON.stringify(manifest, null, 4));
+
 	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (repo) {
 		console.log("successfully created repo", repo);
 		return repo;
@@ -1486,11 +1488,10 @@ router.post('/repo/new', function (req, res) {
 
 router.post('/repo/update', function (req, res) {
 
+	console.log("updating manifest", JSON.stringify(req.body.manifest, null, 4));
 	var user = req.user;
 	var repo = req.body.repo;
 	var sha = req.body.sha;
-
-	console.log("in update with sha", sha);
 
 	var message = req.body.message || "checkpoint commit";
 
@@ -1501,9 +1502,9 @@ router.post('/repo/update', function (req, res) {
 		return acc;
 	}, [])));
 
-	var dockerfile = _generateDockerfile(libraries, req.config, req.body.manifest.app);
-	var flowscontent = new Buffer(JSON.stringify(req.body.flows)).toString('base64');
-	var manifestcontent = new Buffer(JSON.stringify(req.body.manifest)).toString('base64');
+	var dockerfile = _generateDockerfile(libraries, req.config, req.body.manifest.name);
+	var flowscontent = new Buffer(JSON.stringify(req.body.flows, null, 4)).toString('base64');
+	var manifestcontent = new Buffer(JSON.stringify(req.body.manifest, null, 4)).toString('base64');
 	var dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then(function (data) {
@@ -1535,13 +1536,12 @@ router.post('/publish', function (req, res) {
 	var repo = req.body.repo;
 	var manifest = req.body.manifest;
 	var flows = req.body.flows;
-
-	var app = manifest.app;
 	var packages = manifest.packages;
 	var allowed = manifest['allowed-combinations'];
-	var description = manifest.app.description;
+	var description = manifest.description;
 	var commitmessage = 'publish commit';
 
+	console.log("publishing manifest", JSON.stringify(manifest, null, 4));
 	//first save the manifest and flows file - either create new repo or commit changes
 
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(flows.reduce(function (acc, node) {
@@ -1551,14 +1551,14 @@ router.post('/publish', function (req, res) {
 		return acc;
 	}, [])));
 
-	var dockerfile = _generateDockerfile(libraries, req.config, app);
+	var dockerfile = _generateDockerfile(libraries, req.config, manifest.name);
 
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile) {
 		//commit
 
 		console.log("committing");
-		var flowcontent = new Buffer(JSON.stringify(flows)).toString('base64');
-		var manifestcontent = new Buffer(JSON.stringify(manifest)).toString('base64');
+		var flowcontent = new Buffer(JSON.stringify(flows, null, 4)).toString('base64');
+		var manifestcontent = new Buffer(JSON.stringify(manifest, null, 4)).toString('base64');
 		var dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 		var message = commitmessage;
@@ -1570,7 +1570,7 @@ router.post('/publish', function (req, res) {
 		}).then(function (values) {
 			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken)]);
 		}).then(function (values) {
-			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1]), Promise.resolve(values[2].body.content.sha), _publish(req.config, user, app, packages, allowed, JSON.stringify(flows), dockerfile)]);
+			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1]), Promise.resolve(values[2].body.content.sha), _publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)]);
 		}, function (err) {
 			res.status(500).send({ error: err });
 		}).then(function (values) {
@@ -1587,11 +1587,10 @@ router.post('/publish', function (req, res) {
 	} else {
 		//create a new repo!
 
-		var reponame = app.name.startsWith("databox.") ? app.name.toLowerCase() : 'databox.' + app.name.toLowerCase();
+		var reponame = manifest.name.startsWith("databox.") ? manifest.name.toLowerCase() : 'databox.' + manifest.name.toLowerCase();
 
-		return _createRepo(req.config, user, reponame, app.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
-			console.log('publishing...' + reponame);
-			return Promise.all([Promise.resolve(values), _publish(req.config, user, app, packages, allowed, JSON.stringify(flows), dockerfile)]);
+		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
+			return Promise.all([Promise.resolve(values), _publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)]);
 		}, function (err) {
 			res.status(500).send({ error: err });
 		}).then(function (values) {
