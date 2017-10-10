@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { actionCreators as consoleActions, selector } from '../..';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {PALETTE_WIDTH} from 'constants/ViewConstants';
+import {PALETTE_WIDTH,SIDEBAR_WIDTH} from 'constants/ViewConstants';
 import cx from 'classnames';
 import "./serverconsole.css";
 
@@ -69,7 +69,7 @@ export default class ServerConsole extends Component {
 		
 		const style ={
 			left: PALETTE_WIDTH,
-			width: w-PALETTE_WIDTH,
+			width: w-PALETTE_WIDTH-SIDEBAR_WIDTH,
 			visible: visible,
 			height: this.state.currentHeight,
 			background: 'white',

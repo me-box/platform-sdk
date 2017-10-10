@@ -17,11 +17,12 @@ export default class Toolbar extends Component {
   } 
 
 //<Button flat label="liveload" onClick={this.props.requestCode}/>,
+//<Button flat label="logout" href="/auth/logout"/>,
+
   render() {
   	
   		const actions = [
   			<Risk />,
-  			<Button flat label="logout" href="/auth/logout"/>,
         <Button flat label="clear" onClick={this.props.clear}/>,
   			<Button flat label="examples" onClick={this.props.toggleExamples}/>,
   			<Button flat label="load" onClick={this.props.requestRepos}/>,

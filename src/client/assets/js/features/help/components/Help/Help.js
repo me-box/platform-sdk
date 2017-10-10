@@ -150,7 +150,6 @@ export default class Help extends Component {
 		const style ={
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,
-			visible: visible,
 			height: this.state.currentHeight,
 		}
 		const className = cx({

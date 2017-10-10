@@ -1,23 +1,16 @@
 import { createStructuredSelector } from 'reselect';
 import moment from 'moment';
 
-const TOGGLE_CONSOLE  = 'iot.red/serverconsole/TOGGLE_CONSOLE';
 const NEW_MESSAGE  = 'iot.red/serverconsole/NEW_MESSAGE';
 
 export const NAME = 'serverconsole';
 
 const initialState = {
-	visible:true, 
 	messages:[],
 }
 
 export default function reducer(state = initialState , action) {
 	switch (action.type) {
-		case TOGGLE_CONSOLE:
-			return {
-				...state,
-				visible: !state.visible
-			};	
 
 		case NEW_MESSAGE:
 			return {
@@ -30,11 +23,7 @@ export default function reducer(state = initialState , action) {
 	}	
 }
 
-function toggleConsole(){
-	return {
-		type: TOGGLE_CONSOLE
-	}
-}
+
 
 function newMessage(msg){
 	return {
@@ -44,13 +33,17 @@ function newMessage(msg){
 	}
 }
 
-const serverconsole = (state)=>state[NAME];
+const serverconsole = (state)=>{
+	return {
+			...state[NAME], 
+			visible: state.test.visible
+	}
+}
 
 export const selector = createStructuredSelector({
   serverconsole
 });
 
 export const actionCreators = {
- toggleConsole,
  newMessage,
 };

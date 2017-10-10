@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -92,7 +92,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _dockerode = __webpack_require__(21);
+var _dockerode = __webpack_require__(23);
 
 var _dockerode2 = _interopRequireDefault(_dockerode);
 
@@ -109,18 +109,67 @@ module.exports = require("passport");
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("superagent");
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = init;
+exports.sendmessage = sendmessage;
+
+var _socket = __webpack_require__(20);
+
+var _socket2 = _interopRequireDefault(_socket);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var ns = void 0;
+
+function init(server) {
+
+  var io = _socket2.default.listen(server);
+
+  ns = io.of('/databox');
+
+  ns.on('connection', function (socket) {
+
+    socket.on('join', function (app) {
+      console.log("joining client to room ", app);
+      socket.join(app);
+    });
+
+    socket.on('leave', function (app) {
+      console.log("leaving room: " + app);
+      socket.leave(app);
+    });
+
+    socket.on('disconnect', function () {
+      console.log("socket disconnect!");
+    });
+  });
+}
+
+function sendmessage(room, event, message) {
+  ns.to(room).emit(event, message);
+};
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("path");
+module.exports = require("superagent");
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -140,7 +189,7 @@ exports.createTestContainer = createTestContainer;
 exports.writeTempFile = writeTempFile;
 exports.removeTempFile = removeTempFile;
 
-var _zlib = __webpack_require__(22);
+var _zlib = __webpack_require__(24);
 
 var _zlib2 = _interopRequireDefault(_zlib);
 
@@ -148,7 +197,7 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _tarStream = __webpack_require__(23);
+var _tarStream = __webpack_require__(25);
 
 var _tarStream2 = _interopRequireDefault(_tarStream);
 
@@ -448,20 +497,20 @@ function removeTempFile(fileName) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(9);
+module.exports = __webpack_require__(10);
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _http = __webpack_require__(10);
+var _http = __webpack_require__(11);
 
 var _http2 = _interopRequireDefault(_http);
 
@@ -469,27 +518,31 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _expressSession = __webpack_require__(11);
+var _expressSession = __webpack_require__(12);
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _connectRedis = __webpack_require__(12);
+var _connectRedis = __webpack_require__(13);
 
 var _connectRedis2 = _interopRequireDefault(_connectRedis);
 
-var _bodyParser = __webpack_require__(13);
+var _bodyParser = __webpack_require__(14);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(14);
+var _config = __webpack_require__(15);
 
-var _strategies = __webpack_require__(15);
+var _strategies = __webpack_require__(16);
 
 var _strategies2 = _interopRequireDefault(_strategies);
 
 var _minimist = __webpack_require__(2);
 
 var _minimist2 = _interopRequireDefault(_minimist);
+
+var _websocket = __webpack_require__(5);
+
+var _websocket2 = _interopRequireDefault(_websocket);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -517,11 +570,11 @@ function checkcredentials(config) {
 }
 
 function addroutes(app, auth) {
-  app.use('/auth', __webpack_require__(19));
-  app.use('/github', auth, __webpack_require__(20));
-  app.use('/nodered', auth, __webpack_require__(24));
-  app.use('/samples', auth, __webpack_require__(25));
-  app.use('/uibuilder', auth, __webpack_require__(26));
+  app.use('/auth', __webpack_require__(21));
+  app.use('/github', auth, __webpack_require__(22));
+  app.use('/nodered', auth, __webpack_require__(26));
+  app.use('/samples', auth, __webpack_require__(27));
+  app.use('/uibuilder', auth, __webpack_require__(28));
 }
 
 function start(config) {
@@ -548,10 +601,10 @@ function start(config) {
   }));
 
   app.set('view engine', 'html');
-  app.engine('html', __webpack_require__(28).renderFile);
+  app.engine('html', __webpack_require__(30).renderFile);
 
   var server = _http2.default.createServer(app);
-
+  (0, _websocket2.default)(server);
   var auth = function auth(req, res, next) {
 
     if (req.isAuthenticated()) {
@@ -606,31 +659,31 @@ function start(config) {
 }
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = require("connect-redis");
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -763,7 +816,7 @@ function defaultsettings() {
 }
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -778,7 +831,7 @@ var _passport = __webpack_require__(4);
 
 var _passport2 = _interopRequireDefault(_passport);
 
-var _passportGithub = __webpack_require__(16);
+var _passportGithub = __webpack_require__(17);
 
 var _passportGithub2 = _interopRequireDefault(_passportGithub);
 
@@ -800,7 +853,7 @@ function initPassport(app, config) {
 		return;
 	}
 
-	var User = __webpack_require__(17)(config.mongo.URL);
+	var User = __webpack_require__(18)(config.mongo.URL);
 
 	app.use(_passport2.default.initialize());
 	app.use(_passport2.default.session());
@@ -844,19 +897,19 @@ function initPassport(app, config) {
 }
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-github");
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _mongoose = __webpack_require__(18);
+var _mongoose = __webpack_require__(19);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -875,13 +928,19 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 19 */
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = require("socket.io");
+
+/***/ }),
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -921,7 +980,7 @@ router.get('/github/callback', _passport2.default.authenticate('github', { failu
 module.exports = router;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -931,7 +990,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(5);
+var _superagent = __webpack_require__(6);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -939,7 +998,7 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = __webpack_require__(6);
+var _path = __webpack_require__(7);
 
 var _path2 = _interopRequireDefault(_path);
 
@@ -947,7 +1006,7 @@ var _docker = __webpack_require__(3);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(7);
+var _utils = __webpack_require__(8);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1612,25 +1671,25 @@ router.post('/publish', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("dockerode");
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("tar-stream");
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1640,7 +1699,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(5);
+var _superagent = __webpack_require__(6);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -1648,7 +1707,9 @@ var _docker = __webpack_require__(3);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(7);
+var _websocket = __webpack_require__(5);
+
+var _utils = __webpack_require__(8);
 
 var _minimist = __webpack_require__(2);
 
@@ -1657,12 +1718,47 @@ var _minimist2 = _interopRequireDefault(_minimist);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+//import net from 'net';
+//import JsonSocket from 'json-socket';
+
 
 var router = _express2.default.Router();
 
 var argv = (0, _minimist2.default)(process.argv.slice(2));
 var DEVMODE = argv.dev || false;
 var network = "bridge";
+
+/*let connected = false;
+
+const client =  new JsonSocket(new net.Socket());
+
+client.on("error", function(err){
+    connected = false;
+    console.log("error connecting, retrying in 2 sec");
+    setTimeout(function(){_connect()}, 2000);
+});
+
+client.on('uncaughtException', function (err) {
+    connected = false;
+    console.error(err.stack);
+    setTimeout(function(){_connect()}, 2000);
+});
+
+const _connect = (fn)=>{
+    connected = false;
+    
+    const endpoint = DEVMODE ?  "127.0.0.1":'databox-test-server';
+    console.log(`connecting to ${endpoint}:8435`);
+
+    client.connect(8435, endpoint, ()=>{
+        console.log('***** companion app connected *******');
+        connected = true;
+    
+        if (fn){
+            fn();
+        }
+    })
+}*/
 
 var _postFlows = function _postFlows(ip, port, data, username) {
 	var attempts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
@@ -1704,14 +1800,27 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 /*  after a container has started it'll take a bit of time initing, after which we need to send it a flow file
     the only way I can think of to be sure it is ready to receive this is to monitor the container stdout and
     look for "Started Flows", and send the flow file a second after this */
-var _waitForStart = function _waitForStart(container) {
+var _waitForStart = function _waitForStart(container, username) {
+	var showonconsole = true;
+
 	return new Promise(function (resolve, reject) {
+
 		container.attach({ stream: true, stdout: true, stderr: true }, function (err, stream) {
 			stream.on('data', function (line) {
-				console.log(line.toString());
-				if (line.toString().indexOf("Started flows") != -1) {
+				var str = line.toString("utf-8", 8, line.length);
+
+				/*if (connected){
+        			client.sendMessage({type: "debug", channel:username, msg:str})
+    }*/
+
+				(0, _websocket.sendmessage)(username, "debug", { msg: str });
+
+				if (showonconsole) {
+					console.log(str);
+				}
+				if (str.indexOf("Started flows") != -1) {
 					console.log("container ready for flows");
-					stream.destroy();
+					showonconsole = false;
 					setTimeout(function () {
 						console.log("posting flows");
 						resolve(true);
@@ -1796,7 +1905,7 @@ var _inspect = function _inspect(container) {
 };
 
 var _startContainer = function _startContainer(container, flows, username) {
-	return _waitForStart(container).then(function () {
+	return _waitForStart(container, username).then(function () {
 		console.log("container has started!");
 		return _inspect(container);
 	}).then(function (cdata) {
@@ -1993,7 +2102,7 @@ router.post('/flows', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2049,7 +2158,7 @@ router.get('/:sensor', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2063,7 +2172,7 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = __webpack_require__(6);
+var _path = __webpack_require__(7);
 
 var _path2 = _interopRequireDefault(_path);
 
@@ -2073,7 +2182,7 @@ var _minimist2 = _interopRequireDefault(_minimist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Promise = __webpack_require__(27);
+var Promise = __webpack_require__(29);
 Promise.promisifyAll(_fs2.default);
 var argv = (0, _minimist2.default)(process.argv.slice(2));
 var router = _express2.default.Router();
@@ -2188,13 +2297,13 @@ router.post('/image/add', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = require("bluebird");
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = require("ejs");

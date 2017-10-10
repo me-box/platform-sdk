@@ -14,3 +14,7 @@
 	color:#E74C3C;
 	margin-right: 10px;
 }
+
+#serverconsole.closed {
+	display:none;
+}
