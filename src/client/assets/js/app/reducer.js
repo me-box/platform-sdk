@@ -13,6 +13,7 @@ import driver, {NAME as driverName} from 'features/driver';
 import help, {NAME as helpName} from 'features/help';
 import examples, {NAME as examplesName} from 'features/examples';
 import risk, {NAME as riskName} from 'features/risk';
+import serverconsole, {NAME as serverconsoleName} from 'features/serverconsole';
 
 export default {
   routing,
@@ -29,4 +30,5 @@ export default {
   [driverName]: driver,
   [examplesName]: examples,
   [riskName]: risk,
+  [serverconsoleName]: serverconsole,
 };

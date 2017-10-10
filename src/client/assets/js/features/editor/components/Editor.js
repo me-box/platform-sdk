@@ -21,6 +21,7 @@ import ExampleManager from 'features/examples/components/ExampleManager';
 import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
 import Help from 'features/help/components/Help';
+import ServerConsole from 'features/serverconsole/components/ServerConsole';
 
 @connect((state)=>{
     return {
@@ -103,8 +104,10 @@ export default class Editor extends Component {
               <RepoManager h={h-TOOLBAR_HEIGHT}/>
               <TestManager h={h-TOOLBAR_HEIGHT}/>
               <ExampleManager h={h-TOOLBAR_HEIGHT}/>
+              <ServerConsole h={h-TOOLBAR_HEIGHT} w={w} />
               <Help h={h-TOOLBAR_HEIGHT} w={w} />
               <Toolbar {...toolbarprops}/>
+
             </div>)
   }
 

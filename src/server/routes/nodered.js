@@ -1,6 +1,10 @@
 import express from 'express';
 import request from 'superagent';
 import docker from '../utils/docker.js';
+//import net from 'net';
+//import JsonSocket from 'json-socket';
+import {sendmessage} from '../utils/websocket';
+
 import {matchLibraries, flatten, dedup, createTarFile, createDockerImage, createTestContainer, stopAndRemoveContainer} from '../utils/utils.js';
 import minimist from 'minimist';
 const router = express.Router();
@@ -8,6 +12,38 @@ const router = express.Router();
 const argv = minimist(process.argv.slice(2));
 const DEVMODE = argv.dev || false;
 const network = "bridge";
+
+/*let connected = false;
+
+const client =  new JsonSocket(new net.Socket());
+
+client.on("error", function(err){
+    connected = false;
+    console.log("error connecting, retrying in 2 sec");
+    setTimeout(function(){_connect()}, 2000);
+});
+
+client.on('uncaughtException', function (err) {
+    connected = false;
+    console.error(err.stack);
+    setTimeout(function(){_connect()}, 2000);
+});
+
+const _connect = (fn)=>{
+    connected = false;
+    
+    const endpoint = DEVMODE ?  "127.0.0.1":'databox-test-server';
+    console.log(`connecting to ${endpoint}:8435`);
+
+    client.connect(8435, endpoint, ()=>{
+        console.log('***** companion app connected *******');
+        connected = true;
+    
+        if (fn){
+            fn();
+        }
+    })
+}*/
 
 
 const _postFlows = function(ip, port, data, username, attempts=0){
@@ -55,21 +91,34 @@ const _postFlows = function(ip, port, data, username, attempts=0){
 /*  after a container has started it'll take a bit of time initing, after which we need to send it a flow file
     the only way I can think of to be sure it is ready to receive this is to monitor the container stdout and
     look for "Started Flows", and send the flow file a second after this */ 
-const _waitForStart = function(container){
+const _waitForStart = function(container, username){
+	let showonconsole = true;
+
 	return new Promise((resolve,reject)=>{
-		container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
-    		stream.on('data', function(line) {
-    			console.log(line.toString());
-    			if (line.toString().indexOf("Started flows") != -1){
-    				console.log("container ready for flows");
-    				stream.destroy();
-    				setTimeout(()=>{
-    					console.log("posting flows");
-    					resolve(true);	
-    				},1000);
-    			}
-    		});
-		});
+		
+			container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
+	    		stream.on('data', function(line) {
+	    			const str =  line.toString("utf-8", 8, line.length);
+
+	    			/*if (connected){
+	           			client.sendMessage({type: "debug", channel:username, msg:str})
+	    			}*/
+
+	    			sendmessage(username, "debug", {msg:str});
+
+	        		if (showonconsole){
+	        			console.log(str);
+	    			}
+	    			if (str.indexOf("Started flows") != -1){
+	    				console.log("container ready for flows");
+	    				showonconsole = false;
+	    				setTimeout(()=>{
+	    					console.log("posting flows");
+	    					resolve(true);	
+	    				},1000);
+	    			}
+	    		});
+			});
 	});
 }
 
@@ -149,7 +198,7 @@ var _inspect = function(container){
 }
 
 var _startContainer = function(container, flows, username){
-    return _waitForStart(container).then(()=>{
+    return _waitForStart(container, username).then(()=>{
     	console.log("container has started!");
         return _inspect(container);
     }).then((cdata)=>{

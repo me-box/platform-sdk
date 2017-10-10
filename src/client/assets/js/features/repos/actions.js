@@ -2,6 +2,8 @@ import {convertNode, getID, lookup, addNode, addViewProperties} from 'utils/node
 import {scopeify} from 'utils/scopeify';
 import request  from 'superagent';
 import config from 'config';
+import {init} from 'utils/comms/websocket';
+
 import {actionConstants as nodeActionTypes} from "./constants";
 
 import {actionCreators as networkActions} from 'features/network';
@@ -10,7 +12,7 @@ import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as tabActions} from 'features/workspace';
 import {actionCreators as appActions} from 'features/apps';
 
-
+let _room;
 
 const _whitelist = (nodes)=>{
   return nodes.filter(n=>n.type==="export").reduce((acc,n)=>{
@@ -37,7 +39,7 @@ const _generateManifest = (app, reponame, packages, nodes, username)=>{
 
       const appname = app.name.startsWith(username) ? app.name : `${username}-${app.name}`;
       reponame = reponame && reponame.trim() != ""  ? reponame : appname;
-      
+
       return{
 
           'manifest-version': 1,
@@ -336,6 +338,12 @@ function requestRepos(){
         const data = res.body || [];
 			  dispatch(networkActions.networkSuccess(`successfully received repos`));
 			  dispatch(receivedRepos(data));
+        //init websocket
+        if (_room != data.username){
+          _room = data.username;
+          init(data.username, dispatch);
+        }
+
         if (data.repos && data.repos.length > 0){
             dispatch(toggleVisible());
         }

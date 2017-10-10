@@ -46,10 +46,6 @@ const Root = ({ store, history }) => {
   return ComponentEl;
 };
 
-Root.test = ()=>{
-  console.log("ok thi sis the place!");
-}
-
 Root.propTypes = {
   history: PropTypes.object.isRequired,
   store: PropTypes.object.isRequired

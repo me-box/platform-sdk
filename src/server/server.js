@@ -6,6 +6,7 @@ import bodyparser from 'body-parser';
 import {fetch} from './config';
 import initPassport from './strategies';
 import minimist from 'minimist';
+import init from './utils/websocket';
 
 const RedisStore 	 = connectredis(expressSession);
 const argv = minimist(process.argv.slice(2));
@@ -63,8 +64,8 @@ function start(config){
   app.set('view engine', 'html');
   app.engine('html', require('ejs').renderFile);
 
-  var server = http.createServer(app);
-  
+  const server = http.createServer(app);
+  init(server);
   const auth = (req, res, next) => {
 
     if (req.isAuthenticated()){

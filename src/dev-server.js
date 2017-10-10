@@ -39,6 +39,18 @@ app.use(webpackHotMiddleware(compiler));
 
 app.use(express.static('./client/assets/'))
 
+
+app.use("/socket.io/*", function(req,res){
+  console.log("proxiying socket io", `${req.baseUrl}${req.url}`);
+  req.url = `${req.baseUrl}${req.url}`; // Janky hack...
+  apiProxy.web(req, res, {
+    target: {
+      port: 9000,
+      host: "localhost"
+    }
+  });
+});
+
 app.use("/github/*", function(req, res) {
     console.log("proxying github>");
     req.url = `${req.baseUrl}${req.url}`; // Janky hack...

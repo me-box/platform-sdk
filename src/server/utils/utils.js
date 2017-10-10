@@ -258,7 +258,7 @@ export function createTestContainer(image, name, network){
 									ExposedPorts: {"1880/tcp": {}, "9123/tcp":{}, "8096/tcp":{}}, 
 									PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
 									Cmd: ["npm", "start", "--", "--userDir", "/data"], 
-									name: `${name}-red`
+									name: `${name}-red`,
 								}, 
 			function (err, container) {
 				if (err){

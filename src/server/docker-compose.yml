@@ -50,7 +50,7 @@ databox-test-server:
     - mongo
   ports:
     - "9090:9090"
-    - "8435"
+    - "8435:8435"
   container_name:
     databox-test-server
   command:
