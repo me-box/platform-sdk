@@ -309,16 +309,15 @@ export default class Node extends React.Component {
     }
 
     render() {
-      
-      /*<Cell title="input type" content={this.renderTypeInput()}/>
-        <Cell title="output type" content={this.renderTypeOutput()}/>*/
-      
+        
       return <div>
           			<Cells>				
       						<Cell title="name" content={this.renderNameInput()}/>						
-                  <Cell title={"external libraries"} content={this.renderLibraries()}/>
-      						<Cell title={"function"} content={this.renderCodeInput()}/>
-      						<Cell title={"outputs"} content={this.renderSelectOutput()}/>
+                  <Cell title="external libraries" content={this.renderLibraries()}/>
+      						<Cell title="function" content={this.renderCodeInput()}/>
+      						<Cell title="outputs" content={this.renderSelectOutput()}/>
+                  <Cell title="input schema" content={this.renderTypeInput()}/>
+                  <Cell title="output schema" content={this.renderTypeOutput()}/>
           			</Cells>
           	 </div>
     }

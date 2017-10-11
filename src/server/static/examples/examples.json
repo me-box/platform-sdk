@@ -2,11 +2,11 @@
     "repos":[
         {
             "username":"tlodge", 
-            "name":"databox.tutorial-monitor-chart",
-            "description":"simple chart showing databox load average over time",
+            "name":"databox.tutorial-freememory",
+            "description":"simple chart showing databox free memory over time",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
-            "url":"https://api.github.com/repos/tlodge/databox.tutorial-monitor-chart"
+            "url":"https://api.github.com/repos/tlodge/databox.tutorial-freememory"
         },
         {
             "username":"tlodge", 
@@ -39,6 +39,15 @@
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
             "url":"https://api.github.com/repos/tlodge/databox.tutorial-shake-light"
-        } 
+        },
+        {
+            "username":"tlodge", 
+            "name":"databox.tutorial-hue-binary",
+            "description":"flash bulbs in binary sequence",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://api.github.com/repos/tlodge/databox.tutorial-hue-binary"
+        }
+       
     ]
 }
