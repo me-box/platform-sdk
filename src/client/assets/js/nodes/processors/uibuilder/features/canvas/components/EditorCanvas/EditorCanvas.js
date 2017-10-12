@@ -183,7 +183,7 @@ class EditorCanvas extends Component {
 
     return connectDropTarget(
       <div className="canvas">
-         <div ref={node => this.rootNode = node} onMouseMove={this._onMouseMove} style={{margin:margin, height:dim.h, width: dim.w, border:"1px solid black"}}>
+         <div ref={node => this.rootNode = node} onMouseMove={this._onMouseMove} className="grid" style={{margin:margin, height:dim.h, width: dim.w, border:"1px solid black"}}>
             <svg id="svgchart"  width={dim.w} height={dim.h} viewBox={`0 0 ${ow} ${oh}`} onMouseUp={this.onMouseUp}>
               {this.renderTemplates()} 
             </svg>

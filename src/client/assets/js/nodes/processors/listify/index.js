@@ -98,7 +98,7 @@ const config = {
       }        
   },
 
-  descriptionfn: () => "<p> This node will take in datastore data of the form <code> values:[{object}, {object}] </code> and convert it to <code> {keys:Array, rows: Array[]} </code> which is the form expected for the list view of the companion app </p>",
+  descriptionfn: () => "<h3>listify</h3>This node will typically connect to the App output node.  It expects data of the form <code> values:[{object}, {object}] </code> and converts it to <code> {keys:Array, rows: Array[]} </code>.",
 
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";

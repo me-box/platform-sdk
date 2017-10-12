@@ -126,10 +126,23 @@ function _text_schema(){
 			stroke: {type:"colour", description:"stroke colour"},
 			"stroke-width": {type:"number", description:"stroke width"},
 			opacity: {type:"number", description:"opacity from 0 (transparent) to 1 (opaque)"},
-			"text-decoration": {type:"string", description: "text decoration", enum:["none", "underline", "overline", "line-through","blink"]},
-			"font-weight": {type:"string", description:"font weight", enum:["normal","bold","bolder","lighter"]},
+			"text-decoration": {type:"enum", description: "text decoration", enum:["none", "underline", "overline", "line-through"]},
+			"font-weight": {type:"enum", description:"font weight", enum:["normal","bold","bolder","lighter"]},
 			"font-size":{type:"number", description:"size of the text (px)"},
-			"font-style":{type:"string", description:"font style", enum:["normal","italic","oblique"]}
+			"font-style":{type:"enum", description:"font style", enum:["normal","italic","oblique"]},
+			font:{type:"string", description:"font", enum:["Futura", "Arial", "Times New Roman"]},
+			'font-family': {type:"enum", description:"font", enum:[`Arial, Helvetica, sans-serif`, 
+																	`"Arial Black", Gadget, sans-serif`, 
+																	`"Comic Sans MS", cursive, sans-serif`,
+																	`"Courier New", Courier, monospace`, 
+																	`Impact, Charcoal, sans-serif`,
+																	`"Lucida Console", Monaco, monospace`,
+																	`"Lucida Sans Unicode", "Lucida Grande", sans-serif`, 
+																	`Tahoma, Geneva, sans-serif`, 
+																	`"Times New Roman",Times,serif`, 
+																	`"Trebuchet MS", Helvetica, sans-serif`, 
+																	`"Palatino Linotype", "Book Antiqua", Palatino, serif`, 
+																	`Verdana, Geneva, sans-serif`]}
 		}
 	}
 }
@@ -247,6 +260,7 @@ function _text(x:number, y:number){
 			'font-weight': 'normal',
 			'font-size': 30,
 			'font-style': 'normal',
+			'font-family': 'impact, georgia, times, serif'
 		}
 	}
 }
@@ -577,7 +591,20 @@ export function calculateBounds(nodes, minX=Number.MAX_VALUE, maxX=-1, minY=Numb
 }
 
 
+
+export function enumForPropery(type, property){
+	const schema = schemaLookup(type);
+	if (schema.attributes[property] && schema.attributes[property].enum){
+		return schema.attributes[property].enum;
+	}
+	if (schema.style[property] && schema.style[property].enum){
+		return schema.style[property].enum;
+	}
+			
+	return [];
+}
 export function typeForProperty(type, property){
+	console.log("looking up", type, " and property", property);
 	const schema = schemaLookup(type);
 	
 	if (schema){

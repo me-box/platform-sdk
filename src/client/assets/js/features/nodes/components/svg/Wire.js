@@ -9,13 +9,27 @@ export default class Wire extends Component {
         this._path = this._path.bind(this);
     }
 
+    _simplepath(){
+        const {x:sourcex,y:sourcey} = this.props.source;
+        const {x:targetx,y:targety} = this.props.target;
+
+        const portY = 1/2*OUTPUT_GAP;
+
+        return "M" + sourcex + "," + (sourcey + 5)
+        + "C" + (sourcex + targetx) / 2 + "," + sourcey
+        + " " + (sourcex + targetx) / 2 + "," + targety
+        + " " + targetx + "," + targety;
+    }
+
     _path(){
-        const numOutputs = 0;
+
+        const {x:sourcex,y:sourcey} = this.props.source;
+        const {x:targetx,y:targety} = this.props.target;
         const sourcePort = 0;
-        const portY = -((numOutputs-1)/2)*OUTPUT_GAP +OUTPUT_GAP*sourcePort;
+        const portY = -(-1/2)*OUTPUT_GAP +OUTPUT_GAP*sourcePort;
         const sc = 1;
-        const dy = this.props.target.y - (this.props.source.y + portY);
-        const dx = this.props.target.x - (this.props.source.x + sc * NODE_WIDTH/2);
+        const dy = targety - (sourcey + portY);
+        const dx = targetx - (sourcex + sc * NODE_WIDTH/2);
         const delta = Math.sqrt(dy*dy+dx*dx);
         
         let scale =  LINE_CURVE_SCALE;
@@ -30,10 +44,10 @@ export default class Wire extends Component {
                 scaleY = ((dy>0)?0.5:-0.5)*(((3*NODE_HEIGHT)-Math.abs(dy))/(3*NODE_HEIGHT))*(Math.min(NODE_WIDTH,Math.abs(dx))/(NODE_WIDTH)) ;
             }
         }
-        return  `M ${this.props.source.x} ${(this.props.source.y+portY)}`
-              + `C ${(this.props.source.x+sc*(NODE_WIDTH/2+NODE_WIDTH*scale))} ${(this.props.source.y+portY+scaleY*NODE_HEIGHT)} `
-              + `${(this.props.target.x-sc*(scale)*NODE_WIDTH)} ${(this.props.target.y-scaleY*NODE_HEIGHT)} `
-              + `${this.props.target.x} ${this.props.target.y}`
+        return  `M ${sourcex} ${(sourcey+portY)}`
+              + `C ${(sourcex+sc*(NODE_WIDTH/2+NODE_WIDTH*scale))} ${(sourcey+portY+scaleY*NODE_HEIGHT)} `
+              + `${(targetx-sc*(scale)*NODE_WIDTH)} ${(targety-scaleY*NODE_HEIGHT)} `
+              + `${targetx} ${targety}`
     }   
 
     render(){

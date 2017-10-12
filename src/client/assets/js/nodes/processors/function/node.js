@@ -307,7 +307,7 @@ export default class Node extends React.Component {
                 <strong>{matchLibraries(values.func || node.func || "").join(", ")}</strong>
              </div>
     }
-
+    //<Cell title="input schema" content={this.renderTypeInput()}/>
     render() {
         
       return <div>
@@ -316,7 +316,7 @@ export default class Node extends React.Component {
                   <Cell title="external libraries" content={this.renderLibraries()}/>
       						<Cell title="function" content={this.renderCodeInput()}/>
       						<Cell title="outputs" content={this.renderSelectOutput()}/>
-                  <Cell title="input schema" content={this.renderTypeInput()}/>
+                  
                   <Cell title="output schema" content={this.renderTypeOutput()}/>
           			</Cells>
           	 </div>

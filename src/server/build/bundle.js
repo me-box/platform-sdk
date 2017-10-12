@@ -876,6 +876,7 @@ function initPassport(app, config) {
 				});
 			} else {
 				//MUST update here - incase the token has changed
+				console.log("UPDATING TOKEN!", accessToken);
 				var conditions = { accessToken: accessToken };
 				User.update({ githubId: profile.id }, { $set: { accessToken: accessToken } }, function (err, u) {
 					return cb(null, user);

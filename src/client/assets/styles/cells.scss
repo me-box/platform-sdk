@@ -45,15 +45,12 @@ html{
 }
 
 .flexrow {
-   
     display: -webkit-flex;
     display: flex;
     flex: 1 1 auto;
      -webkit-flex: 1 1 auto;
     -webkit-flex-direction: row;
     flex-direction: row;
-    
- 
 }
 
 .flexrow > div {

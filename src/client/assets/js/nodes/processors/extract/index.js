@@ -37,28 +37,21 @@ const config = {
 
     
         return {
+                    input:{
+                        type: "any",
+                        description: "extract will take ANY object as input"
+                    },
                     output: {
                         type: "object",
                         description: "container object",
                         properties: {
                             name: {type:'string', description: "a name assigned to this node"}, 
                             id:  {type:'string', description: "the node id: [id]"},
-                             payload : {
+                            payload : {
                                                 type:"object", 
                                                 description:"extracted attributes", 
                                                 properties: payload
-                                }
-                            /*msg: {
-                                type: "object",
-                                description: "the container object",
-                                properties: {
-                                    payload: {
-                                        type: "object",
-                                        description: "the message payload",
-                                        properties: payload,
-                                    }
-                                }
-                            }*/
+                            }
                         }
                     }
                 }
@@ -72,7 +65,7 @@ const config = {
     },
 
     descriptionfn: (filters)=>{
-        return "pulls out specific data from incoming data";
+        return "This node will take an incoming message and then pull out specific values from it.  It is a simple way of removing all data from a message that is of no use further down the flow";
     }
     
 }

@@ -42,8 +42,17 @@ const config = {
             output =  JSON.parse(outputdef);
         }
         catch(err){
+
         }
-        return {output:output}
+
+        return { 
+                    output,
+                 
+                    input:{
+                        type: "any",
+                        description: "extract will take ANY object as input"
+                    }
+                }
     },
 
     risk: (subtype="")=>{

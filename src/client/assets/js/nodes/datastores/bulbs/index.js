@@ -60,6 +60,7 @@ const config = {
     },
 
     risk: (subtype="bulb-on")=>{
+
         switch(subtype){
             case "bulb-on":
                 return {
@@ -90,13 +91,15 @@ const config = {
     },
 
     descriptionfn:(subtype)=>{
+        const chosen = `<h3> ${subtype} </h3>`
+
         switch(subtype){
             case "bulb-on":
-                return "use to determine whether a bulb is on or off";
+                return `${chosen} This will to determine whether a Philips Hue bulb is currently on or off`;
             case "bulb-hue":
-                return "use to access the hue bulb's hue setting";
+                return `${chosen} This will provide a Philips Hue bulb's hue setting which ranges from 0 to 360`;
             case "bulb-bri":
-                return "use to access the hue bulb's brightness setting";
+                return `${chosen} This will access the Philips Hue bulb's brightness setting, which ranges from 0 to 255`;
             default:
                 return "unknown setting";
         }

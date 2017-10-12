@@ -9,7 +9,7 @@
 
 .sdktoolbar {
 	height: 40px;
-	background: '#424242';
+	background: #424242;
 }		
 
 
@@ -39,4 +39,14 @@
 	margin: 0;
 	height: 70px;
 	border: none;
+}
+
+.sdkdialogue  .toolbar{
+	grid-row: 1;
+	grid-column: 2 / span 4;
+	background: #3f51b5;
+	color: white;
+	line-height: 64px;
+	padding-left: 7px;
+	box-sizing: border-box;
 }

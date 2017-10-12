@@ -15,8 +15,8 @@ export default class TemplateList extends Component {
 
   renderShapes() {
     const {nid} = this.props;
-
-    return this.props.templates.filter((template)=>template.type!=="group").map((template) =>
+    const ignorefornow = ["group", "path", "line", "ellipse"];
+    return this.props.templates.filter((template)=>ignorefornow.indexOf(template.type) == -1).map((template) =>
       (
         <TemplateItem
           key={template.id}
@@ -47,7 +47,6 @@ export default class TemplateList extends Component {
                   onChange={(f)=>{
                     const reader = new FileReader();
                     reader.onload = (output)=>{
-                      //console.log(output.target.result); 
                       post("/uibuilder/image/add", {name:f.name, image:output.target.result}).then(()=>{
                           loadSVGTemplates(nid);
                       },(err)=>{

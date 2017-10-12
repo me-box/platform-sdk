@@ -7,7 +7,7 @@ import Button  from 'react-md/lib/Buttons';
 class Dialogue extends React.Component {
 
 	render(){
-		console.log("am rendeing the dialogu!!");
+		
 		const dialoguestyle = {
 			position: 'absolute',
 			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING)}px)`,

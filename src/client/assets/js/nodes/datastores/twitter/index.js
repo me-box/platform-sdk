@@ -62,7 +62,7 @@ const config =  {
         labelStyle: function() { 
             return this.name?"node_label_italic":"";
         },
-        descriptionfn: ()=>"<p>Latest tweets from a twitter account</p>",
+        descriptionfn: ()=>"<h3> twitter node </h3> This node will provide the latest tweets from a twitter account.  The twitter account is configured at runtime, and allows a user to subscribe to a list of twitter hashtags",
 
 }
                           

@@ -210,8 +210,8 @@ const config = {
           },
           type: {
             type: 'string',
-            description: "one of either \'text\', \'gauge\', \'bar\' or \'list\'",
-            enum: ["text", "gauge", "bar", "list"]
+            description: "one of either \'text\', \'gauge\', \'bar\', \'list\' or \'uibuilder\'",
+            enum: ["text", "gauge", "bar", "list", "uibuilder"]
           },
           payload: {
             type: 'oneof',

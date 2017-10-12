@@ -25,13 +25,20 @@ const config = {
         return this.name||"uibuilder";
     },
     
-    schemafn:()=>{return {}},
+    schemafn:()=>{
+                    return {
+                        input:{
+                            type: "any",
+                            description: "extract will take ANY object as input"
+                        }
+                    }
+                },
     
     labelStyle: function() { 
         return this.name?"node_label_italic":"";
     },
     
-    descriptionfn: ()=>"<p> This node allows you to create svg animations from input data </p>",
+    descriptionfn: ()=>"<p> This is a complex node that allows you to create svg animations from input data.  Outputs from this node should typically be connected to the <strong> app </strong> node. The node will take inputs from any nodes, so long as they have a defined schema (you will need to manually add a schema if you use send data to uibuilder from a <strong>dbfunction</strong> node).  The uibuilder node provides an option for you to upload your own bespoke svg graphics, which you can then connect to data to animate",
 
     risk: (subtype="")=>{
       return {
