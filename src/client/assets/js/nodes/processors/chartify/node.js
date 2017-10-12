@@ -4,16 +4,6 @@ import Textfield from 'components/form/Textfield';
 import {configNode} from 'utils/ReactDecorators';
 
 
-const _inputsHaveChanged = (i1,i2)=>{
-	if (i2.length <= i1.length){
-		return true;
-	}
-	return false;
-}
-
-const _validateNumber = (n)=>{
-	return (!isNaN(parseFloat(n)) && isFinite(n)) || n === "";
-}
        
       
 
@@ -264,7 +254,7 @@ export default class Node extends React.Component {
 											</div>
 										</div>
 										<div>
-											<div className="centered" style={{lineHeight:"1.8em", padding:7}}>
+											<div className="centered" style={{lineHeight:"1.8em", padding:7}}isC>
 												use this to add labels along the outer axis of the gauge.  The format required is <i>label:number,label:number</i> where <strong>label</strong> is the word you would like displayed and <strong>number</strong> is the maximum value for which the label applies.  For example on a gauge with values from 0 to 100, to create 4 equal width labels you might write <i>low:25,medium:50,high:75,massive:100</i> Values from 0-25 will be marked 'low', 25-50 will be marked 'medium', 50-75 will be marked 'high' and 75 to 100 will be marked 'massive'.	 	 
 											</div>
 										</div>
@@ -276,7 +266,7 @@ export default class Node extends React.Component {
 	    }
 
 
-	   	renderGrid(){
+	   	renderGrid(chart){
 	   		
 	   		const {inputs=[], values} = this.props;
 
@@ -300,8 +290,8 @@ export default class Node extends React.Component {
              	return false;
           	}).map((input,i)=>{
           	
-          		const name = input.name.trim() == "" ? input.type : input.name; 
-          	
+          		const name = input.type;
+          		
           		let schema = {};
           	
           		const {schema:{output}} = input;
@@ -347,7 +337,8 @@ export default class Node extends React.Component {
 	          				</div>	
 	          	})
           	
-          	 
+          	 	
+
 				return	<div key={name}>
 							<div className="flexrow">
 								<div className="title">	
@@ -490,10 +481,14 @@ export default class Node extends React.Component {
 			  			</div>
 
 
-          		  		{this.renderGrid()}
+          		  		{this.renderGrid(chart)}
           		  </div>
           
        } 
+
+       	_validateNumber(n){
+			return (!isNaN(parseFloat(n)) && isFinite(n)) || n === "";
+		}
 
         _handleValueSelected(property, value){
        
