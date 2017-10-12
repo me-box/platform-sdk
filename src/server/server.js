@@ -18,6 +18,7 @@ console.log("set port to", PORT);
 console.log("dev mode ", dev);
 
 fetch({dev:dev}).then((config)=>{
+  console.log(config);
   start(config);
 }, (err)=>{
   console.log("error reading config!", err);
@@ -29,6 +30,7 @@ function checkcredentials(config){
 }
 
 function addroutes(app, auth){
+  console.log("adding routes");
   app.use('/auth', require('./routes/auth'));
   app.use('/github', auth, require('./routes/github'));
   app.use('/nodered', auth, require('./routes/nodered'));

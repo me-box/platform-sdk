@@ -555,6 +555,7 @@ console.log("set port to", PORT);
 console.log("dev mode ", dev);
 
 (0, _config.fetch)({ dev: dev }).then(function (config) {
+  console.log(config);
   start(config);
 }, function (err) {
   console.log("error reading config!", err);
@@ -570,6 +571,7 @@ function checkcredentials(config) {
 }
 
 function addroutes(app, auth) {
+  console.log("adding routes");
   app.use('/auth', __webpack_require__(21));
   app.use('/github', auth, __webpack_require__(22));
   app.use('/nodered', auth, __webpack_require__(26));
@@ -708,7 +710,7 @@ function fetch() {
 
 
         return new Promise(function (resolve, reject) {
-
+                console.log("ok am here");
                 _fs2.default.readFile("./conf/settings.json", 'utf8', function (err, data) {
                         if (err) {
                                 return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4)).then(function (settings) {
@@ -719,7 +721,9 @@ function fetch() {
                         }
                         try {
                                 var settings = JSON.parse(data);
+                                console.log(settings);
                                 resolve(settings);
+                                return;
                         } catch (err) {
                                 console.log("error reading settings file!", err);
                                 reject(defaultsettings());
