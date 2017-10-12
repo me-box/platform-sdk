@@ -5,32 +5,44 @@ export function fetch(options={}){
    return new Promise((resolve, reject)=>{
 
         fs.readFile("./conf/settings.json", 'utf8', function(err, data){
-                if (err){
-                    return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(),null,4));
-                }
-                try{
-                        const settings = JSON.parse(data);
-                        resolve(settings);
-                }catch(err){
-                        console.log("error reading settings file!", err);   
-                        reject(defaultsettings());
-                };
+            if (err){
+                return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(),null,4)).then((settings)=>{
+                    console.log("returning", settings);
+                    resolve(settings);
+                    return;
+                });
+            }
+            try{
+                const settings = JSON.parse(data);
+                resolve(settings);
+            }catch(err){
+                console.log("error reading settings file!", err);   
+                reject(defaultsettings());
+            };
         });
    });
 }
 
 export function write(file){
         return new Promise((resolve, reject)=>{
+            try{
                 fs.mkdir("./conf", function(){
 
                     fs.writeFile("./conf/settings.json", file, function(err) {
                         if (err){
                             console.log("hmmm error writing conf/settings.json")
                             reject(JSON.parse(file));
+                            return;
                         }
+                        console.log("successfully created directory");
                         resolve(JSON.parse(file));
                     });
                 });
+            }catch(err){
+                console.log("error writing conf file", err);
+                reject(JSON.parse(file));
+                return;
+            }
         });   
 }
 

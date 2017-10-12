@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Databox - nearly there</title>
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/settings.css">
     <link rel="stylesheet" href="/css/docs.css">
   </head>
   <body>  
@@ -72,10 +72,14 @@
         <div class="grid-x" >
           <div class="cell">
               <p> Now open [your databox directory]/sdk/settings.json and put in your  Client ID and Client Secret and then restart the sdk. </p>
-              <p> To restart the sdk run:</p>
+              <p> To restart the sdk, in the databox directory, run:</p>
                <div class="highlighter-rouge">
-              <code> ./databox-start sdk</code>   
-              </div>   
+               <code>docker-compose -f docker-databox-sdk.yaml restart databox-sdk</code>   
+              </div> 
+              <p> And wait until you see:</p>
+              <div class="highlighter-rouge">
+                <code>Restarting databox-sdk ... done  </code>
+              </div>
           </div>
         </div>
         

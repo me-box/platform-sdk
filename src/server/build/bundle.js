@@ -644,9 +644,9 @@ function start(config) {
 
   app.get('/settings', function (req, res) {
     if (checkcredentials(config)) {
-      res.render('settings', { title: "great, you have updated your config settings", config: "[secret]" });
+      res.redirect("/login");
     } else {
-      res.render('settings', { title: "Nearly there - you just need set your github settings", config: JSON.stringify(config.github || {}, null, 4) });
+      res.render('settings', { title: "Nearly there - you just need set your github settings", config: JSON.stringify(config.github || {}, null, 2) });
     }
   });
 
@@ -711,7 +711,11 @@ function fetch() {
 
                 _fs2.default.readFile("./conf/settings.json", 'utf8', function (err, data) {
                         if (err) {
-                                return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4));
+                                return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4)).then(function (settings) {
+                                        console.log("returning", settings);
+                                        resolve(settings);
+                                        return;
+                                });
                         }
                         try {
                                 var settings = JSON.parse(data);
@@ -726,16 +730,24 @@ function fetch() {
 
 function write(file) {
         return new Promise(function (resolve, reject) {
-                _fs2.default.mkdir("./conf", function () {
+                try {
+                        _fs2.default.mkdir("./conf", function () {
 
-                        _fs2.default.writeFile("./conf/settings.json", file, function (err) {
-                                if (err) {
-                                        console.log("hmmm error writing conf/settings.json");
-                                        reject(JSON.parse(file));
-                                }
-                                resolve(JSON.parse(file));
+                                _fs2.default.writeFile("./conf/settings.json", file, function (err) {
+                                        if (err) {
+                                                console.log("hmmm error writing conf/settings.json");
+                                                reject(JSON.parse(file));
+                                                return;
+                                        }
+                                        console.log("successfully created directory");
+                                        resolve(JSON.parse(file));
+                                });
                         });
-                });
+                } catch (err) {
+                        console.log("error writing conf file", err);
+                        reject(JSON.parse(file));
+                        return;
+                }
         });
 }
 
