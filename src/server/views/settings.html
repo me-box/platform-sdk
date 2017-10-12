@@ -1,60 +1,90 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html class="no-js" lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="/css/milligram.min.css">
-    <title>databox sdk - settings </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Databox - nearly there</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/docs.css">
   </head>
-  <body>
-  	<div class="container">
-  		
-  		<div>
-  			<h2> <%= title %> </h2>	
-  		</div>
+  <body>  
+    <div id="settings">
+        <!-- Start Top Bar -->
+      <div class="top-bar">
+        <div class="top-bar-left">
+          <ul class="menu">
+            <li class="menu-text">databox</li>
+          </ul>
+        </div>
+        <div class="top-bar-right">
+          <ul class="menu">
+            <li><a href="https://github.com/me-box/platform-sdk">sdk github</a></li>
+            <li><a href="https://github.com/me-box/databox">databox github</a></li>
+            <li><a href="http://www.databoxproject.uk">databox project</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- End Top Bar -->
 
-  		<div class="row">
-  			your settings are currently:
-  		</div>
+        <div class="callout large primary">
+        <div class="row column text-center">
+          <h1>nearly there...</h1>
+        </div>
+      </div>
+      <div class="content">
+        <div class="grid-x" >
+          <div class="cell">
+              <p>Your settings are currently:</p>
+              <pre class="highlighter-rouge">
+                <code>
+                  <%= config %>
+                </code>
+              </pre>
+          </div>
+        </div>
+        <div class="grid-x" >
+          <div class="cell">
+              <p> You now need to register a new github app at <a href="https://github.com/settings/developers"  target="_blank">https://github.com/settings/developers</a></p>
+              <p> When presented with the following screen, click on <i>Register a new application</i>
+              <figure class="figure">
+                  <img src="/images/github/github1.jpg" class="thumbnail" width="80%" alt="github register application">
+                  <figcaption class="figure-caption text-center">github register application</figcaption>
+              </figure>
+              <p>When prompted to fill in details, you can give the application any name, and provide any legitimate url for the homepage.  The callback url must be:</p>
+              <div class="highlighter-rouge">
+                <code>http://localhost:8086/auth/github/callback</code>
+              </div>
+              <figure class="figure">
+                  <img src="/images/github/github2.jpg" class="thumbnail" width="80%" alt="github add callback and name">
+                  <figcaption class="figure-caption text-center">github add callback and name</figcaption>
+               </figure>
 
-  		<div class="row">	
-    		<pre>
-    			<code>
-					<%= config %>
-				</code>
-			</pre>
-  		</div>
+               <p> You will then be provided with a Client ID and Client Secret.  These are what you need to finish the install:</p>
+               
+               <figure class="figure">
+                  <img src="/images/github/github3.jpg" class="thumbnail" width="80%" alt="clientID and secret">
+                  <figcaption class="figure-caption text-center">clientID and secret</figcaption>
+               </figure>
 
-  	<div class="row">
-			 <p>Register your new github app at <p>
-       <p><a href="https://github.com/settings/developers">https://github.com/settings/developers</a></p>
-		</div>
+          </div>
+        </div>
 
-		<div class="row">
-		 	<p>Use the callback url shown above (CALLBACK) (or change hostname accordingly).  You'll be given a Client ID and Client Secret.  Put these in the [dockermount]/sdk/settings.json then restart the sdk.  Then to restart the sdk, if you are running as part of the databox repo, then run:</p>
-		</div>
-		
-    <div class="row">
-      <pre>
-        <code> docker-compose -f docker-databox-sdk.yaml restart databox-sdk</code>
-      </pre>
+        <div class="grid-x" >
+          <div class="cell">
+              <p> Now open [your databox directory]/sdk/settings.json and put in your  Client ID and Client Secret and then restart the sdk. </p>
+              <p> To restart the sdk run:</p>
+               <div class="highlighter-rouge">
+              <code> ./databox-start sdk</code>   
+              </div>   
+          </div>
+        </div>
+        
+        <div class="grid-x" >
+          <div class="cell">
+              <p>Once done and restarted, if you go to <a href="http://localhost:8086/"  target="_blank">http://localhost:8086/</a> you should be prompted to login to the sdk.</p>
+          </div>
+        </div>
+      </div>
     </div>
-  
-    <div class="row">
-      <p> else if you are running from the databox-sdk.yml repo then run:</p>
-    </div>
-
-    <div class="row">
-		 	<pre>
-				<code> docker-compose restart databox-sdk </code>
-			</pre>
-  	</div>
-
-  	<div class="row">
-  			Then go 
-        <p><a href="/">here</a></p>
-  		</div>
-  	</div>
-  
   </body>
 </html>

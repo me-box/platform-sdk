@@ -1,0 +1,90 @@
+
+
+.fullheight {
+	height: 100%;
+}
+
+.callout {
+	margin-bottom: 0px;
+}
+
+.callout.primary{
+	background-color: #074E68;
+	color: white;
+}
+
+.docs-nav-title {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: #999;
+    font-weight: bold;
+    line-height: 1;
+    padding-left: 0.9rem;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid #e9e9e9;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+}
+
+.menu{
+	background: #e6e6e6;
+}
+
+.menu .docs-nav-title {
+    margin-top: 1rem;
+    border-top: 0;
+    padding-top: 0;
+}
+
+.menu .side li {
+	width: 100%;
+}
+.menu > li > a{
+    line-height: 1.5;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+}
+
+.submenu .side li{
+	width: 100%
+}
+
+.submenu {
+	list-style: none;
+}
+
+.submenu > li > a{
+    line-height: 1.5;
+    padding: 0.45rem 2rem;
+    font-size: 0.85rem;
+}
+
+.highlighter-rouge{
+	background: #EDEDED;
+	padding:7px;
+	margin-bottom: 1rem;
+}
+
+code{
+	border: none;
+	background-color: none;
+	background: none;
+}
+
+.thumbnail{
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+}
+
+figure{
+	margin-bottom: 1.2rem;
+	text-align: center;
+}
+
+p {
+	line-height: 2;
+}
+
+#settings .content{
+	padding: 15px;
+}
+

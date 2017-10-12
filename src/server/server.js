@@ -107,9 +107,9 @@ function start(config){
 
   app.get('/settings', function(req,res){
       if (checkcredentials(config)){
-         res.render('settings', {title:"great, you have updated your config settings", config:"[secret]"});
+        res.redirect("/login");
       }else{
-        res.render('settings', {title:"Nearly there - you just need set your github settings", config:JSON.stringify(config.github || {},null,4)});
+        res.render('settings', {title:"Nearly there - you just need set your github settings", config:JSON.stringify(config.github || {},null,2)});
       }
   });
 
