@@ -20,7 +20,7 @@ export default class NetworkStatus extends Component {
 		
 		const style ={
 			position: 'absolute',
-			top: 0,
+			top: TOOLBAR_HEIGHT,
 			left: PALETTE_WIDTH, 
 			width: `calc(100vw - ${PALETTE_WIDTH}px)`,
 			height: `calc(100vh - ${TOOLBAR_HEIGHT}px)`,

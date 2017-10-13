@@ -247,28 +247,6 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	});
 }
 
-/*var _name = function(container){
-	if (container["Names"]){
-		return container["Names"][0].split("\/").slice(-1)[0];
-	}
-}
-
-var _addr = function(container){
-	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks.bridge){
-		return container.NetworkSettings.Networks.bridge.IPAddress || "";
-	}
-	return "";
-}
-
-var _ports = function(container){
-	return (container.Ports || []).reduce((acc, obj)=>{
-		if (obj.PublicPort){
-			acc.push(obj.PublicPort);
-		}
-		return acc;
-	},[]);
-}*/
-
 const _listContainers = function(options={}){
 	return new Promise((resolve,reject)=>{
 		docker.listContainers(options, function(err, containers) {
@@ -276,17 +254,6 @@ const _listContainers = function(options={}){
 				reject(containers);
 			}else{
 				resolve(containers);
-
-				/*.map((c)=>{
-					return {
-						id: c["Id"],
-						name: _name(c),  
-						status: c["Status"],
-						state: c["State"],
-						ip: _addr(c),
-						ports: _ports(c)
-					}
-				}));*/
 			}
 		});
 	});

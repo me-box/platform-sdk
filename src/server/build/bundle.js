@@ -1106,11 +1106,11 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			"has_downloads": false
 		}).set('Authorization', 'token ' + accessToken).set('Accept', 'application/json').end(function (err, data) {
 			if (err) {
-				console.log('error creating repo', err);
+				console.log("--> failed to create repo!");
 				reject(err);
 				return;
 			} else {
-
+				console.log("successfully created repo!");
 				var result = data.body;
 
 				//give github time it needs to set up repo
@@ -1138,9 +1138,6 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			content: new Buffer(JSON.stringify(flows, null, 4)).toString('base64'),
 			accessToken: accessToken
 		})]);
-	}, function (err) {
-		console.log(err);
-		res.status(500).send({ error: 'could not create repo' });
 	}).then(function (values) {
 
 		var repo = values[0];
@@ -1415,8 +1412,9 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
+		(0, _websocket.sendmessage)(user.username, "debug", { msg: "pulling latest base container" });
 		return _pull("tlodge/databox-sdk-red:latest").then(function () {
-
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: "finshed pulling latest base container" });
 			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
 			var data = {
@@ -1436,7 +1434,7 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 			reject("could not save to app store!");
 			return;
 		}).then(function (result) {
-
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: "successfully saved to app store" });
 			var path = user.username + '-tmp.tar.gz';
 			return (0, _utils.createTarFile)(dockerfile, flows, path);
 		}, function (err) {
@@ -1444,6 +1442,7 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 			reject("could not create tar file");
 			return;
 		}).then(function (tarfile) {
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: "successfully created tar file, creating docker image" });
 			var _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : user.username.toLowerCase() + '-' + manifest.name.toLowerCase();
 			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? _stripscheme(config.registry.URL) + '/' : "";
 			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname);
@@ -1553,8 +1552,6 @@ router.get('/flow', function (req, res) {
 
 router.post('/repo/new', function (req, res) {
 
-	console.log("in repo new");
-
 	var user = req.user;
 	var name = req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : 'databox.' + req.body.name.toLowerCase();
 	var description = req.body.description || "";
@@ -1639,6 +1636,8 @@ router.post('/publish', function (req, res) {
 	var description = manifest.description;
 	var commitmessage = 'publish commit';
 
+	(0, _websocket.sendmessage)(user.username, "debug", { msg: 'publishing manifest, ' + JSON.stringify(manifest, null, 4) });
+
 	console.log("publishing manifest", JSON.stringify(manifest, null, 4));
 	//first save the manifest and flows file - either create new repo or commit changes
 
@@ -1651,10 +1650,12 @@ router.post('/publish', function (req, res) {
 
 	var dockerfile = _generateDockerfile(libraries, req.config, manifest.name);
 
+	(0, _websocket.sendmessage)(user.username, "debug", { msg: 'dockerfile, ' + dockerfile });
+
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile) {
 		//commit
 
-		console.log("committing");
+		(0, _websocket.sendmessage)(user.username, "debug", { msg: 'commiting changes' });
 		var flowcontent = new Buffer(JSON.stringify(flows, null, 4)).toString('base64');
 		var manifestcontent = new Buffer(JSON.stringify(manifest, null, 4)).toString('base64');
 		var dockerfilecontent = new Buffer(dockerfile).toString('base64');
@@ -1664,6 +1665,7 @@ router.post('/publish', function (req, res) {
 		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then(function (data) {
 			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken)]);
 		}, function (err) {
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: 'error commiting ' + JSON.stringify(err) });
 			res.status(500).send({ error: err });
 		}).then(function (values) {
 			return Promise.all([Promise.resolve(values[0]), Promise.resolve(values[1].body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken)]);
@@ -1686,10 +1688,13 @@ router.post('/publish', function (req, res) {
 		//create a new repo!
 
 		var reponame = manifest.name.startsWith("databox.") ? manifest.name.toLowerCase() : 'databox.' + manifest.name.toLowerCase();
+		(0, _websocket.sendmessage)(user.username, "debug", { msg: 'creating a new repo ' + reponame });
 
 		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
 			return Promise.all([Promise.resolve(values), _publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)]);
 		}, function (err) {
+			console.log("error creating repo", err.response.text);
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: err.response.text });
 			res.status(500).send({ error: err });
 		}).then(function (values) {
 			var repodetails = values[0];
@@ -1996,28 +2001,6 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 	});
 };
 
-/*var _name = function(container){
-	if (container["Names"]){
-		return container["Names"][0].split("\/").slice(-1)[0];
-	}
-}
-
-var _addr = function(container){
-	if (container.NetworkSettings && container.NetworkSettings.Networks && container.NetworkSettings.Networks.bridge){
-		return container.NetworkSettings.Networks.bridge.IPAddress || "";
-	}
-	return "";
-}
-
-var _ports = function(container){
-	return (container.Ports || []).reduce((acc, obj)=>{
-		if (obj.PublicPort){
-			acc.push(obj.PublicPort);
-		}
-		return acc;
-	},[]);
-}*/
-
 var _listContainers = function _listContainers() {
 	var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -2027,17 +2010,6 @@ var _listContainers = function _listContainers() {
 				reject(containers);
 			} else {
 				resolve(containers);
-
-				/*.map((c)=>{
-    	return {
-    		id: c["Id"],
-    		name: _name(c),  
-    		status: c["Status"],
-    		state: c["State"],
-    		ip: _addr(c),
-    		ports: _ports(c)
-    	}
-    }));*/
 			}
 		});
 	});
