@@ -11,10 +11,16 @@
 
 #serverconsole .ts{
 	font-weight: bolder;
-	color:#E74C3C;
+	color:#009688;
 	margin-right: 10px;
 }
 
 #serverconsole.closed {
 	display:none;
+}
+
+#serverconsole ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
 }

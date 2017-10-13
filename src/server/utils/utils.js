@@ -166,36 +166,6 @@ export function createDockerImage(tarfile, tag){
 	});
 }
 
-
-export function uploadImageToRegistry(tag, registry){
-	console.log("** in upload image to registry **");
-
-	return new Promise((resolve, reject)=>{
-		if (registry && registry.trim() !== ""){
-			console.log("uploading to registry", registry);
-			console.log("getting image for", tag);
-			var image = docker.getImage(tag);
-
-
-			image.push({
-				registry : registry
-			}, function(err, data) {
-				data.pipe(process.stdout);
-				if (err){
-					console.log("error uploading to registry", err);
-					reject(err)
-					return;
-				}
-				resolve();
-			});
-		
-		}
-		else{
-			resolve();
-		}
-	});
-}
-
 export function stopAndRemoveContainer(name){
 	
 	return new Promise((resolve, reject)=>{
@@ -247,6 +217,8 @@ export function stopAndRemoveContainer(name){
 */
 export function createTestContainer(image, name, network){
 	console.log(`creating test container ${image}, name: ${name}`);
+	//#PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
+	//"9123/tcp":{},
 	return new Promise((resolve, reject)=>{
 		docker.createContainer(
 								{	Image: image, 
@@ -255,26 +227,25 @@ export function createTestContainer(image, name, network){
 									Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],  
 									//HostConfig: {NetworkMode: network},
 									Labels: {'user':`${name}`}, 
-									ExposedPorts: {"1880/tcp": {}, "9123/tcp":{}, "8096/tcp":{}}, 
-									PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
+									ExposedPorts: {"1880/tcp": {},  "8096/tcp":{}},
 									Cmd: ["npm", "start", "--", "--userDir", "/data"], 
 									name: `${name}-red`,
 								}, 
 			function (err, container) {
 				if (err){
-					console.log(err);
+					console.log("rejecting with error", err);
 					reject(err);
 				}else{
 			
-				container.start({}, function (err, data) {
-					if (err){
-						console.log("error starting container",err);
-						reject(err);
-					}else{
-						resolve(container);
-					}
-				});
-			}
+					container.start({}, function (err, data) {
+						if (err){
+							console.log("error starting container",err);
+							reject(err);
+						}else{
+							resolve(container);
+						}
+					});
+				}
 		});
 	});
 }

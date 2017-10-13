@@ -69,7 +69,7 @@ export default class ServerConsole extends Component {
 		
 		const style ={
 			left: PALETTE_WIDTH,
-			width: w-PALETTE_WIDTH-SIDEBAR_WIDTH,
+			width: w-PALETTE_WIDTH,
 			visible: visible,
 			height: this.state.currentHeight,
 			background: 'white',

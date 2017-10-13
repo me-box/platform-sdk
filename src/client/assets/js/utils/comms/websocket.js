@@ -11,6 +11,7 @@ export function init(appId, dispatch) {
   });
 
   socket.on("debug", function(data){
+    console.log(data.msg);
     dispatch(consoleActions.newMessage(data.msg));
   });
 };

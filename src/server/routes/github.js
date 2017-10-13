@@ -7,6 +7,7 @@ import {flatten, dedup, createTarFile, createDockerImage, uploadImageToRegistry,
 const router = express.Router();
 const agent = request.agent();
 const networks= ["databox_default", "bridge"];
+import {sendmessage} from '../utils/websocket';
 
 //TODO: check if container is tagged instead, as this is a less ambiguous way of retrieving the required container
 const _fetchDockerIP = function(containerName){
@@ -118,12 +119,12 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
      			if (err) {
-       				console.log('error creating repo', err);
+     				console.log("--> failed to create repo!");
        				reject(err);
-       				return;
+       				return
      			} 
      			else {
-     			 	
+     			 	console.log("successfully created repo!");
      			 	const result = data.body;
      			 	       				
      			 	//give github time it needs to set up repo
@@ -159,9 +160,6 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
 
 
    							]);
-	}, (err)=>{
-		console.log(err);
-		res.status(500).send({error:'could not create repo'});
 	}).then( (values)=>{
 		
 		const repo = values[0];
@@ -273,8 +271,8 @@ const _wait = (storeurl)=> {
 	
 	return new Promise((resolve,reject)=>{
 		function get () {
-			console.log(`calling http://${storeurl}`);
-			agent.get(`http://${storeurl}`, (error,response,body)=>{
+			console.log(`calling ${storeurl}`);
+			agent.get(`${storeurl}`, (error,response,body)=>{
                 if(error) {
                     console.log("[seeding manifest] waiting for appstore", error);
                      setTimeout(get,4000);
@@ -288,7 +286,7 @@ const _wait = (storeurl)=> {
 	});
 }
 
-const _saveToAppStore = function(config,manifest){
+const _saveToAppStore = function(config,manifest,username){
 	console.log("in save to app store with manifest", manifest);
 
 	//if no appstore url specified, assume a dockerised one running and retrieve docker ip
@@ -296,22 +294,26 @@ const _saveToAppStore = function(config,manifest){
 		console.log("fetching docker ip for databox_app-server");
 		return _fetchDockerIP("databox_app-server").then((ip)=>{
 			console.log("url to post to:", ip);
-			return _postToAppStore(`${ip}:8181`, manifest);
+			return _postToAppStore(`${ip}:8181`, manifest, username);
 		});
 	}
 	else{
-		const _url = config.appstore.URL.replace("http:\/\/", "");
-		return _postToAppStore(_url, manifest);
+		
+		return _postToAppStore(config.appstore.URL, manifest, username);
 	}
 }
 
-const _postToAppStore = function(storeurl, manifest){
+const _postToAppStore = function(storeurl, manifest, username){
+	const addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
+	const _url = addscheme ? `http://${storeurl}` : storeurl;
 
-	console.log("posting to app store", `${storeurl}/app/post`);
+	console.log("posting to app store", `${_url}/app/post`);
+	sendmessage(username, "debug", {msg:`posting to app store ${_url}/app/post`});
+
 	return _wait(storeurl).then(()=>{
 		return new Promise((resolve, reject)=>{
 			agent
-	  			.post(`http://${storeurl}/app/post`)
+	  			.post(`${_url}/app/post`)
 	  			.send(manifest)
 	  			.set('Accept', 'application/json')
 	  			.type('form')
@@ -408,7 +410,7 @@ const _generateManifest = function(config,user, reponame, app, packages, allowed
 
 const _pull = function(repo){
 	return new Promise((resolve, reject)=>{
-		docker.pull(repo, function (err, stream) {
+		docker.pull(repo, (err, stream)=>{
   			docker.modem.followProgress(stream, onFinished, onProgress);
 
 			function onFinished(err, output) {
@@ -426,13 +428,51 @@ const _pull = function(repo){
 	})
 }
 
+const _stripscheme = function(url){
+	return url.replace("http://", "").replace("https://","");
+}
+
+const _uploadImageToRegistry = function(tag, registry, username){
+
+	return new Promise((resolve, reject)=>{
+		if (registry && registry.trim() !== ""){
+			
+			var image = docker.getImage(tag);
+
+			image.push({registry : registry}, (err, stream)=>{
+				
+				docker.modem.followProgress(stream, onFinished, onProgress);
+
+				function onFinished(err, output) {
+					console.log("FINSIHED PUSHING IMAGE!");
+			   		if (err){
+			   			sendmessage(username, "debug", {msg:err.json.message});
+			   			reject(err);
+			   		}else{
+			   			sendmessage(username, "debug", {msg:"successfully pushed image!"});
+			   			resolve(output);
+			   		}
+				}
+
+				function onProgress(event) {
+					sendmessage(username, "debug", {msg:`[pushing]: ${JSON.stringify(event)}`});
+				}
+			});
+		
+		}
+		else{
+			resolve();
+		}
+	});
+}
 
 const _publish = function(config, user, manifest, flows, dockerfile){
 	
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
+		sendmessage(user.username, "debug", {msg:"pulling latest base container"});
 		return _pull("tlodge/databox-sdk-red:latest").then(()=>{
-
+			sendmessage(user.username, "debug", {msg:"finshed pulling latest base container"});
 			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
 			const data = {
@@ -446,33 +486,39 @@ const _publish = function(config, user, manifest, flows, dockerfile){
 								
 				queries: JSON.stringify(0),
 			}; 
-			return _saveToAppStore(config,data);
+			return _saveToAppStore(config,data,user.username);
 		
+		}, (err)=>{
+			sendmessage(user.username, "debug", {msg:"could not save to app store"});
+			reject("could not save to app store!");
+			return;
 		}).then((result)=>{
-			
+			sendmessage(user.username, "debug", {msg:"successfully saved to app store"});
 			const path = `${user.username}-tmp.tar.gz`;
 			return createTarFile(dockerfile, flows, path);
 		},(err)=>{
-			reject("could not save to app store!");
+			sendmessage(user.username, "debug", {msg:"could not create tar file!"});
+			reject("could not create tar file");
 			return;
 		}).then(function(tarfile){
+			sendmessage(user.username, "debug", {msg:"successfully created tar file, creating docker image"});
 			const _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : `${user.username.toLowerCase()}-${manifest.name.toLowerCase()}`;
-			const _tag 	   = config.registry.URL && config.registry.URL.trim() != "" ? `${config.registry.URL}/` : "";
+			const _tag 	   = config.registry.URL && config.registry.URL.trim() != "" ? `${_stripscheme(config.registry.URL)}/` : "";
 			return createDockerImage(tarfile, `${_tag}${_appname}`);	
 		},(err)=>{
-			reject("could not create tar file", err);
+			sendmessage(user.username, "debug", {msg:err.json.message});
+			reject("could not create docker image", err);
 			return;
 		}).then(function(tag){
-			console.log("tag is", tag);
-			return uploadImageToRegistry(tag, `${config.registry.URL}`);
+			sendmessage(user.username, "debug", {msg:`uploading to registry with tag ${tag}`});
+			return _uploadImageToRegistry(tag, `${config.registry.URL}`, user.username);
 		},(err)=>{
-			reject('could not create docker image');
-			return;
-		}).then(()=>{
-			resolve();
-		}, (err)=>{
+			sendmessage(user.username, "debug", {msg:err.json.message});
 			reject('could not upload to registry');
 			return;
+		}).then(()=>{
+			sendmessage(user.username, "debug", {msg:"successfully published"});
+			resolve();
 		});
 	});		
 }
@@ -583,8 +629,6 @@ router.get('/flow', function(req,res){
 
 router.post('/repo/new', function(req,res){
 	
-	console.log("in repo new");
-
 	var user 			= req.user;
 	var name 			= req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : `databox.${req.body.name.toLowerCase()}`;
 	var description 	= req.body.description || "";
@@ -680,6 +724,8 @@ router.post('/publish', function(req,res){
 	const description = manifest.description;
 	const commitmessage = 'publish commit';
 	
+	sendmessage(user.username, "debug", {msg:`publishing manifest, ${JSON.stringify(manifest,null,4)}`});
+
 	console.log("publishing manifest", JSON.stringify(manifest,null,4));
 	//first save the manifest and flows file - either create new repo or commit changes
 		
@@ -692,9 +738,11 @@ router.post('/publish', function(req,res){
 	
 	const dockerfile 		= _generateDockerfile(libraries, req.config, manifest.name);
 	
+	sendmessage(user.username, "debug", {msg:`dockerfile, ${dockerfile}`});
+
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile){ //commit
-		
-		console.log("committing");
+	
+		sendmessage(user.username, "debug", {msg:`commiting changes`});
 		const flowcontent 		= new Buffer(JSON.stringify(flows,null,4)).toString('base64');
 		const manifestcontent 	= new Buffer(JSON.stringify(manifest,null,4)).toString('base64');
 		const dockerfilecontent = new Buffer(dockerfile).toString('base64');
@@ -707,6 +755,7 @@ router.post('/publish', function(req,res){
 									_createCommit(req.config, user, repo.name, repo.sha.manifest,  'databox-manifest.json', manifestcontent, message, req.user.accessToken)
 							]);
 		}, (err)=>{
+			sendmessage(user.username, "debug", {msg:`error commiting ${JSON.stringify(err)}`});
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			return Promise.all([
@@ -736,12 +785,15 @@ router.post('/publish', function(req,res){
 		});
 		
 	}else{ //create a new repo!
-	 
+	 	
 	  	const reponame =  manifest.name.startsWith("databox.") ? manifest.name.toLowerCase() : `databox.${manifest.name.toLowerCase()}`;	
-		
+		sendmessage(user.username, "debug", {msg:`creating a new repo ${reponame}`});
+
 		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then((values)=>{	
 			return Promise.all([Promise.resolve(values), _publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)]);
 		},(err)=>{
+			console.log("error creating repo", err.response.text);
+			sendmessage(user.username, "debug", {msg:err.response.text});
 			res.status(500).send({error: err});
 		}).then((values)=>{
 			const repodetails = values[0];

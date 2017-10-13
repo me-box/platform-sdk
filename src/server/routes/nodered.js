@@ -73,7 +73,7 @@ const _postFlows = function(ip, port, data, username, attempts=0){
 			.type('json')
 			.end((err, result)=>{
 				if (err) {
-					console.log("eror posting new flows", err);
+					console.log("error posting new flows", err);
 					setTimeout(()=>{
 						attempts += 1;
 						console.log("retrying ", attempts);
@@ -126,6 +126,7 @@ const _pullContainer  = function(name, username){
 		return new Promise((resolve, reject)=>{
 			if (err){
 				console.log("error pulling container!", err);
+				sendmessage(username, "debug", {msg:err.json.message});
 				reject(err);
 				return;
 			}
@@ -203,6 +204,7 @@ var _startContainer = function(container, flows, username){
 		return _postFlows(ip, port, flows, username);
     }, (err)=>{
     	console.log(err);
+    	sendmessage(username, "debug", {msg:err.json.message});
     	throw err;
     });
 }
@@ -234,9 +236,14 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	}).then((image)=>{
 		console.log("creating test container!");
 		return createTestContainer(image, username, network)
+	},(err)=>{
+		console.log("error creating test container!!");
+		sendmessage(username, "debug", {msg:err.json.message});
 	}).then((container)=>{
 		console.log("successfully created container");
 		return _startContainer(container, flows, username);
+	}, (err)=>{
+		sendmessage(username, "debug", {msg:err.json.message});
 	});
 }
 
@@ -331,8 +338,12 @@ const _createContainerFromStandardImage = function(username, flows){
 
 				return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
 					return createTestContainer('tlodge/databox-red', username, network);
+				}, (err)=>{
+					sendmessage(username, "debug", {msg:err.json.message});
 				}).then((container)=>{
 					return _startContainer(container, flows, username);
+				},(err)=>{
+					sendmessage(username, "debug", {msg:err.json.message});
 				});
 			}
 			else{
@@ -346,6 +357,7 @@ const _createContainerFromStandardImage = function(username, flows){
 					return _restart(container).then((cdata)=>{
 						return _startContainer(container, flows, username);
 					}, (err)=>{
+						sendmessage(username, "debug", {msg:err.json.message});
 						return err;
 					});
 				}else{

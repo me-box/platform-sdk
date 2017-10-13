@@ -91,32 +91,6 @@ module.exports = require("minimist");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _dockerode = __webpack_require__(23);
-
-var _dockerode2 = _interopRequireDefault(_dockerode);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var docker = new _dockerode2.default({ socketPath: '/var/run/docker.sock' });
-exports.default = docker;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-module.exports = require("passport");
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.default = init;
 exports.sendmessage = sendmessage;
 
@@ -157,6 +131,32 @@ function sendmessage(room, event, message) {
 };
 
 /***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _dockerode = __webpack_require__(23);
+
+var _dockerode2 = _interopRequireDefault(_dockerode);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var docker = new _dockerode2.default({ socketPath: '/var/run/docker.sock' });
+exports.default = docker;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("passport");
+
+/***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
@@ -183,7 +183,6 @@ exports.flatten = flatten;
 exports.dedup = dedup;
 exports.createTarFile = createTarFile;
 exports.createDockerImage = createDockerImage;
-exports.uploadImageToRegistry = uploadImageToRegistry;
 exports.stopAndRemoveContainer = stopAndRemoveContainer;
 exports.createTestContainer = createTestContainer;
 exports.writeTempFile = writeTempFile;
@@ -201,7 +200,7 @@ var _tarStream = __webpack_require__(25);
 
 var _tarStream2 = _interopRequireDefault(_tarStream);
 
-var _docker = __webpack_require__(3);
+var _docker = __webpack_require__(4);
 
 var _docker2 = _interopRequireDefault(_docker);
 
@@ -366,32 +365,6 @@ function createDockerImage(tarfile, tag) {
 	});
 }
 
-function uploadImageToRegistry(tag, registry) {
-	console.log("** in upload image to registry **");
-
-	return new Promise(function (resolve, reject) {
-		if (registry && registry.trim() !== "") {
-			console.log("uploading to registry", registry);
-			console.log("getting image for", tag);
-			var image = _docker2.default.getImage(tag);
-
-			image.push({
-				registry: registry
-			}, function (err, data) {
-				data.pipe(process.stdout);
-				if (err) {
-					console.log("error uploading to registry", err);
-					reject(err);
-					return;
-				}
-				resolve();
-			});
-		} else {
-			resolve();
-		}
-	});
-}
-
 function stopAndRemoveContainer(name) {
 
 	return new Promise(function (resolve, reject) {
@@ -441,6 +414,8 @@ function stopAndRemoveContainer(name) {
 */
 function createTestContainer(image, name, network) {
 	console.log('creating test container ' + image + ', name: ' + name);
+	//#PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
+	//"9123/tcp":{},
 	return new Promise(function (resolve, reject) {
 		_docker2.default.createContainer({ Image: image,
 			PublishAllPorts: true,
@@ -448,13 +423,12 @@ function createTestContainer(image, name, network) {
 			Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],
 			//HostConfig: {NetworkMode: network},
 			Labels: { 'user': '' + name },
-			ExposedPorts: { "1880/tcp": {}, "9123/tcp": {}, "8096/tcp": {} },
-			PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] },
+			ExposedPorts: { "1880/tcp": {}, "8096/tcp": {} },
 			Cmd: ["npm", "start", "--", "--userDir", "/data"],
 			name: name + '-red'
 		}, function (err, container) {
 			if (err) {
-				console.log(err);
+				console.log("rejecting with error", err);
 				reject(err);
 			} else {
 
@@ -540,7 +514,7 @@ var _minimist = __webpack_require__(2);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
-var _websocket = __webpack_require__(5);
+var _websocket = __webpack_require__(3);
 
 var _websocket2 = _interopRequireDefault(_websocket);
 
@@ -843,7 +817,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = initPassport;
 
-var _passport = __webpack_require__(4);
+var _passport = __webpack_require__(5);
 
 var _passport2 = _interopRequireDefault(_passport);
 
@@ -967,7 +941,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _passport = __webpack_require__(4);
+var _passport = __webpack_require__(5);
 
 var _passport2 = _interopRequireDefault(_passport);
 
@@ -1019,11 +993,13 @@ var _path = __webpack_require__(7);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _docker = __webpack_require__(3);
+var _docker = __webpack_require__(4);
 
 var _docker2 = _interopRequireDefault(_docker);
 
 var _utils = __webpack_require__(8);
+
+var _websocket = __webpack_require__(3);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1032,6 +1008,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var router = _express2.default.Router();
 var agent = _superagent2.default.agent();
 var networks = ["databox_default", "bridge"];
+
 
 //TODO: check if container is tagged instead, as this is a less ambiguous way of retrieving the required container
 var _fetchDockerIP = function _fetchDockerIP(containerName) {
@@ -1258,8 +1235,8 @@ var _wait = function _wait(storeurl) {
 
 	return new Promise(function (resolve, reject) {
 		function get() {
-			console.log('calling http://' + storeurl);
-			agent.get('http://' + storeurl, function (error, response, body) {
+			console.log('calling ' + storeurl);
+			agent.get('' + storeurl, function (error, response, body) {
 				if (error) {
 					console.log("[seeding manifest] waiting for appstore", error);
 					setTimeout(get, 4000);
@@ -1273,7 +1250,7 @@ var _wait = function _wait(storeurl) {
 	});
 };
 
-var _saveToAppStore = function _saveToAppStore(config, manifest) {
+var _saveToAppStore = function _saveToAppStore(config, manifest, username) {
 	console.log("in save to app store with manifest", manifest);
 
 	//if no appstore url specified, assume a dockerised one running and retrieve docker ip
@@ -1281,20 +1258,24 @@ var _saveToAppStore = function _saveToAppStore(config, manifest) {
 		console.log("fetching docker ip for databox_app-server");
 		return _fetchDockerIP("databox_app-server").then(function (ip) {
 			console.log("url to post to:", ip);
-			return _postToAppStore(ip + ':8181', manifest);
+			return _postToAppStore(ip + ':8181', manifest, username);
 		});
 	} else {
-		var _url = config.appstore.URL.replace("http:\/\/", "");
-		return _postToAppStore(_url, manifest);
+
+		return _postToAppStore(config.appstore.URL, manifest, username);
 	}
 };
 
-var _postToAppStore = function _postToAppStore(storeurl, manifest) {
+var _postToAppStore = function _postToAppStore(storeurl, manifest, username) {
+	var addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
+	var _url = addscheme ? 'http://' + storeurl : storeurl;
 
-	console.log("posting to app store", storeurl + '/app/post');
+	console.log("posting to app store", _url + '/app/post');
+	(0, _websocket.sendmessage)(username, "debug", { msg: 'posting to app store ' + _url + '/app/post' });
+
 	return _wait(storeurl).then(function () {
 		return new Promise(function (resolve, reject) {
-			agent.post('http://' + storeurl + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
+			agent.post(_url + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
 				if (err) {
 					console.log("error posting to app store", err);
 					reject(err);
@@ -1394,6 +1375,42 @@ var _pull = function _pull(repo) {
 	});
 };
 
+var _stripscheme = function _stripscheme(url) {
+	return url.replace("http://", "").replace("https://", "");
+};
+
+var _uploadImageToRegistry = function _uploadImageToRegistry(tag, registry, username) {
+
+	return new Promise(function (resolve, reject) {
+		if (registry && registry.trim() !== "") {
+
+			var image = _docker2.default.getImage(tag);
+
+			image.push({ registry: registry }, function (err, stream) {
+
+				_docker2.default.modem.followProgress(stream, onFinished, onProgress);
+
+				function onFinished(err, output) {
+					console.log("FINSIHED PUSHING IMAGE!");
+					if (err) {
+						(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
+						reject(err);
+					} else {
+						(0, _websocket.sendmessage)(username, "debug", { msg: "successfully pushed image!" });
+						resolve(output);
+					}
+				}
+
+				function onProgress(event) {
+					(0, _websocket.sendmessage)(username, "debug", { msg: '[pushing]: ' + JSON.stringify(event) });
+				}
+			});
+		} else {
+			resolve();
+		}
+	});
+};
+
 var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 
 	return new Promise(function (resolve, reject) {
@@ -1413,32 +1430,37 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 
 				queries: JSON.stringify(0)
 			};
-			return _saveToAppStore(config, data);
+			return _saveToAppStore(config, data, user.username);
+		}, function (err) {
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: "could not save to app store" });
+			reject("could not save to app store!");
+			return;
 		}).then(function (result) {
 
 			var path = user.username + '-tmp.tar.gz';
 			return (0, _utils.createTarFile)(dockerfile, flows, path);
 		}, function (err) {
-			reject("could not save to app store!");
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: "could not create tar file!" });
+			reject("could not create tar file");
 			return;
 		}).then(function (tarfile) {
 			var _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : user.username.toLowerCase() + '-' + manifest.name.toLowerCase();
-			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? config.registry.URL + '/' : "";
+			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? _stripscheme(config.registry.URL) + '/' : "";
 			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname);
 		}, function (err) {
-			reject("could not create tar file", err);
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: err.json.message });
+			reject("could not create docker image", err);
 			return;
 		}).then(function (tag) {
-			console.log("tag is", tag);
-			return (0, _utils.uploadImageToRegistry)(tag, '' + config.registry.URL);
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: 'uploading to registry with tag ' + tag });
+			return _uploadImageToRegistry(tag, '' + config.registry.URL, user.username);
 		}, function (err) {
-			reject('could not create docker image');
-			return;
-		}).then(function () {
-			resolve();
-		}, function (err) {
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: err.json.message });
 			reject('could not upload to registry');
 			return;
+		}).then(function () {
+			(0, _websocket.sendmessage)(user.username, "debug", { msg: "successfully published" });
+			resolve();
 		});
 	});
 };
@@ -1720,11 +1742,11 @@ var _superagent = __webpack_require__(6);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
-var _docker = __webpack_require__(3);
+var _docker = __webpack_require__(4);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _websocket = __webpack_require__(5);
+var _websocket = __webpack_require__(3);
 
 var _utils = __webpack_require__(8);
 
@@ -1800,7 +1822,7 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 
 		_superagent2.default.post(ip + ':' + port + '/flows').send(flows).set('Accept', 'application/json').type('json').end(function (err, result) {
 			if (err) {
-				console.log("eror posting new flows", err);
+				console.log("error posting new flows", err);
 				setTimeout(function () {
 					attempts += 1;
 					console.log("retrying ", attempts);
@@ -1851,6 +1873,7 @@ var _pullContainer = function _pullContainer(name, username) {
 		return new Promise(function (resolve, reject) {
 			if (err) {
 				console.log("error pulling container!", err);
+				(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 				reject(err);
 				return;
 			}
@@ -1930,6 +1953,7 @@ var _startContainer = function _startContainer(container, flows, username) {
 		return _postFlows(ip, port, flows, username);
 	}, function (err) {
 		console.log(err);
+		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 		throw err;
 	});
 };
@@ -1961,9 +1985,14 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 	}).then(function (image) {
 		console.log("creating test container!");
 		return (0, _utils.createTestContainer)(image, username, network);
+	}, function (err) {
+		console.log("error creating test container!!");
+		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 	}).then(function (container) {
 		console.log("successfully created container");
 		return _startContainer(container, flows, username);
+	}, function (err) {
+		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 	});
 };
 
@@ -2059,8 +2088,12 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 
 			return _pullContainer("tlodge/databox-red:latest", username).then(function () {
 				return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
+			}, function (err) {
+				(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 			}).then(function (container) {
 				return _startContainer(container, flows, username);
+			}, function (err) {
+				(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 			});
 		} else {
 			var c = containers[0];
@@ -2073,6 +2106,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 				return _restart(container).then(function (cdata) {
 					return _startContainer(container, flows, username);
 				}, function (err) {
+					(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 					return err;
 				});
 			} else {

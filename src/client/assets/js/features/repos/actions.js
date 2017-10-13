@@ -9,7 +9,7 @@ import {actionConstants as nodeActionTypes} from "./constants";
 import {actionCreators as networkActions} from 'features/network';
 import {actionCreators as portActions} from 'features/ports';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
-import {actionCreators as tabActions} from 'features/workspace';
+import {actionCreators as workspaceActions} from 'features/workspace';
 import {actionCreators as appActions} from 'features/apps';
 
 let _room;
@@ -527,6 +527,7 @@ function publish(){
           }else{
            
             dispatch(networkActions.networkSuccess('successfully published app!'));
+              dispatch(workspaceActions.toggleVisible());
                 //dispatch(submissionSuccess(res.body));
             dispatch(receivedSHA(res.body.repo, res.body.sha));
             dispatch(requestRepos());
@@ -598,7 +599,7 @@ function fetchFlow(repo){
             const manifest  = res.body.manifest.content;
             
             //create all of the tabs
-            dispatch(tabActions.receiveTabs(flows.filter((node)=>{
+            dispatch(workspaceActions.receiveTabs(flows.filter((node)=>{
               return node.type === "tab"
             })));
             
@@ -621,6 +622,7 @@ function fetchFlow(repo){
 
             //create the manifest - this will be picked up by the workspace.
             dispatch(receiveManifest(manifest));
+
           }
         });   
 
@@ -668,7 +670,7 @@ function fetchExample(repoName, repoOwner){
               const manifest  = res.body.manifest.content;
               
             
-              dispatch(tabActions.receiveTabs(flows.filter((node)=>{
+              dispatch(workspaceActions.receiveTabs(flows.filter((node)=>{
                 return node.type === "tab"
               })));
             
