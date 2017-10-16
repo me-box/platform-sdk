@@ -97,8 +97,6 @@ function boxes (state, action){
             return {boxes: state.boxes};
 
         case MOUSE_UP:
-            //reconcile the positions of the boxes
-            console.log("--> SEEEN A MOUSE UP!!!!!!!!!!!!!");
            return layoutboxes(state);
 
         default:
@@ -122,8 +120,10 @@ export function reducer(state = {
 
                                         }, action) {
 
+    console.log("APP: seen action", action.type)
 	switch (action.type) {
 		
+
 		case INIT:
 			return Object.assign({}, state, {boxes: action.boxes||[[]]});
 			

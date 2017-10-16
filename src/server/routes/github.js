@@ -342,7 +342,7 @@ const _generateDockerfile = function(libraries, config, name){
 						`FROM tlodge/databox-sdk-red:latest`,
 						`ADD flows.json /data/flows.json`,
 						'LABEL databox.type="app"',
-						`LABEL databox.manifestURL="${config.appstore.URL}/${name}/databox-manifest.json"`,
+						`LABEL databox.manifestURL="${config.appstore.URL}/${name.toLowerCase()}/databox-manifest.json"`,
 	];	
 
 	const startcommands = [
@@ -511,7 +511,7 @@ const _publish = function(config, user, manifest, flows, dockerfile){
 			return;
 		}).then(function(tag){
 			sendmessage(user.username, "debug", {msg:`uploading to registry with tag ${tag}`});
-			return _uploadImageToRegistry(tag, `${config.registry.URL}`, user.username);
+			return _uploadImageToRegistry(tag, `${config.registry.URL}`, user.username.toLowerCase());
 		},(err)=>{
 			sendmessage(user.username, "debug", {msg:err.json.message});
 			reject('could not upload to registry');
@@ -727,8 +727,8 @@ router.post('/publish', function(req,res){
 	sendmessage(user.username, "debug", {msg:`publishing manifest, ${JSON.stringify(manifest,null,4)}`});
 
 	console.log("publishing manifest", JSON.stringify(manifest,null,4));
-	//first save the manifest and flows file - either create new repo or commit changes
-		
+	
+	//first save the manifest and flows file - either create new repo or commit changes	
 	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
 		if (node.type === "dbfunction"){
 			acc = [...acc, matchLibraries(node.func)];

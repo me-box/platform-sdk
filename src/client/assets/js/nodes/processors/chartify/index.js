@@ -43,6 +43,9 @@ const config = {
     subtype: {
       value: "bar"
     },
+    previousinputs: {
+      value: [],
+    }
   },
 
   schemakey: "subtype",

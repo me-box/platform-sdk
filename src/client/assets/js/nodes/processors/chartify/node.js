@@ -4,7 +4,22 @@ import Textfield from 'components/form/Textfield';
 import {configNode} from 'utils/ReactDecorators';
 
 
-       
+const _inputsChanged = (previous, inputs)=>{
+
+	if (!previous){
+		return true
+	}	
+
+	if (Object.keys(inputs).length != Object.keys(previous).length){
+		return true;
+	}
+
+	return Object.keys(inputs).reduce((acc, key)=>{
+		return acc && inputs[key] !== previous[key];
+	}, true);
+
+	
+}
       
 
 @configNode()
@@ -23,9 +38,24 @@ export default class Node extends React.Component {
 	   
 	   componentDidMount(){
 	   		//reset these as inputs may have changed. Could only do this if the inputs have changed, but then would need to keep track
-	   		//of previous version in reducer
-	   		this.props.updateNode("xtype", []);
-	   		this.props.updateNode("ytype", []);
+	   		//of previous version in reducer. 
+	   		const {values:{previousinputs}, inputs=[]} = this.props
+	   		
+	   		const _inputs = inputs.reduce((acc,i)=>{
+	   			acc[i.id] = i.subtype || null;
+	   			return acc;
+	   		},{});
+	   		
+	   		const changed = _inputsChanged(previousinputs, _inputs);
+
+	   		console.log("changed is", changed);
+
+	   		if (changed){
+	   			this.props.updateNode("xtype", []);
+	   			this.props.updateNode("ytype", []);
+	   		}
+	   		
+	   		this.props.updateNode("previousinputs", _inputs);
 	   }
 
 	   renderBarChartOptions(){
@@ -255,7 +285,7 @@ export default class Node extends React.Component {
 										</div>
 										<div>
 											<div className="centered" style={{lineHeight:"1.8em", padding:7}}isC>
-												use this to add labels along the outer axis of the gauge.  The format required is <i>label:number,label:number</i> where <strong>label</strong> is the word you would like displayed and <strong>number</strong> is the maximum value for which the label applies.  For example on a gauge with values from 0 to 100, to create 4 equal width labels you might write <i>low:25,medium:50,high:75,massive:100</i> Values from 0-25 will be marked 'low', 25-50 will be marked 'medium', 50-75 will be marked 'high' and 75 to 100 will be marked 'massive'.	 	 
+												use this to add labels along the outer axis of the gauge.  The format required is <i>label:number,label:number</i> where <strong>label</strong> is the word you would like displayed and <strong>number</strong> is the maximum value for which the label applies.  For example on a gauge with values from 0 to 100, to create 4 equal width labels you might write <i>low:25,medium:50,high:75,massive:100</i>	 	 
 											</div>
 										</div>
 									</div>
@@ -291,7 +321,7 @@ export default class Node extends React.Component {
           	}).map((input,i)=>{
           	
           		const name = input.type;
-          		
+
           		let schema = {};
           	
           		const {schema:{output}} = input;
@@ -365,7 +395,7 @@ export default class Node extends React.Component {
 	   renderSection(section){
 	   		return 	<div>
 		  				<div className="centered" style={{color:'white', background:'#445662'}}>
-		  					<div className="centered" style={{color:'white', background:'#445662', height: 40, lineHeight: "40px"}}>
+		  					<div className="centered" style={{color:'white', background:'#445662', height: 30, lineHeight: "30px"}}>
 		  						{section}
 		  					</div>
 		  				</div>

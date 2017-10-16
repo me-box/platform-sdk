@@ -10,9 +10,9 @@ router.get('/logout',  function(req,res){
 	//if (req.user){
 	//	User.findOne({ username: req.user.username}).remove().exec();
 	//}
-	
+	console.log("logging out!");
 	req.logout();
-
+	res.redirect('/');
 });
   
 router.get('/github', passport.authenticate('github', { scope: 'public_repo' }));

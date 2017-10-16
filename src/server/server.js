@@ -11,14 +11,12 @@ import init from './utils/websocket';
 const RedisStore 	 = connectredis(expressSession);
 const argv = minimist(process.argv.slice(2));
 
-
 const PORT = argv.port || 8086;
 const dev = argv.dev || false;
 console.log("set port to", PORT);
 console.log("dev mode ", dev);
 
 fetch({dev:dev}).then((config)=>{
-  console.log(config);
   start(config);
 }, (err)=>{
   console.log("error reading config!", err);
@@ -67,7 +65,7 @@ function start(config){
   app.engine('html', require('ejs').renderFile);
 
   const server = http.createServer(app);
-  init(server);
+  
   const auth = (req, res, next) => {
 
     if (req.isAuthenticated()){
@@ -84,6 +82,8 @@ function start(config){
     addroutes(app,auth);
   }
 
+  init(server, RedisStore, config.secret);
+  
   app.get('/login', function(req,res){
     res.render('login');  
   });

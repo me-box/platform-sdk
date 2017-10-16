@@ -5,6 +5,9 @@
 	overflow: auto;
 	boxShadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);
 	border: 1px solid #d3d3d3;	
+	max-height: calc(100vh - 84px);
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 .sdktoolbar {
@@ -46,7 +49,7 @@
 	grid-column: 2 / span 4;
 	background: #3f51b5;
 	color: white;
-	line-height: 64px;
+	line-height: 30px;
 	padding-left: 7px;
 	box-sizing: border-box;
 }

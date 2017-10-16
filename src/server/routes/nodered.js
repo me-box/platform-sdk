@@ -118,7 +118,6 @@ const _waitForStart = function(container, username){
 	});
 }
 
-
 const _pullContainer  = function(name, username){
 	console.log("pulling container", name);
 

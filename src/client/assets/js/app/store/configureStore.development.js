@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { persistState } from 'redux-devtools';
 import promiseMiddleware from 'redux-promise';
 import thunk from 'redux-thunk';
-import createLogger from 'redux-logger';
+//import createLogger from 'redux-logger';
 
 import rootReducers from '../reducer';
 import DevTools from '../DevTools';

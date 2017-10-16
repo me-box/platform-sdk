@@ -93,8 +93,7 @@ export function test(){
 
 		//don't bother deploying if there are no outputs that can be tested (i.e. node.type == "debugger" or node.type === "app"
 	
-		if (nodesWithTestOutputs(nodes).length <= 0){
-			
+		if (nodesWithTestOutputs(nodes).nodes.length <= 0){
 			return;
 		}
 		
@@ -199,9 +198,9 @@ const username = (state)=> {
 	return state.repos.currentuser;
 }
 
-const nodes = (state) => {
+const nodestotest = (state) => {
 	return nodesWithTestOutputs(Object.keys(state.nodes.nodesById).map(k=>state.nodes.nodesById[k]));
-}
+}	
 
 const testurl = (state) => state[NAME].testurl;
 
@@ -210,7 +209,7 @@ const _deploying = (state) => state[NAME].deploying;
 const _deployError = (state)=> state[NAME].deployError;
 
 export const selector = createStructuredSelector({
-	nodes,
+	nodestotest,
 	visible,
 	testurl,
 	username,

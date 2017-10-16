@@ -109,7 +109,6 @@ export default class Node extends Component {
     _nodeMouseUp(id, e){
         
         if (this.props.configuringId == null){
-            console.log("STOPPING PROPAGATION!");
             e.stopPropagation();
         }
         //e.preventDefault();

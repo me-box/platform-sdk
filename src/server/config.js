@@ -3,18 +3,18 @@ import fs from 'fs';
 export function fetch(options={}){
 
    return new Promise((resolve, reject)=>{
-        console.log("ok am here");
+        
         fs.readFile("./conf/settings.json", 'utf8', function(err, data){
             if (err){
                 return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(),null,4)).then((settings)=>{
-                    console.log("returning", settings);
+                   
                     resolve(settings);
                     return;
                 });
             }
             try{
                 const settings = JSON.parse(data);
-                console.log(settings);
+               
                 resolve(settings);
                 return;
             }catch(err){

@@ -10,7 +10,7 @@ import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/mode/json';
-import 'brace/theme/github';
+//import 'brace/theme/github';
 import {configNode} from 'utils/ReactDecorators';
 
 @configNode()

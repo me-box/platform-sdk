@@ -15,7 +15,6 @@ class Dialogue extends React.Component {
 			top: NODE_EDITOR_PADDING, 
 			left: NODE_EDITOR_PADDING, 
 			background: 'white',
-			overflow: 'auto',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
 			border: '1px solid #d3d3d3',
 		}

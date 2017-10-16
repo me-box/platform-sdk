@@ -1,10 +1,11 @@
 import socket from 'socket.io';
+
 let ns;
 
-export default function init(server){
+export default function init(server, store, secret){
 
     const io = socket.listen(server);
-  
+
     ns = io.of('/databox');
 
     ns.on('connection', function(socket){

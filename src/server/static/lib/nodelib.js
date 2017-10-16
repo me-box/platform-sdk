@@ -5038,7 +5038,6 @@ var Dialogue = function (_React$Component) {
 				top: _ViewConstants.NODE_EDITOR_PADDING,
 				left: _ViewConstants.NODE_EDITOR_PADDING,
 				background: 'white',
-				overflow: 'auto',
 				boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
 				border: '1px solid #d3d3d3'
 			};
@@ -5174,7 +5173,7 @@ exports = module.exports = __webpack_require__(8)(undefined);
 
 
 // module
-exports.push([module.i, ".sdkdialogue {\n  position: absolute;\n  background: white;\n  z-index: 20;\n  overflow: auto;\n  boxShadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);\n  border: 1px solid #d3d3d3; }\n\n.sdktoolbar {\n  height: 40px;\n  background: '#424242'; }\n\n.sdkdialogue select,\n.sdkdialogue input[type=\"text\"] {\n  width: 100%;\n  height: inherit;\n  border-radius: 0;\n  margin: 0px;\n  height: 40px;\n  border: none;\n  padding: 0px 0px 0px 10px;\n  box-shadow: none; }\n\n.sdkdialogue input[type=\"text\"].md-text-field {\n  width: 100px; }\n\n.sdkdialogue textarea {\n  width: 100%;\n  border-radius: 0;\n  padding: 0px 0px 0px 10px;\n  margin: 0;\n  height: 70px;\n  border: none; }\n", ""]);
+exports.push([module.i, ".sdkdialogue {\n  position: absolute;\n  background: white;\n  z-index: 20;\n  overflow: auto;\n  boxShadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09);\n  border: 1px solid #d3d3d3;\n  max-height: calc(100vh - 84px);\n  overflow-y: scroll;\n  overflow-x: hidden; }\n\n.sdktoolbar {\n  height: 40px;\n  background: '#424242'; }\n\n.sdkdialogue select,\n.sdkdialogue input[type=\"text\"] {\n  width: 100%;\n  height: inherit;\n  border-radius: 0;\n  margin: 0px;\n  height: 40px;\n  border: none;\n  padding: 0px 0px 0px 10px;\n  box-shadow: none; }\n\n.sdkdialogue input[type=\"text\"].md-text-field {\n  width: 100px; }\n\n.sdkdialogue textarea {\n  width: 100%;\n  border-radius: 0;\n  padding: 0px 0px 0px 10px;\n  margin: 0;\n  height: 70px;\n  border: none; }\n", ""]);
 
 // exports
 
@@ -5388,7 +5387,7 @@ exports = module.exports = __webpack_require__(8)(undefined);
 
 
 // module
-exports.push([module.i, ".sdkdialogue .toolbar, .toolbar {\n  width: 100%;\n  height: 64px;\n  background: #303030;\n  color: white; }\n", ""]);
+exports.push([module.i, ".sdkdialogue .toolbar, .toolbar {\n  width: 100%;\n  height: 30px;\n  background: #303030;\n  color: white; }\n", ""]);
 
 // exports
 

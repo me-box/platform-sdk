@@ -23,7 +23,7 @@ export default class TestManager extends Component {
 
 	render() {
 		
-		const {nodes, visible, testurl,username, deploying, deployError} = this.props;
+		const {nodestotest:{nodes,error,warning}, visible, testurl,username, deploying, deployError} = this.props;
 	
 		const iconstyle = {
             alignSelf: 'center',
@@ -66,14 +66,20 @@ export default class TestManager extends Component {
 			padding: 10,
 		}
 		
-		let message = ""
-		if (links.length == 0){
+		let message = "";
+
+		const _warning = warning.join(",");
+
+		if (error.length > 0){
+			message = error.join(",");
+		}
+		else if (links.length == 0){
 			message = "This flow does not have any outputs that can be viewed in test mode, currently the only supported outputs for testing are <strong>debug, app, bulbs and printer</strong>";
 		}
 		else if (links.length == 1){
-			message = "This flow has one output that can be viewed in test mode.  Click on it to take a look";
+			message = `This flow has one output that can be viewed in test mode.  Click on it to take a look. ${warning}`;
 		}else{
-			message = `This flow has ${links.length} flows with outputs that can be viewed in test mode.  Click on any one to take a look`; 
+			message = `This flow has ${links.length} flows with outputs that can be viewed in test mode.  Click on any one to take a look. ${warning}`; 
 		}
 
 		const close = <Button icon onClick={this.props.actions.toggleVisible}>close</Button>;
@@ -102,7 +108,7 @@ export default class TestManager extends Component {
 									</div>
 								</div>
 							</div>
-							{links}
+							{error.length <= 0 && links}
 						</div> 
 					</div>     
 	        	</Drawer>

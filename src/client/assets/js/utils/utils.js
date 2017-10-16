@@ -141,13 +141,27 @@ export function  nodesWithTestOutputs(nodes){
 		
 		const typesOfInterest = ["debugger", "app", "pipstaprint", "bulbsout"];
 		const seen = {};
-		return nodes.reduce((acc, node)=>{
-			if (!seen[node.type] && typesOfInterest.indexOf(node.type) != -1){
+		const warning  = [];
+		const error = [];
+
+		const _nodes =  nodes.reduce((acc, node)=>{
+			if (typesOfInterest.indexOf(node.type) != -1){
 				acc.push(node);
-				seen[node.type]=true;
+				seen[node.type]= (seen[node.type] || 0) + 1;
 			}
 			return acc;
 		},[])
+
+		
+
+		if (seen.app > 1){
+			error.push("You cannot create a databox app with more than one 'app' output.  If you want to display multiple data types you can feed them into a single app node and they adjust the layout (by double clicking the app node)")
+		}
+		if (seen.debugger > 1){
+			warning.push("You have multiple debugger nodes.  That's fine, but the test output will show logs from ALL debugger nodes")
+		}
+
+		return {nodes:_nodes, warning, error}
 }
 
 export function isFunction(obj){
