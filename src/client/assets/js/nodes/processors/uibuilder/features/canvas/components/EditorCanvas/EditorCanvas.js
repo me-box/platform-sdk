@@ -51,7 +51,6 @@ const canvasTarget = {
     const {template,children} = monitor.getItem();
     const {x,y}   = monitor.getSourceClientOffset()
     const {[NAME]:{offset}, w, h, od} = props;
-    
     const {ow, oh} = _originaldimensions({w,h}, od);
 
     if (template !== "group"){
@@ -86,7 +85,12 @@ class EditorCanvas extends Component {
 
 
   componentDidMount() {
-    this._handleResize();
+    //this._handleResize();
+    if (this.rootNode){
+        const {left, top} = this.rootNode.getBoundingClientRect();
+        this.setOffset(left,top-40); // name field=40
+    }
+
     window.addEventListener('resize', this._handleResize);
   }
 
@@ -95,7 +99,7 @@ class EditorCanvas extends Component {
   }
 
   _handleResize(){
-     
+   
       const input = this.rootNode;
       const {[NAME]:{templates},w,h, od} = this.props;
 
@@ -104,7 +108,7 @@ class EditorCanvas extends Component {
         this.setOffset(left,top-40); // name field=40
       }
       
-      if (templates.length <= 0 || od===null){
+      if ( templates.length <= 0 || od===null){
         const dim = _canvasdim(w,h,this.state.aspect);
         this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
       }

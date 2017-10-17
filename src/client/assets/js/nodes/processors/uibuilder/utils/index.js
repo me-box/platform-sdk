@@ -603,8 +603,9 @@ export function enumForPropery(type, property){
 			
 	return [];
 }
+
 export function typeForProperty(type, property){
-	console.log("looking up", type, " and property", property);
+	
 	const schema = schemaLookup(type);
 	
 	if (schema){

@@ -20,8 +20,8 @@ export default class Node extends Component {
 
   componentDidMount(){
       const {dispatch, node:{id}, values={}} = this.props;
-      const {templates={}, mappings={}, transformers={}} = values;
-      dispatch(templateActions.init(id, templates));
+      const {templates={}, templatesById={}, mappings={}, transformers={}} = values;
+      dispatch(templateActions.init(id, templates, templatesById));
       dispatch(mapperActions.init(id, mappings, transformers));
   }
   

@@ -48,35 +48,9 @@ const initialState = {
   }
 };
 
-
-
-/*
-example templates : ["xyza"],
-
-example templatesforID
-{
-  xyza: {
-      id: xyz,
-      type: "group",
-      children : ["xyzab", "xyzb"],
-  },
-
-  xyzab: {
-      id: "xyzab",
-      type: "circle",
-      cx: 69,
-      ...
-  },
-
-  xyzb: {
-      id: "xyzb",
-      type: "circle",
-      cx: 67,
-      ...
-  },
-
-}*/
-
+const _isNumeric = (n)=>{
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 const _updateTemplateStyle = (state, action)=>{
   const path = action.path;
@@ -86,13 +60,23 @@ const _updateTemplateStyle = (state, action)=>{
   }
   
   const id = path[path.length-1];
-  const template = Object.assign({},state.templatesById[id]);
-  template.style = Object.assign({}, template.style, {[action.property]:action.value});
-  return Object.assign({}, state.templatesById, {[template.id]: template});
+
+  const template = {
+                      ...state.templatesById[id],
+                      style : {
+                          ...state.templatesById[id].style,
+                          [action.property]:action.value
+                      }
+  }
+  
+  return {
+            ...state.templatesById, 
+            [template.id]: template
+  }
 }
 
 const _validNumber = (value)=>{
-    return !(isNaN(Number(value)) || value <= 0 || value.trim() === "")
+    return !(isNaN(Number(value)) || value <= 0 || `${value}`.trim() === "")
 }
 
 const _updateTemplateAttribute = (state, action)=>{
@@ -114,22 +98,34 @@ const _updateTemplateAttribute = (state, action)=>{
   /* special case when attribute is width or height and type is group as we need to adjust children too*/
   if (state.templatesById[id].type === "group" && ["width", "height"].indexOf(action.property) != -1){
       
-      if (!_validNumber(action.value))
+
+      if (!_isNumeric(action.value)){
           return state.templatesById;
+      }
 
       const sf = action.value / state.templatesById[id][action.property];
-     
+      
       if (sf == 0){
-        return state.templatesById;
+          return state.templatesById;
       }
 
       const height = state.templatesById[id]["height"] * sf;
       const width  = state.templatesById[id]["width"] * sf;
-      const template = Object.assign({}, state.templatesById[id], {height, width});
-      return Object.assign({}, state.templatesById, {[template.id]:template, ..._expandChildren(state.templatesById, template.children, sf)});
+
+      const template = {...state.templatesById[id], ...{height, width}};
+      
+      return {
+          ...state.templatesById, 
+          [template.id]:template, 
+          ..._expandChildren(state.templatesById, template.children, sf)
+      }
+
   }else{
       const template = Object.assign({}, state.templatesById[id], {[action.property]:action.value});
-      return Object.assign({}, state.templatesById, {[template.id]: template});
+      return {
+        ...state.templatesById, 
+        [template.id]: template
+      };
   }
 }
 
@@ -156,17 +152,21 @@ const _moveTemplate = (template, x, y)=>{
       case "group":
       case "rect":
       case "text":
-        return Object.assign({}, template, {x,y});
+        return {
+                  ...template, 
+                  x:x,
+                  y:y
+        }
       
       case "ellipse":
       case "circle":
 
-      
-       
-
-        return Object.assign({}, template, {cx:x,cy:y});
+        return {
+                  ...template, 
+                  cx:x,
+                  cy:y
+        };
   }
-  
   
   return template;
 }
@@ -207,38 +207,45 @@ const _scaleTemplate = (templates, id, sf)=>{
     switch (template.type){
       
       case "circle":
-        return Object.assign({}, template, {
-                                              r:template.r*sf,
-                                              cx: template.cx*sf,
-                                              cy: template.cy*sf,
-                                            });
+        return {
+                  ...template, 
+                  r:  template.r*sf,
+                  cx: template.cx*sf,
+                  cy: template.cy*sf,
+        }
 
       case "ellipse":
-        return Object.assign({}, template, {
-                                              rx:template.rx*sf, 
-                                              ry:template.ry*sf,  
-                                              cx: template.cx*sf,
-                                              cy: template.cy*sf,
-                                          });
+        return {
+                  ...template, 
+                  rx: template.rx*sf, 
+                  ry: template.ry*sf,  
+                  cx: template.cx*sf,
+                  cy: template.cy*sf,
+        }
 
       case "rect":
-        return Object.assign({}, template, {
-                                                x: template.x*sf,
-                                                y: template.y*sf,
-                                                width:template.width*sf, 
-                                                height:template.height*sf
-                                            });
+        return {
+                  ...template, 
+                  x: template.x*sf,
+                  y: template.y*sf,
+                  width:template.width*sf, 
+                  height:template.height*sf
+        }
 
       case "path":
-        return Object.assign({}, template, {d: _scalePath(sf,template.d)});
+        return {
+                  ...template, 
+                  d: _scalePath(sf,template.d)
+        }
 
       case "group":
       
-        return Object.assign({}, template, {
-                                                width: template.width * sf,
-                                                height: template.height * sf,
+        return {
+                  ...template, 
+                  width: template.width * sf,
+                  height: template.height * sf,
                                                
-                                            })
+        }
     }
 }
 
@@ -248,7 +255,7 @@ const _theta =(cx,cy,x,y)=>{
   const b = x  - cx;
   const theta = Math.atan(b/a);
 
-  return y <= cy ? theta * (180/Math.PI) : 180 + (theta * (180/Math.PI));
+  return Math.round(y <= cy ? theta * (180/Math.PI) : 180 + (theta * (180/Math.PI)));
 } 
 
 
@@ -261,40 +268,39 @@ const _rotateTemplate = (template, x, y)=>{
             cy = template.y + template.height/2;
             cx = template.x + template.width/2;
             angle = _theta(cx,cy,x,y)
-            return Object.assign({}, template, {
-                transform: `rotate(${angle}, ${template.width/2}, ${template.height/2})`
-            });
-            break;
-        
+            
+            return {
+                      ...template, 
+                      transform: `rotate(${angle}, ${Math.round(template.width/2)}, ${Math.round(template.height/2)})`
+            };
 
+        
         case "rect":
             cy = template.y + template.height/2;
             cx = template.x + template.width/2;
             angle = _theta(cx,cy,x,y)
-             return Object.assign({}, template, {
-                transform: `rotate(${angle}, ${template.width/2}, ${template.height/2})`
-            });
-            break;
+            
+            return {
+                      ...template, 
+                      transform: `rotate(${angle}, ${Math,round(template.width/2)}, ${Math.round(template.height/2)})`
+            };
+            
 
         case "ellipse":
         case "circle":
             cx = 0;//template.cx;
             cy = 0;//template.cy;
             angle = _theta(template.cx,template.cy,x,y);
-            return Object.assign({}, template, {
-                transform: `rotate(${angle}, ${0}, ${0})`
-            });
-            break;
+            return { 
+                      ...template, 
+                      transform: `rotate(${angle}, ${0}, ${0})`
+            };
 
         default:
             angle = 0;
             cx = 0;
             cy = 0;
     }
-
-     return Object.assign({}, template, {
-                transform: `rotate(${angle}, ${cx}, ${cy})`
-            });
 }
 
 const _expandTemplate = (template, x, y)=>{
@@ -304,52 +310,66 @@ const _expandTemplate = (template, x, y)=>{
       case "circle":
         const dx = x - template.cx;
         const dy = y - template.cy;
-        const r  = Math.sqrt((dx*dx) + (dy*dy)); 
-        return Object.assign({}, template, {r});
+        const r  = Math.round(Math.sqrt((dx*dx) + (dy*dy))); 
+        return {...template, r:r};
 
       case "ellipse":
-        const rx = Math.abs(x - template.cx);
-        const ry = Math.abs(y - template.cy); 
-        return Object.assign({}, template, {rx, ry});
+        const rx = Math.round(Math.abs(x - template.cx));
+        const ry = Math.round(Math.abs(y - template.cy));
+
+        return  {
+                  ...template, 
+                  rx:rx,
+                  ry:ty
+                };
       
       case "rect":
 
-        const right   = Math.abs(x - template.x) >  Math.abs(x- (template.x + template.width));
-        const bottom  = Math.abs(y - template.y) > Math.abs(y - (template.y + template.height));
+        const right   = Math.round(Math.abs(x - template.x) > Math.abs(x - (template.x + template.width)));
+        const bottom  = Math.round(Math.abs(y - template.y) > Math.abs(y - (template.y + template.height)));
 
         if (right && bottom){
-            return Object.assign({}, template, {width:x-template.x,height:y-template.y})
+            return  {
+                        ...template, 
+                        width:x-template.x,
+                        height:y-template.y
+            }
         }
+
         if (right && !bottom){
-            return Object.assign({}, template, {
-                                                  width:x-template.x, 
-                                                  y:y,
-                                                  height: template.height + template.y-y
-                                                });
+            return  {
+                      ...template, 
+                      width:x-template.x, 
+                      y:y,
+                      height: template.height + template.y-y
+            }
         }
         if (!right && bottom){
-             return Object.assign({}, template, {
-                                                    x: x,
-                                                    width: template.width + template.x-x,
-                                                    height:y-template.y})
+            return {
+                      ...template, 
+                      x: x,
+                      width: template.width + template.x-x,
+                      height:y-template.y
+            }
         }
 
         if (!right && !bottom){
-          return Object.assign({}, template, {
-                                                  x: x,
-                                                  y: y,
-                                                  width: template.width + template.x-x,
-                                                  height: template.height + template.y-y
-                                              });
+          return {
+                    ...template, 
+                    x: x,
+                    y: y,
+                    width: template.width + template.x-x,
+                    height: template.height + template.y-y
+          }
           
         }
 
       case "path":
        
-        return Object.assign({}, template, {
-                                                d: _expandPath(x,y,template)
-
-                                            });
+        return {
+                  ...template, 
+                  d: _expandPath(x,y,template)
+        }
 
       case "group":
          const nw = x-template.x;
@@ -358,10 +378,13 @@ const _expandTemplate = (template, x, y)=>{
          
          if (sf > 0){
             const attrs = {
-              width: sf * template.width,
-              height: sf * template.height,
+              width:  Math.round(sf * template.width),
+              height: Math.round(sf * template.height),
             }
-            return Object.assign({}, template, {...attrs})
+            return {
+                      ...template, 
+                      ...attrs
+                    }
         }
 
         return template;
@@ -431,14 +454,20 @@ const _expandTemplates = (state, action)=>{
     const  _t = _expandTemplate(_tmpl, action.x, action.y);
 
     if (_tmpl.type != "group"){
-      return Object.assign({}, state.templatesById, {[_t.id]:_t})
+      return { 
+                ...state.templatesById, 
+                [_t.id]:_t
+      }
     } 
     else{
       const nw = action.x-_tmpl.x;
       const nh = action.y-_tmpl.y;
       if (nw > 0 && nh > 0){
         const sf = Math.max(nw/_tmpl.width, nh/_tmpl.height);
-        return Object.assign({}, state.templatesById, {[_t.id]:_t, ..._expandChildren(state.templatesById, _tmpl.children, sf)});
+        return {
+                  ...state.templatesById, 
+                  [_t.id]:_t, ..._expandChildren(state.templatesById, _tmpl.children, sf)
+        }
       } 
     } 
 
@@ -455,21 +484,28 @@ const _modifyTemplate = (state, action)=>{
         //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
         if (_tmpl){
           if (state.expanding){
-            return Object.assign({}, state.templatesById, _expandTemplates(state, action));
+              return {
+                ...state.templatesById, 
+                ..._expandTemplates(state, action)
+              }
           }
 
           if (state.dragging){
-            return Object.assign({}, state.templatesById, {[id] : _moveTemplate(_tmpl, action.x-state.dx, action.y-state.dy)});       
+            return {
+                      ...state.templatesById, 
+                      [id] : _moveTemplate(_tmpl, action.x-state.dx, action.y-state.dy)
+            };       
           }
 
            if (state.rotating){
-            return Object.assign({}, state.templatesById, {[id] : _rotateTemplate(_tmpl, action.x, action.y)});
+            return {
+                      ...state.templatesById, 
+                      [id] : _rotateTemplate(_tmpl, action.x, action.y)
+            }
           }
         }
     }
-
     return state.templatesById;
-
 }
 
 
@@ -525,15 +561,29 @@ export default function reducer(state = initialState, action={}) {
   switch (action.type) {
    
     case INIT:
+      
 
-      return Object.assign({}, state, {
-          templates: _parenttemplates(action.templates),
-          templatesById: action.templates,
-      });
+      //handle old case (can remove shortly!)
+      if (!action.templatesById || Object.keys(action.templatesById).length === 0){
+        return {
+                  ...state, 
+                  templates: _parenttemplates(action.templates),
+                  templatesById: action.templates,
+        };
+      }
+
+      return {
+                ...state, 
+                templates: action.templates,
+                templatesById: action.templatesById,
+      };
     
 
     case SET_OFFSET:  
-      return  Object.assign({}, state, {offset:{left:action.left, top:action.top}});
+      return  {
+                ...state, 
+                offset:{left:action.left, top:action.top}
+      }
     
     case MOUSE_MOVE: 
       _x = action.x;
@@ -557,75 +607,88 @@ export default function reducer(state = initialState, action={}) {
       if (_tmpl){ // have to do this check for dev mode to work
         const {x,y} = _templatecoords(_tmpl);
 
-        return Object.assign({}, state,  {
-                                              selected: action.path,
-                                              dragging: !state.expanding && !state.rotating,
-                                              dx: _x-x,
-                                              dy: _y-y,
-                                          });
+        return {
+                  ...state,  
+                  selected: action.path,
+                  dragging: !state.expanding && !state.rotating,
+                  dx: Math.round(_x-x),
+                  dy: Math.round(_y-y),
+        };
       }
 
-        //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
-        //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
+      //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
+      //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
       return state;
 
 
     case MOUSE_UP:
-       return Object.assign({}, state,  {
-                                            selected: state.expanding || state.rotating ? state.selected: null,
-                                            dragging: false,
-                                            expanding: false,
-                                            rotating: false,
-                                        });
+      return {
+                ...state,
+                selected: state.expanding || state.rotating ? state.selected: null,
+                dragging: false,
+                expanding: false,
+                rotating: false,
+      }
     
     case TEMPLATE_DROPPED:
       
       const template = createTemplate(action.template, action.x, action.y);
-  
 
-      return  Object.assign({}, state, {
-                                          templates: [...state.templates, template.id],
-                                          templatesById: {...state.templatesById, ...{[template.id]:template}},
-                                          selected: {path:[template.id], type:template.type},
-                                       });
+      return  {
+                ...state,
+                templates: [...state.templates, template.id],
+                templatesById: {...state.templatesById, [template.id]:template},
+                selected: {path:[template.id], type:template.type}
+             }
 
     case GROUP_TEMPLATE_DROPPED:
+
       const {root, templates} = createGroupTemplate(action.children, action.x, action.y);
-      return Object.assign({}, state, {
-                                          templates: [...state.templates, root.id],
-                                          templatesById: {...state.templatesById, ...{[root.id]:root, ...templates}},//{[grouptemplate.id]:grouptemplate}),
-                                          selected: {path:[root.id], type:'group'},
-                                        });
+      return {
+                ...state,
+                templates: [...state.templates, root.id],
+                templatesById: {...state.templatesById, ...{[root.id]:root, ...templates}},//{[grouptemplate.id]:grouptemplate}),
+                selected: {path:[root.id], type:'group'},
+      };
     
     case TEMPLATE_SELECTED: 
 
-      return Object.assign({}, state,  {selected: action.path});
+      return {...state, selected: action.path};
 
     case TEMPLATE_PARENT_SELECTED: 
-      return Object.assign({}, state,  {selected: _selectParent(state,action)});
+      return {...state, selected: _selectParent(state,action)};
    
     case UPDATE_TEMPLATE_STYLE: 
-      return Object.assign({}, state, {templatesById:_updateTemplateStyle(state,action)});
+      return {...state, templatesById:_updateTemplateStyle(state,action)};
 
     case UPDATE_TEMPLATE_ATTRIBUTE:
-      return Object.assign({}, state, {templatesById:_updateTemplateAttribute(state,action)});
+      return {...state, templatesById:_updateTemplateAttribute(state,action)};
     
     case EXPAND:
-      return Object.assign({}, state, {expanding:true, dragging:false, rotating:false});
+      return {...state, expanding:true, dragging:false, rotating:false};
 
     case ROTATE:
-      return Object.assign({}, state, {expanding:false, dragging:false, rotating:true});
+      return {...state, expanding:false, dragging:false, rotating:true};
 
     case DELETE:
-      return Object.assign({}, state, _deleteTemplate(state));//, {selected: null}});
+      return {...state, ..._deleteTemplate(state)};//, {selected: null}});
 
     case LOAD_TEMPLATES:
-      return Object.assign({}, state, {templates:action.templates, templatesById:action.templatesById, selected:null});
+      return {
+                ...state, 
+                templates:action.templates, 
+                templatesById:action.templatesById, 
+                selected:null
+      }
 
     case CLEAR_STATE:
-      return Object.assign({}, state, initialState);
+      return {
+                ...state, 
+                initialState
+      };
 
     case MOVE_UP:
+      
       const _templateToMoveUp = state.selected.path || null;
 
       if (_templateToMoveUp && _templateToMoveUp[0]){
@@ -635,10 +698,14 @@ export default function reducer(state = initialState, action={}) {
           
           
           if (index != -1  && index < state.templates.length -1){
-            return Object.assign({}, state, {templates: _swap(state.templates, index, index+1)})
+            return {  
+              ...state, 
+              templates: _swap(state.templates, index, index+1)
+            }
           } 
         }
       }
+
       return state;
 
     case MOVE_DOWN:
@@ -649,8 +716,11 @@ export default function reducer(state = initialState, action={}) {
           
           const index = state.templates.indexOf(_templateToMoveDown[0]);
           
-         if (index != -1  && index > 0){
-            return Object.assign({}, state, {templates: _swap(state.templates, index, index-1)})
+          if (index != -1  && index > 0){
+            return {
+                      ...state, 
+                      templates: _swap(state.templates, index, index-1)
+            }
           } 
         }
       }
@@ -672,15 +742,19 @@ function mouseMove(id, x: number, y:number) {
               });
 
     if (getState()[id][NAME].selected && getState()[id][NAME].dragging){
-      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+      dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
     }
   } 
 }
 
 
 function setCanvasDimensions(id, cw,ch){
+
   return (dispatch, getState)=>{
-    if (getState[NAME].templates.length <= 0){
+  
+    if (getState()[id][NAME].templates.length <= 0){
+        
         dispatch({
           id,
           type:SET_CANVAS_DIMENSIONS,
@@ -737,7 +811,8 @@ function deletePressed(id){
       id,
       type: DELETE,
     });
-    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+    dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
   }
 }
 
@@ -748,9 +823,10 @@ function templateDropped(id, template:string, x:number, y:number) {
                 template,
                 x,
                 y,
-              });
+      });
 
-      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+      dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
   }
 }
 
@@ -764,8 +840,10 @@ function groupTemplateDropped(id,children, x:number, y:number){
                   x,
                   y,
                 });
-
-      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+      
+      dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
+      
   }
 }
 
@@ -790,20 +868,23 @@ function templateParentSelected(id,path) {
 function updateTemplateAttribute(id,path:Array, property:string, value){
 
 
+  const _value = _isNumeric(value) ? Math.round(value) : value;
+
+  console.log("valeu is", _value);
   return (dispatch, getState)=>{
     dispatch({
         id,
         type: UPDATE_TEMPLATE_ATTRIBUTE,
         path,
         property,
-        value,
+        value : _value,
     });
-
-    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+    dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
   }
 }
 
 function updateTemplateStyle(id,path:Array, property:string, value){
+  console.log("in update templat styelr");
   return (dispatch, getState)=>{
     dispatch({
       id,
@@ -812,7 +893,8 @@ function updateTemplateStyle(id,path:Array, property:string, value){
       property:property ,
       value,
     });
-    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+    dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
+   
   }
 }
 
@@ -824,7 +906,8 @@ function loadTemplates(id, {templates, templatesById}){
       templates,
       templatesById,
     });
-    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
+    dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
   }
 }
 
@@ -835,30 +918,32 @@ function clearState(id){
       id,
       type: CLEAR_STATE,
     });
-    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templatesById));
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
+    dispatch(nodeActions.updateNode('templatesById', getState()[id][NAME].templatesById));
   }
 }
 
 function moveUp(id){
-   return{
-      id,
-      type: MOVE_UP,
-   }
+    return (dispatch, getState)=>{
+      dispatch({id,type: MOVE_UP});
+      dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
+    }
 }
 
 function moveDown(id){
- return{
-      id,
-      type: MOVE_DOWN,
-   }
+  return (dispatch, getState)=>{
+    dispatch({id,type: MOVE_DOWN});
+    dispatch(nodeActions.updateNode('templates', getState()[id][NAME].templates));
+  }
 }
 
-function init(id, templates){
+function init(id, templates, templatesById){
  
   return {
     id,
     type: INIT,
     templates, 
+    templatesById,
   }
 }
 // Selectors

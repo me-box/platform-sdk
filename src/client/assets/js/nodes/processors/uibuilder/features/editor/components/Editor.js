@@ -38,7 +38,7 @@ export default class Editor extends Component {
     render() {
               
       const {[NAME]:{w,h},actions:{setView},store, canvasheight, canvaswidth, originaldimensions, nid, inputs} = this.props;
-    
+     
 
       const canvasstyle ={
         left: PALETTE_WIDTH,

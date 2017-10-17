@@ -4,13 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { Flex, Box } from 'reflexbox';
-//import '../../../../../styles/index.scss';
-
-//import Tabs from 'react-md/lib/Tabs/Tabs';
-//import Tab from 'react-md/lib/Tabs/Tab';
-//import TabsContainer from 'react-md/lib/Tabs/TabsContainer';
-//import TextField from 'react-md/lib/TextFields';
-
 import Cell from 'components/Cell';
 import Cells from 'components/Cells';
 import Textfield from 'components/form/Textfield';
@@ -40,8 +33,8 @@ export default class Properties extends Component {
           const props = { 
             value: template[key] || "",
             id:key,
-            onChange:(property, event)=>{
-                this._updateAttribute(property, event.target.value);
+            onBlur:(property,event)=>{
+               this._updateAttribute(property, event.target.value);
             }
           }
           const textfield =  <div className="centered"><Textfield {...props}/></div>
@@ -73,7 +66,7 @@ export default class Properties extends Component {
 
       const form = Object.keys(style).map((key,i)=>{
 
-          console.log(typeForProperty(template.type, key));
+         
           if (typeForProperty(template.type, key) === "enum"){
             return <Cell key={key} title={key} content={this.renderEnum(template.type, key, style[key])}/>
           }
@@ -81,7 +74,8 @@ export default class Properties extends Component {
             const props = { 
               value: style[key],
               id:key,
-              onChange:(property, event)=>{
+
+              onBlur:(property, event)=>{
                 this._updateStyle(property, event.target.value);
               }
             }

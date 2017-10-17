@@ -226,7 +226,7 @@ export default class Node extends React.Component {
             console.log(`updating value *${value}*`);
             updateNode("func", value);
         },
-        value: values.func || node.func || "",
+        value: values.func,
         mode: "javascript",
         theme: "github",
         name: node.id,
