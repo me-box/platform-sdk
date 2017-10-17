@@ -102,7 +102,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var ns = void 0;
 
-function init(server) {
+function init(server, store, secret) {
 
   var io = _socket2.default.listen(server);
 
@@ -529,7 +529,6 @@ console.log("set port to", PORT);
 console.log("dev mode ", dev);
 
 (0, _config.fetch)({ dev: dev }).then(function (config) {
-  console.log(config);
   start(config);
 }, function (err) {
   console.log("error reading config!", err);
@@ -580,7 +579,7 @@ function start(config) {
   app.engine('html', __webpack_require__(30).renderFile);
 
   var server = _http2.default.createServer(app);
-  (0, _websocket2.default)(server);
+
   var auth = function auth(req, res, next) {
 
     if (req.isAuthenticated()) {
@@ -595,6 +594,8 @@ function start(config) {
     (0, _strategies2.default)(app, config);
     addroutes(app, auth);
   }
+
+  (0, _websocket2.default)(server, RedisStore, config.secret);
 
   app.get('/login', function (req, res) {
     res.render('login');
@@ -684,18 +685,18 @@ function fetch() {
 
 
         return new Promise(function (resolve, reject) {
-                console.log("ok am here");
+
                 _fs2.default.readFile("./conf/settings.json", 'utf8', function (err, data) {
                         if (err) {
                                 return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4)).then(function (settings) {
-                                        console.log("returning", settings);
+
                                         resolve(settings);
                                         return;
                                 });
                         }
                         try {
                                 var settings = JSON.parse(data);
-                                console.log(settings);
+
                                 resolve(settings);
                                 return;
                         } catch (err) {
@@ -957,8 +958,9 @@ router.get('/logout', function (req, res) {
 	//if (req.user){
 	//	User.findOne({ username: req.user.username}).remove().exec();
 	//}
-
+	console.log("logging out!");
 	req.logout();
+	res.redirect('/');
 });
 
 router.get('/github', _passport2.default.authenticate('github', { scope: 'public_repo' }));
@@ -1292,7 +1294,7 @@ var _generateDockerfile = function _generateDockerfile(libraries, config, name) 
 	});
 
 	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-	var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + name + '/databox-manifest.json"'];
+	var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + name.toLowerCase() + '/databox-manifest.json"'];
 
 	var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
 
@@ -1452,7 +1454,7 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 			return;
 		}).then(function (tag) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: 'uploading to registry with tag ' + tag });
-			return _uploadImageToRegistry(tag, '' + config.registry.URL, user.username);
+			return _uploadImageToRegistry(tag, '' + config.registry.URL, user.username.toLowerCase());
 		}, function (err) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: err.json.message });
 			reject('could not upload to registry');
@@ -1639,8 +1641,8 @@ router.post('/publish', function (req, res) {
 	(0, _websocket.sendmessage)(user.username, "debug", { msg: 'publishing manifest, ' + JSON.stringify(manifest, null, 4) });
 
 	console.log("publishing manifest", JSON.stringify(manifest, null, 4));
-	//first save the manifest and flows file - either create new repo or commit changes
 
+	//first save the manifest and flows file - either create new repo or commit changes	
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(flows.reduce(function (acc, node) {
 		if (node.type === "dbfunction") {
 			acc = [].concat(_toConsumableArray(acc), [(0, _utils.matchLibraries)(node.func)]);
