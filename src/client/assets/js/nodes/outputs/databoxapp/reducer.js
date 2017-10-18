@@ -46,6 +46,10 @@ function removebox(boxes, moving){
 
 function layoutboxes(state){
     
+    if (!state.moving || !state.moving.torow){
+        return null;
+    }
+
     const boxes     = state.moving.torow == -1 ? [[], ...state.boxes] : state.boxes;
     const moving    = state.moving.torow == -1 ? {...state.moving, torow: 0, fromrow:state.moving.fromrow+1, tocol:0} : state.moving;
 

@@ -2,7 +2,7 @@ import { MOUSE_MOVE, MOUSE_UP, MOUSE_DOWN, INIT} from './ActionTypes';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 
 export function updateLayoutProperty(dispatch, getState, id){
-		const layout = getState()[id].boxes.map((row)=>{
+		const layout = (getState()[id].boxes || []).map((row)=>{
     		return row.map((box)=>{
     			return box.id
     		});

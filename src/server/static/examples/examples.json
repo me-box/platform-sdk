@@ -47,6 +47,14 @@
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
             "url":"https://api.github.com/repos/tlodge/databox.tutorial-hue-binary"
+        },
+        {
+            "username":"tlodge", 
+            "name":"databox.tutorial-trump",
+            "description":"trump doomsday clock based on tweet sentiment",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://api.github.com/repos/tlodge/databox.tutorial-trump"
         }
        
     ]

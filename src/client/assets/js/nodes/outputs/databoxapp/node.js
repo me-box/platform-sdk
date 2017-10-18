@@ -162,7 +162,7 @@ export default class Node extends Component {
 
     	const mousestyle = {
     		position: 'absolute',
-    		top: TOOLBAR_HEIGHT + 40,
+    		top: 30 + 40,
        		width: '100%',
        		height: HEIGHT - NAMEROWHEIGHT,
        		overflow: 'hidden',

@@ -30,6 +30,10 @@ class LayoutManager extends Component {
       const {local, w, h} = this.props;
       const {boxes, moving} = local;
       
+      if (!boxes || boxes.length <= 0){
+        return;
+      }
+
       const BOXWIDTH = w/boxes.length;
 
       const MAXROWS = boxes.length;

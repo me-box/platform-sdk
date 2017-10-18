@@ -37,7 +37,7 @@ export default class TemplateGroup extends Component {
 
   render(){
 
-    return  <div style={{zIndex:1}}>
+    return  <div>
               <div style={{textAlign:"center"}}>
                 <div className="templateActions" style={{marginTop:20}}>
                   <FontIcon onClick={this.toggleSelected} style={{color:"white", fontSize:"2em"}}>picture_in_picture</FontIcon>
