@@ -236,12 +236,13 @@ export function createTestContainer(image, name, network){
 					console.log("rejecting with error", err);
 					reject(err);
 				}else{
-			
+					console.log("ok am here")
 					container.start({}, function (err, data) {
 						if (err){
 							console.log("error starting container",err);
 							reject(err);
 						}else{
+							console.log("started container");
 							resolve(container);
 						}
 					});

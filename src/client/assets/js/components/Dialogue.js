@@ -11,7 +11,7 @@ class Dialogue extends React.Component {
 		const dialoguestyle = {
 			position: 'absolute',
 			width: `calc(100vw - ${ (2 * NODE_EDITOR_PADDING)}px)`,
-			top: NODE_EDITOR_PADDING, 
+			top: TOOLBAR_HEIGHT + 10, 
 			left: NODE_EDITOR_PADDING, 
 			background: 'white',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',

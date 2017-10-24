@@ -1,6 +1,7 @@
 import express from 'express';
 import request from 'superagent';
-import docker from '../utils/docker.js';
+import docker from '../utils/docker.js'
+import stream  from 'stream';
 //import net from 'net';
 //import JsonSocket from 'json-socket';
 import {sendmessage} from '../utils/websocket';
@@ -12,6 +13,7 @@ const router = express.Router();
 const argv = minimist(process.argv.slice(2));
 const DEVMODE = argv.dev || false;
 const network = "bridge";
+const streams = {};
 
 /*let connected = false;
 
@@ -96,17 +98,17 @@ const _waitForStart = function(container, username){
 
 	return new Promise((resolve,reject)=>{
 		
-			container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
+			container.attach({stream: true, stdout: true, stderr:true}, function (err, stream) {
 	    		stream.on('data', function(line) {
 	    			const str =  line.toString("utf-8", 8, line.length);
 
 	    			sendmessage(username, "debug", {msg:str});
 
 	        		if (showonconsole){
-	        			console.log(str);
+	        			console.log(`${str}`);
 	    			}
 	    			if (str.indexOf("Started flows") != -1){
-	    				console.log("container ready for flows");
+	    				//console.log("container ready for flows");
 	    				showonconsole = false;
 	    				setTimeout(()=>{
 	    					console.log("posting flows");
@@ -208,6 +210,8 @@ var _startContainer = function(container, flows, username){
     });
 }
 
+
+
 const _createNewImageAndContainer = function(libraries, username, flows){
 	//need to create a new Image!
 	console.log("found external libraries, so creating new image!");
@@ -271,6 +275,35 @@ const _restart = function(container){
 	});
 }
 
+const _containerLogs = function(container, username) {
+
+  // create a single stream for stdin and stdout
+ const logStream = new stream.PassThrough();
+
+  logStream.on('data', function(chunk){
+    //console.log(chunk.toString('utf8'));
+    sendmessage(username, "debug", {msg:chunk.toString('utf8')});	
+  });
+
+  container.logs({
+    follow: true,
+    stdout: true,
+    stderr: true
+  }, function(err, stream){
+    if(err) {
+      return err.message;
+    }
+    container.modem.demuxStream(stream, logStream, logStream);
+    stream.on('end', function(){
+      logStream.end('!stop!');
+    });
+
+    //setTimeout(function() {
+    //  stream.destroy();
+    //}, 2000);
+  });
+}
+
 //stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
 //the test web app responds to the client webpage before it has been given the details of the new app.
 const _createContainerFromStandardImage = function(username, flows){
@@ -317,7 +350,7 @@ const _createContainerFromStandardImage = function(username, flows){
 
 				//restart the container if it exists but is stopped
 				if (c.State === 'exited'){
-					console.log("restarting container");
+					//console.log("restarting container");
 					sendmessage(username, "debug", {msg:"restarting container"});
 					const container = docker.getContainer(c.Id);
 					return _restart(container).then((cdata)=>{
@@ -327,11 +360,16 @@ const _createContainerFromStandardImage = function(username, flows){
 						return err;
 					});
 				}else{
-					console.log("container already running");
+					
 					sendmessage(username, "debug", {msg:"container already running"});
-					console.log(c);
+					if (!streams[c.Id]){
+						const container = docker.getContainer(c.Id);
+						streams[c.Id] = true;
+						_containerLogs(container, username);
+					}
+					
 					const {ip, port} = _fetchRunningAddr(c);
-					console.log("posting new flows to", ip, port);
+					//console.log("posting new flows to", ip, port);
 					return _postFlows(ip, port, flows, username);
 				}
 			}

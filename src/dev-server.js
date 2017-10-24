@@ -97,7 +97,8 @@ app.use("/examples/*", function(req, res) {
 
 app.use("/auth/*", function(req, res) {
    
-    req.url = `${req.baseUrl}${req.url}`.replace(/\/$/, "");
+   req.url = `${req.baseUrl}${req.url}`;
+    console.log("PROXYING AUTH", req.url);
     apiProxy.web(req, res, {
       target: {
         port: 9000,

@@ -867,10 +867,10 @@ function templateParentSelected(id,path) {
 
 function updateTemplateAttribute(id,path:Array, property:string, value){
 
-
+  console.log("OK AM IN UPDATE TEMPLATE ATTRIBUTE", path, property, value);
+   
   const _value = _isNumeric(value) ? Math.round(value) : value;
 
-  console.log("valeu is", _value);
   return (dispatch, getState)=>{
     dispatch({
         id,
@@ -884,7 +884,7 @@ function updateTemplateAttribute(id,path:Array, property:string, value){
 }
 
 function updateTemplateStyle(id,path:Array, property:string, value){
-  console.log("in update templat styelr");
+  
   return (dispatch, getState)=>{
     dispatch({
       id,

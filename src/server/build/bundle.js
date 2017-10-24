@@ -431,12 +431,13 @@ function createTestContainer(image, name, network) {
 				console.log("rejecting with error", err);
 				reject(err);
 			} else {
-
+				console.log("ok am here");
 				container.start({}, function (err, data) {
 					if (err) {
 						console.log("error starting container", err);
 						reject(err);
 					} else {
+						console.log("started container");
 						resolve(container);
 					}
 				});
@@ -548,8 +549,8 @@ function addroutes(app, auth) {
   app.use('/auth', __webpack_require__(21));
   app.use('/github', auth, __webpack_require__(22));
   app.use('/nodered', auth, __webpack_require__(26));
-  app.use('/samples', auth, __webpack_require__(27));
-  app.use('/uibuilder', auth, __webpack_require__(28));
+  app.use('/samples', auth, __webpack_require__(28));
+  app.use('/uibuilder', auth, __webpack_require__(29));
 }
 
 function start(config) {
@@ -576,7 +577,7 @@ function start(config) {
   }));
 
   app.set('view engine', 'html');
-  app.engine('html', __webpack_require__(30).renderFile);
+  app.engine('html', __webpack_require__(31).renderFile);
 
   var server = _http2.default.createServer(app);
 
@@ -963,6 +964,10 @@ router.get('/logout', function (req, res) {
 	res.redirect('/');
 });
 
+router.get('/loggedin', function (req, res) {
+	res.send({ status: req.isAuthenticated() ? "ok" : "fail" });
+});
+
 router.get('/github', _passport2.default.authenticate('github', { scope: 'public_repo' }));
 
 router.get('/github/callback', _passport2.default.authenticate('github', { failureRedirect: '/auth/github' }), function (req, res) {
@@ -978,6 +983,8 @@ module.exports = router;
 
 "use strict";
 
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _express = __webpack_require__(0);
 
@@ -1151,7 +1158,7 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			filename: 'databox-manifest.json',
 			email: user.email || user.username + '@me-box.com',
 			message: commitmessage,
-			content: new Buffer(JSON.stringify(manifest, null, 4)).toString('base64'),
+			content: new Buffer(JSON.stringify(_formatmanifest(manifest), null, 4)).toString('base64'),
 			accessToken: accessToken
 		})]);
 	}).then(function (values) {
@@ -1307,7 +1314,7 @@ var _generateManifest = function _generateManifest(config, user, reponame, app, 
 
 	return {
 		'manifest-version': 1,
-		name: appname,
+		name: appname.toLowerCase(),
 		version: "0.1.0",
 		description: app.description,
 		author: user.username,
@@ -1410,6 +1417,21 @@ var _uploadImageToRegistry = function _uploadImageToRegistry(tag, registry, user
 	});
 };
 
+var _formatmanifest = function _formatmanifest(manifest) {
+	//if empty object return
+	if (Object.keys(manifest).length === 0 && manifest.constructor === Object) {
+		return manifest;
+	}
+
+	return _extends({}, manifest, {
+		name: manifest.name.toLowerCase(),
+		homepage: manifest.homepage.toLowerCase(),
+		repository: _extends({}, manifest.repository, {
+			url: manifest.repository.url.toLowerCase()
+		})
+	});
+};
+
 var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 
 	return new Promise(function (resolve, reject) {
@@ -1419,8 +1441,9 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: "finshed pulling latest base container" });
 			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
+
 			var data = {
-				manifest: JSON.stringify(manifest),
+				manifest: JSON.stringify(_formatmanifest(manifest)),
 
 				poster: JSON.stringify({
 					username: user.username
@@ -1535,8 +1558,8 @@ router.get('/flow', function (req, res) {
 
 	return Promise.all([_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'databox-manifest.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'Dockerfile')]).then(function (values) {
 
-		var flows = Object.assign({}, values[0], { content: JSON.parse(values[0].content) });
-		var manifest = Object.assign({}, values[1], { content: JSON.parse(values[1].content) });
+		var flows = _extends({}, values[0], { content: JSON.parse(values[0].content) });
+		var manifest = _extends({}, values[1], { content: JSON.parse(values[1].content) });
 
 		res.send({
 			result: 'success',
@@ -1562,7 +1585,7 @@ router.post('/repo/new', function (req, res) {
 	var dockerfile = '# ' + name + ' Dockerfile';
 	var commitmessage = req.body.message || "first commit";
 
-	console.log("manifest", JSON.stringify(manifest, null, 4));
+	console.log("manifest", JSON.stringify(_formatmanifest(manifest), null, 4));
 
 	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (repo) {
 		console.log("successfully created repo", repo);
@@ -1601,7 +1624,7 @@ router.post('/repo/update', function (req, res) {
 
 	var dockerfile = _generateDockerfile(libraries, req.config, req.body.manifest.name);
 	var flowscontent = new Buffer(JSON.stringify(req.body.flows, null, 4)).toString('base64');
-	var manifestcontent = new Buffer(JSON.stringify(req.body.manifest, null, 4)).toString('base64');
+	var manifestcontent = new Buffer(JSON.stringify(_formatmanifest(req.body.manifest), null, 4)).toString('base64');
 	var dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then(function (data) {
@@ -1659,7 +1682,7 @@ router.post('/publish', function (req, res) {
 
 		(0, _websocket.sendmessage)(user.username, "debug", { msg: 'commiting changes' });
 		var flowcontent = new Buffer(JSON.stringify(flows, null, 4)).toString('base64');
-		var manifestcontent = new Buffer(JSON.stringify(manifest, null, 4)).toString('base64');
+		var manifestcontent = new Buffer(JSON.stringify(_formatmanifest(manifest), null, 4)).toString('base64');
 		var dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 		var message = commitmessage;
@@ -1753,6 +1776,10 @@ var _docker = __webpack_require__(4);
 
 var _docker2 = _interopRequireDefault(_docker);
 
+var _stream = __webpack_require__(27);
+
+var _stream2 = _interopRequireDefault(_stream);
+
 var _websocket = __webpack_require__(3);
 
 var _utils = __webpack_require__(8);
@@ -1773,6 +1800,7 @@ var router = _express2.default.Router();
 var argv = (0, _minimist2.default)(process.argv.slice(2));
 var DEVMODE = argv.dev || false;
 var network = "bridge";
+var streams = {};
 
 /*let connected = false;
 
@@ -1858,10 +1886,10 @@ var _waitForStart = function _waitForStart(container, username) {
 				(0, _websocket.sendmessage)(username, "debug", { msg: str });
 
 				if (showonconsole) {
-					console.log(str);
+					console.log('' + str);
 				}
 				if (str.indexOf("Started flows") != -1) {
-					console.log("container ready for flows");
+					//console.log("container ready for flows");
 					showonconsole = false;
 					setTimeout(function () {
 						console.log("posting flows");
@@ -2030,6 +2058,35 @@ var _restart = function _restart(container) {
 	});
 };
 
+var _containerLogs = function _containerLogs(container, username) {
+
+	// create a single stream for stdin and stdout
+	var logStream = new _stream2.default.PassThrough();
+
+	logStream.on('data', function (chunk) {
+		//console.log(chunk.toString('utf8'));
+		(0, _websocket.sendmessage)(username, "debug", { msg: chunk.toString('utf8') });
+	});
+
+	container.logs({
+		follow: true,
+		stdout: true,
+		stderr: true
+	}, function (err, stream) {
+		if (err) {
+			return err.message;
+		}
+		container.modem.demuxStream(stream, logStream, logStream);
+		stream.on('end', function () {
+			logStream.end('!stop!');
+		});
+
+		//setTimeout(function() {
+		//  stream.destroy();
+		//}, 2000);
+	});
+};
+
 //stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
 //the test web app responds to the client webpage before it has been given the details of the new app.
 var _createContainerFromStandardImage = function _createContainerFromStandardImage(username, flows) {
@@ -2074,7 +2131,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 
 			//restart the container if it exists but is stopped
 			if (c.State === 'exited') {
-				console.log("restarting container");
+				//console.log("restarting container");
 				(0, _websocket.sendmessage)(username, "debug", { msg: "restarting container" });
 				var container = _docker2.default.getContainer(c.Id);
 				return _restart(container).then(function (cdata) {
@@ -2084,15 +2141,20 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 					return err;
 				});
 			} else {
-				console.log("container already running");
+
 				(0, _websocket.sendmessage)(username, "debug", { msg: "container already running" });
-				console.log(c);
+				if (!streams[c.Id]) {
+					var _container = _docker2.default.getContainer(c.Id);
+					streams[c.Id] = true;
+					_containerLogs(_container, username);
+				}
 
 				var _fetchRunningAddr2 = _fetchRunningAddr(c),
 				    ip = _fetchRunningAddr2.ip,
 				    port = _fetchRunningAddr2.port;
+				//console.log("posting new flows to", ip, port);
 
-				console.log("posting new flows to", ip, port);
+
 				return _postFlows(ip, port, flows, username);
 			}
 		}
@@ -2129,6 +2191,12 @@ module.exports = router;
 
 /***/ }),
 /* 27 */
+/***/ (function(module, exports) {
+
+module.exports = require("stream");
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2184,7 +2252,7 @@ router.get('/:sensor', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2208,7 +2276,7 @@ var _minimist2 = _interopRequireDefault(_minimist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Promise = __webpack_require__(29);
+var Promise = __webpack_require__(30);
 Promise.promisifyAll(_fs2.default);
 var argv = (0, _minimist2.default)(process.argv.slice(2));
 var router = _express2.default.Router();
@@ -2323,13 +2391,13 @@ router.post('/image/add', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = require("bluebird");
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = require("ejs");

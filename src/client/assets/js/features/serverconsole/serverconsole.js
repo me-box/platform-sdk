@@ -45,5 +45,5 @@ export const selector = createStructuredSelector({
 });
 
 export const actionCreators = {
- newMessage,
+ 	newMessage,
 };

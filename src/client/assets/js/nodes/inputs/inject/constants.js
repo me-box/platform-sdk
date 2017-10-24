@@ -25,7 +25,7 @@ export const REPEAT_OPTIONS =  [
 									{name:'none', value:'none'},
                 			   		{name: 'interval', value:'interval'},
                 			   		{name: 'interval between specific times', value:'interval-time'},
-                			   		{name: 'at a specific time', value:'time'}
+                			   		//{name: 'at a specific time', value:'time'}
                 			   	];
 
 export const INTERVAL_OPTIONS = [

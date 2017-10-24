@@ -299,7 +299,7 @@ function updateAppTags(tags){
 	}
 }
 
-function toggleVisible(){
+function togglePublisher(){
 	return {
 		type: TOGGLE_VISIBLE,
 	}
@@ -349,11 +349,11 @@ export const actionCreators = {
   updatePackagePurpose,
   installSelected,
   updatePackageBenefits,
-  toggleVisible,
+  togglePublisher,
   
   updateAppName,
   updateAppDescription,
   updateAppTags,
 
-  cancel: toggleVisible,
+  cancel: togglePublisher,
 };

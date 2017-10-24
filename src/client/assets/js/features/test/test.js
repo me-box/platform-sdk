@@ -185,7 +185,7 @@ function setVisible(){
 	}
 }
 
-function toggleVisible(){
+function toggleTest(){
 	return {
 		type: TOGGLE_VISIBLE
 	}
@@ -220,5 +220,5 @@ export const selector = createStructuredSelector({
 export const actionCreators = {
 	init,
 	test,
-	toggleVisible,
+	toggleTest,
 }

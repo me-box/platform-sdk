@@ -14,6 +14,10 @@ router.get('/logout',  function(req,res){
 	req.logout();
 	res.redirect('/');
 });
+
+router.get('/loggedin', function(req,res){
+	res.send({status:req.isAuthenticated() ? "ok" : "fail"})
+});
   
 router.get('/github', passport.authenticate('github', { scope: 'public_repo' }));
 

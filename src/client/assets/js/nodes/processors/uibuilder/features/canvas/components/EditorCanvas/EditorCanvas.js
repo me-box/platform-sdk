@@ -85,7 +85,13 @@ class EditorCanvas extends Component {
 
 
   componentDidMount() {
-    //this._handleResize();
+    
+    if (this.props.od === null){
+        const dim = _canvasdim(this.props.w,this.props.h,this.state.aspect);
+        this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
+    }
+    
+
     if (this.rootNode){
         const {left, top} = this.rootNode.getBoundingClientRect();
         this.setOffset(left,top-40); // name field=40

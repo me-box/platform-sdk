@@ -36,7 +36,7 @@ export default class Node extends Component {
 			const sensorprops = {
 				options: [
 	                {name: 'bluetooth', value: 'bluetooth'},
-	                {name: 'audio-level', value: 'audio-level'},
+	                /*{name: 'audio-level', value: 'audio-level'},*/
 	                {name: 'accelerometer', value: 'accelerometer'},
 	                {name: 'linear-acceleration', value: 'linear-acceleration'},
 	                {name: 'magnetometer', value: 'magnetometer'},

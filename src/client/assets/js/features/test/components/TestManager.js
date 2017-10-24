@@ -82,7 +82,7 @@ export default class TestManager extends Component {
 			message = `This flow has ${links.length} flows with outputs that can be viewed in test mode.  Click on any one to take a look. ${warning}`; 
 		}
 
-		const close = <Button icon onClick={this.props.actions.toggleVisible}>close</Button>;
+		const close = <Button icon onClick={this.props.actions.toggleTest}>close</Button>;
 		
 		const header = (
       		<Toolbar

@@ -36,7 +36,7 @@ import ServerConsole from 'features/serverconsole/components/ServerConsole';
               requestRepos: bindActionCreators(repoActions.requestRepos, dispatch),
               toggleSaveDialogue: bindActionCreators(repoActions.toggleSaveDialogue, dispatch),
               toggleSaveAsDialogue: bindActionCreators(repoActions.toggleSaveAsDialogue, dispatch),
-              togglePublisher: bindActionCreators(workspaceActions.toggleVisible, dispatch),
+              togglePublisher: bindActionCreators(workspaceActions.togglePublisher, dispatch),
               toggleExamples: bindActionCreators(exampleActions.toggleVisible, dispatch),
               test: bindActionCreators(testActions.test, dispatch),
 

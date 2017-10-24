@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import CSSTransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators as mapperActions, viewConstants, selector, NAME } from '../..';
@@ -12,8 +11,6 @@ import Schema from "../Schema";
 import Attributes from "../Attributes";
 import Transformer from "../Transformer";
 import Properties  from "../Properties";
-import Birth from "../Birth";
-import Death from "../Death";
 
 import "./Mapper.scss";
 import { Flex, Box } from 'reflexbox'
@@ -68,8 +65,15 @@ export default class Mapper extends Component {
   constructor(props){
       super(props);
       //this.state = { activeTabIndex: 0, propertiesExpanded:false, objectsExpanded:false, mapperExpanded:false, mappingsExpanded:false, birthExpanded:false, deathExpanded:false};
-      
-      this.state = {attributesSelected:true, mappingsSelected: false, canvasSelected: false, treeSelected: false, selected:null}
+
+      this.state = {
+                        attributesSelected:true, 
+                        mappingsSelected: false, 
+                        canvasSelected: false, 
+                        treeSelected: false, 
+                        selected:null,
+        
+                    }
       //this._handleTabChange = this._handleTabChange.bind(this);
       this._toggleSelected = this._toggleSelected.bind(this);
      
@@ -79,25 +83,26 @@ export default class Mapper extends Component {
       this.renderMappings= this.renderMappings.bind(this);
       this.renderCanvas= this.renderCanvas.bind(this);
       this.renderObjects = this.renderObjects.bind(this);
-      this.renderBirthDeath = this.renderBirthDeath.bind(this);
       this.renderTreeNode = this.renderTreeNode.bind(this);
       this.showAttributes= this.showAttributes.bind(this)
       this.showMappings= this.showMappings.bind(this);
-      this.showBirthDeath = this.showBirthDeath.bind(this);
       this.showCanvas= this.showCanvas.bind(this);
       this.showTree= this.showTree.bind(this);
 
+      this._save = this._save.bind(this);
+      this._cancel = this._cancel.bind(this);
   }
 
  
-
   renderTreeNode(template, path, selectedPath, depth){
      
       const selected = selectedPath.indexOf(template.id) != -1;
+      
       const cname = cx({
         selected,
         treeNode: true,
       })
+
       return (<div className={cname} onClick={this._toggleSelected.bind(null, [...path, template.id], template.type, selectedPath)}>
                 <div style={_indentstyle(depth)}>{`${template.label} (${template.type})`}</div>
               </div>)
@@ -122,13 +127,9 @@ export default class Mapper extends Component {
 
   renderInputs(){
 
-    
-
     const {inputs, nid, [NAME]:{from}} = this.props;
     const {selected} = this.state;
     
-  
-
     const srcs = inputs.map((input) => {
         const name = input.name.trim() === "" ? input.label : input.name;
         const cname = cx({
@@ -265,15 +266,6 @@ export default class Mapper extends Component {
    
   }
 
-  renderBirthOptions(){
-    const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
-    return <Birth inputs={inputs} nid={nid} path={path}/>
-  }
-
-  renderDeathOptions(){
-     const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
-     return <Death inputs={inputs} nid={nid} path={path}/>
-  }
 
   renderProperties(){
       const { activeTabIndex } = this.state;
@@ -292,7 +284,7 @@ export default class Mapper extends Component {
   }
 
   renderMappings(){
-    const {[NAME]:{selectedMapping, transformers}, nid} = this.props;
+    
     return <div>
                 {this.renderMapper()}
                 <div className="mapperHeading">transformers</div>
@@ -307,12 +299,6 @@ export default class Mapper extends Component {
             </Flex>
   }
 
-  renderBirthDeath(){
-    return  <div>
-              {this.renderBirthOptions()}
-              {this.renderDeathOptions()}
-            </div>
-  }
 
   
   renderObjects(){
@@ -343,23 +329,19 @@ export default class Mapper extends Component {
     return <Flex align="center" style={{background:"#5f9ea0", color:"#fff"}}>
               <Box auto p={1} onClick={this.showAttributes} style={{fontWeight: this.state.attributesSelected ? 'bold' : 'normal'}}> attributes </Box>
               <Box auto p={1} onClick={this.showMappings}   style={{fontWeight: this.state.mappingsSelected ? 'bold' : 'normal'}}> mappings </Box>   
-              <Box auto p={1} onClick={this.showBirthDeath} style={{fontWeight: this.state.birthDeathSelected ? 'bold' : 'normal'}}> lifetime </Box>
-                 
             </Flex>
   }
-  showBirthDeath(){
-    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:false, treeSelected:false, birthDeathSelected:true});
-  }
+  
   showAttributes(){
-    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:true, treeSelected:false, birthDeathSelected:false});
+    this.setState({canvasSelected:false, mappingsSelected:false, attributesSelected:true, treeSelected:false});
   }
 
   showMappings(){
-    this.setState({canvasSelected:false, mappingsSelected:true, attributesSelected:false, treeSelected:false, birthDeathSelected:false});
+    this.setState({canvasSelected:false, mappingsSelected:true, attributesSelected:false, treeSelected:false});
   }
 
   showCanvas(){
-    this.setState({canvasSelected:true, mappingsSelected:false, attributesSelected:false, treeSelected:false, birthDeathSelected:false});
+    this.setState({canvasSelected:true, mappingsSelected:false, attributesSelected:false, treeSelected:false});
   }
 
   showTree(){
@@ -368,8 +350,8 @@ export default class Mapper extends Component {
 
   render() {
    
-    const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h, nid} = this.props;
-    const {attributesSelected, mappingsSelected, canvasSelected, treeSelected, birthDeathSelected} = this.state;
+    const {[NAME]:{open, selectedMapping, transformers}, [CANVASNAME]:{selected}, h, nid, inputs} = this.props;
+    const {attributesSelected, mappingsSelected, canvasSelected, treeSelected} = this.state;
 
     if (!selected)
         return null;
@@ -384,7 +366,6 @@ export default class Mapper extends Component {
         width: 250,
     }
 
-    // <Box auto p={1} onClick={this.showCanvas}> canvas </Box>
     return <div id="mapper">
               <div style={mapperstyle}>
                 
@@ -394,21 +375,44 @@ export default class Mapper extends Component {
                   {attributesSelected && this.renderAttributes()}
                   {mappingsSelected && this.renderMappings()}
                   {canvasSelected && this.renderCanvas()}
-                  {birthDeathSelected && this.renderBirthDeath()}
                 </Flex>
               </div>
-               {selectedMapping && <Transformer selectedMapping={selectedMapping} transformer={transformers[selectedMapping.mappingId]} saveDialog={this.props.actions.saveTransformer.bind(null, nid, selectedMapping.mappingId)} closeDialog={this.props.actions.selectMapping.bind(null,nid,null)}/>}     
+              {selectedMapping && <Transformer 
+                                      nid={nid} 
+                                      inputs={inputs}
+                                      mapping={selectedMapping} 
+                                      saveDialog={this._save} 
+                                      closeDialog={this._cancel}/>}     
             </div>    
   }
 
+  _save(buffer){
+      const {[NAME]:{selectedMapping}, nid} = this.props;
+       
+      
+      this.props.actions.updateTemplateAttribute(nid, selectedMapping.to.path, "enterFn", buffer.birth || null);
+      
+      
+      this.props.actions.updateTemplateAttribute(nid, selectedMapping.to.path, "exitFn", buffer.death || null);
+      
+      if (buffer.transformer){
+          this.props.actions.saveTransformer(nid, selectedMapping.mappingId, buffer.transformer);
+      }
+      this.props.actions.selectMapping(nid,null);
+  }
 
-   _handleTabChange(activeTabIndex) {
+  _cancel(){
+    this.props.actions.selectMapping(this.props.nid,null);
+  }
+
+
+  _handleTabChange(activeTabIndex) {
       this.setState({ activeTabIndex });
-   }
+  }
 
-   _toggleSelected(path,type,selectedPath){
+  _toggleSelected(path,type,selectedPath){
       const {nid} = this.props;
-      //toogle here by checking laste elements of each path;
+     
       if (selectedPath != null && path.length > 0 && type==="group"){
           const id1 = selectedPath[selectedPath.length-1];
           const id2 = path[path.length-1];
@@ -419,5 +423,5 @@ export default class Mapper extends Component {
       }
       this.props.actions.templateSelected(nid, {path:path, type:type});
       
-   }
+  }
 }

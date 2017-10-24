@@ -328,7 +328,7 @@ function mapToAttribute(id, path, property){
   	}
 }
 
-function mapToStyle(id,path, property){
+function mapToStyle(id,path,property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"style", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
@@ -337,7 +337,7 @@ function mapToStyle(id,path, property){
   	}
 }
 
-function mapToTransform(id,path, property){
+function mapToTransform(id,path,property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"transform", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
@@ -427,7 +427,9 @@ function init(id, mappings, transformers){
 	}
 }
 // Selectors
-const mapper  = (state,ownProps) => state[ownProps.nid][NAME];
+const mapper  = (state,ownProps) => {
+	return state[ownProps.nid][NAME];
+}
 //const sources = (state,ownProps) => state[SOURCENAME];
 const canvas = (state,ownProps) => state[ownProps.nid][CANVASNAME];
 

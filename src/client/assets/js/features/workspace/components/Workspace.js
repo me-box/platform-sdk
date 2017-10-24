@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 import {TOOLBAR_HEIGHT, PALETTE_WIDTH, SIDEBAR_WIDTH} from 'constants/ViewConstants';
 import cx from 'classnames';
 import { actionCreators as workspaceActions, selector as selector } from '../';
-
+import {actionCreators as testActions} from 'features/test'
 @connect(selector, (dispatch) => {
   return{
-     actions: bindActionCreators(workspaceActions, dispatch),
+     actions: bindActionCreators({...workspaceActions, ...testActions}, dispatch),
   }
 })
 export default class Workspace extends React.Component {
@@ -97,6 +97,9 @@ export default class Workspace extends React.Component {
 
 		return (<div style={workspace}>
 		    		<NodeCanvas {...this.props}/>
+		    		<div onClick={this.props.actions.toggleTest} style={{position:"fixed", bottom:0}}>
+		    			<i className="fa fa-list fa-2x fa-fw" style={{color:"#bbb"}}></i>
+		    		</div>
 			    </div>);
 	}
 	

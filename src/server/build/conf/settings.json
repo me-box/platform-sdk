@@ -1,0 +1,27 @@
+{
+    "secret": "asjhgdsajhd6sa7d78as6s87adsakgdsadgaskdgsagdk",
+    "github": {
+        "CLIENT_ID": "",
+        "CLIENT_SECRET": "",
+        "CALLBACK": "http://localhost:8086/auth/github/callback",
+        "API": "https://api.github.com",
+        "RAW_URL": "https://raw.githubusercontent.com",
+        "URL": "https://github.com"
+    },
+    "appstore": {
+        "URL": ""
+    },
+    "registry": {
+        "URL": ""
+    },
+    "mongo": {
+        "URL": "mongodb://mongo:27017"
+    },
+    "redis": {
+        "host": "redis",
+        "port": 6379
+    },
+    "testserver": {
+        "URL": "http://localhost:9090"
+    }
+}

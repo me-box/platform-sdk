@@ -145,12 +145,14 @@ export default class Help extends Component {
 
 	render(){
 
-		const {visible, w} = this.props;
-		
+		const {visible, w, h, node} = this.props;
+		const {y=0} = node || {};
+		console.log("H IS",Math.min(this.state.currentHeight, h-y-25));
+
 		const style ={
 			left: PALETTE_WIDTH,
 			width: w-PALETTE_WIDTH,
-			height: this.state.currentHeight,
+			height: Math.min(this.state.currentHeight, h-y-25)
 		}
 		const className = cx({
 			closed: !visible

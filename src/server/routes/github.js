@@ -174,7 +174,7 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
 										filename: 'databox-manifest.json',
 										email: user.email || `${user.username}@me-box.com`,
 										message: commitmessage,
-										content: new Buffer(JSON.stringify(manifest,null,4)).toString('base64'),
+										content: new Buffer(JSON.stringify(_formatmanifest(manifest),null,4)).toString('base64'),
 										accessToken: accessToken,
 								})
    							]);
@@ -361,7 +361,7 @@ const _generateManifest = function(config,user, reponame, app, packages, allowed
 	
 	return  {
 				'manifest-version': 1,
-				name: appname,
+				name: appname.toLowerCase(),
 				version: "0.1.0",
 				description: app.description,
 				author: user.username,
@@ -466,6 +466,23 @@ const _uploadImageToRegistry = function(tag, registry, username){
 	});
 }
 
+const _formatmanifest = function(manifest){
+	//if empty object return
+	if (Object.keys(manifest).length === 0 && manifest.constructor === Object){
+		return manifest;
+	}
+
+	return {
+		...manifest,
+		name: manifest.name.toLowerCase(),
+		homepage: manifest.homepage.toLowerCase(),
+		repository: {
+			...manifest.repository,
+			url: manifest.repository.url.toLowerCase(),
+		}
+	}
+}
+
 const _publish = function(config, user, manifest, flows, dockerfile){
 	
 	return new Promise((resolve, reject)=>{
@@ -475,8 +492,9 @@ const _publish = function(config, user, manifest, flows, dockerfile){
 			sendmessage(user.username, "debug", {msg:"finshed pulling latest base container"});
 			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
+
 			const data = {
-				manifest: JSON.stringify(manifest),
+				manifest: JSON.stringify(_formatmanifest(manifest)),
 								
 				poster: JSON.stringify({
 					username: user.username,
@@ -610,8 +628,8 @@ router.get('/flow', function(req,res){
 
 	).then(function(values) {
 		
-		const flows    = Object.assign({},values[0], {content:JSON.parse(values[0].content)});
-		const manifest = Object.assign({},values[1], {content:JSON.parse(values[1].content)});
+		const flows    = {...values[0], content:JSON.parse(values[0].content)};
+		const manifest = {...values[1], content:JSON.parse(values[1].content)};
 
         res.send({
         	result: 'success',
@@ -619,6 +637,7 @@ router.get('/flow', function(req,res){
         	manifest,
         	Dockerfile: values[2],
         });
+
     }, (err)=>{
     	console.log(err);
     	res.status(500).send({error:'could not retrieve flows, manifest and Dockerfile'});
@@ -637,7 +656,7 @@ router.post('/repo/new', function(req,res){
 	var dockerfile 		= `# ${name} Dockerfile`;
 	var commitmessage 	= req.body.message || "first commit";
 	
-	console.log("manifest", JSON.stringify(manifest,null,4));
+	console.log("manifest", JSON.stringify(_formatmanifest(manifest),null,4));
 
 	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(repo=>{
 		console.log("successfully created repo", repo);
@@ -676,7 +695,7 @@ router.post('/repo/update', function(req, res){
 
 	const dockerfile 		= _generateDockerfile(libraries, req.config, req.body.manifest.name);
 	const flowscontent 		= new Buffer(JSON.stringify(req.body.flows, null, 4)).toString('base64');
-	const manifestcontent 	= new Buffer(JSON.stringify(req.body.manifest, null, 4)).toString('base64');
+	const manifestcontent 	= new Buffer(JSON.stringify(_formatmanifest(req.body.manifest), null, 4)).toString('base64');
 	const dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then((data)=>{
@@ -744,7 +763,7 @@ router.post('/publish', function(req,res){
 	
 		sendmessage(user.username, "debug", {msg:`commiting changes`});
 		const flowcontent 		= new Buffer(JSON.stringify(flows,null,4)).toString('base64');
-		const manifestcontent 	= new Buffer(JSON.stringify(manifest,null,4)).toString('base64');
+		const manifestcontent 	= new Buffer(JSON.stringify(_formatmanifest(manifest),null,4)).toString('base64');
 		const dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 		const message 			= commitmessage;

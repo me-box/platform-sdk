@@ -18,6 +18,8 @@ const CLEAR = 'iot.red/editor/CLEAR';
 
 export const NAME = 'editor';
 
+let logincheck = null;
+
 const initialState = {
 	deploymenuexpanded:false, 
 	testing: false,
@@ -70,11 +72,35 @@ export default function reducer(state = initialState, action={}) {
 }
 
 
+function checkLoggedIn(){
+	request
+		.get(`${config.root}/auth/loggedin`)
+		.set('Accept', 'application/json')
+		.timeout({response: 1500})
+		.end(function(err, res){
+			if (err){
+				console.log(err);
+			}
+			const {status} = res.body;
+			if (status === "fail"){
+				window.location.replace(`${config.root}/login`);
+			}
+		});
+}
+
 function initEditor(){
+	console.log("IN INIT EDITOR");
+	
+	if (!logincheck){
+		logincheck = setInterval(checkLoggedIn, 5000);
+	}
+
 	return (dispatch, getState)=>{
 		const id = getID();
 		dispatch(workspaceActions.initApp(id));
 	}
+
+	
 }
 
 function closeSideBar(){
