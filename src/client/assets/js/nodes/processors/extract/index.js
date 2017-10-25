@@ -65,7 +65,8 @@ const config = {
     },
 
     descriptionfn: (filters)=>{
-        return "This node will take an incoming message and then pull out specific values from it.  It is a simple way of removing all data from a message that is of no use further down the flow";
+        return `<p>This node will take an incoming message and then pull out specific values from it adn places them in the payload of the output message.</p>
+                <p>It is a simple way of removing all data from a message that is of no use further down the flow </p>`;
     }
     
 }

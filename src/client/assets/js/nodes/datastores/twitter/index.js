@@ -30,7 +30,7 @@ const config =  {
 						name: {type:'string', description: "a name assigned to this twitter node"}, 
 						id:  {type:'string', description: "<i>[id]</i>"},
 						type:{type: 'string', description: "<i>twitter</i>"},
-						subtype: {type: 'string', description: `<i>${type}</i>`},
+						//subtype: {type: 'string', description: `<i>${type}</i>`},
 				
 						payload: {
 							type: 'object', 

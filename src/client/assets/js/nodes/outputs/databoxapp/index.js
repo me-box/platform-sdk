@@ -233,7 +233,8 @@ const config = {
       }        
   },
 
-  descriptionfn: () => "<p>This component will display data on the databox UI for this app. It can render text, bar and gauge charts and html.  The chartify, webify and listify nodes can feed directly into this node.  Each node that feeds into this node will be displayed as a dark box below (with the id of the node or its name).  You can drag the boxes around to determine the layout of each node in the UI</p>",
+  descriptionfn: () => `<p>This component will display data on the databox UI for this app. It can render text, bar and gauge charts, svg visualisations and html.  The <strong>chartify, webify, listify and uibuilder </strong> nodes can feed directly into this node.</p> 
+                        <p>The layout for each input into this node can be configured by double clicking on it.  Each input is represented as a grey box (with the id of the node or its name).  You can drag the boxes around into rows / columns to adjust layout of each node in the UI</p>`,
 
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";

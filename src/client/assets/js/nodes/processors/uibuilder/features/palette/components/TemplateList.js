@@ -41,7 +41,7 @@ export default class TemplateList extends Component {
 
       return <form ref="svgUpload" encType="multipart/form-data" action="/upload/image" method="post">
                 <SVGUpload style={{padding:0, width:40, height:30, marginTop:20}}
-                  id="videoFile"
+                  id="imageFile"
                   secondary
                   accept="svg/*"
                   onChange={(f)=>{

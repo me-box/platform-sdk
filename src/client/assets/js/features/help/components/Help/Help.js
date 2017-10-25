@@ -147,7 +147,7 @@ export default class Help extends Component {
 
 		const {visible, w, h, node} = this.props;
 		const {y=0} = node || {};
-		console.log("H IS",Math.min(this.state.currentHeight, h-y-25));
+		
 
 		const style ={
 			left: PALETTE_WIDTH,

@@ -25,6 +25,7 @@ class Dialogue extends React.Component {
 			background: 'rgba(255,255,255,0.9)',
 			top: 0,
 			left: 0,
+			zIndex: 2,
 		}
 
 	

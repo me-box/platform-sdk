@@ -98,7 +98,7 @@ const config = {
       }        
   },
 
-  descriptionfn: () => "<h3>listify</h3>This node will typically connect to the App output node.  It expects data of the form <code> values:[{object}, {object}] </code> and converts it to <code> {keys:Array, rows: Array[]} </code>.",
+  descriptionfn: () => "<h3>listify</h3>This node will typically connect to the <strong>app</strong> output node.  It takes data from the <strong>payload</strong> of a message and displays it as a table, with the headings the attribute names",
 
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
