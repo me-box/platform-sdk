@@ -308,9 +308,7 @@ export default class NodeEditor extends React.Component {
 		const {showhelp} = this.state;
 
 		const close = this.props.actions.nodeConfigureOk;
-		//const info  = <Button icon onClick={this._toggleInfo}>info_outline</Button>;
-		//nav={info}
-
+	
 		return  <div onMouseUp={this._onMouseUp}>
 					<Dialogue 
 						title={`configure ${name}`} 

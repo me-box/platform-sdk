@@ -46,8 +46,8 @@ function removebox(boxes, moving){
 
 function layoutboxes(state){
     
-    if (!state.moving || !state.moving.torow){
-        return null;
+    if (!state.moving || (state.moving.torow == null || state.moving.torow == undefined)){
+        return state.boxes;
     }
 
     const boxes     = state.moving.torow == -1 ? [[], ...state.boxes] : state.boxes;
@@ -84,20 +84,20 @@ function boxes (state, action){
             	const tocol = Math.round((action.x + state.ox) / (state.w/3));
 				const torow = Math.round((action.y + state.oy) / (state.h/state.boxes.length));
 
-				//console.log(`rc: ${rc}, moving to row: ${torow}, col: ${tocol}`);
+				//console.log(`${state.moving.id}, rc: ${rc}, moving to row: ${torow}, col: ${tocol}`);
 
                 return { 
-                		moving: Object.assign(	{}, 
-                								state.moving, 
-                								{
-                									torow: torow,
-                								 	tocol: tocol,
-                								 	top: action.y + state.oy,
-                								 	left:  action.x + state.ox,
-                								}
-                							 )
-            	};
+                		moving: {
+                            ...state.moving, 
+                			torow: torow,
+                			tocol: tocol,
+                			top: action.y + state.oy,
+                			left:  action.x + state.ox,				
+                        }
+                }
+            	
             }
+           
             return {boxes: state.boxes};
 
         case MOUSE_UP:
@@ -124,12 +124,14 @@ export function reducer(state = {
 
                                         }, action) {
 
-    console.log("APP: seen action", action.type)
 	switch (action.type) {
 		
-
 		case INIT:
-			return Object.assign({}, state, {boxes: action.boxes||[[]]});
+			
+            return {
+                ...state, 
+                boxes: action.boxes||[[]]
+            };
 			
         case MOUSE_DOWN:
 			const {w,h} = action;
@@ -141,34 +143,41 @@ export function reducer(state = {
             const oy = top-state.y;
 
             //console.log(`selected ${box.name} and left = ${left} top = ${top}`);
-            return Object.assign({}, state, {
-                                                moving: {
-                                                	id: action.box.id,
-                                                	name: action.box.name,
-                                                	fromrow: row,
-                                                	fromcol: col,
-                                                	torow: row,
-                                                	tocol: col,
-                                                	top: state.y + oy,
-                                                	left: state.x + ox,
-                                                },
-                                                w: w,
-                                                h: h,
-                                                ox: ox, //box.left - state.x, 
-                                                oy: oy, //box.top - state.y,
-                                            });
+            return {
+                ...state, 
+                moving: {
+                	id: action.box.id,
+                	name: action.box.name,
+                	fromrow: row,
+                	fromcol: col,
+                	torow: row,
+                	tocol: col,
+                	top: state.y + oy,
+                	left: state.x + ox,
+                },
+                w: w,
+                h: h,
+                ox: ox, //box.left - state.x, 
+                oy: oy, //box.top - state.y,
+            };
 
         case MOUSE_UP:
            
-            return Object.assign({}, state, {
-                                                moving: null,
-                                                boxes: boxes(state, action),
-                                            });
+            return  {   
+                ...state, 
+                moving: null,
+                boxes: boxes(state, action),
+            };
 
 		case  MOUSE_MOVE:
 			
 
-            return Object.assign({}, state, { ...boxes(state, action), x: action.x, y: action.y})
+            return {    
+                ...state,  
+                ...boxes(state, action), 
+                x: action.x, 
+                y: action.y
+            };
             
 
     	default:

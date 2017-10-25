@@ -120,12 +120,13 @@ export default class Node extends Component {
       
       render() {
 		
-         
+       
+       
         //local is the stuff in this node's reducer
-		const {local, node, inputs=[], values={}, updateNode, w} = this.props;
+		const {local, node, inputs=[], values={}, updateNode, contentw} = this.props;
     
     	const NAMEROWHEIGHT = 190;
-		const WIDTH = w;
+		const WIDTH = contentw;
 		const HEIGHT = LAYOUT_HEIGHT;
 
         const nameprops = {

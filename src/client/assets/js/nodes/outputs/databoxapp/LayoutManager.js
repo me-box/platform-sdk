@@ -31,7 +31,7 @@ class LayoutManager extends Component {
       const {boxes, moving} = local;
       
       if (!boxes || boxes.length <= 0){
-        return;
+        return null;
       }
 
       const BOXWIDTH = w/boxes.length;
@@ -47,8 +47,7 @@ class LayoutManager extends Component {
       
       const b = boxes.map((row, i)=>{
           //const box = boxes[key];
-          
-
+        
           return row.map((box, j)=>{
             const boxw = w / row.length;
             const ammoving = moving && moving.name === box.name
