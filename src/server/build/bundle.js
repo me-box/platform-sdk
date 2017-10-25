@@ -1663,8 +1663,6 @@ router.post('/publish', function (req, res) {
 
 	(0, _websocket.sendmessage)(user.username, "debug", { msg: 'publishing manifest, ' + JSON.stringify(manifest, null, 4) });
 
-	console.log("publishing manifest", JSON.stringify(manifest, null, 4));
-
 	//first save the manifest and flows file - either create new repo or commit changes	
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(flows.reduce(function (acc, node) {
 		if (node.type === "dbfunction") {
@@ -1688,6 +1686,7 @@ router.post('/publish', function (req, res) {
 		var message = commitmessage;
 
 		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then(function (data) {
+
 			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken)]);
 		}, function (err) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: 'error commiting ' + JSON.stringify(err) });
@@ -1699,6 +1698,7 @@ router.post('/publish', function (req, res) {
 		}, function (err) {
 			res.status(500).send({ error: err });
 		}).then(function (values) {
+
 			res.send({
 				result: 'success',
 				repo: repo.name,

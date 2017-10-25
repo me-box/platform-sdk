@@ -745,7 +745,7 @@ router.post('/publish', function(req,res){
 	
 	sendmessage(user.username, "debug", {msg:`publishing manifest, ${JSON.stringify(manifest,null,4)}`});
 
-	console.log("publishing manifest", JSON.stringify(manifest,null,4));
+	
 	
 	//first save the manifest and flows file - either create new repo or commit changes	
 	const libraries = dedup(flatten(flows.reduce((acc, node)=>{
@@ -760,7 +760,7 @@ router.post('/publish', function(req,res){
 	sendmessage(user.username, "debug", {msg:`dockerfile, ${dockerfile}`});
 
 	if (repo && repo.sha && repo.sha.flows && repo.sha.manifest && repo.sha.Dockerfile){ //commit
-	
+		
 		sendmessage(user.username, "debug", {msg:`commiting changes`});
 		const flowcontent 		= new Buffer(JSON.stringify(flows,null,4)).toString('base64');
 		const manifestcontent 	= new Buffer(JSON.stringify(_formatmanifest(manifest),null,4)).toString('base64');
@@ -769,6 +769,9 @@ router.post('/publish', function(req,res){
 		const message 			= commitmessage;
 
 		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then((data)=>{
+			
+			
+
 			return Promise.all([
 									Promise.resolve(data.body.content.sha), 
 									_createCommit(req.config, user, repo.name, repo.sha.manifest,  'databox-manifest.json', manifestcontent, message, req.user.accessToken)
@@ -792,6 +795,9 @@ router.post('/publish', function(req,res){
 		},(err)=>{
 			res.status(500).send({error: err});
 		}).then((values)=>{
+
+			
+			
 			res.send({
 				result:'success', 
 				repo: repo.name, 

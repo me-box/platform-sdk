@@ -314,6 +314,7 @@ function receivedRepos(data){
 }
 
 function receivedSHA(repo, sha){
+
 	return {
 		type: nodeActionTypes.REPO_SHA_RETRIEVED,
 		repo,
@@ -505,7 +506,7 @@ function publish(){
     ]
       
     const repo = getState().repos.loaded;
-      
+
     const data = {  
       repo : repo,
       flows: flows,
@@ -527,8 +528,7 @@ function publish(){
           }else{
            
             dispatch(networkActions.networkSuccess('successfully published app!'));
-              dispatch(workspaceActions.toggleVisible());
-                //dispatch(submissionSuccess(res.body));
+            dispatch(workspaceActions.togglePublisher());
             dispatch(receivedSHA(res.body.repo, res.body.sha));
             dispatch(requestRepos());
           }
