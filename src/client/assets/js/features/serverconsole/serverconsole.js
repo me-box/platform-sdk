@@ -36,7 +36,7 @@ function newMessage(msg){
 const serverconsole = (state)=>{
 	return {
 			...state[NAME], 
-			visible: state.test.visible || state.workspace.publishervisible
+			visible: (state.test.visible || state.workspace.publishervisible) &&  state.nodes.configuringId === null
 	}
 }
 

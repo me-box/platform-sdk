@@ -8,7 +8,7 @@ import { DropTarget } from 'react-dnd';
 import { bindNodeIds } from 'utils/utils';
 //import {PALETTE_WIDTH} from 'features/palette/constants';
 const PALETTE_WIDTH = 150;
-const PADDING = 30;
+const PADDING = 10;
 
 
 const _originaldimensions = (dim, od)=>{
@@ -35,7 +35,7 @@ const _canvasdim = (w, h, aspect)=>{
     boxw = boxw - (boxw-_w) - PADDING*2;
     boxh = boxw / aspect;
   }
-
+  //return {w:_w, h:_h}
   return {w:Math.max(1,boxw), h:Math.max(1,boxh)};
 }
 
@@ -76,6 +76,8 @@ class EditorCanvas extends Component {
 
   	this._onMouseMove = this._onMouseMove.bind(this);
     this._handleResize = this._handleResize.bind(this);
+
+   
     this.rootNode = null;
     this.setOffset = bindActionCreators(canvasActions.setOffset.bind(null,nid), dispatch);
     this.mouseMove = bindActionCreators(canvasActions.mouseMove.bind(null,nid), dispatch);
@@ -87,6 +89,7 @@ class EditorCanvas extends Component {
   componentDidMount() {
     
     if (this.props.od === null){
+
         const dim = _canvasdim(this.props.w,this.props.h,this.state.aspect);
         this.props.updateNode("canvasdimensions",{w:dim.w, h:dim.h});
     }
@@ -94,7 +97,8 @@ class EditorCanvas extends Component {
 
     if (this.rootNode){
         const {left, top} = this.rootNode.getBoundingClientRect();
-        this.setOffset(left,top-40); // name field=40
+       
+        this.setOffset(left,top); // name field=40
     }
 
     window.addEventListener('resize', this._handleResize);
@@ -110,8 +114,9 @@ class EditorCanvas extends Component {
       const {[NAME]:{templates},w,h, od} = this.props;
 
       if (input){
+       
         const {left, top} = input.getBoundingClientRect();
-        this.setOffset(left,top-40); // name field=40
+        this.setOffset(left,top); // name field=40
       }
       
       if ( templates.length <= 0 || od===null){
@@ -122,13 +127,15 @@ class EditorCanvas extends Component {
   }
 
   _onMouseMove(e){
+    
     const {[NAME]:{offset}, w, h, od} = this.props;
     const dim = _canvasdim(w,h,this.state.aspect);
     const {ow, oh} = _originaldimensions(dim, od);
 
-    const {clientX, clientY} = e;
+    const {clientX, clientY} = e; 
     const x = (clientX-offset.left) * ow/dim.w;
     const y = (clientY-offset.top)  * oh/dim.h;
+   
     this.mouseMove(x,y);
   }
 
@@ -193,7 +200,7 @@ class EditorCanvas extends Component {
 
     return connectDropTarget(
       <div className="canvas">
-         <div ref={node => this.rootNode = node} onMouseMove={this._onMouseMove} className="grid" style={{margin:margin, height:dim.h, width: dim.w, border:"1px solid black"}}>
+         <div ref={node => this.rootNode = node}  onMouseMove={this._onMouseMove} className="grid" style={{margin:margin, height:dim.h, width: dim.w, border:"1px solid black"}}>
             <svg id="svgchart"  width={dim.w} height={dim.h} viewBox={`0 0 ${ow} ${oh}`} onMouseUp={this.onMouseUp}>
               {this.renderTemplates()} 
             </svg>

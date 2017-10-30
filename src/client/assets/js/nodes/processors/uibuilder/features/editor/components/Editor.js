@@ -74,7 +74,7 @@ export default class Editor extends Component {
 
       //e.preventDefault();
       //e.stopPropagation();
-      if( e.which == 8 ){ // 8 == backspace
+      if( e.which == 8  || e.which == 127){ // 8 == backspace
             
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
                 

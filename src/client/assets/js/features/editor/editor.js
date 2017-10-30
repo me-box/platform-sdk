@@ -89,7 +89,7 @@ function checkLoggedIn(){
 }
 
 function initEditor(){
-	console.log("IN INIT EDITOR");
+	
 	
 	if (!logincheck){
 		logincheck = setInterval(checkLoggedIn, 5000);

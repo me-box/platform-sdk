@@ -355,6 +355,7 @@ function createDockerImage(tarfile, tag) {
 			if (err) {
 				console.warn(err);
 				reject(err);
+				return;
 			}
 			output.pipe(process.stdout);
 
@@ -452,8 +453,8 @@ function writeTempFile(filestr, fileName) {
 		_fs2.default.writeFile(fileName, filestr, function (err) {
 			if (err) {
 				reject(err);
+				return;
 			}
-
 			resolve(true);
 		});
 	});
@@ -465,6 +466,7 @@ function removeTempFile(fileName) {
 			if (err) {
 				console.log(err);
 				reject(err);
+				return;
 			}
 			resolve(true);
 		});
@@ -1273,6 +1275,13 @@ var _saveToAppStore = function _saveToAppStore(config, manifest, username) {
 };
 
 var _postToAppStore = function _postToAppStore(storeurl, manifest, username) {
+
+	if (storeurl.trim() === "none") {
+		return new Promise(function (resolve, reject) {
+			resolve();
+		});
+	}
+
 	var addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
 	var _url = addscheme ? 'http://' + storeurl : storeurl;
 
@@ -1802,38 +1811,6 @@ var DEVMODE = argv.dev || false;
 var network = "bridge";
 var streams = {};
 
-/*let connected = false;
-
-const client =  new JsonSocket(new net.Socket());
-
-client.on("error", function(err){
-    connected = false;
-    console.log("error connecting, retrying in 2 sec");
-    setTimeout(function(){_connect()}, 2000);
-});
-
-client.on('uncaughtException', function (err) {
-    connected = false;
-    console.error(err.stack);
-    setTimeout(function(){_connect()}, 2000);
-});
-
-const _connect = (fn)=>{
-    connected = false;
-    
-    const endpoint = DEVMODE ?  "127.0.0.1":'databox-test-server';
-    console.log(`connecting to ${endpoint}:8435`);
-
-    client.connect(8435, endpoint, ()=>{
-        console.log('***** companion app connected *******');
-        connected = true;
-    
-        if (fn){
-            fn();
-        }
-    })
-}*/
-
 var _postFlows = function _postFlows(ip, port, data, username) {
 	var attempts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
 
@@ -1845,9 +1822,7 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 		var modifier = outputtypes.indexOf(node.type) != -1 ? { appId: username } : {}; //inject the appID
 		return Object.assign({}, node, modifier);
 	});
-	//REMOVE THIS TO -- PUT IN TO TEST!
-	//port = 1880;
-	//console.log("flows:", JSON.stringify(flows,null,4));
+
 	return new Promise(function (resolve, reject) {
 
 		if (attempts > 5) {
@@ -2008,18 +1983,18 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 
 	console.log(dockerfile);
 
-	var path = 'tmp-' + username + '.tar.gz';
+	var path = 'tmp-' + username.toLowerCase() + '.tar.gz';
 
 	return _pullContainer("tlodge/databox-red:latest", username).then(function () {
-		return (0, _utils.stopAndRemoveContainer)(username + '-red');
+		return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-red');
 	}).then(function () {
 		return (0, _utils.createTarFile)(dockerfile, JSON.stringify(flows), path);
 	}).then(function (tarfile) {
 		console.log('created tar file ' + tarfile);
-		return (0, _utils.createDockerImage)(tarfile, username + '-testimage');
+		return (0, _utils.createDockerImage)(tarfile, username.toLowerCase() + '-testimage');
 	}).then(function (image) {
 		console.log("creating test container!");
-		return (0, _utils.createTestContainer)(image, username, network);
+		return (0, _utils.createTestContainer)(image, username.toLowerCase(), network);
 	}, function (err) {
 		console.log("error creating test container!!");
 		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
@@ -2080,10 +2055,6 @@ var _containerLogs = function _containerLogs(container, username) {
 		stream.on('end', function () {
 			logStream.end('!stop!');
 		});
-
-		//setTimeout(function() {
-		//  stream.destroy();
-		//}, 2000);
 	});
 };
 
@@ -2096,16 +2067,9 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 			label: ['user=' + username],
 			status: ['running', "exited"]
 		}
+	};
 
-		/*return stopAndRemoveContainer(`${username}-red`).then(()=>{
-  return _pullContainer("tlodge/databox-red:latest")
-  }).then(()=>{	
-  return createTestContainer('tlodge/databox-red', username, network);
-  }).then((container)=>{
-  return _startContainer(container, flows, username);
-  });*/
-
-	};return _listContainers(opts).then(function (containers) {
+	return _listContainers(opts).then(function (containers) {
 		return containers;
 	}, function (err) {
 		return err;
@@ -2143,11 +2107,12 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 			} else {
 
 				(0, _websocket.sendmessage)(username, "debug", { msg: "container already running" });
-				if (!streams[c.Id]) {
-					var _container = _docker2.default.getContainer(c.Id);
-					streams[c.Id] = true;
-					_containerLogs(_container, username);
-				}
+
+				/*if (!streams[c.Id]){
+    	const container = docker.getContainer(c.Id);
+    	streams[c.Id] = true;
+    	_containerLogs(container, username);
+    }*/
 
 				var _fetchRunningAddr2 = _fetchRunningAddr(c),
 				    ip = _fetchRunningAddr2.ip,

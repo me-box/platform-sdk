@@ -156,6 +156,7 @@ export function createDockerImage(tarfile, tag){
 			if (err){
 				console.warn(err);
 				reject(err);
+				return;
 			}
 			output.pipe(process.stdout);
 			
@@ -258,8 +259,8 @@ export function writeTempFile(filestr, fileName){
 		fs.writeFile(fileName, filestr, function(err) {
 			if(err) {
 				reject(err);
+				return;
 			}
-			
 			resolve(true);
 		}); 
 	});
@@ -271,6 +272,7 @@ export function removeTempFile(fileName){
 			if(err) {
 				console.log(err);
 				reject(err);
+				return;
 			}
 			resolve(true);
 		});

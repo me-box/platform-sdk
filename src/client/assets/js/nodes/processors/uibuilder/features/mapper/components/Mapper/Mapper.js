@@ -327,8 +327,8 @@ export default class Mapper extends Component {
   renderMenu(){
 
     return <Flex align="center" style={{background:"#5f9ea0", color:"#fff"}}>
-              <Box auto p={1} onClick={this.showAttributes} style={{fontWeight: this.state.attributesSelected ? 'bold' : 'normal'}}> attributes </Box>
-              <Box auto p={1} onClick={this.showMappings}   style={{fontWeight: this.state.mappingsSelected ? 'bold' : 'normal'}}> mappings </Box>   
+              <Box auto p={1} onClick={this.showAttributes} style={{textAlign:'center', fontWeight: this.state.attributesSelected ? 'bold' : 'normal'}}> attributes </Box>
+              <Box auto p={1} onClick={this.showMappings}   style={{textAlign:'center', fontWeight: this.state.mappingsSelected ? 'bold' : 'normal'}}> mappings </Box>   
             </Flex>
   }
   

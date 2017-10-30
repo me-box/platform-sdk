@@ -15,39 +15,6 @@ const DEVMODE = argv.dev || false;
 const network = "bridge";
 const streams = {};
 
-/*let connected = false;
-
-const client =  new JsonSocket(new net.Socket());
-
-client.on("error", function(err){
-    connected = false;
-    console.log("error connecting, retrying in 2 sec");
-    setTimeout(function(){_connect()}, 2000);
-});
-
-client.on('uncaughtException', function (err) {
-    connected = false;
-    console.error(err.stack);
-    setTimeout(function(){_connect()}, 2000);
-});
-
-const _connect = (fn)=>{
-    connected = false;
-    
-    const endpoint = DEVMODE ?  "127.0.0.1":'databox-test-server';
-    console.log(`connecting to ${endpoint}:8435`);
-
-    client.connect(8435, endpoint, ()=>{
-        console.log('***** companion app connected *******');
-        connected = true;
-    
-        if (fn){
-            fn();
-        }
-    })
-}*/
-
-
 const _postFlows = function(ip, port, data, username, attempts=0){
 	console.log(`connecting to ${ip}:${port}/flows`);
 
@@ -58,9 +25,7 @@ const _postFlows = function(ip, port, data, username, attempts=0){
 		const modifier = outputtypes.indexOf(node.type) != -1 ? {appId: username} : {}; //inject the appID
 		return Object.assign({}, node, modifier);
 	});
-	//REMOVE THIS TO -- PUT IN TO TEST!
-	//port = 1880;
-    //console.log("flows:", JSON.stringify(flows,null,4));
+	
 	return new Promise((resolve,reject)=>{
 		
 		if (attempts > 5){
@@ -227,18 +192,18 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 	
 	console.log(dockerfile);
 	
-	const path = `tmp-${username}.tar.gz`;
+	const path = `tmp-${username.toLowerCase()}.tar.gz`;
 
 	return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
-		return stopAndRemoveContainer(`${username}-red`)
+		return stopAndRemoveContainer(`${username.toLowerCase()}-red`)
 	}).then(()=>{
 		return createTarFile(dockerfile, JSON.stringify(flows), path)
 	}).then((tarfile)=>{
 		console.log(`created tar file ${tarfile}`);
-		return createDockerImage(tarfile, `${username}-testimage`);
+		return createDockerImage(tarfile, `${username.toLowerCase()}-testimage`);
 	}).then((image)=>{
 		console.log("creating test container!");
-		return createTestContainer(image, username, network)
+		return createTestContainer(image, username.toLowerCase(), network)
 	},(err)=>{
 		console.log("error creating test container!!");
 		sendmessage(username, "debug", {msg:err.json.message});
@@ -298,9 +263,6 @@ const _containerLogs = function(container, username) {
       logStream.end('!stop!');
     });
 
-    //setTimeout(function() {
-    //  stream.destroy();
-    //}, 2000);
   });
 }
 
@@ -314,14 +276,6 @@ const _createContainerFromStandardImage = function(username, flows){
 			status: ['running', "exited"],			
 		}
   	}	
-
-  	/*return stopAndRemoveContainer(`${username}-red`).then(()=>{
-		return _pullContainer("tlodge/databox-red:latest")
-	}).then(()=>{	
-		return createTestContainer('tlodge/databox-red', username, network);
-	}).then((container)=>{
-		return _startContainer(container, flows, username);
-	});*/
 
 	return _listContainers(opts).then((containers)=>{
     		return containers;
@@ -362,11 +316,12 @@ const _createContainerFromStandardImage = function(username, flows){
 				}else{
 					
 					sendmessage(username, "debug", {msg:"container already running"});
-					if (!streams[c.Id]){
+					
+					/*if (!streams[c.Id]){
 						const container = docker.getContainer(c.Id);
 						streams[c.Id] = true;
 						_containerLogs(container, username);
-					}
+					}*/
 					
 					const {ip, port} = _fetchRunningAddr(c);
 					//console.log("posting new flows to", ip, port);

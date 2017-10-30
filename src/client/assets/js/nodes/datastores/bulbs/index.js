@@ -30,9 +30,54 @@ const config = {
         const type = subtype || "bulb-on";
       
         const payloads = {
+            
             "bulb-on": {type: "string", description: "<i>on</i> or <i>off</i>"},
             "bulb-hue": {type: "number", description: "a hue value (0-360)"},
-            "bulb-bri": {type: "number",description: "a brightness value (0-255)"}
+            "bulb-bri": {type: "number",description: "a brightness value (0-255)"},
+            
+            "hue-ZLLTemperature" : {
+                type: "object", 
+                description: "hue sensor temperature value",
+                properties: {
+                    "temperature":  {
+                        type:"number", 
+                        description:"hue light temperature value (2000-6500)"
+                    },
+                    "lastupdated": {
+                        type: "string",
+                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS"
+                    }
+                }
+            },
+
+            "hue-ZLLPresence" : {
+                type: "object", 
+                description: "hue sensor presence indicator",
+                properties: {
+                    "presence":  {
+                        type:"boolean", 
+                        description:"true if presence detected, false otherwise"
+                    },
+                    "lastupdated": {
+                        type: "string",
+                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS"
+                    }
+                }
+            },
+
+            "hue-ZLLLightLevel": {
+                type: "object", 
+                description: "hue sensor light indicator",
+                properties: {
+                    "lightlevel" : {type: "number",description: "a lux value"},
+                    "dark" : {type: "boolean", description: "true  if dark, false otherwise"},
+                    "daylight" : {type: "boolean", description: "true  if daylight, false otherwise"},
+                    "lastupdated": {
+                        type: "string",
+                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS"
+                    }
+                }
+            }
         }
       
         return {
@@ -62,6 +107,7 @@ const config = {
     risk: (subtype="bulb-on")=>{
 
         switch(subtype){
+
             case "bulb-on":
                 return {
                     score: 2,
@@ -78,6 +124,24 @@ const config = {
                 return {
                     score: 1,
                     reason: "little risk associated with revealing a bulb's brightness"
+                }
+
+            case "hue-ZLLTemperature":
+                return {
+                    score: 1,
+                    reason: "little risk associated with revealing a bulb's temperature"
+                }
+
+            case "hue-ZLLPresence":
+                return {
+                    score: 3,
+                    reason: "indication of presence can be revealing, dependent on sensor placement"
+                }
+
+            case "hue-ZLLLightLevel":
+                return {
+                    score: 1,
+                    reason: "little risk associated with revealing a hue sensor's light level"
                 }
 
             default: 
@@ -100,6 +164,12 @@ const config = {
                 return `${chosen} This will provide a Philips Hue bulb's hue setting which ranges from 0 to 360`;
             case "bulb-bri":
                 return `${chosen} This will access the Philips Hue bulb's brightness setting, which ranges from 0 to 255`;
+            case "hue-ZLLTemperature":
+                return `${chosen} This will acccess a hue sensor's temperature value (2000-6500)`;
+            case "hue-ZLLPresence":
+                return `${chosen} This will provide a presence indicator (true or false)`;
+            case "hue-ZLLLightLevel":
+                return `${chosen} This will provide a hue sensor light level value (in lux)`;  
             default:
                 return "unknown setting";
         }

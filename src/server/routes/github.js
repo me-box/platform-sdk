@@ -304,6 +304,13 @@ const _saveToAppStore = function(config,manifest,username){
 }
 
 const _postToAppStore = function(storeurl, manifest, username){
+	
+	if (storeurl.trim() === "none"){
+		return new Promise((resolve, reject)=>{
+			resolve();
+		});
+	}
+
 	const addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
 	const _url = addscheme ? `http://${storeurl}` : storeurl;
 

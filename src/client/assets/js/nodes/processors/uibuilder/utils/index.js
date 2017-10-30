@@ -5,8 +5,8 @@ function _group_schema(){
 		attributes:{
 			x: {type:"number", description:"x translate"},
 			y: {type:"number", description:"y translate"},
-			width:{type:"number", description:"bounding box width of group"},
-			height: {type:"number", description:"bounding box height of group"},
+			//width:{type:"number", description:"bounding box width of group"},
+			//height: {type:"number", description:"bounding box height of group"},
 		},
 		style:{
 			fill: 	{type:"colour", description:"fill colour"},
@@ -809,6 +809,7 @@ export function templateForPath(path, templates)
 }
 
 export function defaultCode(key, property){
+
    if (["scale", "rotate", "translate"].indexOf(property) !== -1){
       
       switch (property){

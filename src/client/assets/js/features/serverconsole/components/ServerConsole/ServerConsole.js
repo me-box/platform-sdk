@@ -72,14 +72,20 @@ export default class ServerConsole extends Component {
 			width: w-PALETTE_WIDTH,
 			visible: visible,
 			height: this.state.currentHeight,
-			background: 'white',
+			background: 'rgba(255,255,255,0.85)',
 			color: 'black',
 			overflowY: 'auto',
 		}
 		const className = cx({
 			closed: !visible
 		});
-
+		const consoletitle =	{
+			position: "absolute",
+			top: 0,
+			textAlign: "center",
+			color: "#303030",
+			width: "100%"
+		}
 		return 		<div>
 						<div className="inner" >
 							<div draggable="true" 
@@ -90,6 +96,7 @@ export default class ServerConsole extends Component {
 							style={style} 
 							id="serverconsole" 
 							className={className}>
+								<div style={consoletitle}>console</div>
 								<div className="consolecontent">{this.renderMessages()}</div>
 							</div>
 						</div>

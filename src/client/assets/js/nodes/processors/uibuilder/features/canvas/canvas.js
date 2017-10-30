@@ -42,6 +42,8 @@ const initialState = {
   rotating: false,
   dx: 0, //drag x pos
   dy: 0, //drag y pos
+  _x: 0, //xoffset
+  _y: 0, //yoffset
   offset: {
     left: 0,
     top: 0,
@@ -196,6 +198,7 @@ export function _expandPath(x,y, template){
   const b = pathBounds(template);
   const nw = x-b.x;
   const sf = nw/b.width; 
+
   return _scalePath(sf,template.d);
 }
 
@@ -203,7 +206,8 @@ export function _expandPath(x,y, template){
 const _scaleTemplate = (templates, id, sf)=>{
     
     const template = templates[id];
-
+    const sw = Number(`${template.style["stroke-width"] || 0}`.replace("px",""));
+    
     switch (template.type){
       
       case "circle":
@@ -212,6 +216,10 @@ const _scaleTemplate = (templates, id, sf)=>{
                   r:  template.r*sf,
                   cx: template.cx*sf,
                   cy: template.cy*sf,
+                   style : {
+                    ...template.style,
+                   'stroke-width': `${(sw*sf).toFixed(2)}px`,
+                  }
         }
 
       case "ellipse":
@@ -221,6 +229,10 @@ const _scaleTemplate = (templates, id, sf)=>{
                   ry: template.ry*sf,  
                   cx: template.cx*sf,
                   cy: template.cy*sf,
+                   style : {
+                    ...template.style,
+                   'stroke-width': `${(sw*sf).toFixed(2)}px`,
+                  }
         }
 
       case "rect":
@@ -229,13 +241,24 @@ const _scaleTemplate = (templates, id, sf)=>{
                   x: template.x*sf,
                   y: template.y*sf,
                   width:template.width*sf, 
-                  height:template.height*sf
+                  height:template.height*sf,
+                  style : {
+                    ...template.style,
+                   'stroke-width': `${(sw*sf).toFixed(2)}px`,
+                  }
         }
 
       case "path":
+        
+      
+
         return {
                   ...template, 
-                  d: _scalePath(sf,template.d)
+                  d: _scalePath(sf,template.d),
+                  style : {
+                    ...template.style,
+                   'stroke-width': `${(sw*sf).toFixed(2)}px`,
+                  }
         }
 
       case "group":
@@ -365,10 +388,11 @@ const _expandTemplate = (template, x, y)=>{
         }
 
       case "path":
-       
+  
         return {
                   ...template, 
-                  d: _expandPath(x,y,template)
+                  d: _expandPath(x,y,template),
+                  
         }
 
       case "group":
@@ -590,11 +614,14 @@ export default function reducer(state = initialState, action={}) {
       _y = action.y;
      
       //performance improvement
-      if (!state.selected || (!state.expanding && !state.dragging && !state.rotating))
-        return state;
+      if (!state.selected || (!state.expanding && !state.dragging && !state.rotating)){
+        return state
+      }
 
       return {
         ...state,
+        _x: action.x,
+        _y: action.y,
         templatesById: _modifyTemplate(state, action),
       }
 
@@ -611,8 +638,8 @@ export default function reducer(state = initialState, action={}) {
                   ...state,  
                   selected: action.path,
                   dragging: !state.expanding && !state.rotating,
-                  dx: Math.round(_x-x),
-                  dy: Math.round(_y-y),
+                  dx: _x-x,
+                  dy: _y-y,
         };
       }
 
@@ -867,8 +894,7 @@ function templateParentSelected(id,path) {
 
 function updateTemplateAttribute(id,path:Array, property:string, value){
 
-  console.log("OK AM IN UPDATE TEMPLATE ATTRIBUTE", path, property, value);
-   
+  
   const _value = _isNumeric(value) ? Math.round(value) : value;
 
   return (dispatch, getState)=>{

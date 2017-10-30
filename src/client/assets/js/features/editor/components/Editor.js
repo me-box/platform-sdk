@@ -50,6 +50,7 @@ export default class Editor extends Component {
   	super(props);
     this._handleResize = this._handleResize.bind(this);
     this._handleKeyDown = this._handleKeyDown.bind(this);
+   
   } 
 
   componentDidMount(){
@@ -114,7 +115,7 @@ export default class Editor extends Component {
 
     _handleKeyDown(e) {
        var rx = /INPUT|SELECT|TEXTAREA|DIV/i;
-       if( e.which == 8 ){ // 8 == backspace
+       if( e.which == 8 || e.which == 127){ // 8 == backspace
             if(!rx.test(e.target.tagName) || e.target.disabled || e.target.readOnly ){
                 this.props.actions.deletePressed();
                 e.preventDefault();
@@ -122,9 +123,13 @@ export default class Editor extends Component {
        }
     }
 
+
+    
     _handleResize(e){
+     
       const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
       const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+       console.log(`IN HANDLE RESIZE ${w},${h}`);
       this.props.actions.windowResize(w,h);
     }
 }

@@ -30,6 +30,9 @@ export default class Node extends Component {
               {name: 'on', value: 'bulb-on'},
               {name: 'hue', value: 'bulb-hue'},
               {name: 'brightness', value: 'bulb-bri'},
+              {name: 'temperature', value: 'hue-ZLLTemperature'},
+              {name: 'presence', value: 'hue-ZLLPresence'},
+              {name: 'light-level', value: 'hue-ZLLLightLevel'}
           ],
           
           label:"subtype",
