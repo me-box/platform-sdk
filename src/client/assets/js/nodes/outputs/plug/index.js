@@ -32,7 +32,8 @@ const config = {
         properties: {
           payload: {
             type: 'string',
-            description: `<i> on </i> or <i> off </i>`
+            description: `<i> on </i> or <i> off </i>`,
+            enum: ["on", "off"]
           }
         },
         required: ["payload"]

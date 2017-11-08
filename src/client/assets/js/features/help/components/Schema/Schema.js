@@ -12,7 +12,7 @@ const _oneof = function(schema, id, selectedid){
 				tail = _oneofpayload(item, id, selectedid)
 			}
 		}
-		else if (item.type === "oneof"){
+		else if (item.type === "oneOf"){
 
 			if (item.oneOf){
 				tail = _oneof(item.oneOf, id, selectedid)
@@ -99,7 +99,7 @@ const _oneofpayload = function(item, id, selectedid){
 
 	const items = Object.keys(schema).map((key,i)=>{
 		const item = schema[key];
-		if (item.type === "object" || item.type=="oneof"){
+		if (item.type === "object" || item.type=="oneOf"){
 			return _formatobject(item,key,id, selectedid); 
 		}			
 		return _formatprimitive(item,key,id, selectedid);
@@ -122,7 +122,7 @@ const _payload = function(schema, id, selectedid){
 
 	return Object.keys(schema).map((key,i)=>{
 		const item = schema[key];
-		if (item.type === "object" || item.type=="oneof"){
+		if (item.type === "object" || item.type=="oneOf"){
 			return _formatobject(item,key,id, selectedid); 
 		}			
 		return _formatprimitive(item,key,id, selectedid);

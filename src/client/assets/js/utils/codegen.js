@@ -35,7 +35,17 @@ function _enumerate_properties(obj, depth){
 					const item = obj[key];
 					switch (item.type){
 						case "object":
-							acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:\n${_templateobject(item,depth+1)}`;
+						case "oneOf":
+							acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:${_templateobject(item,depth+1)}`;
+							break;
+
+
+						case "string":
+							if (item.enum){
+								acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:${item.enum.map(i=>`"${i}"`).join("||")},`;
+							}else{
+								acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:<${item.type}>,`;
+							}
 							break;
 						default:
 							acc = `${acc}\n${_tabsfordepth(1)}${_tabsfordepth(depth)}${key}:<${item.type}>,`;
@@ -45,9 +55,12 @@ function _enumerate_properties(obj, depth){
 }
 
 function _map_properties(arr, depth){
-	return `${arr.map((item)=>{
-		return `\n${_tabsfordepth(depth)}\/\/${item.description||""}\n${_templateobject(item, depth)}\n`;
-	}).join("\n")}`;
+	return `/*${arr.map((item)=>{
+		if (["oneOf", "object"].indexOf(item.type) != -1){
+			return `\n${_tabsfordepth(depth)}\/\/${item.description||""}\n${_templateobject(item, depth)}\n`;
+		}
+		return `${item.description||""}`;
+	}).join("||")}*/`;
 }
 
 function _templateobject(obj,depth){
@@ -69,8 +82,7 @@ function _codeForInput(data){
 
 //creates the var assignment
 export function codeFromSchema(data, type){	
-	console.log("generating code for schema", data, " type", type);
-
+	
 	if (type==="input"){
 		//return Object.keys(data).reduce((lines, key)=>{
 		//	console.log("looking at data", data[key]);		

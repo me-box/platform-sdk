@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 import NodeEditor from './components/NodeEditor/';
 import {NODE_EDITOR_PADDING, TAB_HEIGHT, PALETTE_WIDTH, TOOLBAR_HEIGHT, WORKSPACE_FOOTER} from './constants/ViewConstants';
 
+
+
 export function contextTypes(cType) {
     return function (DecoratedComponent) {
         DecoratedComponent.contextTypes = cType;
@@ -48,18 +50,19 @@ export function configNode(){
             const NODE_EDITOR_MAX_HEIGHT  = h - (2 * NODE_EDITOR_PADDING);
 
             const inputs = Object.keys(links).filter((key)=>{
-                const link = links[key]; 
-                return link.target.id === id;
+              const link = links[key]; 
+              return link.target.id === id;
             }).map((linkId)=>{
-
-                return nodes[links[linkId].source.id];
+              const {name, label, id, schema, type, _def:{color,icon}} = nodes[links[linkId].source.id];
+              return {name, label,id,schema,type,color,icon};
             });
           
             const outputs = Object.keys(links).filter((key)=>{ 
-               const link = links[key]; 
-               return link.source.id === id;
+              const link = links[key]; 
+              return link.source.id === id;
             }).map((linkId)=>{
-                return nodes[links[linkId].target.id];
+              const {name, label, id, schema, type, _def:{color,icon}} = nodes[links[linkId].target.id];
+              return {name, label,id,schema,type, color,icon};
             });   
 
             const props = {

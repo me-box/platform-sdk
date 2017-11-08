@@ -20,10 +20,6 @@ module.exports = merge(config, {
     application: 'production',
     //vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-redux', 'redux']
   },
-  externals: {
-    "react" : "React",
-    "react-dom" : "ReactDOM",
-  },
   plugins: [
     new CopyWebpackPlugin([
       {

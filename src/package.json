@@ -97,6 +97,7 @@
     "classnames": "2.2.5",
     "express": "4.14.0",
     "http-proxy": "^1.16.2",
+    "json-schema-to-flow-type": "^0.2.6",
     "moment": "^2.17.1",
     "react": "^16.0.0",
     "react-ace": "^4.1.6",

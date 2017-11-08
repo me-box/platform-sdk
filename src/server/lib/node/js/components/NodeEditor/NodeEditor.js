@@ -231,8 +231,8 @@ export default class NodeEditor extends React.Component {
 				
 				const props = {
 						schema: node.schema ? node.schema.output || {} : {}, 
-						icon: node._def.icon,
-						color: node._def.color, 
+						icon: node.icon,
+						color: node.color, 
 						id: node.id,
 						selectedid: node.id,
 				};
@@ -270,8 +270,8 @@ export default class NodeEditor extends React.Component {
 		const outputdescription = outputs.map((node, i)=>{	
 				const props = {
 						schema: node.schema ? node.schema.input || {} : {},
-						icon: node._def.icon,
-						color: node._def.color, 
+						icon: node.icon,
+						color: node.color, 
 						id: node.id,
 						selectedid: node.id,
 				};

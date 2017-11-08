@@ -50,7 +50,7 @@ const config = {
                  
                     input:{
                         type: "any",
-                        description: "extract will take ANY object as input"
+                        description: "dbfunction will take ANY object as input"
                     }
                 }
     },

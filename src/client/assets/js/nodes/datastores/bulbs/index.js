@@ -89,6 +89,21 @@ const config = {
                     id:  {type:'string', description: "the node id: [id]"},
                     type:{type: 'string', description: `the type:\'bulbs-in\'`},
                     subtype: {type: 'string', description: `reading type:\'${type}\'`},
+                    testarray: {    
+                                    type: 'array', 
+                                    description: `testing an array for mapping`, 
+                                    items: {
+                                        type: "object", 
+                                        properties:{
+                                            name: {
+                                                type:"string"
+                                            },
+                                            value:{
+                                                type:"number"
+                                            }
+                                        }
+                                    }
+                                },
                     payload: {
                       type: 'object', 
                       description: 'the payload object', 

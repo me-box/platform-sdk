@@ -242,9 +242,10 @@ export default class Mapper extends Component {
           return acc;
         },item.from.sourceId);
 
-        const [id, ...rest] = item.to.path; 
+        //const [id, ...rest] = item.to.path; 
 
-
+        const id = item.to.path[item.to.path.length-1];
+        console.log("item is ", item);
         //TODO: see: https://github.com/gaearon/redux-devtools/issues/167
         //dev tools can cause old actions to be replayed when the router is replaced (but nids will be different...)
         if (!templatesById[id]){
@@ -391,10 +392,11 @@ export default class Mapper extends Component {
        
       
       this.props.actions.updateTemplateAttribute(nid, selectedMapping.to.path, "enterFn", buffer.birth || null);
-      
-      
       this.props.actions.updateTemplateAttribute(nid, selectedMapping.to.path, "exitFn", buffer.death || null);
       
+      this.props.actions.mapBirth(nid, selectedMapping.mappingId, buffer.birth || null);
+      this.props.actions.mapDeath(nid, selectedMapping.mappingId, buffer.death || null);
+
       if (buffer.transformer){
           this.props.actions.saveTransformer(nid, selectedMapping.mappingId, buffer.transformer);
       }

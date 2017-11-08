@@ -124,7 +124,7 @@ app.use("/uibuilder/*", function(req, res) {
 app.use("/lib/*", function(req, res) {
   
    req.url = `${req.baseUrl}${req.url}`.replace(/\/$/, "");
-
+   console.log(req.url);
     apiProxy.web(req, res, {
       target: {
         port: 9000,

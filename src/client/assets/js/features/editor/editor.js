@@ -73,19 +73,21 @@ export default function reducer(state = initialState, action={}) {
 
 
 function checkLoggedIn(){
-	request
+	return {status:true};
+
+	/*request
 		.get(`${config.root}/auth/loggedin`)
 		.set('Accept', 'application/json')
 		.timeout({response: 1500})
 		.end(function(err, res){
 			if (err){
-				console.log(err);
+				return;
 			}
 			const {status} = res.body;
 			if (status === "fail"){
 				window.location.replace(`${config.root}/login`);
 			}
-		});
+		});*/
 }
 
 function initEditor(){

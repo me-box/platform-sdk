@@ -214,7 +214,7 @@ const config = {
             enum: ["text", "gauge", "bar", "list", "uibuilder"]
           },
           payload: {
-            type: 'oneof',
+            type: 'oneOf',
             description: 'the message payload',
             oneOf: _descriptions.map((item) => {
               return item;

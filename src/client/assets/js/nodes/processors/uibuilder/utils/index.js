@@ -823,7 +823,14 @@ export function defaultCode(key, property){
             return `return \`translate(\${${key}},\${${key}})\``;
       }
    }
-   return `return ${key}`
+   if (["cx", "x"].indexOf(property) !== -1){
+   	 return `return ${key}%w;`
+   }
+
+   if (["cy", "y"].indexOf(property) !== -1){
+   	 return `return ${key}%h;`
+   }
+   return `return ${key};`
 }
 
 export function resolvePath(key,path,obj){

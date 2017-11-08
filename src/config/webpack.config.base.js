@@ -12,6 +12,11 @@ module.exports = {
     publicPath: '/',
 
   },
+  externals: {
+    "react" : "React",
+    "react-dom" : "ReactDOM",
+    "flow": "flow",
+  },
   resolve: {
     modules: [
       path.join(__dirname, '../client/scripts'),

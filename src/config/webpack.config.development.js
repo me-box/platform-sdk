@@ -15,6 +15,11 @@ module.exports = merge(config, {
   debug: true,
   cache: true,
   devtool: 'cheap-module-eval-source-map',
+  externals: {
+    "react" : "React",
+    "react-dom" : "ReactDOM",
+    "flow": "flow",
+  },
   entry: {
     application: [
       'webpack-hot-middleware/client',
@@ -22,10 +27,6 @@ module.exports = merge(config, {
       'development'
     ],
     //vendor: ['react-redux', 'react-router', 'react-router-redux', 'redux']
-  },
-  externals: {
-    "react" : "React",
-    "react-dom" : "ReactDOM"
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

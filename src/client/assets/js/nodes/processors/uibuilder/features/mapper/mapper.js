@@ -11,6 +11,8 @@ const INIT = 'uibuilder/mapper/INIT';
 const TOGGLE_MAPPER  = 'uibuilder/mapper/TOGGLE_MAPPER';
 const MAP_FROM  = 'uibuilder/mapper/MAP_FROM';
 const MAP_TO = 'uibuilder/mapper/MAP_TO';
+const MAP_DEATH = 'uibuilder/mapper/MAP_DEATH';
+const MAP_BIRTH = 'uibuilder/mapper/MAP_BIRTH';
 const SELECT_MAPPING = 'uibuilder/mapper/SELECT_MAPPING';
 const SAVE_TRANSFORMER = 'uibuilder/mapper/SAVE_TRANSFORMER';
 const REMOVE_MAPPING = 'uibuilder/mapper/REMOVE_MAPPING';
@@ -166,50 +168,112 @@ export default function reducer(state = initialState, action= {}) {
 	switch (action.type){
 		case INIT:
 
-      		return Object.assign({}, state, {
+      		return { 
+      			...state,
           		mappings: action.mappings,
           		transformers: action.transformers,
-      		});
+      		}
 		
 		case TOGGLE_MAPPER:
-			return Object.assign({}, state, {open:!state.open});
+
+			return {
+						...state, 
+						open:!state.open
+			}
 	
 		case MAP_FROM:
-			return Object.assign({}, state, {from:createFrom(action)});
+			return {
+						...state, 
+						from:createFrom(action)
+					};
 
 		case MAP_TO:
 			if (state.from){
-				return Object.assign({}, state, {
-													mappings: [...state.mappings, {mappingId: action.mappingId, ttype:action.ttype, from:state.from, to:createTo(action) /*nodes:[]*/}],
-													from: null,
-													to: null,
-												})
+				return {
+					...state,
+					mappings: [...state.mappings, {mappingId: action.mappingId, ttype:action.ttype, from:state.from, to:createTo(action) /*nodes:[]*/}],
+					from: null,
+					to: null,
+					transformers :{
+						...state.transformers,
+						[action.mappingId]:action.transformer,
+					}
+				}
 			}
 			return state;
 
+
+		case MAP_BIRTH:
+			return {
+				...state,
+				mappings: state.mappings.reduce((acc, item)=>{
+					if (item.mappingId === action.mappingId){
+						acc.push({...item, birth: action.birth})
+					}else{
+						acc.push(item);
+					}
+					return acc;
+				},[])
+			}
+		
+		case MAP_DEATH:
+			
+			return {
+				...state,
+				mappings: state.mappings.reduce((acc, item)=>{
+					if (item.mappingId === action.mappingId){
+						acc.push({...item, death: action.death})
+					}else{
+						acc.push(item);
+					}
+					return acc;
+				},[])
+			}
+
 		case SELECT_MAPPING:
-			return Object.assign({},state,{selectedMapping:action.mapping});
+			return {...state,selectedMapping:action.mapping};
 
 
 		case SAVE_TRANSFORMER:
-			return Object.assign({},state,{transformers:Object.assign({}, state.transformers, {[action.mappingId]:action.transformer})});
+			return {	
+						...state,
+									
+						transformers:{
+							...state.transformers, 
+							[action.mappingId]:action.transformer
+						}
+					};
 
 		case LOAD_MAPPINGS:
-			return Object.assign({},state, {mappings:action.mappings, transformers:action.transformers, selectedMapping:null, from:null, to:null});
+			return {	...state, 
+						mappings:action.mappings, 
+						transformers:action.transformers, 
+						selectedMapping:null, 
+						from:null, 
+						to:null
+					};
 
 		case CLEAR_STATE:
-			return Object.assign({}, state, initialState);
+			return {
+					...state, 
+					...initialState
+			};
 
 		case REMOVE_MAPPING:
-			return Object.assign({}, state, {
+			return {
+
+				...state, 
+				
 				mappings: state.mappings.filter(mapping=>mapping.mappingId != action.mappingId),
+				
 				transformers:  Object.keys(state.transformers).reduce((acc, key)=>{
 					if (key != action.mappingId){
-						acc[key] = state.transformers[key];
+							acc[key] = state.transformers[key];
 					}
 					return acc;
 				},{})
-			})
+			}
+
 		default:	
 			return state;
 	}
@@ -234,12 +298,34 @@ function mapFrom(id, sourceId, key, path, type){
 	};
 }
 
+function mapBirth(id, mappingId, birth){
+	return {	 
+		id,
+		type: MAP_BIRTH,
+		mappingId,
+		birth
+	}
+}
+
+function mapDeath(id, mappingId, death){
+	return {	 
+		id,
+		type: MAP_DEATH,
+		mappingId,
+		death
+	}
+}
+
 function mapTo(id, ttype, path, property){
 
 	return (dispatch,getState)=>{
-	
+		
+		if (!getState()[id][NAME].from)
+			return;
+
 		const template = getState()[id][CANVASNAME].templatesById[path[path.length-1]];
 		
+
 		const action = {
 			id,
 			type: MAP_TO,
@@ -248,9 +334,11 @@ function mapTo(id, ttype, path, property){
 			property,
 			shape: template.type,
 			mappingId: generateId(),
+			transformer: defaultCode(getState()[id][NAME].from.key,property),
 			
 		}
 		dispatch(action);
+		dispatch(nodeActions.updateNode('transformers', getState()[id][NAME].transformers));
 	}
 }
 
@@ -301,6 +389,7 @@ function subscribeMappings(id){
 }
 
 function removeMapping(id, mappingId){
+	console.log("in remove mapping", mappingId);
 	return (dispatch, getState)=>{
 		dispatch({id,type: REMOVE_MAPPING,mappingId});
 		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
@@ -316,6 +405,7 @@ function deletePressed(id, templateId){
 			dispatch(removeMapping(id, mappingId));
 		});
 		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+		dispatch(nodeActions.updateNode('transformers', getState()[id][NAME].transformers));
 	}
 }
 
@@ -323,6 +413,7 @@ function mapToAttribute(id, path, property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"attribute", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      dispatch(nodeActions.updateNode('transformers', getState()[id][NAME].transformers));
       //build provenance tree
       dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
@@ -332,6 +423,7 @@ function mapToStyle(id,path,property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"style", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      dispatch(nodeActions.updateNode('transformers', getState()[id][NAME].transformers));
       //build provenance tree
       dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
@@ -341,6 +433,7 @@ function mapToTransform(id,path,property){
 	return (dispatch, getState)=>{
       dispatch(mapTo(id,"transform", path, property));
       dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+      dispatch(nodeActions.updateNode('transformers', getState()[id][NAME].transformers));
       //build provenance tree
       dispatch(nodeActions.updateNode('tree', _buildTree(id, getState()[id][NAME].mappings, getState().nodes.nodesById, getState().ports.linksById)));
   	}
@@ -456,6 +549,8 @@ export const actionCreators = {
   init,
   toggleMapper,
   mapFrom,
+  mapBirth,
+  mapDeath,
   mapToAttribute,
   mapToStyle,
   mapToTransform,
@@ -467,4 +562,5 @@ export const actionCreators = {
   deletePressed,
   createEnterSubscription,
   clearState,
+
 };

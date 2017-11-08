@@ -12,6 +12,7 @@ import 'brace/mode/javascript';
 import 'brace/mode/json';
 //import 'brace/theme/github';
 import {configNode} from 'utils/ReactDecorators';
+const  jsontoflow = require("json-schema-to-flow-type");
 
 @configNode()
 export default class Node extends React.Component {
@@ -34,7 +35,7 @@ export default class Node extends React.Component {
                 height: 40,
                 width: 40,
                 color:'white',
-                background: _node._def.color || '#ca2525',
+                background: _node.color || '#ca2525',
                 border: '2px solid white', 
                 textAlign: 'center',
                 boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
@@ -46,7 +47,7 @@ export default class Node extends React.Component {
             }
             
             return  <div  onClick={this._createInputCode.bind(null, _node)} key={i} style={iconstyle}>
-                  <i className={`fa ${_node._def.icon} fa-fw`}></i>
+                  <i className={`fa ${_node.icon} fa-fw`}></i>
                 </div>
       });
 
@@ -61,7 +62,7 @@ export default class Node extends React.Component {
             height: 40,
             width: 40,
             color:'white',
-            background: _node._def.color || '#ca2525',
+            background: _node.color || '#ca2525',
             border: '2px solid white', 
             textAlign: 'center',
             boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
@@ -73,7 +74,7 @@ export default class Node extends React.Component {
         }
           
         return  <div onClick={this._createOutputCode.bind(null, _node)} key={i} style={iconstyle}>
-                <i className={`fa ${_node._def.icon} fa-fw`}></i>
+                <i className={`fa ${_node.icon} fa-fw`}></i>
               </div>
       });
     }
@@ -88,7 +89,7 @@ export default class Node extends React.Component {
                 height: 40,
                 width: 40,
                 color:'white',
-                background: _node._def.color || '#ca2525',
+                background: _node.color || '#ca2525',
                 border: '2px solid white', 
                 textAlign: 'center',
                 boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
@@ -100,9 +101,9 @@ export default class Node extends React.Component {
             }
             
             return  <div onClick={()=>{
-                                    this._createInputType(_node);
-                                    this.setState({selected:"inputtypedef"})}} key={i} style={iconstyle}>
-                        <i className={`fa ${_node._def.icon} fa-fw`}></i>
+                        this._createInputType(_node);
+                        this.setState({selected:"inputtypedef"})}} key={i} style={iconstyle}>
+                        <i className={`fa ${_node.icon} fa-fw`}></i>
                     </div>
       });
     }
@@ -118,7 +119,7 @@ export default class Node extends React.Component {
             height: 40,
             width: 40,
             color:'white',
-            background: _node._def.color || '#ca2525',
+            background: _node.color || '#ca2525',
             border: '2px solid white', 
             textAlign: 'center',
             boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
@@ -133,7 +134,7 @@ export default class Node extends React.Component {
                                     this._createOutputType(_node);
                                     this.setState({selected:"outputtypedef"})}} key={i} style={iconstyle}>
 
-                 <i className={`fa ${_node._def.icon} fa-fw`}></i>
+                 <i className={`fa ${_node.icon} fa-fw`}></i>
                 </div>
       });
     }
@@ -217,15 +218,109 @@ export default class Node extends React.Component {
               </div>          
     }
 
+    _getReturnFromItem(obj, returns){
+        
+        
+
+        switch(obj.type){
+          case "ReturnStatement":
+            if (obj.argument){
+              return [...returns, Object.keys(obj.argument)
+                                      .filter((i)=>["loc","range"].indexOf(i)==-1)
+                                      .reduce((acc,key)=>{
+                                        acc[key] = obj.argument[key]
+                                        return acc;
+                                      },{})
+                    ];
+            }
+            return returns;
+
+          case "IfStatement":
+            return [...returns, ...this._getReturnFromItem(obj.consequent, []),  ...this._getReturnFromItem(obj.alternate, [])] 
+
+          case "BlockStatement":
+            return obj.body.reduce((acc, item)=>{
+                return [...acc, ...this._getReturnFromItem(item, [])];
+            },returns);
+
+          case "SwitchStatement":
+            return (obj.cases || []).reduce((acc,c)=>{
+              return [...acc, ...c.consequent.reduce((acc,item)=>{
+                 return [...acc, ...this._getReturnFromItem(item,[])];
+              },[])];
+
+            },returns);
+          
+          default:
+            return;
+        }
+    }
+
     renderCodeInput(){
 
-      const {node, values={}, updateNode} = this.props;
+      const {node, outputs=[], inputs=[], values={}, updateNode} = this.props;
 
       const aceprops = {
+
         onChange: (value)=>{
-            console.log(`updating value *${value}*`);
+            
+            
+            /*const _in = inputs.reduce((acc, node)=>{
+               const schema = node.schema ? node.schema.output : {}; 
+               return {id:"Msg", schema:jsontoflow.parseSchema({...schema, id:"msg"})};
+            },{id:"",schema:""});
+
+            console.log(_in);*/
+            
+            const _out = outputs.reduce((acc, node)=>{
+              const id = node.name||node.type
+              const schema = node.schema ? node.schema.input : {};
+              return  {id : id.charAt(0).toUpperCase() + id.slice(1), schema: jsontoflow.parseSchema({...schema, id:node.name||node.type})};
+            },{id:"", schema:""});
+            
+  
+            let intype = "";
+            let inschema = "";
+
+            if (inputs.length == 1){
+              const _n = inputs[0].schema ? inputs[0].schema.output : {};
+              inschema = jsontoflow.parseSchema({..._n, id:"msg"})
+              intype   = "msg:Msg";
+            }
+            if (inputs.length > 1){
+              intype = "msg:mixed";
+            }
+
+            
+            const toparse = `${inschema} (${intype})=>{${value}}`;
+            console.log(toparse);
+
+            const parsed = flow.parse(toparse,{});
+            console.log(parsed);
+            //console.log(parsed.body[0].expression.body.body);
+
+            if (parsed.errors.length <= 0){
+              const statement = parsed.body.reduce((acc,item)=>{
+                if (item.type === "ExpressionStatement"){
+                  return item;
+                }
+              },{});
+              const returnstatement = statement.expression.body.body.reduce((acc,obj)=>{
+                  return [...acc, this._getReturnFromItem(obj,[])];
+              },[]).filter(i=>i ? i.length > 0 : false);
+
+              console.log(JSON.stringify(returnstatement,null,4));
+            }
+
+           
+            const fn = `${inschema} ${_out.schema} (${intype}):${_out.id || "any"}=>{${value}}`;
+            console.log(flow.checkContent("-", `${fn}`));
+
+            //console.log("output code is",  jsontoflow.parseSchema({...schema, id:node.name || node.type}));
+              
             updateNode("func", value);
         },
+
         value: values.func,
         mode: "javascript",
         theme: "github",
