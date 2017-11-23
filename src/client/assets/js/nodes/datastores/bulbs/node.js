@@ -10,7 +10,7 @@ export default class Node extends Component {
 
     render(){
         
-        const {node,values={},updateNode, updateOutputSchema} = this.props;
+        const {node,values={},updateNode} = this.props;
         
         const nameprops = {
           id: "name",

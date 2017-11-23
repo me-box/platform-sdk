@@ -126,15 +126,21 @@ const config = {
                 },
                 x: {
                   type: 'number',
-                  description: 'the x axis value, vigorous shaking will range from (-38 to 38)'
+                  description: 'the x axis value, vigorous shaking will range from (-38 to 38)',
+                  minimum: -38,
+                  maximum: 38
                 },
                 y: {
                   type: 'number',
-                  description: 'the y axis value, vigorous shaking will range from (-38 to 38)'
+                  description: 'the y axis value, vigorous shaking will range from (-38 to 38)',
+                  minimum: -38,
+                  maximum: 38
                 },
                 z: {
                   type: 'number',
-                  description: 'the z axis value, vigorous shaking will range from (-38 to 38)'
+                  description: 'the z axis value, vigorous shaking will range from (-38 to 38)',
+                  minimum: -38,
+                  maximum: 38
                 },
               }
             }

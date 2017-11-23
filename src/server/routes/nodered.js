@@ -20,10 +20,11 @@ const _postFlows = function(ip, port, data, username, attempts=0){
 
 	
 	//add in channelIDs here
+	console.log(`adding output types`);
 	const flows = data.map((node)=>{
-		const outputtypes = ["app", "debugger", "bulbsout", "pipstaprint"];		
+		const outputtypes = ["app", "debugger", "bulbsout", "plugout"];		
 		const modifier = outputtypes.indexOf(node.type) != -1 ? {appId: username} : {}; //inject the appID
-		return Object.assign({}, node, modifier);
+		return {...node,  ...modifier};
 	});
 	
 	return new Promise((resolve,reject)=>{

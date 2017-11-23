@@ -32,7 +32,7 @@ const config = {
         properties: {
           payload: {
             type: 'string',
-            description: `<i> on </i> or <i> off </i>`,
+            description: "on or off",
             enum: ["on", "off"]
           }
         },
@@ -51,7 +51,7 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  descriptionfn: () => "<p> turn a plug on or off </p>",
+  descriptionfn: () => `<p> Use this node to turn a TP-Link smart plug on or off.</p><p>  Send a <code>{payload:"on"}</code> to turn it on and a <code>{payload:"off"}</code> to turn it off</p>`,
 };
 
 

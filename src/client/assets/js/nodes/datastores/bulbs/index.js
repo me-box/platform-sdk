@@ -32,8 +32,20 @@ const config = {
         const payloads = {
             
             "bulb-on": {type: "string", description: "<i>on</i> or <i>off</i>"},
-            "bulb-hue": {type: "number", description: "a hue value (0-360)"},
-            "bulb-bri": {type: "number",description: "a brightness value (0-255)"},
+            "bulb-hue": {   
+                            type: "number", 
+                            description: "a hue value (0-360)",
+                            minimum:0,
+                            maximum:360
+                        },
+
+            "bulb-bri": {
+                            type: "number",
+                            description: "a brightness value",
+                            minimum: 0,
+                            maximum: 255
+                        },
+
             
             "hue-ZLLTemperature" : {
                 type: "object", 
@@ -41,11 +53,14 @@ const config = {
                 properties: {
                     "temperature":  {
                         type:"number", 
-                        description:"hue light temperature value (2000-6500)"
+                        description:"hue light temperature value (2000-6500)",
+                        minimum:2000,
+                        maximum:6500
                     },
                     "lastupdated": {
                         type: "string",
-                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS"
+                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
+                        format: "date-time"
                     }
                 }
             },
@@ -60,7 +75,8 @@ const config = {
                     },
                     "lastupdated": {
                         type: "string",
-                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS"
+                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
+                        format: "date-time"
                     }
                 }
             },
@@ -69,12 +85,18 @@ const config = {
                 type: "object", 
                 description: "hue sensor light indicator",
                 properties: {
-                    "lightlevel" : {type: "number",description: "a lux value"},
+                    "lightlevel" : {
+                        type: "number",
+                        description: "a lux value",
+                        minimum:0,
+                        maximum:100000
+                    },
                     "dark" : {type: "boolean", description: "true  if dark, false otherwise"},
                     "daylight" : {type: "boolean", description: "true  if daylight, false otherwise"},
                     "lastupdated": {
                         type: "string",
-                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS"
+                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
+                        format: "date-time",
                     }
                 }
             }
@@ -88,22 +110,7 @@ const config = {
                     name: {type:'string', description: "a name assigned to this bulb"}, 
                     id:  {type:'string', description: "the node id: [id]"},
                     type:{type: 'string', description: `the type:\'bulbs-in\'`},
-                    subtype: {type: 'string', description: `reading type:\'${type}\'`},
-                    testarray: {    
-                                    type: 'array', 
-                                    description: `testing an array for mapping`, 
-                                    items: {
-                                        type: "object", 
-                                        properties:{
-                                            name: {
-                                                type:"string"
-                                            },
-                                            value:{
-                                                type:"number"
-                                            }
-                                        }
-                                    }
-                                },
+                    subtype: {type: 'string', description: `reading type:\'${type}\'`, enum: ["bulb-on","bulb-hue","bulb-bri","hue-ZLLTemperature","hue-ZLLPresence","hue-ZLLLightLevel"]},
                     payload: {
                       type: 'object', 
                       description: 'the payload object', 

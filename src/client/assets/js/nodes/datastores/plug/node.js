@@ -1,16 +1,17 @@
-import React from 'react';
+import React, {PropTypes, Component} from 'react';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
 import Cell from 'components/Cell';
 import Cells from 'components/Cells';
+import {configNode} from 'utils/ReactDecorators';
 
-class Node extends React.Component {
+@configNode()
+export default class Node extends Component {
 
     render() {
        
-    
-        const {selected,values,updateNode} = this.props;
-          
+        const {node,values={},updateNode, updateOutputSchema} = this.props;
+       
         const nameprops = {
             id: "name",
             value: 	this.props.values.name || "",
@@ -23,19 +24,19 @@ class Node extends React.Component {
         const typeprops = {
 				  
           options: [
-						{name: 'power', value: 'power'},
-		        {name: 'voltage', value: 'voltage'},
-		        {name: 'current', value: 'current'},
-		        {name: 'on/off', value: 'power-state'},
+						{name: 'power', value: 'TP-Power-Usage'},
+		        {name: 'on/off', value: 'TP-PowerState'},
 		      ],
 					     
 				  onSelect: (event)=>{
-					 this.props.updateNode("subtype", event.target.value);
-					 this.props.updateOutputSchema(event.target.value);
+            updateNode("subtype", event.target.value);
 				  },
 				
-				  style: {width: '100%'},
-				  value: this.props.values.subtype || "",
+				  label:"subtype",
+          itemLabel:"name",
+          itemValue:"value",
+          helpText:"Select a subtype!",
+          value: values.subtype || ""
         }
 			
         const typeinput = <div className="centered">

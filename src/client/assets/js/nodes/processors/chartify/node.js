@@ -32,13 +32,12 @@ export default class Node extends React.Component {
             this.renderBarChartOptions = this.renderBarChartOptions.bind(this);
             this.renderGaugeOptions = this.renderGaugeOptions.bind(this);
             this.renderGrid = this.renderGrid.bind(this);
-           
 	   }
 	   
 	   
 	   componentDidMount(){
-	   		//reset these as inputs may have changed. Could only do this if the inputs have changed, but then would need to keep track
-	   		//of previous version in reducer. 
+	   		
+	   		//reset these as inputs may have changed. 
 	   		const {values:{previousinputs}, inputs=[]} = this.props
 	   		
 	   		const _inputs = inputs.reduce((acc,i)=>{
@@ -47,8 +46,6 @@ export default class Node extends React.Component {
 	   		},{});
 	   		
 	   		const changed = _inputsChanged(previousinputs, _inputs);
-
-	   		console.log("changed is", changed);
 
 	   		if (changed){
 	   			this.props.updateNode("xtype", []);
@@ -314,7 +311,8 @@ export default class Node extends React.Component {
           
 
           	return inputs.filter((input)=>{
-             	if  (input._def.category === "datastores"){
+          		console.log("looking at input", input);
+             	if  (input.category === "datastores"){
              		return seen.hasOwnProperty(input.type) ? false : (seen[input.type] = true);
              	}
              	return false;

@@ -14,9 +14,10 @@ import LoadScene from './LoadScene';
 import Toolbar from 'react-md/lib/Toolbars';
 import Button from 'react-md/lib/Buttons';
 
+import {MAPPER_WIDTH} from '../../mapper/constants'
 
 const PALETTE_WIDTH = 60;
-const MAPPER_WIDTH = 250;
+
 
 
 @connect(selector, (dispatch) => {

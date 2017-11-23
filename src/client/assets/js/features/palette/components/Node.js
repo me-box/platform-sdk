@@ -115,7 +115,7 @@ class Node extends Component {
             WebkitFlexFlow: 'column',
             flexFlow: 'column',
             textAlign: 'center',
-            width: 178,
+            width: 178 - 15,
         }
 
         const iconstyle = {
@@ -128,7 +128,7 @@ class Node extends Component {
             //border: '2px solid white', 
             lineHeight: '5.5em',
             textAlign: 'center',
-            boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.9), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
+            //boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.9), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
             color:'white',
         }
 

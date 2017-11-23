@@ -99,7 +99,7 @@ const config = {
         return this.name?"node_label_italic":"";
     },
     
-    descriptionfn: ()=>"<p> This node allows you to actuate phillips hue bulbs i.e. turn them on or off, change their hue or change brightness </p>",
+    descriptionfn: ()=>`<p> You can affect Philips Hue Bulbs in several ways with this node i.e. turn them on or off, change their hue or change brightness.</p> <p> To choose what you want to (i.e turn a bulb on or off, change its brightness or colour), you can either select the options by double clicking the node and selecting one of 'on', 'hue' or 'brightness' and provide a value, or you can just set the type and pass the value in as a message, e.g. <code> {payload: "on"} </code> to turn the bulb on, or <code> {payload: 255}</code> to set brightness.<p>  You can also set the type and value with a message (and this will override any configuration that you set) e.g. to send an off, your message would need to be <code> payload: {type:"set-bulb-on", value:"off"} </code> or to set brightness: <code>  {type:"set-bulb-brightness", value:124}</p>` 
 }
 
 export default {

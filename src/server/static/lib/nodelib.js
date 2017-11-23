@@ -493,7 +493,7 @@ var MOUSE_X_OFFSET = exports.MOUSE_X_OFFSET = -178;
 var MOUSE_Y_OFFSET = exports.MOUSE_Y_OFFSET = -35 - TOOLBAR_HEIGHT;
 var MOBILE_TEST_SCREEN_HEIGHT = exports.MOBILE_TEST_SCREEN_HEIGHT = 667;
 var MOBILE_TEST_SCREEN_WIDTH = exports.MOBILE_TEST_SCREEN_WIDTH = 375;
-var NODE_EDITOR_PADDING = exports.NODE_EDITOR_PADDING = 40;
+var NODE_EDITOR_PADDING = exports.NODE_EDITOR_PADDING = 10;
 
 /***/ }),
 /* 8 */
@@ -2084,12 +2084,14 @@ function configNode() {
                             label = _nodes$links$linkId$s.label,
                             id = _nodes$links$linkId$s.id,
                             schema = _nodes$links$linkId$s.schema,
+                            subtype = _nodes$links$linkId$s.subtype,
                             type = _nodes$links$linkId$s.type,
                             _nodes$links$linkId$s2 = _nodes$links$linkId$s._def,
                             color = _nodes$links$linkId$s2.color,
-                            icon = _nodes$links$linkId$s2.icon;
+                            icon = _nodes$links$linkId$s2.icon,
+                            category = _nodes$links$linkId$s2.category;
 
-                        return { name: name, label: label, id: id, schema: schema, type: type, color: color, icon: icon };
+                        return { name: name, label: label, id: id, schema: schema, type: type, subtype: subtype, color: color, icon: icon, category: category };
                     });
 
                     var outputs = Object.keys(links).filter(function (key) {
@@ -2101,13 +2103,15 @@ function configNode() {
                             label = _nodes$links$linkId$t.label,
                             id = _nodes$links$linkId$t.id,
                             schema = _nodes$links$linkId$t.schema,
+                            subtype = _nodes$links$linkId$t.subtype,
                             type = _nodes$links$linkId$t.type,
                             _nodes$links$linkId$t2 = _nodes$links$linkId$t._def,
                             color = _nodes$links$linkId$t2.color,
-                            icon = _nodes$links$linkId$t2.icon;
+                            icon = _nodes$links$linkId$t2.icon,
+                            category = _nodes$links$linkId$t2.category;
 
-                        return { name: name, label: label, id: id, schema: schema, type: type, color: color, icon: icon };
-                    });
+                        return { name: name, label: label, id: id, schema: schema, type: type, subtype: subtype, color: color, icon: icon, category: category };
+                    }); //get _def out
 
                     var props = {
                         node: node,

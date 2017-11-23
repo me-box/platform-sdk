@@ -12,7 +12,7 @@ const GLOBALS = {
 };
 
 module.exports = merge(config, {
-  debug: true,
+  //debug: true,
   cache: true,
   devtool: 'cheap-module-eval-source-map',
   externals: {
@@ -43,10 +43,10 @@ module.exports = merge(config, {
           path.resolve(__dirname, '../client/scripts')
         ],
         loaders: [
-          'style',
-          'css',
-          'postcss',
-          { loader: 'sass', query: { outputStyle: 'expanded' } }
+          'style-loader',
+          'css-loader',
+          //'postcss',
+          { loader: 'sass-loader', query: { outputStyle: 'expanded' } }
         ]
       },
       // Sass + CSS Modules
@@ -70,7 +70,7 @@ module.exports = merge(config, {
       // CSS
       {
         test: /\.css$/,
-        loader: 'style!css!postcss'
+        loader: ['style-loader','css-loader', 'postcss-loader']
       }
     ]
   }

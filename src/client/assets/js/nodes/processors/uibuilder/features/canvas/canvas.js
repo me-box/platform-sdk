@@ -143,7 +143,7 @@ const _selectParent = (state, action)=>{
 const _moveTemplate = (template, x, y)=>{
    let angle=0;
  
-  if (template.transform){
+  if (template && template.transform){
       const {rotate} = componentsFromTransform(template.transform);
       if (rotate && rotate.length > 0){
         angle = 180 - rotate[0];
@@ -419,7 +419,7 @@ const _expandTemplate = (template, x, y)=>{
 }
 
 const _getAllChildIds = (template, blueprints)=>{
-  if (template.children){
+  if (template && template.children){
     return [].concat.apply([], template.children.map((child)=>{
         if (blueprints[child].children){
           return [child, ..._getAllChildIds(blueprints[child], blueprints)]

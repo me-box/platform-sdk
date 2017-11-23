@@ -139,7 +139,7 @@ export function matchLibraries(code){
 
 export function  nodesWithTestOutputs(nodes){
 		
-		const typesOfInterest = ["debugger", "app", "pipstaprint", "bulbsout"];
+		const typesOfInterest = ["debugger", "app", "plugout", "bulbsout"];
 		const seen = {};
 		const warning  = [];
 		const error = [];

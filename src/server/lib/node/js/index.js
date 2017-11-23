@@ -53,17 +53,17 @@ export function configNode(){
               const link = links[key]; 
               return link.target.id === id;
             }).map((linkId)=>{
-              const {name, label, id, schema, type, _def:{color,icon}} = nodes[links[linkId].source.id];
-              return {name, label,id,schema,type,color,icon};
+              const {name, label, id, schema, subtype, type, _def:{color,icon,category}} = nodes[links[linkId].source.id];
+              return {name,label,id,schema,type, subtype, color,icon,category};
             });
           
             const outputs = Object.keys(links).filter((key)=>{ 
               const link = links[key]; 
               return link.source.id === id;
             }).map((linkId)=>{
-              const {name, label, id, schema, type, _def:{color,icon}} = nodes[links[linkId].target.id];
-              return {name, label,id,schema,type, color,icon};
-            });   
+              const {name, label, id, schema, subtype, type, _def:{color,icon,category}} = nodes[links[linkId].target.id];
+              return {name,label,id,schema,type, subtype, color,icon,category};
+            });   //get _def out
 
             const props = {
                 node,

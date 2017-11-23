@@ -3,6 +3,7 @@ const merge = require('webpack-merge');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MinifyPlugin = require("babel-minify-webpack-plugin");
 const config = require('./webpack.config.base');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -14,7 +15,7 @@ const GLOBALS = {
 };
 
 module.exports = merge(config, {
-  debug: false,
+  //debug: false,
   devtool: 'cheap-module-source-map',
   entry: {
     application: 'production',
@@ -35,7 +36,8 @@ module.exports = merge(config, {
     new webpack.NoErrorsPlugin(),
     new webpack.DefinePlugin(GLOBALS),
     //new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.UglifyJsPlugin({
+    
+    /*new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
         'screw_ie8': true
@@ -44,10 +46,13 @@ module.exports = merge(config, {
         comments: false
       },
       sourceMap: false
-    }),
+    }),*/
+
+    new MinifyPlugin(),
+
     new webpack.LoaderOptionsPlugin({
       minimize: true,
-      debug: false
+      //debug: false
     }),
     new ExtractTextPlugin({
       filename: 'css/app.css',
@@ -56,6 +61,7 @@ module.exports = merge(config, {
     new BundleAnalyzerPlugin({
        analyzerMode: 'static'
     }),
+    
   ],
   module: {
     noParse: /\.min\.js$/,
@@ -69,40 +75,19 @@ module.exports = merge(config, {
           path.resolve(__dirname, '../client/scripts')
         ],
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style',
+          fallbackLoader: 'style-loader',
           loader: [
-            { loader: 'css', query: { sourceMap: true } },
-            'postcss',
-            { loader: 'sass', query: { outputStyle: 'compressed' } }
+            { loader: 'css-loader', query: { sourceMap: true } },
+            //'postcss',
+            { loader: 'sass-loader', query: { outputStyle: 'compressed' } }
           ]
         })
       },
-      // Sass + CSS Modules
-      // {
-      //   test: /\.scss$/,
-      //   include: /src\/client\/assets\/javascripts/,
-      //   loader: ExtractTextPlugin.extract({
-      //     fallbackLoader: 'style',
-      //     loader: [
-      //       {
-      //         loader: 'css',
-      //         query: {
-      //           modules: true,
-      //           importLoaders: 1,
-      //           localIdentName: '[path][name]__[local]--[hash:base64:5]'
-      //         }
-      //       },
-      //       'postcss',
-      //       { loader: 'sass', query: { outputStyle: 'compressed' } }
-      //     ]
-      //   })
-      // },
-      // CSS
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: 'style',
-          loader: ['css', 'postcss']
+          fallbackLoader: 'style-loader',
+          loader: ['css-loader', 'postcss-loader']
         })
       }
     ]

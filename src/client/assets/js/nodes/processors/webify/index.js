@@ -3,7 +3,7 @@ import Node from "./node";
 const config =  {
 
     category: 'processors',    
-    color: '#002255',
+    color: '#3771C8',
     
     defaults: {             
         name: {value:""},

@@ -69,11 +69,9 @@ export default class Palette extends Component {
 
         const palettecontainerstyle={
             display: types.length > 0 ? 'block':'none',
-            background: '#303030',
+            background: '#4A4B4D',
             color: 'white',
             letterSpacing: 1,
-            WebkitFontSmoothing: 'antialiased',
-            textRendering: 'optimizeLegibility',
             width: PALETTE_WIDTH,
         }
 

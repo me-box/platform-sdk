@@ -5,6 +5,7 @@ import { actionCreators as mapperActions, viewConstants, selector, NAME } from '
 import { actionCreators as shapeActions, NAME as CANVASNAME } from 'nodes/processors/uibuilder/features/canvas/';
 import cx from 'classnames';
 import Button from 'react-md/lib/Buttons';
+import {MAPPER_WIDTH} from '../../constants';
 //import { actionCreators as sourceActions } from 'features/sources';
 
 import Schema from "../Schema";
@@ -88,7 +89,7 @@ export default class Mapper extends Component {
       this.showMappings= this.showMappings.bind(this);
       this.showCanvas= this.showCanvas.bind(this);
       this.showTree= this.showTree.bind(this);
-
+      this.renderSelectedHeading = this.renderSelectedHeading.bind(this);
       this._save = this._save.bind(this);
       this._cancel = this._cancel.bind(this);
   }
@@ -203,15 +204,21 @@ export default class Mapper extends Component {
 
   }
 
+  renderSelectedHeading(){
+    const {[CANVASNAME]:{templatesById, selected:{path=null}}} = this.props; 
 
-  renderMapper(){
-
-      const {[CANVASNAME]:{templatesById, selected:{path=null}}} = this.props; 
-
-      if (!path || path.lnegth <= 0)
+    if (!path || path.length <= 0)
         return null;
 
-      const template = templatesById[path[path.length-1]];
+    const template = templatesById[path[path.length-1]];
+    
+    if (template){
+      return <div className="mapperHeading">{template.label}</div>
+    }
+    return null;
+  }
+
+  renderMapper(){
       
       const headingstyle = {
         fontWeight: 'bolder',
@@ -221,8 +228,8 @@ export default class Mapper extends Component {
         color: 'white',
       }
 
-      return  <Box style={{background:'white'}}>
-                <div className="mapperHeading">{template.label}</div>
+      return  <Box style={{background:'#4A4B4D'}}>
+                
                 <Flex>
                     <Box col={6}>{this.renderInputs()}</Box>
                     <Box col={6}>{this.renderComponents()}</Box>
@@ -254,10 +261,10 @@ export default class Mapper extends Component {
 
         const templateName = templatesById[id].label;
 
-        return <div key={i} style={{marginBottom:2, borderLeft:"3px solid #5f9ea0"}}>
+        return <div key={i} style={{marginBottom:2, color:"white",background:"#6E7F99"}}>
                   <Flex>
                     <Box className="tfrom" mcol={10} onClick={this.props.actions.selectMapping.bind(null,nid,item)}>{`${sourceName}:`}<strong>{`${item.from.key}`}</strong></Box>
-                    <Box col={2} className="tclose"><Button icon onClick={this.props.actions.removeMapping.bind(null,nid,item.mappingId)}>close</Button></Box>
+                    <Box col={2} className="tclose"><Button icon style={{color:"white"}} onClick={this.props.actions.removeMapping.bind(null,nid,item.mappingId)}>close</Button></Box>
                   </Flex>
                   <Flex>
                     <Box className="tto" col={12} onClick={this.props.actions.selectMapping.bind(null,nid,item)}> {`${templateName}:`}<strong>{`${item.to.property}`}</strong></Box>  
@@ -286,12 +293,16 @@ export default class Mapper extends Component {
 
   renderMappings(){
     
-    return <div>
-                {this.renderMapper()}
-                <div className="mapperHeading">transformers</div>
+
+    return  <div>
+              <div>
+                {this.renderMapper()}    
+              </div>
+              <div style={{background:"#4A4B4D", padding:3, marginTop:3}}>
+                <div className="transformerHeading">transformers</div>
                 {this.renderTransformers()}
-               
-          </div>
+              </div>
+            </div>
   }
 
   renderCanvas(){
@@ -313,23 +324,24 @@ export default class Mapper extends Component {
         color: "white",
       }
       return <div>
-              <Flex flexColumn={true} style={{maxHeight: 300, overflow:'auto'}}>
+              
+              <Flex align="center" style={{background:"#5C5C5C", color:"white"}}>
+                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveUp(nid)}><i className="fa fa-arrow-up"></i></Box>
+                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveDown(nid)}><i className="fa fa-arrow-down"></i></Box>
+              </Flex>
+              <Flex flexColumn={true} style={{maxHeight: 200, overflow:'auto'}}>
                 <Box> 
                   {tree}
                 </Box>
-              </Flex>
-              <Flex align="center" style={{background:"#667793", color:"white"}}>
-                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveUp(nid)}><i className="fa fa-arrow-up"></i></Box>
-                <Box auto p={1} style={layerstyle} onClick={()=>this.props.actions.moveDown(nid)}><i className="fa fa-arrow-down"></i></Box>
               </Flex>
             </div>
   }
 
   renderMenu(){
 
-    return <Flex align="center" style={{background:"#5f9ea0", color:"#fff"}}>
-              <Box auto p={1} onClick={this.showAttributes} style={{textAlign:'center', fontWeight: this.state.attributesSelected ? 'bold' : 'normal'}}> attributes </Box>
-              <Box auto p={1} onClick={this.showMappings}   style={{textAlign:'center', fontWeight: this.state.mappingsSelected ? 'bold' : 'normal'}}> mappings </Box>   
+    return <Flex align="center" style={{background:"#5C5C5C", color:"#fff"}}>
+              <Box auto p={1} onClick={this.showAttributes} style={{textAlign:'center', background: this.state.attributesSelected ? "#4A4B4D" : "none" , fontWeight: this.state.attributesSelected ? 'bold' : 'normal'}}> attributes </Box>
+              <Box auto p={1} onClick={this.showMappings}   style={{textAlign:'center', background: this.state.mappingsSelected ? "#4A4B4D" : "none", fontWeight: this.state.mappingsSelected ? 'bold' : 'normal'}}> mappings </Box>   
             </Flex>
   }
   
@@ -361,10 +373,12 @@ export default class Mapper extends Component {
         position: "absolute",
         height: h,
         right: 0,
-        background: "#dfdfdf",
+        background: "#5C5C5C",
         opacity: 0.95,
         overflow:'auto',
-        width: 250,
+        width: MAPPER_WIDTH,
+        padding: 3,
+
     }
 
     return <div id="mapper">
@@ -372,11 +386,14 @@ export default class Mapper extends Component {
                 
                   {this.renderObjects()}
                   <Flex flexColumn={true}>
-                  {this.renderMenu()}
-                  {attributesSelected && this.renderAttributes()}
-                  {mappingsSelected && this.renderMappings()}
-                  {canvasSelected && this.renderCanvas()}
-                </Flex>
+                    {this.renderSelectedHeading()}
+                    <div style={{padding: 3}}>
+                      {this.renderMenu()}
+                      {attributesSelected && this.renderAttributes()}
+                      {mappingsSelected && this.renderMappings()}
+                      {canvasSelected && this.renderCanvas()}
+                    </div>
+                  </Flex>
               </div>
               {selectedMapping && <Transformer 
                                       nid={nid} 

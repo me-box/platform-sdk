@@ -4,6 +4,25 @@ import "./filter.scss";
 import Cell from 'components/Cell';
 import Cells from 'components/Cells';
 import Textfield from 'components/form/Textfield';
+
+
+const _inputsChanged = (previous, inputs)=>{
+
+	if (!previous){
+		return true
+	}	
+
+	if (Object.keys(inputs).length != Object.keys(previous).length){
+		return true;
+	}
+
+	return Object.keys(inputs).reduce((acc, key)=>{
+		return acc && inputs[key] !== previous[key];
+	}, true);
+
+	
+}
+
 @configNode()
 export default class Node extends React.Component {
 
@@ -15,7 +34,7 @@ export default class Node extends React.Component {
 	}
 
 	renderItem(source, name, item, path){
-		console.log("rendering item", JSON.stringify(item,null,4));
+		
 		if (item.type ===  "object"){
 			return 	<ul className="filterList">
 						<li><strong>{name}</strong></li>
@@ -24,7 +43,7 @@ export default class Node extends React.Component {
 					
 		}else{
 			
-			console.log("selections are", this.state.selections);
+			
 
 			const checked = this.state.selections.map(f=>f.path.join()+f.source).indexOf(path.join()+source) !== -1;
 
@@ -63,7 +82,27 @@ export default class Node extends React.Component {
 		})
 	}	
 
+	componentDidMount(){
+	   		
+	   	const {values:{previousinputs}, inputs=[]} = this.props
+
+	   	const _inputs = inputs.reduce((acc,i)=>{
+	   		acc[i.id] = i.subtype || null;
+	   		return acc;
+	   	},{});
+
+		const changed = _inputsChanged(previousinputs, _inputs);
+
+	   	if (changed){
+	   		this.setState({selections: []});
+	   		this.props.updateNode("filters", []);
+	   	}
+	   		
+	   	this.props.updateNode("previousinputs", _inputs);
+	}
+
 	render(){
+
 		const {inputs = [], values={}, updateNode} = this.props;
 		
 		const nameprops = {	
@@ -93,23 +132,15 @@ export default class Node extends React.Component {
           				<Cell title={"data"} content={this.renderFilters(sources)}/>
           			</Cells>
             	</div>
-
-		
-
 	}
 
 	_toggleFilter(source, item, path, event){
 		const target = event.target;
 		const checked = target.checked;
-		
-		console.log("seen a toggle filter", source, item, path, checked);
 		let _filters;
 
 		if (!checked){
 			_filters = this.state.selections.filter((filter)=>{
-				console.log("checking " + filter.source + " against " + source);
-				console.log("checking " + filter.path.join() + " againts " + path.join());
-				console.log(filter.source === source && filter.path.join() !== path.join());
 				return filter.source === source && filter.path.join() !== path.join();
 			});
 		}else{

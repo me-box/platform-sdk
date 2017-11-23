@@ -47,8 +47,8 @@ export default class Schema extends Component {
                  const amselected = selected.path.reduce((acc, item , i)=>{
                     return acc && item === path[i]; 
                  },true)
-                 style.fontWeight = "bold";
-                 style.textTransform = "uppercase";
+                 
+                 style.background = "#67A3A5";
               }
           }
           return <Box className="sourceattr" style={style} key={`${path.join()}${key}`} onClick={this.props.onSelect.bind(null,key,path,type)}>{indent(path)}{key}</Box>

@@ -1773,6 +1773,11 @@ module.exports = require("tar-stream");
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+//import net from 'net';
+//import JsonSocket from 'json-socket';
+
+
 var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
@@ -1800,9 +1805,6 @@ var _minimist2 = _interopRequireDefault(_minimist);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-//import net from 'net';
-//import JsonSocket from 'json-socket';
-
 
 var router = _express2.default.Router();
 
@@ -1817,10 +1819,11 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 	console.log('connecting to ' + ip + ':' + port + '/flows');
 
 	//add in channelIDs here
+	console.log('adding output types');
 	var flows = data.map(function (node) {
-		var outputtypes = ["app", "debugger", "bulbsout", "pipstaprint"];
+		var outputtypes = ["app", "debugger", "bulbsout", "plugout"];
 		var modifier = outputtypes.indexOf(node.type) != -1 ? { appId: username } : {}; //inject the appID
-		return Object.assign({}, node, modifier);
+		return _extends({}, node, modifier);
 	});
 
 	return new Promise(function (resolve, reject) {

@@ -19,7 +19,7 @@ export default class Palette extends Component {
   render() {
     const {h} = this.props;
     return (
-      <Paper zDepth={2} style={{position:'absolute', zIndex:1, overflowY:'visible', height:h, color:"white", background:"#3f51b5", width:viewConstants.PALETTE_WIDTH}}>
+      <Paper zDepth={2} style={{position:'absolute', zIndex:1, overflowY:'visible', height:h, color:"white", background:"#4A4B4D", width:viewConstants.PALETTE_WIDTH}}>
         <PaletteLayout {...this.props} />
       </Paper>
     );

@@ -1,7 +1,7 @@
 #mapper{
     box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 4px;
     background: #445662;
-    width: 250px;
+    width: 280px;
 }
 
 #mapper .title{
@@ -14,8 +14,17 @@
 }
 
 #mapper .flexrow > .title {
-    text-transform: uppercase;
-    color: black;
+    text-transform: none;
+    color: white;
+    font-size: 1.1em;
+}
+
+#mapper .flexcolumn > div{
+    border-bottom:  1px solid #4A4B4D;
+}
+#mapper   input[type="text"]{
+  background: #667379;
+  color: white;
 }
 
 #mapper .flexrow > .title, #mapper .flexrow > .attributetitle {
@@ -24,10 +33,12 @@
     -ms-flex: 0 0 auto;
     flex: 0 0 auto;
     width: 118px;
-    border-right: 1px solid #b6b6b6;
-    border-left: 1px solid #b6b6b6;
-    background: #f2f2f2;
-    font-size: 0.75em;
+    border-right: 1px solid #4A4B4D;
+    border-bottom: none;
+    border-top: none;
+    border-left: none;
+
+    background: #6E7F99;
 }
 
 #mapper .info{
@@ -47,42 +58,48 @@
 
 #mapper .mappersrc{
     padding: 7px;
-    font-weight: bolder;
     color: white;
-    background: #535353;
+    background: #3C3C3C;
     text-align: center;
+    border-right: 1px solid #4A4B4D;
 }
 
 #mapper .mapperattr{
     padding: 7px;
-    font-weight: bolder;
     color: white;
-    background: #535353;
+    background: #3C3C3C;
     text-align : center;
-    border-left: 2px solid white;
+   
 }
 
 #mapper .sourceName{
     padding: 7px;
     color: white;  
     background:#667793;
-    border-bottom: 1px solid #8dbebf;
+    border-bottom: 1px solid #4A4B4D;
+     border-right: 1px solid #4A4B4D;
     text-align: center;
-    margin-top: 2px;
 }
 
 #mapper .sourceName.selected{
-    font-weight: bolder;
+   
+    border-left: 5px solid #67A3A5;
 }
 
 .sourceattr {
-    background: white;
-    padding: 4px;
+    padding: 7px;
+    color: white;
+    background: #667379;
+    border-bottom: 1px solid #4A4B4D;
+    border-right: 1px solid #4A4B4D;
 }
 
 .toattr {
-    background: white;
-    padding: 4px;
+    padding: 7px;
+    color: white;
+    background: #667379;
+    text-align: center;
+    border-bottom: 1px solid #4A4B4D;
 }
 
 #mapper .subselect{
@@ -97,12 +114,10 @@
 }
 
 #mapper .treeNode{
-    padding: 5px;
-    border-bottom: 1px solid #b6b6b6;
-    border-left: 1px solid #b6b6b6;
-    border-right: 1px solid #b6b6b6;
-    color: #303030;
-    background: white;
+    padding: 8px;
+    border-bottom: 1px solid #5C5C5C;
+    color: white;
+    background: #4A4B4D;
 }
 
 #mapper .treeNode.selected{
@@ -113,27 +128,28 @@
     font-weight: bolder;
     text-align: center;
     padding: 10px;
-    background: rgb(48, 48, 48);
+    background: #67A3A5;
     color: white;
+    margin: 5px 0px;
+}
 
+#mapper .transformerHeading {
+    font-weight: bolder;
+    padding: 7px;
+    color: white;
 }
 
 #mapper .tfrom{
-    text-align: center;
-    background: white;
     width:100%;
-    padding: 8px;
+    padding: 6px;
 }
 
 #mapper .tto{
-    text-align: center;
-    background: white;
     width: 100%;
-    padding: 8px;
+    padding: 6px;
 }
 
 #mapper .tclose{
-    background: white;
     width: 100%;
 }
 
