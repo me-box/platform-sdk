@@ -220,18 +220,21 @@ export default class Node extends React.Component {
 
     _getReturnFromItem(obj, returns){
         
+       
         
-
+        if (!obj){
+          return [];
+        }
+        
         switch(obj.type){
           case "ReturnStatement":
-            if (obj.argument){
+            if (obj.argument){ 
               return [...returns, Object.keys(obj.argument)
                                       .filter((i)=>["loc","range"].indexOf(i)==-1)
                                       .reduce((acc,key)=>{
                                         acc[key] = obj.argument[key]
                                         return acc;
-                                      },{})
-                    ];
+                                      },{})];
             }
             return returns;
 
@@ -255,6 +258,117 @@ export default class Node extends React.Component {
             return;
         }
     }
+    
+
+    _getTypeFor(rawType){
+
+        try{
+          if (rawType[0] === "\""){
+            return "string";
+          }
+        }catch(err){
+
+        }
+
+        if (!isNaN(rawType)){
+          return "number";
+        }
+        
+        return "literal";
+    }
+
+    _extractproperties(properties){
+
+        return properties.reduce((acc, property)=>{
+            if (property.type === "Property"){
+                if (property.value.type === "ObjectExpression"){
+                  acc[property.key.name] = {
+                      type: "object",
+                      properties: this._extractproperties(property.value.properties)
+                  }
+                }
+                else{
+                  acc[property.key.name || property.key.value] = {type:this._getTypeFor(property.value.raw)}
+                }
+                return acc;
+            }
+        },{})
+    }
+
+    _schemafy(statements){
+        
+        return statements.map((statement)=>{  
+            if (statement.type === "ObjectExpression"){
+              return {
+                  type: "object",
+                  properties: this._extractproperties(statement.properties),
+              }
+            }
+        })
+    }
+
+    _checkSchema(inputs, outputs, value){
+      
+      /*
+      
+      // commented this out for now as this is the type checking part - at moment only build output json schema
+          
+      const _out = outputs.reduce((acc, node)=>{
+        const id = node.name||node.type
+        const schema = node.schema ? node.schema.input : {};
+        return  {id : id.charAt(0).toUpperCase() + id.slice(1), schema: jsontoflow.parseSchema({...schema, id:node.name||node.type})};
+      },{id:"", schema:""});
+            
+  
+      let intype = "";
+      let inschema = "";
+
+      if (inputs.length == 1){
+        const _n = inputs[0].schema ? inputs[0].schema.output : {};
+        inschema = jsontoflow.parseSchema({..._n, id:"msg"})
+        intype   = "msg:Msg";
+      }
+      
+      if (inputs.length > 1){
+        intype = "msg:mixed";
+      }
+      
+    
+      const toparse = `${inschema} (${intype})=>{${value}}`;
+      */
+
+      const toparse = `()=>{${value}}`;
+
+      try{
+        
+        const parsed = flow.parse(toparse,{});
+       
+        if (parsed.errors.length <= 0){
+          const statement = parsed.body.reduce((acc,item)=>{
+            if (item.type === "ExpressionStatement"){
+              return item;
+            }
+          },{});
+          
+          console.log("statement is", statement);
+
+          const returnstatement = statement.expression.body.body.reduce((acc,obj)=>{
+            return [...acc, this._getReturnFromItem(obj,[])];
+          },[]).filter(i=>i ? i.length > 0 : false);
+
+          const schemas = this._schemafy(returnstatement[0]);
+          if (schemas.length > 0){
+             this.props.updateNode("outputtypedef", JSON.stringify(schemas[0],null,4));
+          }
+        }
+
+        //const fn = `${inschema} ${_out.schema} (${intype}):${_out.id || "any"}=>{${value}}`;
+        //console.log(flow.checkContent("-", `${fn}`));*/
+      }
+      catch(e){
+        console.log("parse failure!");
+      }
+    }
 
     renderCodeInput(){
 
@@ -272,52 +386,12 @@ export default class Node extends React.Component {
 
             console.log(_in);*/
             
-            const _out = outputs.reduce((acc, node)=>{
-              const id = node.name||node.type
-              const schema = node.schema ? node.schema.input : {};
-              return  {id : id.charAt(0).toUpperCase() + id.slice(1), schema: jsontoflow.parseSchema({...schema, id:node.name||node.type})};
-            },{id:"", schema:""});
-            
-  
-            let intype = "";
-            let inschema = "";
-
-            if (inputs.length == 1){
-              const _n = inputs[0].schema ? inputs[0].schema.output : {};
-              inschema = jsontoflow.parseSchema({..._n, id:"msg"})
-              intype   = "msg:Msg";
-            }
-            if (inputs.length > 1){
-              intype = "msg:mixed";
-            }
-
-            
-            const toparse = `${inschema} (${intype})=>{${value}}`;
-            console.log(toparse);
-
-            const parsed = flow.parse(toparse,{});
-            console.log(parsed);
-            //console.log(parsed.body[0].expression.body.body);
-
-            if (parsed.errors.length <= 0){
-              const statement = parsed.body.reduce((acc,item)=>{
-                if (item.type === "ExpressionStatement"){
-                  return item;
-                }
-              },{});
-              const returnstatement = statement.expression.body.body.reduce((acc,obj)=>{
-                  return [...acc, this._getReturnFromItem(obj,[])];
-              },[]).filter(i=>i ? i.length > 0 : false);
-
-              console.log(JSON.stringify(returnstatement,null,4));
-            }
+            this._checkSchema(inputs, outputs, value);
 
            
-            const fn = `${inschema} ${_out.schema} (${intype}):${_out.id || "any"}=>{${value}}`;
-            console.log(flow.checkContent("-", `${fn}`));
-
             //console.log("output code is",  jsontoflow.parseSchema({...schema, id:node.name || node.type}));
-              
+            
+
             updateNode("func", value);
         },
 

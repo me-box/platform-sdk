@@ -267,6 +267,18 @@ const _containerLogs = function(container, username) {
   });
 }
 
+
+const _startNewContainer = function(username, flows){
+	return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
+		return createTestContainer('tlodge/databox-red', username, network);
+	}, (err)=>{
+		sendmessage(username, "debug", {msg:err.json.message});
+	}).then((container)=>{
+		return _startContainer(container, flows, username);
+	},(err)=>{
+		sendmessage(username, "debug", {msg:err.json.message});
+	});
+}
 //stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
 //the test web app responds to the client webpage before it has been given the details of the new app.
 const _createContainerFromStandardImage = function(username, flows){
@@ -289,16 +301,7 @@ const _createContainerFromStandardImage = function(username, flows){
 			if (containers.length <= 0){
 				console.log("creating test container");
 				sendmessage(username, "debug", {msg:"creating test container"});
-
-				return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
-					return createTestContainer('tlodge/databox-red', username, network);
-				}, (err)=>{
-					sendmessage(username, "debug", {msg:err.json.message});
-				}).then((container)=>{
-					return _startContainer(container, flows, username);
-				},(err)=>{
-					sendmessage(username, "debug", {msg:err.json.message});
-				});
+				return _startNewContainer(username, flows);
 			}
 			else{
 				const c = containers[0];
@@ -316,17 +319,21 @@ const _createContainerFromStandardImage = function(username, flows){
 					});
 				}else{
 					
-					sendmessage(username, "debug", {msg:"container already running"});
+					sendmessage(username, "debug", {msg:"container already running, so removing"});
 					
+					return stopAndRemoveContainer(`${username.toLowerCase()}-red`).then(()=>{
+						_startNewContainer(username, flows);
+					});
+
 					/*if (!streams[c.Id]){
 						const container = docker.getContainer(c.Id);
 						streams[c.Id] = true;
 						_containerLogs(container, username);
 					}*/
 					
-					const {ip, port} = _fetchRunningAddr(c);
+					//const {ip, port} = _fetchRunningAddr(c);
 					//console.log("posting new flows to", ip, port);
-					return _postFlows(ip, port, flows, username);
+					//return _postFlows(ip, port, flows, username);
 				}
 			}
 		});	

@@ -384,7 +384,7 @@ function stopAndRemoveContainer(name) {
 			}, null);
 
 			if (!container) {
-				console.log("did not find running container");
+				console.log("did not find container");
 				resolve(true);
 				return;
 			}
@@ -2061,6 +2061,17 @@ var _containerLogs = function _containerLogs(container, username) {
 	});
 };
 
+var _startNewContainer = function _startNewContainer(username, flows) {
+	return _pullContainer("tlodge/databox-red:latest", username).then(function () {
+		return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
+	}, function (err) {
+		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
+	}).then(function (container) {
+		return _startContainer(container, flows, username);
+	}, function (err) {
+		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
+	});
+};
 //stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
 //the test web app responds to the client webpage before it has been given the details of the new app.
 var _createContainerFromStandardImage = function _createContainerFromStandardImage(username, flows) {
@@ -2083,16 +2094,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 		if (containers.length <= 0) {
 			console.log("creating test container");
 			(0, _websocket.sendmessage)(username, "debug", { msg: "creating test container" });
-
-			return _pullContainer("tlodge/databox-red:latest", username).then(function () {
-				return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
-			}, function (err) {
-				(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
-			}).then(function (container) {
-				return _startContainer(container, flows, username);
-			}, function (err) {
-				(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
-			});
+			return _startNewContainer(username, flows);
 		} else {
 			var c = containers[0];
 
@@ -2109,7 +2111,11 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 				});
 			} else {
 
-				(0, _websocket.sendmessage)(username, "debug", { msg: "container already running" });
+				(0, _websocket.sendmessage)(username, "debug", { msg: "container already running, so removing" });
+
+				return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-red').then(function () {
+					_startNewContainer(username, flows);
+				});
 
 				/*if (!streams[c.Id]){
     	const container = docker.getContainer(c.Id);
@@ -2117,13 +2123,9 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
     	_containerLogs(container, username);
     }*/
 
-				var _fetchRunningAddr2 = _fetchRunningAddr(c),
-				    ip = _fetchRunningAddr2.ip,
-				    port = _fetchRunningAddr2.port;
+				//const {ip, port} = _fetchRunningAddr(c);
 				//console.log("posting new flows to", ip, port);
-
-
-				return _postFlows(ip, port, flows, username);
+				//return _postFlows(ip, port, flows, username);
 			}
 		}
 	});

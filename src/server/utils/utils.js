@@ -185,7 +185,7 @@ export function stopAndRemoveContainer(name){
 			},null);
 			
 			if (!container){
-				console.log("did not find running container");
+				console.log("did not find container");
 				resolve(true);
 				return;
 			}
