@@ -87,8 +87,7 @@ const _createCommit = function(config, user, repo, sha, filename, content, messa
    			.set('Accept', 'application/json')
    			.end((err, data)=>{
      			if (err ) {
-       				console.log("******** ERROR ********");
-       				console.log(err);
+       				console.log("******** ERROR ********", err);
        				reject(err);
        				
      			} else {
@@ -113,7 +112,8 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
   				"private": false,
   				"has_issues": false,
   				"has_wiki": false,
-  				"has_downloads": false
+  				"has_downloads": false,
+  				"topic": "databox",
 			})
    			.set('Authorization', `token ${accessToken}`)
    			.set('Accept', 'application/json')
@@ -121,10 +121,9 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
      			if (err) {
      				console.log("--> failed to create repo!");
        				reject(err);
-       				return
      			} 
      			else {
-     			 	console.log("successfully created repo!");
+     			 	
      			 	const result = data.body;
      			 	       				
      			 	//give github time it needs to set up repo
@@ -141,8 +140,26 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
        				);
      			}
    			})
+   	})
+   	.then((repo)=>{
+   		
+		return new Promise((resolve,reject)=>{
+   			request.put(`${config.github.API}/repos/${user.username}/${repo.name}/topics`)
+   				.send({names:["databox"]})
+   				.set('Authorization', `token ${accessToken}`)
+   				.set('Accept', 'application/vnd.github.mercy-preview+json')
+				.end((err, data)=>{
+     				if (err) {
+     					console.log("failed to create repo", err);
+       					reject(err);
+     				} 
+     				else {
+     					resolve(repo)
+     				}
+     			})
+		});
+
    	}).then((repo)=>{
-   		console.log("successfully created repo", repo);
 
    	 	return Promise.all([
 		 						Promise.resolve(repo),
@@ -182,7 +199,6 @@ const _createRepo = function(config, user, name, description, flows, manifest, d
    		
    	}).then( (values)=>{
 		const reponame = values[0];
-		console.log("creating dockerfile", dockerfile);
 
 		return Promise.all([
 								Promise.resolve(reponame),
@@ -558,25 +574,33 @@ router.get('/repos/:user', function(req,res){
 	if (!username  || username.trim() === ""){
 		username = req.user.username;	
 	}
+
+	const query = {
+		user: username,
+		topic: "databox",
+	}
 	request
-   		.get(`${req.config.github.API}/users/${username}/repos`)
+   		//.get(`${req.config.github.API}/users/${username}/repos`)
+   		.get(`${req.config.github.API}/search/repositories`)
+   		.query({q:`user:${user.username} topic:databox`}) 
    		.set('Accept', 'application/json')
    		.set('Authorization', `token ${req.user.accessToken}`)
+   		.query(query)
    		.end((err, data)=>{
      		if (err){
      			console.log(err);
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
-     			const repos = data.body.map(function(repo){
+  
+     			const repos = data.body.items.map(function(repo){
+       				
        				return {
-       							name: repo.name, 
-       							description: repo.description,
-       							updated: repo.updated_at, 
-       							icon:repo.owner.avatar_url, 
-       							url:repo.url, 
+						name: repo.name, 
+						description: repo.description,
+						updated: repo.updated_at, 
+						icon:repo.owner.avatar_url, 
+						url:repo.url, 
        				} 
-       			}).filter(function(repo){
-       				return repo.name.startsWith("databox.");
        			})
        			
      			res.send({username,repos});
@@ -590,9 +614,9 @@ router.get('/repos', function(req,res){
 	const user = req.user;
 	
 	request
-   		.get(`${req.config.github.API}/users/${user.username}/repos`)
-   		.query({'per_page': 100, sort:'created', direction:'desc'})
-   		
+   		//.get(`${req.config.github.API}/users/${user.username}/repos`)
+   		.get(`${req.config.github.API}/search/repositories`)
+   		.query({q:`user:${user.username} topic:databox`}) 
    		.set('Accept', 'application/json')
    		.set('Authorization', `token ${req.user.accessToken}`)
    		.end((err, data)=>{
@@ -601,7 +625,8 @@ router.get('/repos', function(req,res){
      			req.logout();
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
-     			const repos = data.body.map(function(repo){
+
+     			const repos = data.body.items.map(function(repo){
        				
        				return {
 						name: repo.name, 
@@ -610,9 +635,7 @@ router.get('/repos', function(req,res){
 						icon:repo.owner.avatar_url, 
 						url:repo.url, 
        				} 
-       			}).filter(function(repo){
-       				return repo.name.startsWith("databox.");
-       			});
+       			})
        			
        			res.send({username:req.user.username,repos});
        		}
@@ -656,7 +679,7 @@ router.get('/flow', function(req,res){
 router.post('/repo/new', function(req,res){
 	
 	var user 			= req.user;
-	var name 			= req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : `databox.${req.body.name.toLowerCase()}`;
+	var name 			= req.body.name.toLowerCase();
 	var description 	= req.body.description || "";
 	var flows       	= req.body.flows 	|| [];
 	var manifest    	= req.body.manifest || {};
@@ -818,7 +841,7 @@ router.post('/publish', function(req,res){
 		
 	}else{ //create a new repo!
 	 	
-	  	const reponame =  manifest.name.startsWith("databox.") ? manifest.name.toLowerCase() : `databox.${manifest.name.toLowerCase()}`;	
+	  	const reponame =  manifest.name.toLowerCase();	
 		sendmessage(user.username, "debug", {msg:`creating a new repo ${reponame}`});
 
 		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then((values)=>{	
