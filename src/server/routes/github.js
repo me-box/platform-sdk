@@ -507,6 +507,7 @@ const _formatmanifest = function(manifest){
 }
 
 const _publish = function(config, user, manifest, flows, dockerfile){
+	console.log("publishing app");
 	
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
@@ -543,9 +544,11 @@ const _publish = function(config, user, manifest, flows, dockerfile){
 			return;
 		}).then(function(tarfile){
 			sendmessage(user.username, "debug", {msg:"successfully created tar file, creating docker image"});
+			console.log("config file", JSON.stringify(config,null,4));
+			console.log("version ", config.version);
 			const _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : `${user.username.toLowerCase()}-${manifest.name.toLowerCase()}`;
 			const _tag 	   = config.registry.URL && config.registry.URL.trim() != "" ? `${_stripscheme(config.registry.URL)}/` : "";
-			return createDockerImage(tarfile, `${_tag}${_appname}`);	
+			return createDockerImage(tarfile, `${_tag}${_appname}:${config.version || "latest"}`);	
 		},(err)=>{
 			sendmessage(user.username, "debug", {msg:err.json.message});
 			reject("could not create docker image", err);
@@ -590,6 +593,7 @@ router.get('/repos/:user', function(req,res){
      		if (err){
      			console.log(err);
      			res.status(500).send({error:'could not retrieve repos'});
+     			//res.send({username,repos:[]})
      		}else{
   
      			const repos = data.body.items.map(function(repo){
@@ -622,7 +626,7 @@ router.get('/repos', function(req,res){
    		.end((err, data)=>{
      		if (err){
      			console.log(err);
-     			req.logout();
+     			//req.logout();
      			res.status(500).send({error:'could not retrieve repos'});
      		}else{
 

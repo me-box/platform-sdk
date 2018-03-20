@@ -149,7 +149,7 @@ export function createTarFile(dockerfile, flowfile, path){
 
 export function createDockerImage(tarfile, tag){
 
-	console.log(`creating image for tarfile ${tarfile} with tag ${tag}`);
+	console.log(`creating image for tarfile ${tarfile} with docker tag ${tag}`);
 
 	return new Promise((resolve, reject)=>{
 		docker.buildImage(tarfile, {t: tag, nocache:true}, function (err, output){
@@ -171,13 +171,15 @@ export function stopAndRemoveContainer(name){
 	
 	return new Promise((resolve, reject)=>{
 			
-		const container = docker.listContainers(function (err, containers) {
+		const container = docker.listContainers({all:true},(err, containers)=>{
 			
 			if (err){
 				reject(err);
 			}
 			
 			const container = containers.reduce((acc, container)=>{
+				console.log("checking", `/${name}` , " in ", container.Names);
+
 				if (container.Names.indexOf(`/${name}`) != -1){
 					return container;
 				}	
@@ -186,7 +188,7 @@ export function stopAndRemoveContainer(name){
 			
 			if (!container){
 				console.log("did not find container");
-				resolve(true);
+				reject();
 				return;
 			}
 		
@@ -194,10 +196,10 @@ export function stopAndRemoveContainer(name){
 			
 			containerToStop.stop((err,data)=>{
 				console.log("container stopped!");
-				if (err){
-					reject(err);
-					return;
-				}
+				//if (err){
+				//	reject(err);
+				//	return;
+				//}
 				containerToStop.remove((err, data)=>{
 					if (err){
 						reject(err);
@@ -217,6 +219,7 @@ export function stopAndRemoveContainer(name){
  a webcam is used and 8096 is the (docker mapped) port that serves up the webcam page
 */
 export function createTestContainer(image, name, network){
+	const self = this;
 	console.log(`creating test container ${image}, name: ${name}`);
 	//#PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
 	//"9123/tcp":{},
@@ -232,10 +235,15 @@ export function createTestContainer(image, name, network){
 									Cmd: ["npm", "start", "--", "--userDir", "/data"], 
 									name: `${name}-red`,
 								}, 
-			function (err, container) {
+			 (err, container)=>{
 				if (err){
-					console.log("rejecting with error", err);
-					reject(err);
+					console.log("error:", err);
+					return 	stopAndRemoveContainer(`${name}-red`).then(()=>{
+						return createTestContainer(image,name,network);
+					},(err)=>{
+						reject(err);
+						return;
+					});
 				}else{
 					console.log("ok am here")
 					container.start({}, function (err, data) {

@@ -26,81 +26,217 @@ const config = {
         return this.name||this.topic||"bulbsin";
     },
     
+
     schemafn: (subtype)=>{
         const type = subtype || "bulb-on";
-      
-        const payloads = {
+
+        const personal = (type)=>{
+             switch (type){
             
-            "bulb-on": {type: "string", description: "<i>on</i> or <i>off</i>"},
-            "bulb-hue": {   
-                            type: "number", 
-                            description: "a hue value (0-360)",
-                            minimum:0,
-                            maximum:360
-                        },
+                case "bulb-on": 
+                     return [
+                                type: "personal",
+                                subtype: "behaviour",
+                                ordinal: "secondary",
+                            
+                                description: "bulb on/off data can provide an indicator of routine and room occupancy",
+                                required: ["payload.value"],
+                                conditions: [
+                                    {
+                                        accuracy: 0.9,
+                                        granularity: {threshold:-1, unit:"none"}
+                                    }
+                                ],
 
-            "bulb-bri": {
-                            type: "number",
-                            description: "a brightness value",
-                            minimum: 0,
-                            maximum: 255
-                        },
+                                accretion: true
+                            ]
 
-            
-            "hue-ZLLTemperature" : {
-                type: "object", 
-                description: "hue sensor temperature value",
-                properties: {
-                    "temperature":  {
-                        type:"number", 
-                        description:"hue light temperature value (2000-6500)",
-                        minimum:2000,
-                        maximum:6500
-                    },
-                    "lastupdated": {
-                        type: "string",
-                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
-                        format: "date-time"
-                    }
-                }
-            },
+                case "bulb-hue":
+                    return [];
 
-            "hue-ZLLPresence" : {
-                type: "object", 
-                description: "hue sensor presence indicator",
-                properties: {
-                    "presence":  {
-                        type:"boolean", 
-                        description:"true if presence detected, false otherwise"
-                    },
-                    "lastupdated": {
-                        type: "string",
-                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
-                        format: "date-time"
-                    }
-                }
-            },
+                case "bulb-bri":
+                    return [];
 
-            "hue-ZLLLightLevel": {
-                type: "object", 
-                description: "hue sensor light indicator",
-                properties: {
-                    "lightlevel" : {
-                        type: "number",
-                        description: "a lux value",
-                        minimum:0,
-                        maximum:100000
-                    },
-                    "dark" : {type: "boolean", description: "true  if dark, false otherwise"},
-                    "daylight" : {type: "boolean", description: "true  if daylight, false otherwise"},
-                    "lastupdated": {
-                        type: "string",
-                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
-                        format: "date-time",
-                    }
-                }
+                case "hue-ZLLTemperature":
+                    return [
+                        type: "personal",
+                        subtype: "consumption",
+                        ordinal: "secondary",
+                        required: ["payload.temperature"],
+                        description: "temperature data can provide an indicator of routine and room occupancy",
+                        required: ["payload.value"],
+                        conditions: [
+                            {
+                                accuracy: 0.4,
+                                granularity: {threshold:1, unit:"samples per minute"}
+                            }
+                        ],
+
+                        accretion: true,
+                    ];
+
+                case "hue-ZLLPresence":
+                    return [ 
+                            {
+                                type: "personal",
+                                subtype: "behaviour",
+                                ordinal: "secondary",
+                                
+                                description: "presence data can provide an indicator of routine and room occupancy",
+                                required: ["payload.value"],
+
+                                conditions: [
+                                    {
+                                        accuracy: 0.9,
+                                        granularity: {threshold:-1, unit:"none"}
+                                    }
+                                ],
+
+                                accretion: true,
+                            },
+                            {
+                                type: "personal",
+                                subtype: "location",
+                                ordinal: "secondary",
+                                required: ["payload.value"],
+                                
+                                description: "presence data can provide partial location information",
+
+                                conditions: [
+                                    {
+                                        granularity: {threshold:-1, unit:"none"}
+                                    }
+                                ],
+
+                                accretion: true,
+                            }
+                        ]
+
+                case "hue-ZLLLightLevel":
+                    return [
+                            {
+                                type: "personal",
+                                subtype: "behaviour",
+                                ordinal: "secondary",
+                                required: ["payload.value"],
+                                description: "correlated light readings can be used to infer behaviour (e.g. media consumption)",
+
+                                evidence: [
+                                    "http://ieeexplore.ieee.org/document/7456511/?arnumber=7456511"
+                                ],
+                                
+                                conditions: [
+                                    {
+                                        accuracy: 0.7,
+                                        granularity: {
+                                            threshold:10, 
+                                            unit:"Hz"
+                                        }
+                                    }
+                                ],
+                                accretion: false,
+                            }
+                    ]
+
+                default:
+                    return [];
+
+
             }
-        }
+        };
+
+        const payloads = (type)=>{
+
+            switch (type){
+            
+                case "bulb-on": 
+                    return {
+                                type: "string", 
+                                description: "<i>on</i> or <i>off</i>",
+                               
+                            };
+                
+                case "bulb-hue":
+                    return  {   
+                                type: "number", 
+                                description: "a hue value (0-360)",
+                                minimum:0,
+                                maximum:360
+                            };
+
+                case "bulb-bri":
+                    return  {
+                                type: "number",
+                                description: "a brightness value",
+                                minimum: 0,
+                                maximum: 255
+                            };
+
+                
+                case "hue-ZLLTemperature":
+
+                    return {
+                                type: "object", 
+                                description: "hue sensor temperature value",
+                                properties: {
+                                    "temperature":  {
+                                        type:"number", 
+                                        description:"hue light temperature value (2000-6500)",
+                                        minimum:2000,
+                                        maximum:6500
+                                    },
+                                    "lastupdated": {
+                                        type: "string",
+                                        description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
+                                        format: "date-time"
+                                    }
+                                }
+                            };
+
+                case "hue-ZLLPresence":
+                    
+                    return {
+                        type: "object", 
+                        description: "hue sensor presence indicator",
+                        properties: {
+                            "presence":  {
+                                type:"boolean", 
+                                description:"true if presence detected, false otherwise"
+                            },
+                            "lastupdated": {
+                                type: "string",
+                                description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
+                                format: "date-time"
+                            }
+                        }
+                    };
+
+                case "hue-ZLLLightLevel": 
+                    return {
+                        type: "object", 
+                        description: "hue sensor light indicator",
+                        properties: {
+                            "lightlevel" : {
+                                type: "number",
+                                description: "a lux value",
+                                minimum:0,
+                                maximum:100000
+                            },
+                            "dark" : {type: "boolean", description: "true  if dark, false otherwise"},
+                            "daylight" : {type: "boolean", description: "true  if daylight, false otherwise"},
+                            "lastupdated": {
+                                type: "string",
+                                description: "date string in ISO 8601 format: YYYY-MM-DDTHH:MM:SS",
+                                format: "date-time",
+                            }
+                        }
+                    }
+
+                default:
+                    return {};
+            }
+        };
+
       
         return {
             output:{
@@ -109,19 +245,20 @@ const config = {
                 properties:{
                     name: {type:'string', description: "a name assigned to this bulb"}, 
                     id:  {type:'string', description: "the node id: [id]"},
-                    type:{type: 'string', description: `the type:\'bulbs-in\'`},
+                    type:{type: 'string', description: `the type:\'bulbsin\'`},
                     subtype: {type: 'string', description: `reading type:\'${type}\'`, enum: ["bulb-on","bulb-hue","bulb-bri","hue-ZLLTemperature","hue-ZLLPresence","hue-ZLLLightLevel"]},
                     payload: {
                       type: 'object', 
                       description: 'the payload object', 
                       properties: {
                         ts: {type:'time', description: 'a unix timestamp'},
-                        value: payloads[type],          
+                        value: payloads(type),          
                       },
                       required: ["ts", "value"]
                     }
                 },
-                required: ["id", "type", "subtype", "payload"]
+                ptype: personal(type),
+                required: ["id", "type", "subtype", "payload"],
             }
         }
     },

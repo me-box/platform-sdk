@@ -7,6 +7,7 @@ import Cell from 'components/Cell';
 import Cells from 'components/Cells';
 //import '../../../../style/sass/code.scss';
 
+
 class Node extends React.Component {
 
        render() {

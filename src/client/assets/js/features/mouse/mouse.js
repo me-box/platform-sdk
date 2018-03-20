@@ -2,7 +2,7 @@ import { createStructuredSelector } from 'reselect';
 import { MOUSE_X_OFFSET, MOUSE_Y_OFFSET} from 'constants/ViewConstants';
 import {actionCreators as nodeActions} from 'features/nodes/actions';
 import {actionCreators as portActions} from 'features/ports';
-
+import {debounce} from 'utils/utils';
 
 const MOUSE_MOVE = 'iot.red/mouse/MOUSE_MOVE';
 const MOUSE_SCROLL =  'iot.red/mouse/MOUSE_SCROLL';
@@ -55,16 +55,9 @@ export function mouseDown(){
 }
 
 export function mouseUp(){
-    
     return {
       type: MOUSE_UP,
     }
-    /*return function(dispatch,getState){
-        dispatch(mouseActions.mouseUp());
-        //dispatch(portActions.mouseUp());
-        //dispatch(testActions.mouseUp());
-        //dispatch(repoActions.mouseUp());
-    } */
 }
 
 export function scroll(top){

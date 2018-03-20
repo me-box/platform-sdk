@@ -23,5 +23,6 @@
     },
     "testserver": {
         "URL": "http://localhost:9090"
-    }
+    },
+    "version": "0.3.0"
 }

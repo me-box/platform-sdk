@@ -148,6 +148,7 @@ function initNodeKeys(keys){
 }
 
 function updateNode(property, value){
+ 
   return {
     type: nodeActionTypes.NODE_UPDATE_VALUE,
     property,

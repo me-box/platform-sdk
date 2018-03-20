@@ -17,7 +17,7 @@ const streams = {};
 
 const _postFlows = function(ip, port, data, username, attempts=0){
 	console.log(`connecting to ${ip}:${port}/flows`);
-
+	username = username.toLowerCase();
 	
 	//add in channelIDs here
 	console.log(`adding output types`);
@@ -61,7 +61,7 @@ const _postFlows = function(ip, port, data, username, attempts=0){
     look for "Started Flows", and send the flow file a second after this */ 
 const _waitForStart = function(container, username){
 	let showonconsole = true;
-
+	username = username.toLowerCase();
 	return new Promise((resolve,reject)=>{
 		
 			container.attach({stream: true, stdout: true, stderr:true}, function (err, stream) {
@@ -88,7 +88,7 @@ const _waitForStart = function(container, username){
 
 const _pullContainer  = function(name, username){
 	console.log("pulling container", name);
-
+	username = username.toLowerCase();
 	return docker.pull(name).then((stream, err)=>{
 		return new Promise((resolve, reject)=>{
 			if (err){
@@ -164,6 +164,7 @@ var _inspect = function(container){
 }
 
 var _startContainer = function(container, flows, username){
+	username = username.toLowerCase();
     return _waitForStart(container, username).then(()=>{
         return _inspect(container);
     }).then((cdata)=>{
@@ -242,7 +243,7 @@ const _restart = function(container){
 }
 
 const _containerLogs = function(container, username) {
-
+ username = username.toLowerCase();
   // create a single stream for stdin and stdout
  const logStream = new stream.PassThrough();
 
@@ -269,6 +270,8 @@ const _containerLogs = function(container, username) {
 
 
 const _startNewContainer = function(username, flows){
+	username = username.toLowerCase();
+
 	return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
 		return createTestContainer('tlodge/databox-red', username, network);
 	}, (err)=>{
@@ -282,7 +285,8 @@ const _startNewContainer = function(username, flows){
 //stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
 //the test web app responds to the client webpage before it has been given the details of the new app.
 const _createContainerFromStandardImage = function(username, flows){
-	
+	//username = `${username}${Math.round(Math.random()*50)}`;
+	username = username.toLowerCase();
 	const opts = {
 		filters : {
 			label: [`user=${username}`],
@@ -352,14 +356,14 @@ router.post('/flows', function(req, res){
 	},[])));
 	
 	if (libraries.length > 0){
-		return _createNewImageAndContainer(libraries, req.user.username, flows).then((result)=>{
+		return _createNewImageAndContainer(libraries, req.user.username.toLowerCase(), flows).then((result)=>{
 			res.send({success:true});
 		}, (err)=>{
 		 	res.status(500).send({error:err});
 		});
 	}
 	else{
-		return _createContainerFromStandardImage(req.user.username, flows).then((result)=>{
+		return _createContainerFromStandardImage(req.user.username.toLowerCase(), flows).then((result)=>{
 			res.send({success:true});
 		}, (err)=>{
 			res.status(500).send({error:err});

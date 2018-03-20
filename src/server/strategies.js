@@ -27,7 +27,9 @@ export default function initPassport(app, config){
 				function(accessToken, refreshToken, profile, cb) {
 					
 					User.findOne({ githubId: profile.id }, function (err, user) {
+
 						if (user == null){
+							console.log("creating new user");
 							var newuser = new User({ githubId: profile.id, 
 												username: profile.username, 
 												 accessToken: accessToken, 
@@ -38,8 +40,7 @@ export default function initPassport(app, config){
 							});
 						}else{
 							//MUST update here - incase the token has changed
-							console.log("UPDATING TOKEN!", accessToken);
-							var conditions = {  accessToken: accessToken }
+							
 							User.update({ githubId: profile.id }, { $set: { accessToken: accessToken }}, function(err, u){
 								return cb(null, user);
 							});			

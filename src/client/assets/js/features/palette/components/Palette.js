@@ -22,6 +22,7 @@ export default class Palette extends Component {
     }
 
     componentDidMount(){
+       
         this.props.actions.fetchNodes();
     }
 

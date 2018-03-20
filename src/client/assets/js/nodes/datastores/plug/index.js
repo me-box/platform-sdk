@@ -1,5 +1,6 @@
 import Node from "./node";
 
+
 const config = {
     
     category: 'datastores',      
@@ -28,18 +29,104 @@ const config = {
     schemafn: (subtype)=>{
         const type = subtype || "TP-PowerState";
       
-        const payloads = {
+        const payloads = (type)=>{
             
-            "TP-PowerState": {
-                type: "string", 
-                description: "<i>on</i> or <i>off</i>"
-            },
+            switch (type){
+             
+                case  "TP-PowerState": 
+                    return {
+                        type: "string", 
+                        description: "<i>on</i> or <i>off</i>",
+                        ptype: [
+                            {
+                                type: "personal",
+                                subtype: "behaviour",
+                                ordinal: "secondary",
+                                
+                                description: "power on/off can be used to infer occupancy patterns",
+ 
+                                conditions: [
+                                    {
+                                        granularity: {threshold:0.01, unit:"Hz"}
+                                    }
+                                ],
+                                accretion: true,
+                            },
+                            {
+                                type: "personal",
+                                subtype: "location",
+                                ordinal: "secondary",
+                                
+                                description: "power on/off can be used to infer partial location",
+ 
+                                conditions: [
+                                    {
+                                        granularity: {threshold:0.01, unit:"Hz"}
+                                    }
+                                ],
+                                accretion: true,
+                            },
+                        ]
+                    }
 
-            "TP-Power-Usage": {   
-                type: "number", 
-                description: "power utilisation in Watts"
+                case "TP-Power-Usage": 
+                    return {   
+                        type: "object", 
+                        description: "values for current, voltage, power and total",
+                        properties: {
+                            current : {
+                                type: "number",
+                                desciption: "the reading for current (amps)"
+                            },
+                            voltage: {
+                                type: "number",
+                                desciption: "the reading for voltage (V)"
+                            },
+                            power : {
+                                type: "number",
+                                desciption: "the reading for power (W)"
+                            }
+                        },
+                        ptype:[
+                            {
+                                type: "personal",
+                                subtype: "consumption",
+                                ordinal: "secondary",
+                                
+                                description: "power usage will give a (partial) indication of energy consumption",
+ 
+                                conditions: [
+                                    {
+                                        granularity: {threshold:0.01, unit:"Hz"},
+                                    }
+                                ],
+
+                                accretion: true,
+                            },
+                            {
+                                type: "personal",
+                                subtype: "employment-status",
+                                ordinal: "secondary",
+                                
+                                description: "power usage can be used to infer employment status",
+
+                                evidence: ["https://www.sciencedirect.com/science/article/pii/S0198971516300813","https://dl.acm.org/citation.cfm?id=2422562"],
+ 
+                                conditions: [
+                                    {
+                                        granularity: {threshold:0.01, unit:"Hz"}
+                                    }
+                                ],
+
+                                accretion: true,
+                            }
+                        ]
+                    }
+                default:
+                    return {}
             }
-        }
+        };
+
       
         return {
             output:{
@@ -55,12 +142,12 @@ const config = {
                       description: 'the payload object', 
                       properties: {
                         ts: {type:'time', description: 'a unix timestamp'},
-                        value: payloads[type],          
+                        value: payloads(type),          
                       },
                       required: ["ts", "value"]
                     }
                 },
-                required: ["id", "type", "subtype", "payload"]
+                required: ["id", "type", "subtype", "payload"],
             }
         }
     },

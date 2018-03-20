@@ -12,7 +12,9 @@ import 'brace/mode/javascript';
 import 'brace/mode/json';
 //import 'brace/theme/github';
 import {configNode} from 'utils/ReactDecorators';
-const  jsontoflow = require("json-schema-to-flow-type");
+
+//TODO - this doesn't work on safari!!
+//var  jsontoflow = require("json-schema-to-flow-type");
 
 @configNode()
 export default class Node extends React.Component {
@@ -180,7 +182,7 @@ export default class Node extends React.Component {
 
     renderTypeOutput(){
        const {node, values={}, updateNode} = this.props;
-
+       
        const outputtypeprops = {
           onChange: (value)=>{
               updateNode("outputtypedef", value);
@@ -215,7 +217,7 @@ export default class Node extends React.Component {
                 </div>
 
                 <AceEditor {...outputtypeprops}/>
-              </div>          
+              </div>   
     }
 
     _getReturnFromItem(obj, returns){
@@ -255,7 +257,7 @@ export default class Node extends React.Component {
             },returns);
           
           default:
-            return;
+            return [];
         }
     }
     
@@ -278,7 +280,7 @@ export default class Node extends React.Component {
     }
 
     _extractproperties(properties){
-
+      
         return properties.reduce((acc, property)=>{
             if (property.type === "Property"){
                 if (property.value.type === "ObjectExpression"){
@@ -290,24 +292,29 @@ export default class Node extends React.Component {
                 else{
                   acc[property.key.name || property.key.value] = {type:this._getTypeFor(property.value.raw)}
                 }
-                return acc;
+                
             }
+            return acc;
         },{})
     }
 
     _schemafy(statements){
-        
+       
+
         return statements.map((statement)=>{  
+
             if (statement.type === "ObjectExpression"){
               return {
                   type: "object",
                   properties: this._extractproperties(statement.properties),
               }
             }
+            return {}
+
         })
     }
 
-    _checkSchema(inputs, outputs, value){
+    _checkSchema(inputs, outputs, value, updateNode){
       
       /*
       
@@ -357,11 +364,14 @@ export default class Node extends React.Component {
           },[]).filter(i=>i ? i.length > 0 : false);
 
           const schemas = this._schemafy(returnstatement[0]);
+
           if (schemas.length > 0){
-             this.props.updateNode("outputtypedef", JSON.stringify(schemas[0],null,4));
+            if (schemas[0]){
+              updateNode("outputtypedef", JSON.stringify(schemas[0],null,4)) 
+            }
           }
         }
-
+        
         //const fn = `${inschema} ${_out.schema} (${intype}):${_out.id || "any"}=>{${value}}`;
         //console.log(flow.checkContent("-", `${fn}`));*/
       }
@@ -369,6 +379,7 @@ export default class Node extends React.Component {
         console.log("parse failure!");
       }
     }
+    
 
     renderCodeInput(){
 
@@ -386,11 +397,10 @@ export default class Node extends React.Component {
 
             console.log(_in);*/
             
-            this._checkSchema(inputs, outputs, value);
+            this._checkSchema(inputs, outputs, value, updateNode);
 
            
-            //console.log("output code is",  jsontoflow.parseSchema({...schema, id:node.name || node.type}));
-            
+          
 
             updateNode("func", value);
         },

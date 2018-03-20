@@ -3,6 +3,8 @@ import {DragLayer} from 'react-dnd';
 import { connect } from 'react-redux';
 import Node from '../svg/Node';
 import Link from '../svg/Link';
+import Badge  from '../svg/Badge';
+
 import { createSelector } from 'reselect'
 import { actionCreators as nodeActions } from '../../actions';
 import { actionCreators as mouseActions } from 'features/mouse';
@@ -83,6 +85,10 @@ class NodeCanvas extends Component {
     const _links = links.map((id)=>{
       return <Link key={id} id={id}/>
     })
+
+    const _badges = links.map((id)=>{
+      return <Badge key={id} id={id}/>
+    })
     
     const chartstyle = {
       overflow: "hidden",
@@ -94,6 +100,7 @@ class NodeCanvas extends Component {
                <svg id="svgchart" width={w} height={h}>
                   {_links}
                   {_nodes}
+                  {_badges}
                </svg>
                {_configs}
             </div> ); 

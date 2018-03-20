@@ -152,12 +152,12 @@ export default function reducer(state = initialState, action) {
 
 
     case nodeActionTypes.NODE_UPDATE_VALUE:
-   
-      
-      return Object.assign({}, state, {
-        buffer : Object.assign({}, state.buffer, {[action.property]:action.value})
-      })
-  
+     
+
+      return {
+                ...state,
+                buffer : {...state.buffer, [action.property]:action.value}
+      }   
 
     case nodeActionTypes.NODE_INCREMENT_VALUE_KEY:
 
@@ -233,7 +233,6 @@ export default function reducer(state = initialState, action) {
       return state;
     
     case nodeActionTypes.NODE_UPDATE_SCHEMA:
-    
       return Object.assign({}, state, {
                 nodesById : Object.assign({}, state.nodesById, {
                   [action.id]: Object.assign({}, state.nodesById[action.id], {schema:action.schema})

@@ -23,10 +23,6 @@ const CLEAR_STATE =  'uibuilder/mapper/CLEAR_STATE';
 // This will be used in our root reducer and selectors
 export const NAME = 'uibuilder_mapper';
 
-// Define the initial state for `shapes` module
-
-let _listeners = [];
-
 const initialState: State = {
 	open:true,
 	mappings:[],
@@ -99,70 +95,6 @@ const _buildTree = (nid, mappings, nodes, links)=>{
 		return acc;
 	},{});
 }
-
-const _function_for = (ttype)=>{
-	switch (ttype){
-
-		case "attribute":
-			return liveActions.updateNodeAttribute;
-
-		case "transform":
-			return liveActions.updateNodeTransform;
-
-		case "style":
- 			return liveActions.updateNodeStyle;
-
-		default: 
-			return null;
-
-	}
-}
-
-const _subscribe = (mapping, onData)=>{
-	
-
-	var ds = DatasourceManager.get(mapping.from.sourceId);
-	
-	if (ds){
-		
-		let count = 0;
-		return  ds.emitter.addListener('data', (data)=>{
-			onData(mapping, data, count);
-    		count+=1;
-    	});
-	}
-}
-
-
-
-const _defaultTransform = (type)=>{
-	
-	switch (type){
-		case "rotate":
-			return "rotate(0)";
-
-		case "translate":
-			return "translate(0,0)";
-
-		case "scale":
-			return "scale(1)";
-
-		default:
-			return "translate(0,0)";
-	}
-}
-
-const _getNode = (nodesByKey, nodesById, enterKey, path)=>{
-	if (path && path.length >= 1){
-		const id 	  = path[path.length-1];
-		const key 	  = enterKey || "root";
-		const nodeId  = nodesByKey[id] ? nodesByKey[id][key] : null;
-		return nodeId ? nodesById[nodeId] : {};
-	}
-	return {};
-}
-
-	
 
 export default function reducer(state = initialState, action= {}) {
 	switch (action.type){
@@ -299,21 +231,29 @@ function mapFrom(id, sourceId, key, path, type){
 }
 
 function mapBirth(id, mappingId, birth){
-	return {	 
-		id,
-		type: MAP_BIRTH,
-		mappingId,
-		birth
-	}
+	return (dispatch, getState)=>{
+		dispatch({	 
+			id,
+			type: MAP_BIRTH,
+			mappingId,
+			birth
+		});
+		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+	};
 }
 
 function mapDeath(id, mappingId, death){
-	return {	 
-		id,
-		type: MAP_DEATH,
-		mappingId,
-		death
-	}
+	console.log("IN MAPT DEATH", death);
+	
+	return (dispatch, getState)=>{
+		dispatch({	 
+			id,
+			type: MAP_DEATH,
+			mappingId,
+			death
+		});
+		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
+	};
 }
 
 function mapTo(id, ttype, path, property){
@@ -342,54 +282,9 @@ function mapTo(id, ttype, path, property){
 	}
 }
 
-function subscribeMappings(id){
-
-	return (dispatch, getState)=>{
-		const {mapper:{mappings}} = getState();
-
-		for (let i = 0; i < mappings.length; i++){
-			
-			const fn = _function_for(mappings[i].ttype);
-			if (fn){
-
-				const onData = (mapping, data, count)=>{
-					
-					const {live: {nodesByKey, nodesById}, canvas: {templatesById}, mapper:{transformers}, editor:{screen}} = getState();
-					const {mappingId, from: {key},  to:{property}} = mapping;
-
-					const template = templatesById[mapping.to.path[mapping.to.path.length-1]];
-					const value   = resolvePath(mapping.from.key, mapping.from.path, data);
-					
-					let shouldenter = true;
-					let enterKey = null;
-
-					if (template.enterFn){
-						const {enter,key} = template.enterFn;
-						shouldenter = Function(...enter.params, enter.body)(data,count);
-						enterKey = 	Function(...key.params, key.body)(data,count);
-					}
-				
-    				const remove   = template.exitFn ?   Function(...template.exitFn.params, template.exitFn.body)(data,count) : null; //template.exitFn(data, count) : false;    				
-					const node = _getNode(nodesByKey, nodesById, enterKey, mapping.to.path); 
-					
-					if (remove){
-						dispatch(liveActions.removeNode(id, node.id, mapping.to.path, enterKey));
-					}else if (shouldenter){
-						const transformer = transformers[mappingId] || defaultCode(key,property);
-						const transform   = Function("id", key, "node", "i", "w", "h", transformer);	
-						//TODO: do we need id here?
-						dispatch(fn(mapping.to.path,property,transform(enterKey||"root", value, node, count, screen.w, screen.h), enterKey, Date.now(), count));
-					}
-				}
-				_listeners.push(_subscribe(mappings[i], onData));
-			}
-		}
-		dispatch({id,type: SUBSCRIBED});
-	}
-}
 
 function removeMapping(id, mappingId){
-	console.log("in remove mapping", mappingId);
+	
 	return (dispatch, getState)=>{
 		dispatch({id,type: REMOVE_MAPPING,mappingId});
 		dispatch(nodeActions.updateNode('mappings', getState()[id][NAME].mappings));
@@ -447,32 +342,6 @@ function selectMapping(id,mapping){
 	}
 }
 
-
-function createEnterSubscription(id,path, sourceId, sourcepath, enterFn){
-	
-	return (dispatch,getState)=>{
-		_subscribe( {
-			from: {
-				sourceId,
-				path:sourcepath,
-			},
-			to: {
-				path,
-			}
-		},(mapping,data,count)=>{
-			//evaluate the enter function
-			const {enter,key} = enterFn;
-			const shouldenter = Function(...enter.params, enter.body)(data,count);
-			const enterKey = 	Function(...key.params, key.body)(data,count);
-			dispatch(liveActions.cloneNode(id,path,enterKey,count));
-		});
-
-		dispatch({
-			id,
-			type: CREATED_ENTER_SUBSCRIPTION,
-		});
-	}
-}
 
 function saveTransformer(id, mappingId, transformer){
 
@@ -557,10 +426,8 @@ export const actionCreators = {
   selectMapping,
   loadMappings,
   saveTransformer,
-  subscribeMappings,
   removeMapping,
   deletePressed,
-  createEnterSubscription,
   clearState,
 
 };

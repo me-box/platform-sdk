@@ -42,7 +42,17 @@ const config =  {
 							required: ["ts", "value"]
 						}
 					},
-					required: ["id", "type", "subtype", "payload"]	
+					required: ["id", "type", "subtype", "payload"],
+                    
+                    ptype : [
+                        {
+                            type: "identifier",
+                            ordinal: "primary",
+                            description: "a tweet or twitter username can be matched to an individual",
+                            required: ["payload.value"],
+                            accretion: false,
+                        },
+                    ]
         		}
         	}
         },

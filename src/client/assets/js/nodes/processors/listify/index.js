@@ -8,6 +8,7 @@ const config = {
       value: ""
     },
   },
+  schemakey:"name",
   inputs: 1,
   outputs: 1,
 
@@ -18,7 +19,9 @@ const config = {
     return this.name || this.topic || "listify";
   },
 
-  schemafn: () => {
+  schemafn: (subtype="", ptype={}) => {
+
+    console.log("in list schema func", subtype, ptype);
 
     return {
       output: {
@@ -55,9 +58,13 @@ const config = {
                   }
                 }
               },
+              
               required: ["timestamp", "keys", "rows"]
             }
           },
+          ptype: Object.keys(ptype).reduce((acc,key)=>{
+                return [...acc, ...ptype[key]];
+          },[]),
           required: ["sourceId", "type", "payload"]
       },
       input: {

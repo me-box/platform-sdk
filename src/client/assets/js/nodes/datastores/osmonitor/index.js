@@ -67,7 +67,8 @@ const config = {
               required: ["ts", "value"]
             },
           },
-          required: ["id", "type", "subtype", "payload"]
+          required: ["id", "type", "subtype", "payload"],
+          ptype: []
       }
     }
   },

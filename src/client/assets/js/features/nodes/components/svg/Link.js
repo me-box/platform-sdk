@@ -5,41 +5,30 @@ import {actionCreators as linkActions, selector} from 'features/ports';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-
-
 const path =(source, sport, target)=>{
 
     const outputradius = OUTPUT_WIDTH/2;
     const numOutputs = source.outputs || 1;
     const sourcePort = sport || 0;
     const portY = -((numOutputs-1)/2)*OUTPUT_GAP + OUTPUT_GAP*sourcePort;
-    const sc = 1;
+   
     const dy = target.y - (source.y + portY);
-    const dx = target.x - (source.x + sc * source.w/2);
-    const delta = Math.sqrt(dy*dy+dx*dx);
-    
+    const dx = target.x - (source.x + source.w);
+  
     let scale =  LINE_CURVE_SCALE;
-    let scaleY = 0;
     
-    if (delta < source.w) {
-        scale = 0.75-0.75*((source.w-delta)/source.w);
-    }
-    if (dx*sc < 0) {
+    if (dx < 0) {
         scale += 2*(Math.min(outputradius*source.w,Math.abs(dx))/(outputradius*source.w));
-        if (Math.abs(dy) < 3*NODE_HEIGHT) {
-            scaleY = ((dy>0)?0.5:-0.5)*(((3*NODE_HEIGHT)-Math.abs(dy))/(3*NODE_HEIGHT))*(Math.min(source.w,Math.abs(dx))/(source.w)) ;
-        }
     }
 
     const x1 = source.x + (source.w/2) + outputradius;
     const x2 = target.x - (target.w/2) - outputradius;
     const y1 = source.y;
     const y2 = target.y;
-
-    // 
-    return `M ${x1} ${(source.y+portY)}`
-          + `C ${(x1+sc*(source.w/2+source.w*scale))} ${(y1+portY+scaleY*NODE_HEIGHT)} `
-          + `${(x2-sc*(scale)*source.w)} ${(y2-scaleY*NODE_HEIGHT)} `
+ 
+    return `M ${x1} ${source.y+portY}`
+          + `C ${x1+(source.w*scale)} ${y1+portY} `
+          + `${x2-scale*source.w} ${y2} `
           + `${x2} ${y2}`
 }
 
@@ -58,6 +47,8 @@ export default class Link extends Component {
     render(){
     
         const {id, link, link:{source,target,sourcePort}, ports:{selectedId}}  = this.props;
+        
+   
 
         const DELTA = (source.w/2) + OUTPUT_WIDTH/2;
         
@@ -90,10 +81,12 @@ export default class Link extends Component {
             onClick: this.props.actions.linkSelected.bind(null, id),
         };
 
-		const className = cx({
-			'link_line' : !(selectedId === id),
-			'drag_line' : (selectedId === id),
-		});
+       
+		    
+        const className = cx({
+			   'link_line' : !(selectedId === id),
+			   'drag_line' : (selectedId === id),
+		    });
 		
         return <g>
         			<rect {...clickrectprops} ></rect>

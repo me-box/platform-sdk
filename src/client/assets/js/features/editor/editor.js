@@ -73,9 +73,9 @@ export default function reducer(state = initialState, action={}) {
 
 
 function checkLoggedIn(){
-	return {status:true};
+	
 
-	/*request
+	request
 		.get(`${config.root}/auth/loggedin`)
 		.set('Accept', 'application/json')
 		.timeout({response: 1500})
@@ -87,14 +87,14 @@ function checkLoggedIn(){
 			if (status === "fail"){
 				window.location.replace(`${config.root}/login`);
 			}
-		});*/
+		});
 }
 
 function initEditor(){
 	
 	
 	if (!logincheck){
-		logincheck = setInterval(checkLoggedIn, 5000);
+		logincheck = setInterval(checkLoggedIn, 10000);
 	}
 
 	return (dispatch, getState)=>{

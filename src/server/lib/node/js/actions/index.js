@@ -17,6 +17,7 @@ function nodeConfigureCancel(){
 }
 
 function updateNode(property, value){
+
   return {
     type: NODE_UPDATE_VALUE,
     property,
@@ -36,7 +37,7 @@ function updateSchema(id, schema){
   return {
     type: NODE_UPDATE_SCHEMA,
     id,
-    schema,
+    schema
   }
 }
 

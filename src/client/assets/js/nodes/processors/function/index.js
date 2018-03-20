@@ -46,7 +46,7 @@ const config = {
         }
 
         return { 
-                    output,
+                    output: output || {},
                  
                     input:{
                         type: "any",

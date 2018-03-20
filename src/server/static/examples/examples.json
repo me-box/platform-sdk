@@ -2,7 +2,87 @@
     "repos":[
         {
             "username":"tlodge", 
-            "name":"databox.tutorial-freememory",
+            "name":"task_one",
+            "description":"twitter in debugger",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_one"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_two",
+            "description":"accelerometer gauge",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_two"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_three",
+            "description":"plot two charts",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_three"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_four",
+            "description":"flash bulbs",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_four"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_five",
+            "description":"detect presence",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_five"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_six",
+            "description":"check power",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_six"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_seven",
+            "description":"digital clock",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_seven"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_eight",
+            "description":"binary bulbs",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_eight"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_nine",
+            "description":"story shaker",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_nine"
+        },
+        {
+            "username":"tlodge", 
+            "name":"task_ten",
+            "description":"tweet home control",
+            "updated":"2017-09-11T09:27:25Z",
+            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
+            "url":"https://github.com/tlodge/task_ten"
+        },
+        {
+            "username":"tlodge", 
+            "name":"tutorial-freememory",
             "description":"simple chart showing databox free memory over time",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
@@ -10,7 +90,7 @@
         },
         {
             "username":"tlodge", 
-            "name":"databox.tutorial-accelerometer-axes",
+            "name":"tutorial-accelerometer-axes",
             "description":"accelerometer vapour trail",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
@@ -18,7 +98,7 @@
         },
         {
             "username":"tlodge", 
-            "name":"databox.tutorial-light-gauge",
+            "name":"tutorial-light-gauge",
             "description":"databox light gauge tutorial",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
@@ -26,15 +106,7 @@
         },
         {
             "username":"tlodge", 
-            "name":"databox.tutorial-on-off",
-            "description":"databox flash bulbs",
-            "updated":"2017-09-11T09:27:25Z",
-            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
-            "url":"https://api.github.com/repos/tlodge/databox.tutorial-on-off"
-        },
-        {
-            "username":"tlodge", 
-            "name":"databox.tutorial-shake-light",
+            "name":"tutorial-shake-light",
             "description":"shake a light on or off",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
@@ -42,20 +114,14 @@
         },
         {
             "username":"tlodge", 
-            "name":"databox.tutorial-hue-binary",
-            "description":"flash bulbs in binary sequence",
-            "updated":"2017-09-11T09:27:25Z",
-            "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
-            "url":"https://api.github.com/repos/tlodge/databox.tutorial-hue-binary"
-        },
-        {
-            "username":"tlodge", 
-            "name":"databox.tutorial-trump",
+            "name":"tutorial-trump",
             "description":"trump doomsday clock based on tweet sentiment",
             "updated":"2017-09-11T09:27:25Z",
             "icon":"https://avatars0.githubusercontent.com/u/126439?v=4",
             "url":"https://api.github.com/repos/tlodge/databox.tutorial-trump"
         }
+        
+
        
     ]
 }

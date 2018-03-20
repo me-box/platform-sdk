@@ -30,22 +30,22 @@ export default class Node extends React.Component {
 		super(props);
 		const {values:{filters}} = props;
 		this._toggleFilter = this._toggleFilter.bind(this);
-		this.state = { selections:  filters };
+		this.state = { selections:  filters};
 	}
 
-	renderItem(source, name, item, path){
+	renderItem(sid, stype, name, item, path){
 		
 		if (item.type ===  "object"){
 			return 	<ul className="filterList">
 						<li><strong>{name}</strong></li>
-						{this.renderSchema(source, item.properties, path)}
+						{this.renderSchema(sid, stype, item.properties,  path)}
 					</ul>
 					
 		}else{
 			
 			
 
-			const checked = this.state.selections.map(f=>f.path.join()+f.source).indexOf(path.join()+source) !== -1;
+			const checked = this.state.selections.map(f=>f.path.join()+f.stype).indexOf(path.join()+stype) !== -1;
 
 			return <li> 
 						<div className="flexrow">
@@ -53,7 +53,7 @@ export default class Node extends React.Component {
 
 								<input type="checkbox" 
 									name={name}
-								  	onChange={this._toggleFilter.bind(null, source, item, path)}
+								  	onChange={this._toggleFilter.bind(null, sid, stype, item, path)}
 								  	checked={checked}/>
 								<label>{name}</label>
 							</div>
@@ -65,10 +65,10 @@ export default class Node extends React.Component {
 		}
 	}
 
-	renderSchema(source, schema, path=[]){
+	renderSchema(sid, stype, schema, path=[]){
 		return Object.keys(schema).map((key,i)=>{
-			const item = Object.assign({}, schema[key], {name:key});
-			return <ul className="filterList" key={i}> {this.renderItem(source, key, item, [...path, key])} </ul>
+			const item = {...schema[key], name:key}
+			return <ul className="filterList" key={i}> {this.renderItem(sid, stype, key, item, [...path, key])} </ul>
 		});
 	}
 	
@@ -77,7 +77,7 @@ export default class Node extends React.Component {
 			return <div key={i}>
 						<h3>{source.type}</h3>
 						<div className="filter-divider" />
-						<div>{this.renderSchema(source.type, source.schema.properties)}</div>
+						<div>{this.renderSchema(source.id, source.type, source.schema.properties)}</div>
 					</div>
 		})
 	}	
@@ -121,10 +121,11 @@ export default class Node extends React.Component {
 		const sources = inputs.reduce((acc, node)=>{
 			const {schema:{output}} = node;
 			if (output){
-				acc.push({type:node.type, schema:output});
+				acc = [...acc, {type:node.type, id:node.id, schema:output}];
 			}
 			return acc;
 		},[]) 	
+
 
 		return <div>
           			<Cells>	
@@ -134,20 +135,29 @@ export default class Node extends React.Component {
             	</div>
 	}
 
-	_toggleFilter(source, item, path, event){
+	_toggleFilter(sid, stype, item, path, event){
+
+		
+		console.log("am in toggle filter with", sid, stype, item);
+
+		const {inputs = []} = this.props;
+
 		const target = event.target;
 		const checked = target.checked;
 		let _filters;
 
 		if (!checked){
 			_filters = this.state.selections.filter((filter)=>{
-				return filter.source === source && filter.path.join() !== path.join();
+				return filter.sid === sid && filter.path.join() !== path.join();
 			});
 		}else{
-			_filters = [...this.state.selections, {source,item,path}];
+			_filters = [...this.state.selections, {sid,stype,item,path}];
 		}
-
+	
 		this.setState({selections: _filters});
+		//need to resolve input schemas privacy against filters!
+
+		
 		this.props.updateNode("filters", _filters);
 	}
 

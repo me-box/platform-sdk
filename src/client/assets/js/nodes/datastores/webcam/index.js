@@ -27,6 +27,12 @@ const config = {
     },
     
     schemafn: (subtype)=>{
+        const privacy = (type)=>{
+            switch (type){
+                default:
+                    return  privacy_template;
+            }
+        };  
         return {
             output:{
                 type: "object",
@@ -35,6 +41,30 @@ const config = {
                     name: {type:'string', description: "a name assigned to this webcam"}, 
                     dataURL: {type: 'string', description: "a string containing a representation of the image in the format specified by the type parameter"},
                 },
+                ptype: [
+                    {
+                        type: "sensitive",
+                        subtype: "sexuality",
+                        ordinal: "secondary",
+                    
+                        conditions:[
+                            {
+                                accuracy: 0.8, 
+                                samples: 1,
+                            },
+                            {
+                                accuracy: 0.9,
+                                attributes: ["vocation"]
+                            },
+                            {
+                                accuracy: 0.9,
+                                attributes: ["age", "finance"]
+                            }
+                        ]
+                    },
+
+                    accretion: false,
+                ]
             }
         }
     },

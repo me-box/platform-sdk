@@ -65,13 +65,29 @@ export function configNode(){
               return {name,label,id,schema,type, subtype, color,icon,category};
             });   //get _def out
 
+            
+
             const props = {
                 node,
                 values:buffer,
                 updateNode:  (property,value)=>{
+
                     this.props.actions.updateNode(property,value);
                     if (property === node._def.schemakey){
-                        this.props.actions.updateSchema(id, node._def.schemafn(value));
+                       //csn pass in ptype here!!
+
+                        const ptype = inputs.reduce((acc,input)=>{
+                            
+                            if (input.schema && input.schema.output && input.schema.output.ptype){
+                              acc = { 
+                                ...acc, 
+                                [input.id] : input.schema.output.ptype
+                              }
+                            }
+                            return acc;
+                        },{});
+
+                        this.props.actions.updateSchema(id, node._def.schemafn(value, ptype));
                         this.props.actions.updateDescription(id, node._def.descriptionfn(value));
                     }
                 },

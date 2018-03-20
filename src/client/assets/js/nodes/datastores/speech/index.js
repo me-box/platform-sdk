@@ -28,7 +28,8 @@ const config = {
     
     schemafn: (subtype)=>{
         const type = subtype || "speech";
-      
+    
+
         return {
             output:{
                 type: "object",
@@ -42,6 +43,7 @@ const config = {
                       type: 'string', description: 'speech-to-text value', 
                     }
                 },
+                ptype: []
             }
         }
     },

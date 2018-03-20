@@ -22,13 +22,14 @@ export default class Transformer extends PureComponent {
   constructor(props) {
     super(props);
     const template = this._currentTemplate();
+    const { mapping } = props;
 
     this.state = {
         showschema:false, 
         menuItem:"transformer",
         transformerBuffer: this._transformerCode(),
-        birthBuffer: template ? template.enterFn|| null : null,
-        deathBuffer: template ? template.exitFn || null : null,
+        birthBuffer: mapping ? mapping.birth || null : null,
+        deathBuffer: mapping ? mapping.death || null : null,
     }
 
     this.transformerChange = this.transformerChange.bind(this);
@@ -59,12 +60,12 @@ export default class Transformer extends PureComponent {
   }
 
   closeDialog = () => {
-    const template = this._currentTemplate();
-
+    //const template = this._currentTemplate();
+    const { mapping } = this.props;
     this.setState({
       transformerBuffer: this._transformerCode(),
-      birthBuffer: template ? template.enterFn : null,
-      deathBuffer: template ? template.exitFn : null,
+      birthBuffer: mapping ? mapping.birth : null,
+      deathBuffer: mapping ? mapping.death : null,
     });
 
     this.props.closeDialog();
@@ -201,8 +202,8 @@ export default class Transformer extends PureComponent {
   }
 
   renderDeath(){
-    const {[CANVASNAME]:{selected:{path}}, nid, inputs} = this.props;
-    return <Death value={this.state.deathBuffer} inputs={inputs} nid={nid} path={path} onChange={this.deathChange}/>
+    const {[CANVASNAME]:{selected:{path}}, nid, inputs, mapping} = this.props;
+    return <Death value={this.state.deathBuffer} inputs={inputs} mapping={mapping} nid={nid} path={path} onChange={this.deathChange}/>
   }
 
   renderFunction(){

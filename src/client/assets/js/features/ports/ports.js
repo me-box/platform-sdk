@@ -35,7 +35,62 @@ const initialState = {
 	}
 };
 
+const _flatten = (arr=[])=>{
+	return arr.reduce((acc, row)=>{
+		if (Array.isArray(row)){
+			return row.reduce((acc, src)=>{
+				acc.push(src);
+					return acc;
+			}, acc);
+		}
+		return [...acc, row];
+	}, [])
+}
 
+const _dedup = (arr=[])=>{
+	let seen = {};
+	return arr.filter((item)=>{
+		if (seen[item])
+			return false;
+		seen[item] = true;
+		return true;
+	});
+}
+
+const _leaf = (id, links)=>{
+	const item = links.find((item)=>{
+		return item.split(":")[1] === id;
+	});
+	return item ? false : true;
+}
+
+const _from = (link)=>{
+	return link.split(":")[1]
+} 
+
+const _to = (link)=>{
+	return link.split(":")[2]
+}
+
+const _remove_loops = (links)=>{
+	return links.reduce((acc, item)=>{
+		if (!(acc.find(i=>_from(i) === _to(item) && _to(i) === _from(item)))){
+			acc = [...acc, item];
+		}
+		return acc;
+	},[]);
+}
+
+const _children = (id, links, seen=[])=>{
+	if (_leaf(id,links)){
+		return [id];
+	}
+	return [id, ...links.filter((l)=>_from(l) === id).map(link=>[].concat(..._children(_to(link), links)))];
+}
+
+const _updatedownstream = (node, dispatch, getState)=>{
+	return [].concat(..._children(node.id, _remove_loops(getState().ports["links"])))
+}
 
 export default function reducer(state = initialState, action) {
 
@@ -112,8 +167,7 @@ export default function reducer(state = initialState, action) {
 		case portActionTypes.PORT_MOUSE_OVER:
 			
 			if (state.output && (state.output.node.id != action.node.id && action.node.inputs > 0) && action.portIndex == 0){
-				
-				
+
 				const id = `${state.output.sourcePort}:${state.output.node.id}:${action.node.id}:${action.portIndex}`;
 
 				return Object.assign({}, state, {
@@ -136,11 +190,14 @@ export default function reducer(state = initialState, action) {
 
 		case portActionTypes.PORT_MOUSE_DOWN:
 			
+			const privacy = action.node.schema && action.node.schema.output ? action.node.schema.output.ptype || [] : [];
+			
 	    	return Object.assign({}, state, {
 	    		output: {
     				node: {
 				    	id: action.node.id,
-				    	z : action.node.z
+				    	z : action.node.z,
+				    	privacy,
 				    },
     				sourcePort: action.portIndex,
     				portType: action.portType,
@@ -196,22 +253,29 @@ function linkSelected(link){
 
 function portMouseDown(node,portType,portIndex,e){
 	
-    return {
-      type: portActionTypes.PORT_MOUSE_DOWN,
-      node,
-      portType,
-      portIndex,
+	return {
+     	type: portActionTypes.PORT_MOUSE_DOWN,
+      	node,
+      	portType,
+      	portIndex,
     }
 } 
 
 function portMouseOver(node,portType,portIndex,e){
- 	 
-    return {
-      type: portActionTypes.PORT_MOUSE_OVER,
-      node,
-      portType,
-      portIndex,
-    }
+ 	
+ 	return (dispatch, getState)=>{
+		if (getState().ports.output){
+			
+			console.log(_updatedownstream(node, dispatch, getState));
+
+			dispatch({
+     	 		type: portActionTypes.PORT_MOUSE_OVER,
+      			node,
+      			portType,
+      			portIndex,
+    		});
+		}
+	}
 } 
 
 function linkDelete(link){

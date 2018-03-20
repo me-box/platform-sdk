@@ -88,6 +88,12 @@ function start(config){
     res.render('login');  
   });
 
+  app.get('*.js', function (req, res, next) {
+    req.url = req.url + '.gz';
+    res.set('Content-Encoding', 'gzip');
+    next();
+  });
+
   app.use('/', express.static("static"));
 
   app.get('/', function(req,res){

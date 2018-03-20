@@ -348,7 +348,7 @@ function createTarFile(dockerfile, flowfile, path) {
 
 function createDockerImage(tarfile, tag) {
 
-	console.log('creating image for tarfile ' + tarfile + ' with tag ' + tag);
+	console.log('creating image for tarfile ' + tarfile + ' with docker tag ' + tag);
 
 	return new Promise(function (resolve, reject) {
 		_docker2.default.buildImage(tarfile, { t: tag, nocache: true }, function (err, output) {
@@ -370,13 +370,15 @@ function stopAndRemoveContainer(name) {
 
 	return new Promise(function (resolve, reject) {
 
-		var container = _docker2.default.listContainers(function (err, containers) {
+		var container = _docker2.default.listContainers({ all: true }, function (err, containers) {
 
 			if (err) {
 				reject(err);
 			}
 
 			var container = containers.reduce(function (acc, container) {
+				console.log("checking", '/' + name, " in ", container.Names);
+
 				if (container.Names.indexOf('/' + name) != -1) {
 					return container;
 				}
@@ -385,7 +387,7 @@ function stopAndRemoveContainer(name) {
 
 			if (!container) {
 				console.log("did not find container");
-				resolve(true);
+				reject();
 				return;
 			}
 
@@ -393,10 +395,10 @@ function stopAndRemoveContainer(name) {
 
 			containerToStop.stop(function (err, data) {
 				console.log("container stopped!");
-				if (err) {
-					reject(err);
-					return;
-				}
+				//if (err){
+				//	reject(err);
+				//	return;
+				//}
 				containerToStop.remove(function (err, data) {
 					if (err) {
 						reject(err);
@@ -414,6 +416,7 @@ function stopAndRemoveContainer(name) {
  a webcam is used and 8096 is the (docker mapped) port that serves up the webcam page
 */
 function createTestContainer(image, name, network) {
+	var self = this;
 	console.log('creating test container ' + image + ', name: ' + name);
 	//#PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
 	//"9123/tcp":{},
@@ -429,8 +432,13 @@ function createTestContainer(image, name, network) {
 			name: name + '-red'
 		}, function (err, container) {
 			if (err) {
-				console.log("rejecting with error", err);
-				reject(err);
+				console.log("error:", err);
+				return stopAndRemoveContainer(name + '-red').then(function () {
+					return createTestContainer(image, name, network);
+				}, function (err) {
+					reject(err);
+					return;
+				});
 			} else {
 				console.log("ok am here");
 				container.start({}, function (err, data) {
@@ -602,6 +610,12 @@ function start(config) {
 
   app.get('/login', function (req, res) {
     res.render('login');
+  });
+
+  app.get('*.js', function (req, res, next) {
+    req.url = req.url + '.gz';
+    res.set('Content-Encoding', 'gzip');
+    next();
   });
 
   app.use('/', _express2.default.static("static"));
@@ -859,7 +873,9 @@ function initPassport(app, config) {
 	}, function (accessToken, refreshToken, profile, cb) {
 
 		User.findOne({ githubId: profile.id }, function (err, user) {
+
 			if (user == null) {
+				console.log("creating new user");
 				var newuser = new User({ githubId: profile.id,
 					username: profile.username,
 					accessToken: accessToken,
@@ -870,8 +886,7 @@ function initPassport(app, config) {
 				});
 			} else {
 				//MUST update here - incase the token has changed
-				console.log("UPDATING TOKEN!", accessToken);
-				var conditions = { accessToken: accessToken };
+
 				User.update({ githubId: profile.id }, { $set: { accessToken: accessToken } }, function (err, u) {
 					return cb(null, user);
 				});
@@ -1017,7 +1032,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var router = _express2.default.Router();
-var agent = _superagent2.default.agent();
+var agent = _superagent2.default
+//.get(`${req.config.github.API}/users/${username}/repos`)
+
+//.get(`${req.config.github.API}/users/${user.username}/repos`)
+.agent();
 var networks = ["databox_default", "bridge"];
 
 
@@ -1093,8 +1112,7 @@ var _createCommit = function _createCommit(config, user, repo, sha, filename, co
 			"sha": sha
 		}).set('Authorization', 'token ' + accessToken).set('Accept', 'application/json').end(function (err, data) {
 			if (err) {
-				console.log("******** ERROR ********");
-				console.log(err);
+				console.log("******** ERROR ********", err);
 				reject(err);
 			} else {
 				//have found that it can still take time before this registers as the latest commit.
@@ -1114,14 +1132,14 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			"private": false,
 			"has_issues": false,
 			"has_wiki": false,
-			"has_downloads": false
+			"has_downloads": false,
+			"topic": "databox"
 		}).set('Authorization', 'token ' + accessToken).set('Accept', 'application/json').end(function (err, data) {
 			if (err) {
 				console.log("--> failed to create repo!");
 				reject(err);
-				return;
 			} else {
-				console.log("successfully created repo!");
+
 				var result = data.body;
 
 				//give github time it needs to set up repo
@@ -1137,7 +1155,18 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			}
 		});
 	}).then(function (repo) {
-		console.log("successfully created repo", repo);
+
+		return new Promise(function (resolve, reject) {
+			_superagent2.default.put(config.github.API + '/repos/' + user.username + '/' + repo.name + '/topics').send({ names: ["databox"] }).set('Authorization', 'token ' + accessToken).set('Accept', 'application/vnd.github.mercy-preview+json').end(function (err, data) {
+				if (err) {
+					console.log("failed to create repo", err);
+					reject(err);
+				} else {
+					resolve(repo);
+				}
+			});
+		});
+	}).then(function (repo) {
 
 		return Promise.all([Promise.resolve(repo), _addFile({
 			config: config,
@@ -1165,7 +1194,6 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 		})]);
 	}).then(function (values) {
 		var reponame = values[0];
-		console.log("creating dockerfile", dockerfile);
 
 		return Promise.all([Promise.resolve(reponame), Promise.resolve(values[1]), Promise.resolve(values[2]), _addFile({
 			config: config,
@@ -1442,6 +1470,7 @@ var _formatmanifest = function _formatmanifest(manifest) {
 };
 
 var _publish = function _publish(config, user, manifest, flows, dockerfile) {
+	console.log("publishing app");
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
@@ -1477,9 +1506,11 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 			return;
 		}).then(function (tarfile) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: "successfully created tar file, creating docker image" });
+			console.log("config file", JSON.stringify(config, null, 4));
+			console.log("version ", config.version);
 			var _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : user.username.toLowerCase() + '-' + manifest.name.toLowerCase();
 			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? _stripscheme(config.registry.URL) + '/' : "";
-			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname);
+			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname + ':' + (config.version || "latest"));
 		}, function (err) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: err.json.message });
 			reject("could not create docker image", err);
@@ -1507,12 +1538,20 @@ router.get('/repos/:user', function (req, res) {
 	if (!username || username.trim() === "") {
 		username = req.user.username;
 	}
-	_superagent2.default.get(req.config.github.API + '/users/' + username + '/repos').set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).end(function (err, data) {
+
+	var query = {
+		user: username,
+		topic: "databox"
+	};
+	_superagent2.default.get(req.config.github.API + '/search/repositories').query({ q: 'user:' + user.username + ' topic:databox' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).query(query).end(function (err, data) {
 		if (err) {
 			console.log(err);
 			res.status(500).send({ error: 'could not retrieve repos' });
+			//res.send({username,repos:[]})
 		} else {
-			var repos = data.body.map(function (repo) {
+
+			var repos = data.body.items.map(function (repo) {
+
 				return {
 					name: repo.name,
 					description: repo.description,
@@ -1520,8 +1559,6 @@ router.get('/repos/:user', function (req, res) {
 					icon: repo.owner.avatar_url,
 					url: repo.url
 				};
-			}).filter(function (repo) {
-				return repo.name.startsWith("databox.");
 			});
 
 			res.send({ username: username, repos: repos });
@@ -1534,13 +1571,14 @@ router.get('/repos', function (req, res) {
 	console.log("getting repos with accessToken", req.user.accessToken);
 	var user = req.user;
 
-	_superagent2.default.get(req.config.github.API + '/users/' + user.username + '/repos').query({ 'per_page': 100, sort: 'created', direction: 'desc' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).end(function (err, data) {
+	_superagent2.default.get(req.config.github.API + '/search/repositories').query({ q: 'user:' + user.username + ' topic:databox' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).end(function (err, data) {
 		if (err) {
 			console.log(err);
-			req.logout();
+			//req.logout();
 			res.status(500).send({ error: 'could not retrieve repos' });
 		} else {
-			var repos = data.body.map(function (repo) {
+
+			var repos = data.body.items.map(function (repo) {
 
 				return {
 					name: repo.name,
@@ -1549,8 +1587,6 @@ router.get('/repos', function (req, res) {
 					icon: repo.owner.avatar_url,
 					url: repo.url
 				};
-			}).filter(function (repo) {
-				return repo.name.startsWith("databox.");
 			});
 
 			res.send({ username: req.user.username, repos: repos });
@@ -1587,7 +1623,7 @@ router.get('/flow', function (req, res) {
 router.post('/repo/new', function (req, res) {
 
 	var user = req.user;
-	var name = req.body.name.startsWith("databox.") ? req.body.name.toLowerCase() : 'databox.' + req.body.name.toLowerCase();
+	var name = req.body.name.toLowerCase();
 	var description = req.body.description || "";
 	var flows = req.body.flows || [];
 	var manifest = req.body.manifest || {};
@@ -1721,7 +1757,7 @@ router.post('/publish', function (req, res) {
 	} else {
 		//create a new repo!
 
-		var reponame = manifest.name.startsWith("databox.") ? manifest.name.toLowerCase() : 'databox.' + manifest.name.toLowerCase();
+		var reponame = manifest.name.toLowerCase();
 		(0, _websocket.sendmessage)(user.username, "debug", { msg: 'creating a new repo ' + reponame });
 
 		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
@@ -1817,6 +1853,7 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 	var attempts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
 
 	console.log('connecting to ' + ip + ':' + port + '/flows');
+	username = username.toLowerCase();
 
 	//add in channelIDs here
 	console.log('adding output types');
@@ -1854,7 +1891,7 @@ var _postFlows = function _postFlows(ip, port, data, username) {
     look for "Started Flows", and send the flow file a second after this */
 var _waitForStart = function _waitForStart(container, username) {
 	var showonconsole = true;
-
+	username = username.toLowerCase();
 	return new Promise(function (resolve, reject) {
 
 		container.attach({ stream: true, stdout: true, stderr: true }, function (err, stream) {
@@ -1881,7 +1918,7 @@ var _waitForStart = function _waitForStart(container, username) {
 
 var _pullContainer = function _pullContainer(name, username) {
 	console.log("pulling container", name);
-
+	username = username.toLowerCase();
 	return _docker2.default.pull(name).then(function (stream, err) {
 		return new Promise(function (resolve, reject) {
 			if (err) {
@@ -1956,6 +1993,7 @@ var _inspect = function _inspect(container) {
 };
 
 var _startContainer = function _startContainer(container, flows, username) {
+	username = username.toLowerCase();
 	return _waitForStart(container, username).then(function () {
 		return _inspect(container);
 	}).then(function (cdata) {
@@ -2037,7 +2075,7 @@ var _restart = function _restart(container) {
 };
 
 var _containerLogs = function _containerLogs(container, username) {
-
+	username = username.toLowerCase();
 	// create a single stream for stdin and stdout
 	var logStream = new _stream2.default.PassThrough();
 
@@ -2062,6 +2100,8 @@ var _containerLogs = function _containerLogs(container, username) {
 };
 
 var _startNewContainer = function _startNewContainer(username, flows) {
+	username = username.toLowerCase();
+
 	return _pullContainer("tlodge/databox-red:latest", username).then(function () {
 		return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
 	}, function (err) {
@@ -2075,7 +2115,8 @@ var _startNewContainer = function _startNewContainer(username, flows) {
 //stop and remove image regardless of whether it is running already or not.  This will deal with teh problem where
 //the test web app responds to the client webpage before it has been given the details of the new app.
 var _createContainerFromStandardImage = function _createContainerFromStandardImage(username, flows) {
-
+	//username = `${username}${Math.round(Math.random()*50)}`;
+	username = username.toLowerCase();
 	var opts = {
 		filters: {
 			label: ['user=' + username],
@@ -2143,13 +2184,13 @@ router.post('/flows', function (req, res) {
 	}, [])));
 
 	if (libraries.length > 0) {
-		return _createNewImageAndContainer(libraries, req.user.username, flows).then(function (result) {
+		return _createNewImageAndContainer(libraries, req.user.username.toLowerCase(), flows).then(function (result) {
 			res.send({ success: true });
 		}, function (err) {
 			res.status(500).send({ error: err });
 		});
 	} else {
-		return _createContainerFromStandardImage(req.user.username, flows).then(function (result) {
+		return _createContainerFromStandardImage(req.user.username.toLowerCase(), flows).then(function (result) {
 			res.send({ success: true });
 		}, function (err) {
 			res.status(500).send({ error: err });

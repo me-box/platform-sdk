@@ -23,6 +23,7 @@ import TestManager from 'features/test/components/TestManager';
 import Help from 'features/help/components/Help';
 import ServerConsole from 'features/serverconsole/components/ServerConsole';
 
+
 @connect((state)=>{
     return {
         editor: state[NAME],
@@ -92,6 +93,8 @@ export default class Editor extends Component {
     const toolbarprops  = {
         ...this.props.actions
     }
+
+ 
 
     return (<div onKeyDown={this._keyPress}> 
               <DragDropContainer>
