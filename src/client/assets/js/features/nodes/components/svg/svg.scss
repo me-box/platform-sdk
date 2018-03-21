@@ -3,11 +3,18 @@ text.icon {
     font-size: 30px;
     fill: white;
     text-anchor: middle;
+    -moz-user-select: none;
+   	-khtml-user-select: none;
+   	-webkit-user-select: none;
 }
 
 text.badge{
-	font-family: FontAwesome;
-    font-size: 15px;
+	font-family: monaco, Consolas, "Lucida Console", monospace;
+    font-size: 12px;
+    font-weight: bold;
     fill: white;
     text-anchor: middle;
+    -moz-user-select: none;
+   	-khtml-user-select: none;
+   	-webkit-user-select: none;
 }

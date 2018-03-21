@@ -81,15 +81,15 @@ const _remove_loops = (links)=>{
 	},[]);
 }
 
-const _children = (id, links, seen=[])=>{
+const _children = (id, links)=>{
 	if (_leaf(id,links)){
 		return [id];
 	}
 	return [id, ...links.filter((l)=>_from(l) === id).map(link=>[].concat(..._children(_to(link), links)))];
 }
 
-const _updatedownstream = (node, dispatch, getState)=>{
-	return [].concat(..._children(node.id, _remove_loops(getState().ports["links"])))
+const _downstreamnodes = (id, links)=>{
+	return [].concat(..._children(id, _remove_loops(links)));
 }
 
 export default function reducer(state = initialState, action) {
@@ -266,7 +266,7 @@ function portMouseOver(node,portType,portIndex,e){
  	return (dispatch, getState)=>{
 		if (getState().ports.output){
 			
-			console.log(_updatedownstream(node, dispatch, getState));
+			const nodes = _downstreamnodes(node.id,getState().ports["links"]);
 
 			dispatch({
      	 		type: portActionTypes.PORT_MOUSE_OVER,
@@ -274,16 +274,41 @@ function portMouseOver(node,portType,portIndex,e){
       			portType,
       			portIndex,
     		});
+
+    		nodes.forEach((n)=>{
+				//const node = getState().nodes.nodesById[n];
+				//this.props.actions.updateSchema(id, node._def.schemafn(value, ptype));
+				dispatch({
+					type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
+					id: n,
+					schema: {},
+				});
+			});
 		}
 	}
 } 
 
 function linkDelete(link){
 	
+	return (dispatch, getState)=>{
 
-	return {
-		type: portActionTypes.DELETE_LINK,
-		link
+		const id 	= _to(link);
+		const links = getState().ports["links"];
+
+		const nodes = _downstreamnodes(id,getState().ports["links"]);
+
+		nodes.forEach((n)=>{
+			dispatch({
+				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
+				id: n,
+				schema: {},
+			});
+		});
+
+		dispatch ({
+			type: portActionTypes.DELETE_LINK,
+			link
+		});
 	}
 }
 

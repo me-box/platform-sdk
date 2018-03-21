@@ -6,11 +6,24 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 
-const circle = (source, sport, target, ptype)=>{
+const _colours = {
+    "identifier": "#3771c8",
+    "personal" : "#E65100",
+    "sensitive" : "#B71C1C",
+}
+
+const badge = (source, sport, target, ptype)=>{
 
     if (ptype.length <= 0){
       return null;
     }
+
+    const types = Object.keys(ptype.reduce((acc, item)=>{
+        acc[item.type] = true;
+        return acc;
+    },{}));
+
+    
 
     const outputradius = OUTPUT_WIDTH/2;
     const numOutputs = source.outputs || 1;
@@ -31,7 +44,7 @@ const circle = (source, sport, target, ptype)=>{
     const y1 = source.y;
     const y2 = target.y;
  
-    const _r = 10
+    const _r = 8
     const _cx1 = x1+(source.w*scale);
     const _cx2 = x2-scale*source.w;
     const _cy1 = y1+portY;
@@ -39,16 +52,77 @@ const circle = (source, sport, target, ptype)=>{
     const _cx = _cx1 + (_cx2-_cx1)/2
     const _cy = _cy2 - (_cy2-_cy1)/2
     
-    const textprops = {
-      x:_cx,
-      y:_cy+_r/2,
-    }
+    
 
     const privateicon = '\uf06e';
-   
+    const gap = 2;
+    const delta = (_r * (types.length-1)) + (gap * types.length);
+
+    /*const circles = types.map((t, i)=>{
+
+        const _dcy = _cy-delta + (i * 2 * _r) + ((i+1)*gap) + gap/2
+
+        const textprops = {
+            x:_cx,
+            y:_dcy+3,
+        }
+
+        const circlestyle = {
+            stroke:"#fff",
+            strokeWidth:2,
+            fill: _colours[t]
+        }
+
+        return  <g>
+                    <circle cx={_cx} cy={_dcy} r={_r} style={circlestyle} />
+                    <text className="badge" {...textprops}>{t[0]}</text>
+                </g>
+    });*/
+    const theta = 120 * Math.PI/180;
+    
+    const circlecentestyle = {
+        stroke:"#fff",
+        strokeWidth:2,
+        fill: "#ddd"
+    }
+    
+    const linestyle = {
+        stroke:"#888", 
+        strokeWidth:2,
+    }
+
+    const circles = types.map((t, i)=>{
+
+        
+
+        const _dcx = 20 * Math.sin(theta*i);
+        const _dcy = 20 * Math.cos(theta*i);
+
+        //const _dcy = _cy-delta + (i * 2 * _r) + ((i+1)*gap) + gap/2
+
+        const textprops = {
+            x:_cx+_dcx,
+            y:_cy+_dcy+3,
+        }
+
+        const circlestyle = {
+            stroke:"#fff",
+            strokeWidth:2,
+            fill: _colours[t]
+        }
+
+        return  <g>
+                     <line x1={_cx} y1={_cy} x2={_cx+_dcx} y2={_cy+_dcy} style={linestyle}/>
+                    <circle cx={_cx+_dcx} cy={_cy+_dcy} r={_r} style={circlestyle} />
+                   
+                    <text className="badge" {...textprops}>{t[0]}</text>
+                </g>
+    });
+
     return  <g>
-              <circle cx={_cx} cy={_cy} r={_r} stroke="#ddd" fill="#888"/>
-              <text className="badge" {...textprops}>{privateicon}</text>
+                 
+                {circles}      
+                <circle cx={_cx} cy={_cy} r={_r/2}  style={circlecentestyle}/>
             </g>
 }
 
@@ -66,6 +140,6 @@ export default class Badge extends Component {
     render(){
         const {link:{source,target,sourcePort}}  = this.props;
         const ptype = source.schema && source.schema.output && source.schema.output.ptype ? source.schema.output.ptype : [];
-        return circle(source, sourcePort, target, ptype)
+        return badge(source, sourcePort, target, ptype)
     }
 }

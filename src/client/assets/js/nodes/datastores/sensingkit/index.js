@@ -72,6 +72,19 @@ const config = {
                   }
                 ],
                 accretion: false,
+              },
+              {
+                type: "sensitive",
+                subtype: "behaviour",
+                ordinal: "secondary",
+                description: "bluetooth scan information can be used to infer location",
+                required: ["payload.address"],
+                conditions: [
+                  {
+                    granularity: {threshold: 300, unit: "scan frequency in seconds"}
+                  }
+                ],
+                accretion: false,
               }
           ]
 
