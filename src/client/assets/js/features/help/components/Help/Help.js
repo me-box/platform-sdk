@@ -17,7 +17,6 @@ import Schema from '../Schema';
 export default class Help extends Component {
 
 	state = {
-		category: "description",
 		dragging: false,
 		currentY: 0,
 		currentHeight: 300,
@@ -28,22 +27,22 @@ export default class Help extends Component {
 		this.renderMenu = this.renderMenu.bind(this);
 		this.renderContent = this.renderContent.bind(this);
 		this.renderMenuItem = this.renderMenuItem.bind(this);
+
 		this.onDrag = this.onDrag.bind(this);
 		this.onDrop = this.onDrop.bind(this);
 		this.onExit = this.onExit.bind(this);
 		this.startDrag = this.startDrag.bind(this);
-		//this.state = {category:"description"};
 	}
 
 	
 	renderMenuItem(item){
 		
-		const onClick = ()=>this.setState({category:item});
-
-		if (this.state.category === item){
-			return <li onClick={onClick} className="selected">{item}</li>
+		const onClick = (i)=>this.props.actions.setSubtype(i);
+		
+		if (this.props.subtype === item){
+			return <li onClick={()=>onClick(item)} className="selected">{item}</li>
 		}
-		return <li onClick={onClick}>{item}</li>
+		return <li onClick={()=>onClick(item)}>{item}</li>
 	}
 
 	renderMenu(){
@@ -55,6 +54,7 @@ export default class Help extends Component {
 					{this.renderMenuItem("description")}
 					{inputs > 0 && this.renderMenuItem("expected input")}
 					{outputs >0 && this.renderMenuItem("output data")}
+					{outputs > 0 && this.renderMenuItem("personal data")}
 			   </ul>
 
 	}
@@ -89,9 +89,21 @@ export default class Help extends Component {
 		return <Schema {...props}/> 	
 	}
 
-	renderContent(){
-		const {node={}} = this.props;
+	renderPrivacy(node){
+		if (!node){
+			return null;
+		}
+		if (node.schema && node.schema.output){
+			return <div> {JSON.stringify(node.schema.output.ptype || [],null,4)} </div>
+		}
+		return null;
 		
+	}
+
+	renderContent(){
+		const {subtype="", node={}} = this.props;
+		
+
 		let description = "";
 
 		if (node){
@@ -102,13 +114,15 @@ export default class Help extends Component {
 			}
 		}
 
-		switch (this.state.category){
+		switch (subtype){
 			case "description":
 				return this.renderDescription(description);
 			case "expected input":
 				return this.renderInputs(node)
 			case "output data":
 				return this.renderOutputs(node)
+			case "personal data":
+				return this.renderPrivacy(node)
 			default:
 				return this.renderDescription(description);
 		}

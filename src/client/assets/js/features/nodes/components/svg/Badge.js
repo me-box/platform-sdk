@@ -12,7 +12,7 @@ const _colours = {
     "sensitive" : "#B71C1C",
 }
 
-const badge = (source, sport, target, ptype)=>{
+const badge = (source, sport, target, ptype, onClick)=>{
 
     if (ptype.length <= 0){
       return null;
@@ -111,10 +111,9 @@ const badge = (source, sport, target, ptype)=>{
             fill: _colours[t]
         }
 
-        return  <g>
-                     <line x1={_cx} y1={_cy} x2={_cx+_dcx} y2={_cy+_dcy} style={linestyle}/>
+        return  <g onClick={onClick}>
+                    <line x1={_cx} y1={_cy} x2={_cx+_dcx} y2={_cy+_dcy} style={linestyle}/>
                     <circle cx={_cx+_dcx} cy={_cy+_dcy} r={_r} style={circlestyle} />
-                   
                     <text className="badge" {...textprops}>{t[0]}</text>
                 </g>
     });
@@ -138,8 +137,9 @@ export default class Badge extends Component {
     }    
 
     render(){
-        const {link:{source,target,sourcePort}}  = this.props;
+        const {id, link:{source,target,sourcePort}}  = this.props;
+        const onclick = ()=>{this.props.actions.linkSelected(id)}
         const ptype = source.schema && source.schema.output && source.schema.output.ptype ? source.schema.output.ptype : [];
-        return badge(source, sourcePort, target, ptype)
+        return badge(source, sourcePort, target, ptype, onclick)
     }
 }

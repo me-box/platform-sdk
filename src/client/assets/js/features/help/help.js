@@ -1,42 +1,86 @@
 import { createStructuredSelector } from 'reselect';
 
-const TOGGLE_HELP  = 'iot.red/help/TOGGLE_HELP';
+const SET_SUBTYPE  = 'iot.red/help/SET_SUBTYPE';
 
 export const NAME = 'help';
 
 const initialState = {
-	visible:false, 
+//	visible:false, 
+	subtype:"description"
 }
 
-export default function reducer(state = initialState , action) {
+export default function reducer(state = initialState, action) {
+	
 	switch (action.type) {
-		case TOGGLE_HELP:
+		case 'iot.red/ports/LINK_SELECTED':
+			return {
+				...state,
+				subtype: "personal data"
+			};
+		
+		case 'iot.red/nodes/NODE_MOUSE_DOWN':
+			return {
+				...state,
+				subtype: "description"
+			}
+
+		case SET_SUBTYPE:
 			return {
 						...state,
-						visible: !state.visible
-					};	
+						subtype: action.subtype
+			};
+
 		default:
 			return state;
-	}	
-}
-
-function toggleHelp(){
-	return {
-		type: TOGGLE_HELP
 	}
 }
 
-const node = (state) => {
-	return state.nodes.selectedId ? state.nodes.nodesById[state.nodes.selectedId] : null;
+/*function toggleHelp(subtype="node"){
+	return {
+		type: TOGGLE_HELP,
+		subtype,
+	}
+}*/
+
+function setSubtype(subtype){
+	return {
+		type: SET_SUBTYPE,
+		subtype,
+	}
 }
 
-const visible = (state) =>  state.nodes.selectedId && !state.nodes.configuringId && !state.test.visible && !state.workspace.publishervisible
+const _from = (link)=>{
+	return link.split(":")[1]
+} 
 
+const node = (state) => {
+	if (state.nodes.selectedId) 
+		return state.nodes.nodesById[state.nodes.selectedId];
+
+	if (state.ports.selectedId){
+		const nid = _from(state.ports.selectedId);
+		return state.nodes.nodesById[nid];
+	}
+
+	return null;
+}
+
+const subtype = (state)=>{	
+	return state[NAME].subtype
+}
+
+const visible = (state) =>  {
+
+	return (state.nodes.selectedId && !state.nodes.configuringId && !state.test.visible && !state.workspace.publishervisible)
+	|| state.ports.selectedId
+
+}
 export const selector = createStructuredSelector({
   visible,
+  subtype,
   node,
 });
 
 export const actionCreators = {
- toggleHelp
+  setSubtype
 };
