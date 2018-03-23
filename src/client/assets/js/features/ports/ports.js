@@ -92,6 +92,55 @@ const _downstreamnodes = (id, links)=>{
 	return [].concat(..._children(id, _remove_loops(links)));
 }
 
+const _updatedownstream = (id, dispatch, getState)=>{
+			
+	const links = getState().ports["links"];
+
+	const downstream = _downstreamnodes(id,links);
+
+	downstream.forEach((n)=>{
+
+		const nodes = getState().nodes.nodesById;
+		const node = nodes[n];
+
+
+		const inputs = links.filter((key)=>{
+          	return _to(key) === n;
+        }).map((linkId)=>{
+          const {id, schema} = nodes[_from(linkId)];
+          return {id,schema};
+        });
+
+      	const ptype = inputs.reduce((acc,input)=>{    
+            if (input.schema && input.schema.output && input.schema.output.ptype){
+              acc = { 
+                ...acc, 
+                [input.id] : input.schema.output.ptype
+              }
+            }
+            return acc;
+        },{});
+
+		if (node && node._def.schemakey){
+			const value = node[node._def.schemakey];
+			if (value){
+				dispatch({
+						type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
+						id: n,
+						schema: node._def.schemafn(value, ptype)
+				});
+			}
+		}
+		else{
+			dispatch({
+				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
+				id: n,
+				schema: {},
+			});
+		}
+	});
+}
+
 export default function reducer(state = initialState, action) {
 
 	switch (action.type) {
@@ -266,8 +315,6 @@ function portMouseOver(node,portType,portIndex,e){
  	return (dispatch, getState)=>{
 		if (getState().ports.output){
 			
-			const nodes = _downstreamnodes(node.id,getState().ports["links"]);
-
 			dispatch({
      	 		type: portActionTypes.PORT_MOUSE_OVER,
       			node,
@@ -275,15 +322,7 @@ function portMouseOver(node,portType,portIndex,e){
       			portIndex,
     		});
 
-    		nodes.forEach((n)=>{
-				//const node = getState().nodes.nodesById[n];
-				//this.props.actions.updateSchema(id, node._def.schemafn(value, ptype));
-				dispatch({
-					type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
-					id: n,
-					schema: {},
-				});
-			});
+			_updatedownstream(node.id, dispatch,getState);
 		}
 	}
 } 
@@ -291,24 +330,11 @@ function portMouseOver(node,portType,portIndex,e){
 function linkDelete(link){
 	
 	return (dispatch, getState)=>{
-
-		const id 	= _to(link);
-		const links = getState().ports["links"];
-
-		const nodes = _downstreamnodes(id,getState().ports["links"]);
-
-		nodes.forEach((n)=>{
-			dispatch({
-				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
-				id: n,
-				schema: {},
-			});
-		});
-
 		dispatch ({
 			type: portActionTypes.DELETE_LINK,
 			link
 		});
+		_updatedownstream(_to(link), dispatch,getState);
 	}
 }
 

@@ -57,7 +57,7 @@ const config = {
                 type: "identifier",
                 ordinal: "primary",
                 description: "the mac address and user-provided name can be used to unambiguously identify a user",
-                required: ["address"],
+                required: ["payload.address"],
                 accretion: false,
               },
               {
@@ -71,18 +71,25 @@ const config = {
                     granularity: {threshold: 300, unit: "scan frequency in seconds"}
                   }
                 ],
+                evidence: [
+                  "https://doi.org/10.1007/11601494_1"
+                ],
                 accretion: false,
               },
-              {
-                type: "sensitive",
-                subtype: "behaviour",
+               {
+                type: "personal",
+                subtype: "relationships",
                 ordinal: "secondary",
-                description: "bluetooth scan information can be used to infer location",
+                description: "bluetooth scan information can be used to infer social relationships",
                 required: ["payload.address"],
                 conditions: [
                   {
                     granularity: {threshold: 300, unit: "scan frequency in seconds"}
                   }
+                ],
+                evidence: [
+                  "https://dl.acm.org/citation.cfm?id=2494176",
+                  "https://doi.org/10.1109/MPRV.2005.37"
                 ],
                 accretion: false,
               }

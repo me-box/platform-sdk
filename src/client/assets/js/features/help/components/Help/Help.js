@@ -8,6 +8,12 @@ import cx from 'classnames';
 import Schema from '../Schema';
 
 
+const _colours = {
+    "identifier": "#3771c8",
+    "personal" : "#E65100",
+    "sensitive" : "#B71C1C",
+}
+
 @connect(selector, (dispatch) => {
   return{
      actions: bindActionCreators(helpActions, dispatch),
@@ -38,7 +44,7 @@ export default class Help extends Component {
 	renderMenuItem(item){
 		
 		const onClick = (i)=>this.props.actions.setSubtype(i);
-		
+
 		if (this.props.subtype === item){
 			return <li onClick={()=>onClick(item)} className="selected">{item}</li>
 		}
@@ -89,12 +95,110 @@ export default class Help extends Component {
 		return <Schema {...props}/> 	
 	}
 
+	renderEvidence(ptype){
+		if (ptype.evidence){
+			return 	<div className="noborder">
+						<div className="personalcontent">{ptype.evidence}</div>
+					</div>
+		}
+		return null;
+	}
+
+	renderTitle(ptype, property, value){
+		if (ptype[property]){
+			return 	<div className="noborder">
+						<div className="personaltitle">{value}</div>
+					</div>
+		}
+		return null;
+	}
+
+	renderConditions(ptype){
+		if (ptype.conditions){
+			return 	<div className="noborder">
+						<div  className="personalcontent">{JSON.stringify(ptype.conditions)}</div>
+					</div>
+		}
+		return null;
+	}
+
+	renderInference(ptype){
+		return 	<div className="personaltype centered">
+					inferred <strong>{ptype.type}</strong> data
+			    </div>
+	}
+
+	renderRaw(ptype){
+		return 	<div className="personaltype centered">
+					{ptype.type}
+			    </div>
+	}
+
+	renderType(ptype){
+		return <div className="noborder">
+			{ptype.ordinal === "secondary" && this.renderInference(ptype)}
+			{ptype.ordinal === "primary" && this.renderRaw(ptype)}
+		</div>
+
+	}
+
+	renderSubtype(ptype){
+		if (ptype.subtype){
+			return 	<div className="noborder">
+						<div className="centered personaltype">
+							{ptype.subtype}
+						</div>
+					</div>
+		}
+		return null;
+	}
 	renderPrivacy(node){
 		if (!node){
 			return null;
 		}
+
 		if (node.schema && node.schema.output){
-			return <div> {JSON.stringify(node.schema.output.ptype || [],null,4)} </div>
+
+
+			const personal = (node.schema.output.ptype || []).map((ptype)=>{
+
+				const iconstyle = {
+					background: _colours[ptype.type]
+				}
+				
+				return <div>
+							<div className="flexrow">
+								<div className="personalicons">
+									<div className="flexcolumn" style={{width:50, padding:8}}>
+										{this.renderType(ptype)}
+										<div className="noborder">	
+											<div className="circle centered" style={iconstyle}>{ptype.type[0]}</div>
+										</div>
+										{this.renderSubtype(ptype)}
+									</div>
+								</div>
+								<div style={{paddingLeft:10}}>
+									<div className="flexcolumn">
+										<div className="noborder">
+											<div className="personaltitle">Description</div>
+										</div>
+										<div className="noborder">
+											<div className="personalcontent">{ptype.description}</div>
+										</div>
+										
+										{this.renderTitle(ptype, "evidence", "Evidence for inference")}
+										{this.renderEvidence(ptype)}
+
+										{this.renderTitle(ptype, "conditions", "Conditions required for inference")}
+										{this.renderConditions(ptype)}
+									</div>
+								</div>
+							</div>
+							<hr/>
+						</div>
+			});
+		
+			return <div> {personal} </div>
 		}
 		return null;
 		
