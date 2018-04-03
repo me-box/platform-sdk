@@ -98,7 +98,7 @@ export default class Help extends Component {
 	renderEvidence(ptype){
 		if (ptype.evidence){
 			return 	<div className="noborder">
-						<div className="personalcontent">{ptype.evidence}</div>
+						<div className="personalcontent"><a href="{ptype.evidence}">{ptype.evidence}</a></div>
 					</div>
 		}
 		return null;
@@ -113,10 +113,38 @@ export default class Help extends Component {
 		return null;
 	}
 
+	renderGranularityConditions(item){
+		if (item.accuracy){
+			console.log(item);
+			return <li>This inference can be made with a {item.accuracy * 100}% accuracy if the source granularity has a threshold of {item.granularity.threshold} {item.granularity.unit}</li>
+		}
+		return <li>This inference can be made if the source granularity has a threshold of {item.granularity.threshold} {item.granularity.unit}</li>
+	}
+
+	renderAttributeConditions(item){
+		if (item.accuracy){
+			return <li>This inference can be made with a {item.accuracy * 100}% accuracy if the following data is also present: {item.attributes.join()}</li>
+		}
+		return  <li>This inference can be made if the following data is also present: {item.attributes.join()}</li>
+	}
+
 	renderConditions(ptype){
 		if (ptype.conditions){
+
+			const conditions = ptype.conditions.map((item)=>{
+				if (item.granularity){
+					return this.renderGranularityConditions(item);
+				}
+				if (item.attributes){
+					return this.renderAttributeConditions(item);
+				}
+			});
 			return 	<div className="noborder">
-						<div  className="personalcontent">{JSON.stringify(ptype.conditions)}</div>
+						<div  className="personalcontent">
+							<ul>
+								{conditions}
+							</ul>
+						</div>
 					</div>
 		}
 		return null;

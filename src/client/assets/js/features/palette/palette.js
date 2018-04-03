@@ -16,8 +16,6 @@ const _categorise=(nodes)=>{
 		acc[node.def.category].push(node);
 		return acc;
 	},{});
-
-  console.log("ok nodes categorised are", _nodes);
   return _nodes;
 }
 
@@ -90,15 +88,13 @@ const loadNodes = (json)=>{
    const nodes = [];
    console.log("am in nodes");
    json.nodes.forEach((node)=>{
-      console.log("first node is", node);
-      console.log("requiring", `../../nodes/${node.file}.js`);
+
       const n = require(`../../nodes/${node.file}.js`);
 
       nodes.push({component:n.default.node, name: n.default.type, def: n.default.def, reducer: n.default.reducer});
-      console.log(nodes);
+    
    });    
-   console.log("finiti!");
-   console.log("nodes are", nodes);
+  
    return nodes;
 }
 
@@ -120,9 +116,7 @@ function fetchNodes(store) {
       })
       .then(response => response.json())
       .then(function(json){
-          console.log("json is", json);
           const nodes = loadNodes(json);
-          console.log("nodes are", nodes);
           dispatch(receiveNodes(nodes));
       })
 

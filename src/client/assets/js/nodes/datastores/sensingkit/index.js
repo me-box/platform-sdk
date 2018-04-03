@@ -45,8 +45,10 @@ const config = {
 
   schemakey: "subtype",
 
-  schemafn: (subtype) => {
+  schemafn: (subtype,nid) => {
 
+    console.log("in schema fn in sensingkit, nid is", nid);
+    
     const personal = (subtype)=>{
       
       switch (subtype) {
@@ -68,7 +70,7 @@ const config = {
                 required: ["payload.address"],
                 conditions: [
                   {
-                    granularity: {threshold: 300, unit: "scan frequency in seconds"}
+                    granularity: {threshold: 120, unit: "seconds between scans"}
                   }
                 ],
                 evidence: [
@@ -84,7 +86,7 @@ const config = {
                 required: ["payload.address"],
                 conditions: [
                   {
-                    granularity: {threshold: 300, unit: "scan frequency in seconds"}
+                    granularity: {threshold: 300, unit: "seconds between scans"}
                   }
                 ],
                 evidence: [
@@ -674,7 +676,7 @@ const config = {
           type: "object",
           description: "the container object",
           properties: schema(subtype),
-          ptype: personal(subtype),
+          ptype: {[nid]:personal(subtype)},
       }
     }
   },

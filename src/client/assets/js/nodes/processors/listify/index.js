@@ -21,9 +21,9 @@ const config = {
 
   schemafn: (subtype="", ptype={}) => {
 
-    console.log("in list schema func", subtype, ptype);
+    
 
-    return {
+    const schema = {
       output: {
           type: "object",
           description: "the container object",
@@ -46,7 +46,10 @@ const config = {
                 },
                 keys: {
                   type: "array",
-                  description: "['key1','key2', '..']"
+                  description: "['key1','key2', '..']",
+                  items: {
+                    type: "string"
+                  }
                 },
                 rows: {
                   type: "object",
@@ -63,7 +66,14 @@ const config = {
             }
           },
           ptype: Object.keys(ptype).reduce((acc,key)=>{
-                return [...acc, ...ptype[key]];
+                return [  ...acc, 
+                          ...ptype[key].map((i)=>{
+                              return {
+                                ...i, 
+                                required:["payload.rows.key"]
+                              }
+                          })
+                        ]
           },[]),
           required: ["sourceId", "type", "payload"]
       },
@@ -95,7 +105,11 @@ const config = {
         },
         required: ["payload"]
       }
-    }
+    };
+
+    console.log("ok in listify and returning schema", schema);
+
+    return schema;
   },
 
   risk: (subtype="")=>{

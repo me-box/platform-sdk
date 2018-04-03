@@ -18,10 +18,25 @@ const badge = (source, sport, target, ptype, onClick)=>{
       return null;
     }
 
-    const types = Object.keys(ptype.reduce((acc, item)=>{
+    console.log("badge, got ptype", ptype);
+    
+    const _t = Object.keys(ptype || {}).reduce((acc, key)=>{
+        const item = ptype[key];
+        return {
+            ...acc, 
+            ...item.reduce((acc,item)=>{
+                return {...acc, [item.type]:true}
+            },{})
+        }
+    },{});
+
+    console.log("_t is", _t)
+
+    const types = Object.keys(_t);
+    /*Object.keys(ptype.reduce((acc, item)=>{
         acc[item.type] = true;
         return acc;
-    },{}));
+    },{}));*/
 
     
 

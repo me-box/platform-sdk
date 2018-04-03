@@ -111,23 +111,15 @@ const _updatedownstream = (id, dispatch, getState)=>{
           return {id,schema};
         });
 
-      	const ptype = inputs.reduce((acc,input)=>{    
-            if (input.schema && input.schema.output && input.schema.output.ptype){
-              acc = { 
-                ...acc, 
-                [input.id] : input.schema.output.ptype
-              }
-            }
-            return acc;
-        },{});
-
 		if (node && node._def.schemakey){
+			console.log("downstream node is", node);
+			
 			const value = node[node._def.schemakey];
 			if (value){
 				dispatch({
 						type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
 						id: n,
-						schema: node._def.schemafn(value, ptype)
+						schema: node._def.schemafn(value, node.id, inputs)
 				});
 			}
 		}

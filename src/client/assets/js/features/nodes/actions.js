@@ -31,22 +31,23 @@ function _schema(node){
   
    if (node._def.schemakey && (typeof node._def.schemakey !== "undefined")){
       if (node._def.schemafn){
-        return node._def.schemafn(node[node._def.schemakey]);
+        return node._def.schemafn(node[node._def.schemakey], node.id);
       }
    }
+   console.log("in scahme with node", node)
 
-   return _defaultschema(node._def);
+   return _defaultschema(node._def, node.id);
 }
 
-function _defaultschema(def){  
-
+function _defaultschema(def,id){  
+ console.log("in default schema!", id);
   if (def.schemakey){
       
       const key = def.defaults[def.schemakey];
 
       if (key && (typeof key.value !== "undefined")){
           if (def.schemafn){
-            return def.schemafn(key.value);
+            return def.schemafn(key.value,id);
           }
       }
   }
@@ -76,7 +77,6 @@ function dropNode({component, nt, def, reducer}, x0, y0){
   
   return function(dispatch, getState){
 
-   
 
     //adjust x and y for offsets
     const x = x0 + MOUSE_X_OFFSET + NODE_WIDTH/2;
@@ -88,15 +88,16 @@ function dropNode({component, nt, def, reducer}, x0, y0){
     }
 
     let _def = Object.assign({},def);
-    
+    const id = getID();
+
     const node = {
-      id: getID(),
+      id,
       type: nt,
       _def: _def,
       _: (id)=>{return id},
       inputs: _def.inputs || 0,
       outputs: _def.outputs,
-      schema: _defaultschema(_def),
+      schema: _defaultschema(_def,id),
       description: _description(_def),
       changed: true,
       selected: true,

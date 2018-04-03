@@ -13,7 +13,7 @@ const config =  {
         inputs:0,               
         outputs:1,             
         
-        schemafn: (subtype)=>{
+        schemafn: (subtype,nid)=>{
         
 			const type = subtype || "twitterHashTagStream";
 			
@@ -44,7 +44,7 @@ const config =  {
 					},
 					required: ["id", "type", "subtype", "payload"],
                     
-                    ptype : [
+                    ptype : {[nid]:[
                         {
                             type: "identifier",
                             ordinal: "primary",
@@ -52,7 +52,7 @@ const config =  {
                             required: ["payload.value"],
                             accretion: false,
                         },
-                    ]
+                    ]}
         		}
         	}
         },

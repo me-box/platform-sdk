@@ -33,21 +33,21 @@ export default class Node extends React.Component {
 		this.state = { selections:  filters};
 	}
 
-	renderItem(sid, stype, name, item, path, ptype){
+	renderItem(sid, stype, name, item, path){
 		
 		
 
 		if (item.type ===  "object"){
 			return 	<ul className="filterList">
 						<li><strong>{name}</strong></li>
-						{this.renderSchemaObject(sid, stype, item.properties, path, ptype)}
+						{this.renderSchemaObject(sid, stype, item.properties, path)}
 					</ul>
 					
 		}
-		else if(item.type === "array"){
+		else if(item.type === "array" && item.items && Array.isArray(item.items)){
 			return 	<ul className="filterList">
 						<li><strong>{name}</strong></li>
-						{this.renderSchemaArray(sid, stype, item.items, path, ptype)}
+						{this.renderSchemaArray(sid, stype, item.items, path)}
 					</ul>
 		}
 		else{
@@ -62,7 +62,7 @@ export default class Node extends React.Component {
 
 								<input type="checkbox" 
 									name={name}
-								  	onChange={this._toggleFilter.bind(null, sid, stype, item, path, ptype.filter(p=>p.id===sid))}
+								  	onChange={this._toggleFilter.bind(null, sid, stype, item, path)}
 								  	checked={checked}/>
 								<label>{name}</label>
 							</div>
@@ -74,16 +74,16 @@ export default class Node extends React.Component {
 		}
 	}
 
-	renderSchemaArray(sid, stype, items, path=[], ptype=[]){
+	renderSchemaArray(sid, stype, items, path=[]){
 		return items.map((item)=>{
-			return this.renderItem(item.id, stype, item.id, item, path, ptype);
+			return this.renderItem(item.id, stype, item.id, item, path);
 		});
 	}
 
-	renderSchemaObject(sid, stype, schema, path=[], ptype=[]){
+	renderSchemaObject(sid, stype, schema, path=[]){
 		return Object.keys(schema).map((key,i)=>{
 			const item = {...schema[key], name:key}
-			return <ul className="filterList" key={i}> {this.renderItem(sid, stype, key, item, [...path, key], ptype)} </ul>
+			return <ul className="filterList" key={i}> {this.renderItem(sid, stype, key, item, [...path, key])} </ul>
 		});
 	}
 	
@@ -92,15 +92,10 @@ export default class Node extends React.Component {
 			return <div key={i}>
 						<h3>{source.type}</h3>
 						<div className="filter-divider" />
-						<div>{this.renderSchemaObject(source.id, source.type, source.schema.properties, [], source.schema.ptype.map((p)=>{
-								return {id:source.id, ...p}
-						}))}</div>
+						<div>{this.renderSchemaObject(source.id, source.type, source.schema.properties, [])}</div>
 					</div>
 		})
 	}	
-
-	//TODO: can we put the id of pytpe into the schema?
-	//TODO: check whether we really need to pass in upstream to the schema function.
 
 	componentDidMount(){
 	   		
@@ -156,8 +151,9 @@ export default class Node extends React.Component {
 
 	//can we not pass in ptype here?
 
-	_toggleFilter(sid, stype, item, path, ptype, event){
+	_toggleFilter(sid, stype, item, path, event){
 		
+		console.log("toggling utem", item);
 		const {inputs = []} = this.props;
 
 		const target = event.target;
@@ -174,7 +170,7 @@ export default class Node extends React.Component {
 				return false;
 			});
 		}else{
-			_filters = [...this.state.selections, {sid,stype,item,path,ptype}];
+			_filters = [...this.state.selections, {sid,stype,item,path}];
 		}
 	
 		this.setState({selections: _filters});
