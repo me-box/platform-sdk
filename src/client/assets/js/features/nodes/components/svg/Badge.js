@@ -17,8 +17,6 @@ const badge = (source, sport, target, ptype, onClick)=>{
     if (ptype.length <= 0){
       return null;
     }
-
-    console.log("badge, got ptype", ptype);
     
     const _t = Object.keys(ptype || {}).reduce((acc, key)=>{
         const item = ptype[key];
@@ -30,13 +28,7 @@ const badge = (source, sport, target, ptype, onClick)=>{
         }
     },{});
 
-    console.log("_t is", _t)
-
     const types = Object.keys(_t);
-    /*Object.keys(ptype.reduce((acc, item)=>{
-        acc[item.type] = true;
-        return acc;
-    },{}));*/
 
     
 

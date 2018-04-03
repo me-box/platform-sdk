@@ -188,46 +188,51 @@ export default class Help extends Component {
 		if (node.schema && node.schema.output){
 
 
-			const personal = (node.schema.output.ptype || []).map((ptype)=>{
+			const personal = (Object.keys(node.schema.output.ptype || {})).reduce((acc,key)=>{
 
-				const iconstyle = {
-					background: _colours[ptype.type]
-				}
-				
-				return <div>
-							<div className="flexrow">
-								<div className="personalicons">
-									<div className="flexcolumn" style={{width:50, padding:8}}>
-										{this.renderType(ptype)}
-										<div className="noborder">	
-											<div className="circle centered" style={iconstyle}>{ptype.type[0]}</div>
+				return [...acc,  node.schema.output.ptype[key].map((ptype)=>{
+					const iconstyle = {
+						background: _colours[ptype.type]
+					}
+					
+					return <div>
+								<div className="flexrow">
+									<div className="personalicons">
+										<div className="flexcolumn" style={{width:50, padding:8}}>
+											{this.renderType(ptype)}
+											<div className="noborder">	
+												<div className="circle centered" style={iconstyle}>{ptype.type[0]}</div>
+											</div>
+											{this.renderSubtype(ptype)}
 										</div>
-										{this.renderSubtype(ptype)}
+									</div>
+									<div style={{paddingLeft:10}}>
+										<div className="flexcolumn">
+											<div className="noborder">
+												<div className="personaltitle">Description</div>
+											</div>
+											<div className="noborder">
+												<div className="personalcontent">{ptype.description}</div>
+											</div>
+											
+											{this.renderTitle(ptype, "evidence", "Evidence for inference")}
+											{this.renderEvidence(ptype)}
+
+											{this.renderTitle(ptype, "conditions", "Conditions required for inference")}
+											{this.renderConditions(ptype)}
+										</div>
 									</div>
 								</div>
-								<div style={{paddingLeft:10}}>
-									<div className="flexcolumn">
-										<div className="noborder">
-											<div className="personaltitle">Description</div>
-										</div>
-										<div className="noborder">
-											<div className="personalcontent">{ptype.description}</div>
-										</div>
-										
-										{this.renderTitle(ptype, "evidence", "Evidence for inference")}
-										{this.renderEvidence(ptype)}
-
-										{this.renderTitle(ptype, "conditions", "Conditions required for inference")}
-										{this.renderConditions(ptype)}
-									</div>
-								</div>
+								<hr/>
 							</div>
-							<hr/>
-						</div>
-			});
+					
+				})];
+
+			},[]);
 		
 			return <div> {personal} </div>
-		}
+		};
+
 		return null;
 		
 	}
