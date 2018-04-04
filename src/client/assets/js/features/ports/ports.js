@@ -2,6 +2,7 @@ import { createStructuredSelector } from 'reselect';
 import {OUTPUT_WIDTH} from 'constants/ViewConstants';
 import {actionConstants as portActionTypes} from './constants';
 import {actionConstants as nodeActionTypes}from "features/nodes/constants";
+import {downstreamnodes, fromnode, tonode} from "utils/tree";
 
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
@@ -57,47 +58,14 @@ const _dedup = (arr=[])=>{
 	});
 }
 
-const _leaf = (id, links)=>{
-	const item = links.find((item)=>{
-		return item.split(":")[1] === id;
-	});
-	return item ? false : true;
-}
-
-const _from = (link)=>{
-	return link.split(":")[1]
-} 
-
-const _to = (link)=>{
-	return link.split(":")[2]
-}
-
-const _remove_loops = (links)=>{
-	return links.reduce((acc, item)=>{
-		if (!(acc.find(i=>_from(i) === _to(item) && _to(i) === _from(item)))){
-			acc = [...acc, item];
-		}
-		return acc;
-	},[]);
-}
-
-const _children = (id, links)=>{
-	if (_leaf(id,links)){
-		return [id];
-	}
-	return [id, ...links.filter((l)=>_from(l) === id).map(link=>[].concat(..._children(_to(link), links)))];
-}
-
-const _downstreamnodes = (id, links)=>{
-	return [].concat(..._children(id, _remove_loops(links)));
-}
-
 const _updatedownstream = (id, dispatch, getState)=>{
 			
 	const links = getState().ports["links"];
 
-	const downstream = _downstreamnodes(id,links);
+	const downstream = downstreamnodes(id,links);
 
+	console.log("downstream nodes are", downstream);
+	
 	downstream.forEach((n)=>{
 
 		const nodes = getState().nodes.nodesById;
@@ -105,9 +73,9 @@ const _updatedownstream = (id, dispatch, getState)=>{
 
 
 		const inputs = links.filter((key)=>{
-          	return _to(key) === n;
+          	return tonode(key) === n;
         }).map((linkId)=>{
-          const {id, schema} = nodes[_from(linkId)];
+          const {id, schema} = nodes[fromnode(linkId)];
           return {id,schema};
         });
 
@@ -326,7 +294,7 @@ function linkDelete(link){
 			type: portActionTypes.DELETE_LINK,
 			link
 		});
-		_updatedownstream(_to(link), dispatch,getState);
+		_updatedownstream(tonode(link), dispatch,getState);
 	}
 }
 

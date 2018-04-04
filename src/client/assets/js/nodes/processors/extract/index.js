@@ -103,7 +103,7 @@ const config = {
             return acc;
         },{});
 
-        console.log("schema fn, ptypes are,", ptypes, " filters are", filters);
+        console.log("node:", nid, "schema fn, ptypes are,", ptypes, " filters are", filters);
 
         const items = filters.reduce((acc, filter)=>{
             const {sid, item:{type, name, description}, path} = filter;

@@ -54,8 +54,6 @@ export default class Node extends React.Component {
 			
 			const checked = this.state.selections.filter(f=>f.sid===sid).map(f=>f.path.join()+f.stype).indexOf(path.join()+stype) !== -1;
 			
-			
-
 			return <li> 
 						<div className="flexrow">
 							<div className="fixed" style={{width: 150}}>

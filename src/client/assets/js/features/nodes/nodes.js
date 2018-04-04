@@ -2,6 +2,7 @@ import {actionConstants as nodeActionTypes} from './constants';
 import { createStructuredSelector } from 'reselect';
 import { NODE_WIDTH } from 'constants/ViewConstants';
 import {actionConstants as portActionTypes} from "features/ports/constants";
+
 export const NAME = 'nodes';
 
 const {LINK_SELECTED} = portActionTypes;
@@ -43,6 +44,8 @@ const initialState = {
   configuringId: null, 
   buffer: {},
 }
+
+
 
 export default function reducer(state = initialState, action) {
   

@@ -6,7 +6,7 @@ import {getID, addViewProperties, lookup} from 'utils/nodeUtils';
 import {calculateTextWidth, toggleItem} from 'utils/utils';
 import {scopeify} from 'utils/scopeify';
 import {register,unregister,unregisterAll} from 'app/store/configureStore';
-
+import {downstreamnodes, fromnode, tonode} from "utils/tree";
 
 function loadNode({component,node,reducer}){
   return function(dispatch, getState){
@@ -148,14 +148,19 @@ function initNodeKeys(keys){
   }
 }
 
-function updateNode(property, value){
- 
-  return {
-    type: nodeActionTypes.NODE_UPDATE_VALUE,
-    property,
-    value,
-  }
+/*function updateNode(property, value){
+  console.log("AM IN UPDATE NODE!!");
+
+  return (dispatch, getState)=>{
+    dispatch({
+      type: nodeActionTypes.NODE_UPDATE_VALUE,
+      property,
+      value,
+    })
+    _updatedownstream(getState().nodes.configuringId, dispatch, getState)
+  } 
 }
+*/
 
 function updateNodeValueKey(property, key, value){
 
@@ -178,7 +183,7 @@ function incrementNodeValueKey(property, key, amount, min, max){
   }
 }
 
-function updateSchema(id, schema){
+/*function updateSchema(id, schema){
   return {
     type: nodeActionTypes.NODE_UPDATE_SCHEMA,
     id,
@@ -192,12 +197,12 @@ function updateDescription(id, description){
     id,
     description,
   }
-}
+}*/
 
 
 function nodeMouseDown(id){
      
-  return function(dispatch, getState){
+  return (dispatch, getState)=>{
  
     dispatch ({
         type: nodeActionTypes.NODE_MOUSE_DOWN,
@@ -209,7 +214,7 @@ function nodeMouseDown(id){
 function nodeDoubleClicked(id){
 
   //TODO: WHY TWO EVENTS HERE?
-  return function(dispatch, getState) {
+  return (dispatch, getState)=>{
 
     dispatch({
       type: nodeActionTypes.NODE_DOUBLE_CLICKED,
@@ -224,7 +229,7 @@ function nodeDoubleClicked(id){
   }
 } 
 
-function nodeConfigureOk(){
+/*function nodeConfigureOk(){
     
     return {
       type: nodeActionTypes.NODE_CONFIGURE_OK,
@@ -235,14 +240,14 @@ function nodeConfigureCancel(){
     return {
       type: nodeActionTypes.NODE_CONFIGURE_CANCEL,
     }
-}
+}*/
 
 function nodeDelete(){
     //TODO; delete registration!
-    return ((dispatch, getState)=>{
+    return (dispatch, getState)=>{
       unregister(getState().nodes.selectedId);
       dispatch({type: nodeActionTypes.NODE_DELETE});
-    });
+    };
 }
 
 function clearNodes(){
@@ -286,14 +291,14 @@ function nodeMouseUp(){
 
 function receiveFlows(nodes){
   
-  return ((dispatch, getState)=>{
+  return (dispatch, getState)=>{
     
       const lookuptype = lookup.bind(null,getState().palette.types)
       const _nodes = nodes.map((node)=>{
          const {component,reducer} = lookuptype(node.type)
          dispatch(loadNode({component, node, reducer}));
       });
-  });
+  };
  
   return {
       type: nodeActionTypes.RECEIVE_FLOWS,
@@ -305,17 +310,17 @@ function receiveFlows(nodes){
 export const actionCreators = {
   dropNode,
   initNodeKeys,
-  updateNode,
+  //updateNode,
   clearNodes,
   updateNodeValueKey,
   incrementNodeValueKey,
-  updateSchema,
-  updateDescription,
+  //updateSchema,
+  //updateDescription,
   nodeMouseDown,
   nodeMouseUp,
   nodeDoubleClicked,
-  nodeConfigureOk,
-  nodeConfigureCancel,
+  //nodeConfigureOk,
+  //nodeConfigureCancel,
   deleteTab,
   mouseMove,
   //mouseUp,
