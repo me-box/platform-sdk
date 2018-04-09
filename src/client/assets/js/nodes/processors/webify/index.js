@@ -1,4 +1,5 @@
 import Node from "./node";
+import {extract_ptype_from_inputs} from 'utils/utils';
 
 const config =  {
 
@@ -25,7 +26,7 @@ const config =  {
         return this.name||"webify";
     },
     
-    schemafn: ()=>{
+    schemafn: (value="", id="", inputs=[])=>{
     	return{
     		output:{
 				type: "object",
@@ -44,6 +45,7 @@ const config =  {
 						required: ["values"]
 					}
 				},
+				ptype: extract_ptype_from_inputs(inputs),
 				required: ["sourceId", "type", "payload"]
 			},
 			input:{

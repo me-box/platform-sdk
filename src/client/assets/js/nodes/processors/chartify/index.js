@@ -1,4 +1,5 @@
 import Node from "./node";
+import {extract_ptype_from_inputs} from "utils/utils";
 
 const config = {
   category: 'processors',
@@ -61,7 +62,7 @@ const config = {
   },
 
 
-  schemafn: (chart) => {
+  schemafn: (chart,id,inputs=[]) => {
 
     const subtype = chart || "bar";
 
@@ -214,7 +215,8 @@ const config = {
               properties: _payload[subtype]
             }
           },
-          required: ["type", "sourceId", "payload"]
+          required: ["type", "sourceId", "payload"],
+          ptype: extract_ptype_from_inputs(inputs),
       },
       input: {
         type: "object",

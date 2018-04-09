@@ -1,4 +1,5 @@
 import Node from "./node";
+import {extract_ptype_from_inputs} from "utils/utils";
 
 const config = {
     category: 'processors',    
@@ -33,20 +34,23 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(outputdef)=>{
+    schemafn:(outputdef, id, inputs=[])=>{
 
        
         let output = {};
 
         try{
-            output =  JSON.parse(outputdef);
+            output =  JSON.parse(outputdef)
         }
         catch(err){
 
         }
 
         return { 
-                    output: output || {},
+                    output: {
+                                ...output, 
+                                ptype: extract_ptype_from_inputs(inputs)
+                    },
                  
                     input:{
                         type: "any",

@@ -56,14 +56,14 @@ databox-test-server:
   command:
     node index.js
 
-openface:
-  image:
-    tlodge/openface
-  ports:
-    - "9001"
-  volumes:
-    - ${HOSTMOUNT}/openface/red/:/root/openface/demos/red/
-  container_name:
-    openface
-  command:
-    /root/start.sh
+#openface:
+#  image:
+#    tlodge/openface
+#  ports:
+#    - "9001"
+#  volumes:
+#    - ${HOSTMOUNT}/openface/red/:/root/openface/demos/red/
+#  container_name:
+#    openface
+#  command:
+#    /root/start.sh

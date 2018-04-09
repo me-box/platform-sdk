@@ -1,5 +1,6 @@
 import Node from "./node";
 import reducer from './reducer';
+import {extract_ptype_from_inputs} from 'utils/utils';
 
 const config = {
     category: 'processors',    
@@ -26,11 +27,14 @@ const config = {
         return this.name||"uibuilder";
     },
     
-    schemafn:()=>{
+    schemafn:(value="", id, inputs=[])=>{
                     return {
                         input:{
                             type: "any",
                             description: "extract will take ANY object as input"
+                        },
+                        output:{
+                             ptype: extract_ptype_from_inputs(inputs),
                         }
                     }
                 },

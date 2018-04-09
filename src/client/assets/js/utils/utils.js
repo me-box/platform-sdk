@@ -1,3 +1,21 @@
+
+export function  extract_ptype_from_inputs(inputs){
+   return inputs.reduce((acc,input)=>{    
+        if (input.schema && input.schema.output && input.schema.output.ptype){
+          return { 
+            ...acc, 
+            ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
+                return {
+                    ...acc,
+                    [key]: input.schema.output.ptype[key],
+                }
+            },{})
+          }
+        }
+        return acc;
+    },{});
+}
+
 export function calculateTextWidth(str, className, offset) {
 	
     let sp = document.createElement("span");

@@ -26,9 +26,26 @@ const _matches =(filters, key, schema)=>{
     const paths = filters.filter(i=>i.sid==key).map(i=>i.path.join("."));
     
     const matches = schema.filter((item)=>{
-        return item.required.reduce((acc, r)=>{
-            return acc || paths.indexOf(r) !== -1;
-        },false);
+        if (!item.required){ 
+            return false;
+        }
+
+        //shorthand version of allOf is an array with each item that needs to match
+        if (Array.isArray(item.required)){
+            
+            if (item.required.length <= 0)
+                return false;
+
+            return item.required.reduce((acc, r)=>{
+                return acc && paths.indexOf(r) !== -1;
+            },true);
+        }
+
+        if (item.required === Object(item.required)){
+            //do anyOf, allOf, not check
+            return false;
+        }
+         
     },{}).map((i)=>{
         return {    ...i,
             required: i.required.map(i=>`payload.${key}.${i}`)

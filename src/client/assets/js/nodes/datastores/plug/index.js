@@ -26,9 +26,122 @@ const config = {
         return this.name||this.topic||"plugin";
     },
     
-    schemafn: (subtype)=>{
+    schemafn: (subtype, id)=>{
         const type = subtype || "TP-PowerState";
       
+        const privacy = (type)=>{
+            switch (type){
+                
+                case  "TP-PowerState": 
+                    return [
+                        {
+                            type: "personal",
+                            subtype: "behaviour",
+                            ordinal: "secondary",
+                            
+                            description: "power on/off can be used to infer occupancy patterns",
+
+                            conditions: [
+                                {
+                                    granularity: {threshold:0.01, unit:"Hz"}
+                                }
+                            ],
+                            required: ["payload.value"],
+                            accretion: true,
+                        },
+                        {
+                            type: "personal",
+                            subtype: "location",
+                            ordinal: "secondary",
+                            
+                            description: "power on/off can be used to infer partial location",
+
+                            conditions: [
+                                {
+                                    granularity: {threshold:0.01, unit:"Hz"}
+                                }
+                            ],
+                            required: ["payload.value"],
+                            accretion: true,
+                        },
+                    ]
+
+                case  "TP-Power-Usage":
+                    return [
+                        {
+                            type: "personal",
+                            subtype: "consumption",
+                            ordinal: "secondary",
+                            
+                            description: "current drawn over time can give a (partial) indication of energy consumption",
+
+                            conditions: [
+                                {
+                                    granularity: {threshold:0.01, unit:"Hz"},
+                                }
+                            ],
+
+                            required: ["payload.value.current"],
+
+                            accretion: true,
+                        },
+                        {
+                            type: "personal",
+                            subtype: "consumption",
+                            ordinal: "secondary",
+                            
+                            description: "voltage measured across your device can give a (partial) indication of energy consumption",
+
+                            conditions: [
+                                {
+                                    granularity: {threshold:0.01, unit:"Hz"},
+                                }
+                            ],
+
+                            required: ["payload.value.voltage"],
+
+                            accretion: true,
+                        },
+                         {
+                            type: "personal",
+                            subtype: "consumption",
+                            ordinal: "secondary",
+                            
+                            description: "power usage will give a (partial) indication of energy consumption",
+
+                            conditions: [
+                                {
+                                    granularity: {threshold:0.01, unit:"Hz"},
+                                }
+                            ],
+
+                            required: ["payload.value.power"],
+
+                            accretion: true,
+                        },
+                        {
+                            type: "personal",
+                            subtype: "employment-status",
+                            ordinal: "secondary",
+                            
+                            description: "power usage can be used to infer employment status",
+
+                            evidence: ["https://www.sciencedirect.com/science/article/pii/S0198971516300813","https://dl.acm.org/citation.cfm?id=2422562"],
+
+                            conditions: [
+                                {
+                                    granularity: {threshold:0.01, unit:"Hz"}
+                                }
+                            ],
+                            required: ["payload.value.power"], //need a strcuture of ors and ands
+                            accretion: true,
+                        }
+                    ]
+                default: 
+                    return {}
+            }
+        }
+
         const payloads = (type)=>{
             
             switch (type){
@@ -37,36 +150,6 @@ const config = {
                     return {
                         type: "string", 
                         description: "<i>on</i> or <i>off</i>",
-                        ptype: [
-                            {
-                                type: "personal",
-                                subtype: "behaviour",
-                                ordinal: "secondary",
-                                
-                                description: "power on/off can be used to infer occupancy patterns",
- 
-                                conditions: [
-                                    {
-                                        granularity: {threshold:0.01, unit:"Hz"}
-                                    }
-                                ],
-                                accretion: true,
-                            },
-                            {
-                                type: "personal",
-                                subtype: "location",
-                                ordinal: "secondary",
-                                
-                                description: "power on/off can be used to infer partial location",
- 
-                                conditions: [
-                                    {
-                                        granularity: {threshold:0.01, unit:"Hz"}
-                                    }
-                                ],
-                                accretion: true,
-                            },
-                        ]
                     }
 
                 case "TP-Power-Usage": 
@@ -86,41 +169,7 @@ const config = {
                                 type: "number",
                                 desciption: "the reading for power (W)"
                             }
-                        },
-                        ptype:[
-                            {
-                                type: "personal",
-                                subtype: "consumption",
-                                ordinal: "secondary",
-                                
-                                description: "power usage will give a (partial) indication of energy consumption",
- 
-                                conditions: [
-                                    {
-                                        granularity: {threshold:0.01, unit:"Hz"},
-                                    }
-                                ],
-
-                                accretion: true,
-                            },
-                            {
-                                type: "personal",
-                                subtype: "employment-status",
-                                ordinal: "secondary",
-                                
-                                description: "power usage can be used to infer employment status",
-
-                                evidence: ["https://www.sciencedirect.com/science/article/pii/S0198971516300813","https://dl.acm.org/citation.cfm?id=2422562"],
- 
-                                conditions: [
-                                    {
-                                        granularity: {threshold:0.01, unit:"Hz"}
-                                    }
-                                ],
-
-                                accretion: true,
-                            }
-                        ]
+                        }
                     }
                 default:
                     return {}
@@ -146,6 +195,9 @@ const config = {
                       },
                       required: ["ts", "value"]
                     }
+                },
+                ptype : {
+                    [id] : privacy(type)
                 },
                 required: ["id", "type", "subtype", "payload"],
             }

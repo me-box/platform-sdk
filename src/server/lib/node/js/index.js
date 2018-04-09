@@ -74,22 +74,12 @@ export function configNode(){
 
                     this.props.actions.updateNode(property,value);
                     if (property === node._def.schemakey){
-                       //csn pass in ptype here!!
-
-                        const ptype = inputs.reduce((acc,input)=>{
-                            
-                            if (input.schema && input.schema.output && input.schema.output.ptype){
-                              acc = { 
-                                ...acc, 
-                                [input.id] : input.schema.output.ptype
-                              }
-                            }
-                            return acc;
-                        },{});
-
-                        this.props.actions.updateSchema(id, node._def.schemafn(value, ptype));
+                        this.props.actions.updateSchema(id, node._def.schemafn(value, id, inputs.map((i)=>{
+                          return {id:i.id, schema:i.schema};                         
+                        }) || []));
                         this.props.actions.updateDescription(id, node._def.descriptionfn(value));
                     }
+                    this.props.actions.updateDownStream(id);
                 },
                 inputs,
                 outputs,

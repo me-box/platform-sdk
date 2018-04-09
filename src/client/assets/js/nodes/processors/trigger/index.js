@@ -1,5 +1,5 @@
 import Node from "./node";
-
+import {extract_ptype_from_inputs} from "utils/utils";
 const config = {
   category: 'processors',
   color: '#3771C8',
@@ -27,12 +27,13 @@ const config = {
   },
 
 
-  schemafn: () => {
+  schemafn: (value="", id, inputs=[]) => {
 
     return { 
         output:{
             type: "any",
-            description: "trigger may output any object"
+            description: "trigger may output any object",
+            ptype: extract_ptype_from_inputs(inputs),
         },
      
         input:{

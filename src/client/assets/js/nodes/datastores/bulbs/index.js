@@ -27,14 +27,14 @@ const config = {
     },
     
 
-    schemafn: (subtype)=>{
+    schemafn: (subtype, id)=>{
         const type = subtype || "bulb-on";
 
         const personal = (type)=>{
              switch (type){
             
                 case "bulb-on": 
-                     return [
+                     return [{
                                 type: "personal",
                                 subtype: "behaviour",
                                 ordinal: "secondary",
@@ -49,7 +49,7 @@ const config = {
                                 ],
 
                                 accretion: true
-                            ]
+                            }]
 
                 case "bulb-hue":
                     return [];
@@ -58,7 +58,7 @@ const config = {
                     return [];
 
                 case "hue-ZLLTemperature":
-                    return [
+                    return [{
                         type: "personal",
                         subtype: "consumption",
                         ordinal: "secondary",
@@ -73,7 +73,7 @@ const config = {
                         ],
 
                         accretion: true,
-                    ];
+                    }];
 
                 case "hue-ZLLPresence":
                     return [ 
@@ -257,7 +257,7 @@ const config = {
                       required: ["ts", "value"]
                     }
                 },
-                ptype: personal(type),
+                ptype: {[id]: personal(type)},
                 required: ["id", "type", "subtype", "payload"],
             }
         }

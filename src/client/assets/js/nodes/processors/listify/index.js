@@ -1,4 +1,5 @@
 import Node from "./node";
+import {extract_ptype_from_inputs} from "utils/utils";
 
 const config = {
   category: 'processors',
@@ -19,9 +20,9 @@ const config = {
     return this.name || this.topic || "listify";
   },
 
-  schemafn: (subtype="", ptype={}) => {
+  schemafn: (subtype="", id, inputs=[]) => {
 
-    
+    console.log("LISTIFY - evalutaing schema fn with subtype", subtype, "id", id, "inputs", inputs);
 
     const schema = {
       output: {
@@ -65,16 +66,7 @@ const config = {
               required: ["timestamp", "keys", "rows"]
             }
           },
-          ptype: Object.keys(ptype).reduce((acc,key)=>{
-                return [  ...acc, 
-                          ...ptype[key].map((i)=>{
-                              return {
-                                ...i, 
-                                required:["payload.rows.key"]
-                              }
-                          })
-                        ]
-          },[]),
+          ptype: extract_ptype_from_inputs(inputs),
           required: ["sourceId", "type", "payload"]
       },
       input: {

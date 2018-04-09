@@ -14,7 +14,7 @@ const _colours = {
 
 const badge = (source, sport, target, ptype, onClick)=>{
 
-    if (ptype.length <= 0){
+    if (Object.keys(ptype || {}).length <= 0){
       return null;
     }
     
@@ -128,7 +128,7 @@ const badge = (source, sport, target, ptype, onClick)=>{
     return  <g>
                  
                 {circles}      
-                <circle cx={_cx} cy={_cy} r={_r/2}  style={circlecentestyle}/>
+                {circles.length > 0 && <circle cx={_cx} cy={_cy} r={_r/2}  style={circlecentestyle}/>}
             </g>
 }
 

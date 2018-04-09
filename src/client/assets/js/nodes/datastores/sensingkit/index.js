@@ -49,6 +49,9 @@ const config = {
 
     console.log("in schema fn in sensingkit, nid is", nid);
     
+    //TODO: incorporate anyOf, allOf, not (from json.schema) for required!
+    //[] implictly means all of!
+    
     const personal = (subtype)=>{
       
       switch (subtype) {

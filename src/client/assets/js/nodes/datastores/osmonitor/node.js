@@ -21,10 +21,10 @@ export default class Node extends Component {
           
     const typeprops = {
 			options: [
-					                {name: '1 min load average', value: 'loadavg1'},
-					                {name: '5 min load average', value: 'loadavg5'},
-					                {name: '15 min load average', value: 'loadavg15'},
-					                {name: 'free memory', value:'freemem'},
+                {name: '1 min load average', value: 'loadavg1'},
+                {name: '5 min load average', value: 'loadavg5'},
+                {name: '15 min load average', value: 'loadavg15'},
+                {name: 'free memory', value:'freemem'},
 			],
 					     
 			onSelect: (event)=>{
