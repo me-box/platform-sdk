@@ -1,6 +1,30 @@
 import Node from "./node";
 import {extract_ptype_from_inputs} from "utils/utils";
 
+
+const _extract_keys = (inputs)=>{
+  const keys = inputs.reduce((acc,input)=>{
+    const schema = input.schema.output || {};
+    const payload = schema.properties ? schema.properties.payload : {};
+    return [...acc, {type: "array", id:input.id, description: "keys that index rows", items:Object.keys(payload.properties || {}).reduce((acc,key)=>{
+        return [...acc, {type:"string", description: `key: ${key} to item: ${payload.properties[key].description}`}]
+    },[])}] 
+  },[]);
+  return { oneOf : keys }
+}
+
+const _extract_rows = (inputs)=>{
+  const rows = inputs.reduce((acc,input)=>{
+    const schema = input.schema.output || {};
+    const payload = schema.properties ? schema.properties.payload : {};
+    return [...acc, {id:input.id, ...Object.keys(payload).reduce((acc,key)=>{
+      acc[key] = payload[key];
+      return acc;
+    },{})}]
+  },[]);
+  return { oneOf : rows }
+}
+
 const config = {
   category: 'processors',
   color: '#3771C8',
@@ -20,10 +44,23 @@ const config = {
     return this.name || this.topic || "listify";
   },
 
+  /*
+  {
+                  type: "array",
+                  description: "['key1','key2', '..']",
+                  items: {
+                    type: "string"
+                  }
+                },
+  */
+
+
   schemafn: (subtype="", id, inputs=[]) => {
 
     console.log("LISTIFY - evalutaing schema fn with subtype", subtype, "id", id, "inputs", inputs);
-
+    //ptype coming in === ptype going out
+    const ptype = extract_ptype_from_inputs(inputs);
+    
     const schema = {
       output: {
           type: "object",
@@ -42,31 +79,17 @@ const config = {
               description: "values to be rendered as a list",
               properties: {
                 timestamp: {
-                  type: "ts",
+                  type: "number",
                   description: "a unix timestamp"
                 },
-                keys: {
-                  type: "array",
-                  description: "['key1','key2', '..']",
-                  items: {
-                    type: "string"
-                  }
-                },
-                rows: {
-                  type: "object",
-                  properties: {
-                    key: {
-                      type: "any",
-                      description: "key value pair where key matches key in keys array"
-                    }
-                  }
-                }
+                keys: _extract_keys(inputs), 
+                rows: _extract_rows(inputs),
               },
               
               required: ["timestamp", "keys", "rows"]
             }
           },
-          ptype: extract_ptype_from_inputs(inputs),
+          ptype: ptype,
           required: ["sourceId", "type", "payload"]
       },
       input: {
@@ -95,11 +118,13 @@ const config = {
             }
           }
         },
+        ptype: ptype,
         required: ["payload"]
       }
     };
 
     console.log("ok in listify and returning schema", schema);
+   
 
     return schema;
   },

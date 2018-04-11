@@ -72,17 +72,24 @@ export default class Node extends React.Component {
 		}
 	}
 
-	renderSchemaArray(sid, stype, items, path=[]){
+	renderSchemaArray(sid,stype, items, path=[]){
+		console.log("in render schema array!",items);
 		return items.map((item)=>{
-			return this.renderItem(item.id, stype, item.id, item, path);
+			return this.renderItem(sid, stype, item.id, item, path);
 		});
 	}
 
 	renderSchemaObject(sid, stype, schema, path=[]){
 		return Object.keys(schema).map((key,i)=>{
 			const item = {...schema[key], name:key}
+			if (item.oneOf){
+				console.log("seen an item.oneOf", item.oneOf);
+
+				return this.renderSchemaArray(sid, stype, item.oneOf, path);
+			}
 			return <ul className="filterList" key={i}> {this.renderItem(sid, stype, key, item, [...path, key])} </ul>
 		});
+		
 	}
 	
 	renderFilters(sources){
@@ -116,8 +123,8 @@ export default class Node extends React.Component {
 
 	render(){
 
-		const {inputs = [], values={}, updateNode} = this.props;
-		
+		const {inputs = [],values={}, updateNode} = this.props;
+
 		const nameprops = {	
 			 value: values.name || "",
 			 id: "name",
@@ -151,9 +158,7 @@ export default class Node extends React.Component {
 
 	_toggleFilter(sid, stype, item, path, event){
 		
-		console.log("toggling utem", item);
-		const {inputs = []} = this.props;
-
+		console.log("toggle filter!!", sid);
 		const target = event.target;
 		const checked = target.checked;
 		let _filters;

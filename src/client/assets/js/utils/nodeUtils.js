@@ -33,7 +33,9 @@ export function convertNode(n, links=[]) {
     node.id = n.id;
     node.type = n.type;
     node.z = n.z;
-    	
+    if (n.schema && n.schema.input && n.schema.input.ptype)
+      node.ptype = n.schema.input.ptype;
+
     for (var d in n._def.defaults) {
     	
         if (n._def.defaults.hasOwnProperty(d)) {

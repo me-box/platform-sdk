@@ -27,6 +27,9 @@ const config =  {
     },
     
     schemafn: (value="", id="", inputs=[])=>{
+    	
+    	const ptype = extract_ptype_from_inputs(inputs);
+
     	return{
     		output:{
 				type: "object",
@@ -45,7 +48,7 @@ const config =  {
 						required: ["values"]
 					}
 				},
-				ptype: extract_ptype_from_inputs(inputs),
+				ptype: ptype,
 				required: ["sourceId", "type", "payload"]
 			},
 			input:{
@@ -53,7 +56,9 @@ const config =  {
 				description: "the object whose properties you wish to template",
 				properties:{
 					any: {type: "any", description: "any object"}
-				}
+				},
+				ptype: ptype,
+
 			}
 		}	
     },

@@ -51,7 +51,7 @@ const config = {
     
     //TODO: incorporate anyOf, allOf, not (from json.schema) for required!
     //[] implictly means all of!
-    
+
     const personal = (subtype)=>{
       
       switch (subtype) {
@@ -376,7 +376,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 name: {
@@ -421,7 +421,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 x: {
@@ -475,7 +475,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 x: {
@@ -518,7 +518,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 x: {
@@ -570,7 +570,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 charge: {
@@ -625,7 +625,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 value: {
@@ -661,7 +661,7 @@ const config = {
               description: 'the message payload',
               properties: {
                 ts: {
-                  type: 'time',
+                  type: 'number',
                   description: 'a unix timestamp'
                 },
                 value: {

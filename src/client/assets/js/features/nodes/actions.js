@@ -34,13 +34,11 @@ function _schema(node){
         return node._def.schemafn(node[node._def.schemakey], node.id);
       }
    }
-   console.log("in scahme with node", node)
-
+  
    return _defaultschema(node._def, node.id);
 }
 
 function _defaultschema(def,id){  
- console.log("in default schema!", id);
   if (def.schemakey){
       
       const key = def.defaults[def.schemakey];

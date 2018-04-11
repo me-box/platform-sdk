@@ -20,11 +20,14 @@ const _existsinupstream = (upstream={}, sid)=>{
     }
 }
 
-const _matches =(filters, key, schema)=>{
+const _matches =(nid, filters, key, schema)=>{
     console.log("performing a match with filters", filters, "and key", key, ",schema", schema);
 
-    const paths = filters.filter(i=>i.sid==key).map(i=>i.path.join("."));
-    
+    //const paths = filters.filter(i=>i.nid==key || i.sid==key).map(i=>i.path.join("."));
+    const paths = filters.map(i=>i.path.join("."));
+    console.log("PATHS are", paths);
+    console.log("schame is", schema);
+
     const matches = schema.filter((item)=>{
         if (!item.required){ 
             return false;
@@ -35,7 +38,7 @@ const _matches =(filters, key, schema)=>{
             
             if (item.required.length <= 0)
                 return false;
-
+            console.log("doing match search against required:", item.required)
             return item.required.reduce((acc, r)=>{
                 return acc && paths.indexOf(r) !== -1;
             },true);
@@ -52,7 +55,7 @@ const _matches =(filters, key, schema)=>{
         }
     });
 
-    return (matches.length > 0) ? {[key] : matches} : {}
+    return (matches.length > 0) ? {[nid] : matches} : {}
 }
 
 const config = {
@@ -89,7 +92,7 @@ const config = {
 
     schemafn:(filters=[], nid="", inputs=[])=>{
 
-        let paths = {};
+       // let paths = {};
 
         
 
@@ -99,14 +102,14 @@ const config = {
               acc = { 
                 ...acc, 
                 ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
-                    const matches = _matches(filters,key,input.schema.output.ptype[key]);
+                    const matches = _matches(nid,filters,key,input.schema.output.ptype[key]);
                     return {
                         ...acc,
                         ...matches,
                     }
 
                     /*if (sids.indexOf(key) != -1){
-                        //resolve  input.schema.output.ptype[key].path against all filters sid==key path
+                        //resolve  input.schema.output.ptype[kepathsy].path against all filters sid==key path
                         if (matchesfilter(filters, input.schema.output.ptype[key])){
                             acc = { ...acc, 
                                 [key] : input.schema.output.ptype[key]
@@ -123,9 +126,10 @@ const config = {
         console.log("node:", nid, "schema fn, ptypes are,", ptypes, " filters are", filters);
 
         const items = filters.reduce((acc, filter)=>{
+            
             const {sid, item:{type, name, description}, path} = filter;
            
-            paths[sid]  = [...(paths[sid] || []), path.join(".")];
+           // paths[sid]  = [...(paths[sid] || []), path.join(".")];
             
 
             return [...acc, {

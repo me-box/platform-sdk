@@ -5,6 +5,9 @@ const _leaf= (id, links)=>{
 	return item ? false : true;
 }
 
+//TODO: this only removes single node a->b->a  loops, not transtive a->b->c->a
+//make recursive...
+
 const _remove_loops=(links)=>{
 	return links.reduce((acc, item)=>{
 		if (!(acc.find(i=>_from(i) === _to(item) && _to(i) === _from(item)))){

@@ -36,7 +36,9 @@ const config = {
 
     schemafn:(outputdef, id, inputs=[])=>{
 
-       
+        //ptype coming in === ptype going out
+        const ptype = extract_ptype_from_inputs(inputs);
+        
         let output = {};
 
         try{
@@ -46,15 +48,17 @@ const config = {
 
         }
 
+        //TODO: be more specific about the input (since we know what it is!)
         return { 
                     output: {
                                 ...output, 
-                                ptype: extract_ptype_from_inputs(inputs)
+                                ptype: ptype,
                     },
                  
                     input:{
                         type: "any",
-                        description: "dbfunction will take ANY object as input"
+                        description: "dbfunction will take ANY object as input",
+                        ptype: ptype,
                     }
                 }
     },

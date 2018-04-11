@@ -65,6 +65,8 @@ const config = {
   schemafn: (chart,id,inputs=[]) => {
 
     const subtype = chart || "bar";
+    //ptype coming in === ptype going out
+    const ptype = extract_ptype_from_inputs(inputs);
 
     const _payload = {
 
@@ -216,7 +218,7 @@ const config = {
             }
           },
           required: ["type", "sourceId", "payload"],
-          ptype: extract_ptype_from_inputs(inputs),
+          ptype:ptype,
       },
       input: {
         type: "object",
@@ -259,6 +261,7 @@ const config = {
             required: ["ts", "value"]
           }
         },
+        ptype:ptype,
         required: ["type", "subtype", "sensor", "payload"]
       },
     }
