@@ -28,13 +28,17 @@ export function addViewProperties(node){
 }
 
 export function convertNode(n, links=[]) {
-    
+    console.log("am in convert node!");
     var node = {};
     node.id = n.id;
     node.type = n.type;
     node.z = n.z;
-    if (n.schema && n.schema.input && n.schema.input.ptype)
+    if (n.schema && n.schema.input && n.schema.input.ptype){
+      if (n.type === "listify"){
+        console.log("schema for listify is...", n.schema);
+      }
       node.ptype = n.schema.input.ptype;
+    }
 
     for (var d in n._def.defaults) {
     	

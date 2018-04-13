@@ -158,7 +158,7 @@ export default class Node extends React.Component {
 
 	_toggleFilter(sid, stype, item, path, event){
 		
-		console.log("toggle filter!!", sid);
+		console.log("---> toggle filter!!", sid);
 		const target = event.target;
 		const checked = target.checked;
 		let _filters;
@@ -179,7 +179,7 @@ export default class Node extends React.Component {
 		this.setState({selections: _filters});
 		//need to resolve input schemas privacy against filters!
 
-		
+		console.log("ok updating filters to", _filters);
 		this.props.updateNode("filters", _filters);
 	}
 

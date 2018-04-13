@@ -24,9 +24,10 @@ const _matches =(nid, filters, key, schema)=>{
     console.log("performing a match with filters", filters, "and key", key, ",schema", schema);
 
     //const paths = filters.filter(i=>i.nid==key || i.sid==key).map(i=>i.path.join("."));
-    const paths = filters.map(i=>i.path.join("."));
-    console.log("PATHS are", paths);
-    console.log("schame is", schema);
+    const paths = filters.map(i=>`${i.sid}.${i.path.join(".")}`);
+    //console.log("PATHS are", paths);
+    //console.log("schame is", schema);
+    //console.log('key is', key);
 
     const matches = schema.filter((item)=>{
         if (!item.required){ 
@@ -38,9 +39,9 @@ const _matches =(nid, filters, key, schema)=>{
             
             if (item.required.length <= 0)
                 return false;
-            console.log("doing match search against required:", item.required)
+            //console.log("doing match search against required:", item)
             return item.required.reduce((acc, r)=>{
-                return acc && paths.indexOf(r) !== -1;
+                return acc && paths.indexOf(`${key}.${r}`) !== -1;
             },true);
         }
 
@@ -55,7 +56,11 @@ const _matches =(nid, filters, key, schema)=>{
         }
     });
 
-    return (matches.length > 0) ? {[nid] : matches} : {}
+    if (matches.length> 0){
+        console.log("** MATCHES", {[nid]:matches});
+    }
+
+    return (matches.length > 0) ?  matches : []
 }
 
 const config = {
@@ -94,36 +99,23 @@ const config = {
 
        // let paths = {};
 
-        
-
+      
         const ptypes = inputs.reduce((acc,input)=>{    
             if (input.schema && input.schema.output && input.schema.output.ptype){
 
-              acc = { 
-                ...acc, 
-                ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
-                    const matches = _matches(nid,filters,key,input.schema.output.ptype[key]);
-                    return {
-                        ...acc,
-                        ...matches,
-                    }
-
-                    /*if (sids.indexOf(key) != -1){
-                        //resolve  input.schema.output.ptype[kepathsy].path against all filters sid==key path
-                        if (matchesfilter(filters, input.schema.output.ptype[key])){
-                            acc = { ...acc, 
-                                [key] : input.schema.output.ptype[key]
-                            }
-                        }
-                    }
-                    return acc;*/
-                },{}),
-              }
+              acc[nid] = [
+                    ...(acc[nid] || []),  
+                    ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
+                        return [...acc,  ..._matches(nid,filters,key,input.schema.output.ptype[key])]
+                    },[])
+              ]
             }
             return acc;
         },{});
+        
+       
 
-        console.log("node:", nid, "schema fn, ptypes are,", ptypes, " filters are", filters);
+        //console.log("node:", nid, "schema fn, ptypes are,", ptypes, " filters are", filters);
 
         const items = filters.reduce((acc, filter)=>{
             
