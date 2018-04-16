@@ -99,11 +99,12 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(filters=[], node={}, inputs=[])=>{
+    schemafn:(nid, node={}, inputs=[])=>{ /*(filters=[], node={}, inputs=[])=>{*/
 
        // let paths = {};
 
-        const nid = node.id || "";
+        //const nid = node.id || "";
+        const filters = node.filters || [];
 
         const ptypes = inputs.reduce((acc,input)=>{    
             if (input.schema && input.schema.output && input.schema.output.ptype){
@@ -143,45 +144,6 @@ const config = {
         },[]);
 
 
-       /* const _ptypes = Object.keys(ptypes).reduce((acc,sid)=>{
-
-            //if (!_existsinupstream(upstream, sid)){ //remove if ptype is no longer upstream
-            //    return acc;
-            //}
-
-            const item = ptypes[sid] || [];
-            const _paths = paths[sid] || [];
-            return [...acc, ...item.reduce((acc, pt)=>{
-                const eligible = (pt.required || []).reduce((acc, value)=>{
-                    return acc && _paths.indexOf(value) !== -1;
-                }, true);
-
-                if (eligible){
-                    return [...acc, pt]
-                }
-                return acc;
-            },[])]
-        },[]);  */ 
-
-       
-
-        console.log("extract OUTPUT schema is");
-        console.log({
-                type: "object",
-                description: "container object",
-                properties: {
-                    name: {type:'string', description: "a name assigned to this node"}, 
-                    id:  {type:'string', description: "the node id: [id]"},
-                    payload : {
-                        type:"array", 
-                        description:"extracted attributes", 
-                        items: items,
-                    }
-                },
-                ptype: ptypes
-            });
-
-
         return {
             input:{
                 type: "any",
@@ -204,14 +166,14 @@ const config = {
         }
     },
 
-    risk: (subtype="")=>{
+    risk: (node={})=>{
       return {
           score: 0,
           reason: "no risk in extracting data from an object"
       }        
     },
 
-    descriptionfn: (filters)=>{
+    descriptionfn: (values)=>{
         return `<p>This node will take an incoming message and then pull out specific values from it adn places them in the payload of the output message.</p>
                 <p>It is a simple way of removing all data from a message that is of no use further down the flow </p>`;
     }

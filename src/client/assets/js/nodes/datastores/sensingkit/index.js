@@ -46,13 +46,9 @@ const config = {
     }
   },
 
-  schemakey: ["subtype","granularity"],
-
-  descriptionkey: "subtype",
-
-  schemafn: (nid, buffer={}) => {
-    console.log("----> seningkit in update schame fn, nid is ", nid, " node is", buffer);
-    const subtype = buffer.subtype || "";
+  schemafn: (nid, node={}) => {
+    console.log("----> seningkit in update schame fn, nid is ", nid, " node is", node);
+    const subtype = node.subtype || "";
     console.log("subtype is", subtype);
     //TODO: incorporate anyOf, allOf, not (from json.schema) for required!
     //[] implictly means all of!
@@ -103,7 +99,11 @@ const config = {
                 ],
                 accretion: false,
               }
-          ]
+          ].filter((ptype)=>{
+            return ptype.conditions.reduce((acc,item)=>{
+              return acc || item.granularity.threshold <= node.granularity;
+            },false);
+          })
 
         case "accelerometer":
           return [
@@ -179,7 +179,11 @@ const config = {
                 
                 accretion: false,
               }        
-          ]
+          ].filter((ptype)=>{
+            return ptype.conditions.reduce((acc,item)=>{
+              return acc || item.granularity.threshold <= node.granularity;
+            },false);
+          })
 
         case "linear-acceleration":
         case "magnetometer":
@@ -258,7 +262,11 @@ const config = {
                 
                 accretion: false,
               }        
-            ];
+            ].filter((ptype)=>{
+              return ptype.conditions.reduce((acc,item)=>{
+                return acc || item.granularity.threshold <= node.granularity;
+              },false);
+            });
 
             case "rotation":
               return [];
@@ -278,7 +286,11 @@ const config = {
                   required: ["plugged"],
                   accretion: false,
                 }
-              ]
+              ].filter((ptype)=>{
+                return ptype.conditions.reduce((acc,item)=>{
+                  return acc || granularity.threshold <= node.granularity;
+                },false);
+              });
 
             case "audio-level":
               return [
@@ -295,7 +307,11 @@ const config = {
                 required: ["payload.value"],
                 accretion: false,
               }
-            ]
+            ].filter((ptype)=>{
+              return ptype.conditions.reduce((acc,item)=>{
+                return acc || item.granularity.threshold <= node.granularity;
+              },false);
+            })
 
             case "light":
               return [
@@ -345,7 +361,11 @@ const config = {
 
                     accretion: false,
                 }
-              ]
+              ].filter((ptype)=>{
+                return ptype.conditions.reduce((acc,item)=>{
+                  return acc || item.granularity.threshold <= node.granularity;
+                },false);
+              })
 
             default:
               return []
@@ -683,13 +703,15 @@ const config = {
       output: {
           type: "object",
           description: "the container object",
-          properties: schema(buffer.subtype),
-          ptype: {[nid]:personal(buffer.subtype)},
+          properties: schema(node.subtype),
+          ptype: {[nid]:personal(node.subtype)},
       }
     }
   },
 
-  risk: (subtype="light")=>{
+  risk: (node={})=>{
+    const subtype = node.subtype || "light";
+
     switch(subtype){
     
       case "bluetooth":
@@ -747,9 +769,11 @@ const config = {
   labelStyle: function() {
     return this.name ? "node_label_italic" : "";
   },
-  descriptionfn: (subtype) => {
+  descriptionfn: (node={}) => {
+    
+    console.log("in descriptionfn ", node);
 
-
+    const subtype = node.subtype;
 
     if (subtype) {
       const chosen = `<h3> ${subtype} </h3>`

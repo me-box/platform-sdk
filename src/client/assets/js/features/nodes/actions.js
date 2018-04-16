@@ -59,15 +59,16 @@ function _description(def){
 
   }
 
-  if (def.schemakey){
-      const key = def.defaults[def.schemakey];
-      if (key && key.value){
+  //if (def.schemakey){
+  //    const key = def.defaults[def.schemakey];
+  //    if (key && key.value){
           if (def.descriptionfn){
-              return def.descriptionfn(key.value);
+              return def.descriptionfn(def);
           }
-      }
-  }
-  return def.descriptionfn ? def.descriptionfn() : {}
+     // }
+  //}
+  //return def.descriptionfn ? def.descriptionfn() : {}
+  return {};
 }
 
 function dropNode({component, nt, def, reducer}, x0, y0){

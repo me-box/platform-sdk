@@ -245,7 +245,7 @@ export default class Help extends Component {
 
 		if (node){
 			if (node._def.descriptionfn){
-				description = node._def.descriptionfn(node.subtype);
+				description = node._def.descriptionfn(node);
 			}else{
 				description = node.description;
 			}
