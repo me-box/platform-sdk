@@ -9,19 +9,34 @@ const _leaf= (id, links)=>{
 //make recursive...
 
 const _remove_loops=(links)=>{
+	
+	
+	let seen = {};
+
 	return links.reduce((acc, item)=>{
-		if (!(acc.find(i=>_from(i) === _to(item) && _to(i) === _from(item)))){
+		 
+		if (!seen[item]){ //(acc.find(i=>_from(i) === _to(item) && _to(i) === _from(item)))){
 			acc = [...acc, item];
 		}
+		seen = {...seen, [item]:true}
 		return acc;
 	},[]);
 }
 
-const _children=(id, links)=>{
+
+const _children=(id, links, seen={})=>{
+	
+	if (seen[[id, ...links].join()]){
+		return [id];
+	}
+
 	if (_leaf(id,links)){
 		return [id];
 	}
-	return [id, ...links.filter((l)=>_from(l) === id).map(link=>[].concat(..._children(_to(link), links)))];
+
+	seen[[id, ...links].join()] = true;
+
+	return [id, ...links.filter((l)=>_from(l) === id).map(link=>[].concat(..._children(_to(link), links, seen)))];
 }
 
 const _from =(link)=>{
@@ -41,5 +56,5 @@ export function tonode(link){
 }
 
 export function downstreamnodes(id, links){
-	return [].concat(..._children(id, _remove_loops(links)));
+	return [].concat(..._children(id,links));// _remove_loops(links)));
 }

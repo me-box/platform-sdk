@@ -1,0 +1,25 @@
+.slider{
+	width: 100%;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.slider .value {
+	font-size: 2em;
+	text-align: center;
+	margin-top: 30px;
+	margin-bottom: 10px;
+}
+.rangeslider-horizontal{
+	margin: 20px 0px 10px 0px;
+}
+
+.rangeslider-horizontal .rangeslider__fill {
+ 
+    background-color: #3f51b5;
+    
+}
+
+.rangeslider__labels .rangeslider__label-item {
+    top: 0px;
+    transform: translate3d(-50%, -20%, 0);
+}

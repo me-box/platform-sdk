@@ -6,19 +6,44 @@ import Cell from 'components/Cell';
 import Cells from 'components/Cells';
 //import '../../../../style/sass/code.scss';
 import {configNode} from 'utils/ReactDecorators';
+import Slider from 'react-rangeslider';
+import 'react-rangeslider/lib/index.css'
+import './style.css';
 
 @configNode()
 export default class Node extends Component {
 	
+		constructor(props){
+			super(props);
+			this.renderSlider = this.renderSlider.bind(this);
+		}
+
 		componentDidMount(){
-		
+			
 	   		if (this.props.values.sensor){
 	   			//this.props.updateDescription(this.props.values.sensor);
 	   			//this.props.updateOutputSchema(this.props.values.sensor);
 	   			//this.props.fetchSampleData(this.props.values.sensor);
 	   		}
 	   	}
-	   	
+
+	   	renderSlider(){
+	   		const horizontalLabels = {
+		      0: 'Low',
+		      200: 'High'
+		    }
+		    return 	<div className='slider'>
+			        	<Slider
+			          	min={5}
+			          	max={200}
+			          	value={this.props.values.granularity || 0}
+			          	labels={horizontalLabels}
+			          	onChange={(x)=>{this.props.updateNode("granularity", x)}}
+			        	/>
+			        	<div className='value'>{`${this.props.values.granularity || 0}Hz`}</div>
+			      	</div>
+	   	}
+
       	render() {
        		
          	const nameprops = {	
@@ -58,11 +83,16 @@ export default class Node extends Component {
 							<Select {...sensorprops}/>												
 						  </div>
 
+
 			
-          
+
+     
+        	
         	return <Cells>									
 						<Cell title={"name"} content={nameinput}/>
 						<Cell title={"sensor"} content={sensorinput}/>
+						<Cell title={"sample frequency (Hz)"} content={this.renderSlider()}/>
+          					
           			</Cells>
           		
           

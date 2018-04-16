@@ -41,14 +41,19 @@ const config = {
     subtype: {
       value: "light"
     },
+    granularity: {
+      value: 10,
+    }
   },
 
-  schemakey: "subtype",
+  schemakey: ["subtype","granularity"],
 
-  schemafn: (subtype,nid) => {
+  descriptionkey: "subtype",
 
-    console.log("in schema fn in sensingkit, nid is", nid);
-    
+  schemafn: (nid, buffer={}) => {
+    console.log("----> seningkit in update schame fn, nid is ", nid, " node is", buffer);
+    const subtype = buffer.subtype || "";
+    console.log("subtype is", subtype);
     //TODO: incorporate anyOf, allOf, not (from json.schema) for required!
     //[] implictly means all of!
 
@@ -678,8 +683,8 @@ const config = {
       output: {
           type: "object",
           description: "the container object",
-          properties: schema(subtype),
-          ptype: {[nid]:personal(subtype)},
+          properties: schema(buffer.subtype),
+          ptype: {[nid]:personal(buffer.subtype)},
       }
     }
   },
@@ -745,6 +750,7 @@ const config = {
   descriptionfn: (subtype) => {
 
 
+
     if (subtype) {
       const chosen = `<h3> ${subtype} </h3>`
       switch (subtype) {
@@ -775,7 +781,7 @@ const config = {
           return `${chosen}`
       }
     }
-    return core;
+    return "";
 
   }
 };

@@ -33,7 +33,7 @@ const config = {
       value: ""
     },
   },
-  schemakey:"name",
+  schemakey:["name"],
   inputs: 1,
   outputs: 1,
 
@@ -59,7 +59,7 @@ const config = {
 
     console.log("LISTIFY - evalutaing schema fn with subtype", subtype, "id", id, "inputs", inputs);
     //ptype coming in === ptype going out
-    const ptype = extract_ptype_from_inputs(inputs);
+    const ptype = extract_ptype_from_inputs(inputs,id);
     
     const schema = {
       output: {

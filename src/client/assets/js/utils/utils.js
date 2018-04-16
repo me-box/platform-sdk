@@ -1,5 +1,5 @@
 
-export function  extract_ptype_from_inputs(inputs){
+export function  extract_ptype_from_inputs(inputs,id=""){
    return inputs.reduce((acc,input)=>{    
         if (input.schema && input.schema.output && input.schema.output.ptype){
           return { 
@@ -7,7 +7,7 @@ export function  extract_ptype_from_inputs(inputs){
             ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
                 return {
                     ...acc,
-                    [key]: input.schema.output.ptype[key],
+                    [id]: input.schema.output.ptype[key],
                 }
             },{})
           }

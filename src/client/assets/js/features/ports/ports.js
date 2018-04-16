@@ -64,7 +64,6 @@ const _updatedownstream = (id, dispatch, getState)=>{
 
 	const downstream = downstreamnodes(id,links);
 
-
 	downstream.forEach((n)=>{
 
 		const nodes = getState().nodes.nodesById;
@@ -80,12 +79,12 @@ const _updatedownstream = (id, dispatch, getState)=>{
 
 		if (node){ 
 			
-			const value = node._def.schemakey ? node[node._def.schemakey] : null;
+			const value = node._def.schemakey ? node[node._def.schemakey[0]] : null;
 
 			dispatch({
 				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
 				id: n,
-				schema: node._def.schemafn(value, node.id, inputs || [])
+				schema: node._def.schemafn(node._def.schemakey[0], node, inputs || [])
 			});
 		}
 		else{

@@ -25,11 +25,14 @@ const _matches =(nid, filters, key, schema)=>{
 
     //const paths = filters.filter(i=>i.nid==key || i.sid==key).map(i=>i.path.join("."));
     const paths = filters.map(i=>`${i.sid}.${i.path.join(".")}`);
-    //console.log("PATHS are", paths);
-    //console.log("schame is", schema);
+    console.log("PATHS are", paths);
+    console.log("schame is", schema);
     //console.log('key is', key);
 
     const matches = schema.filter((item)=>{
+
+        console.log("item required is", item.required);
+        
         if (!item.required){ 
             return false;
         }
@@ -39,15 +42,16 @@ const _matches =(nid, filters, key, schema)=>{
             
             if (item.required.length <= 0)
                 return false;
-            //console.log("doing match search against required:", item)
+            console.log("doing match search against required:", item)
             return item.required.reduce((acc, r)=>{
+                console.log(`looking for ${key}.${r}`);
                 return acc && paths.indexOf(`${key}.${r}`) !== -1;
             },true);
         }
 
         if (item.required === Object(item.required)){
             //do anyOf, allOf, not check
-            return false;
+            return true;
         }
          
     },{}).map((i)=>{
@@ -77,7 +81,7 @@ const config = {
         previousinputs: {value: []}
     },
 
-    schemakey: "filters",
+    schemakey: ["filters"],
     
     inputs:1,               
     
@@ -95,11 +99,12 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(filters=[], nid="", inputs=[])=>{
+    schemafn:(filters=[], node={}, inputs=[])=>{
 
        // let paths = {};
 
-      
+        const nid = node.id || "";
+
         const ptypes = inputs.reduce((acc,input)=>{    
             if (input.schema && input.schema.output && input.schema.output.ptype){
 
