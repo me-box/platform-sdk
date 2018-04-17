@@ -6,7 +6,7 @@ import Cells from 'components/Cells';
 import Textfield from 'components/form/Textfield';
 
 
-const _inputsChanged = (previous, inputs)=>{
+/*const _inputsChanged = (previous, inputs)=>{
 
 	if (!previous){
 		return true
@@ -21,20 +21,20 @@ const _inputsChanged = (previous, inputs)=>{
 	}, true);
 
 	
-}
+}*/
 
 @configNode()
 export default class Node extends React.Component {
 
 	constructor(props){
 		super(props);
+
 		const {values:{filters}} = props;
 		this._toggleFilter = this._toggleFilter.bind(this);
 		this.state = { selections:  filters};
 	}
 
 	renderItem(sid, stype, name, item, path){
-		
 		
 
 		if (item.type ===  "object"){
@@ -51,7 +51,7 @@ export default class Node extends React.Component {
 					</ul>
 		}
 		else{
-			
+
 			const checked = this.state.selections.filter(f=>f.sid===sid).map(f=>f.path.join()+f.stype).indexOf(path.join()+stype) !== -1;
 			
 			return <li> 
@@ -73,7 +73,7 @@ export default class Node extends React.Component {
 	}
 
 	renderSchemaArray(sid,stype, items, path=[]){
-		console.log("in render schema array!",items);
+		
 		return items.map((item)=>{
 			return this.renderItem(sid, stype, item.id, item, path);
 		});
@@ -102,24 +102,6 @@ export default class Node extends React.Component {
 		})
 	}	
 
-	componentDidMount(){
-	   		
-	   	const {values:{previousinputs}, inputs=[]} = this.props
-
-	   	const _inputs = inputs.reduce((acc,i)=>{
-	   		acc[i.id] = i.subtype || null;
-	   		return acc;
-	   	},{});
-
-		const changed = _inputsChanged(previousinputs, _inputs);
-
-	   	if (changed){
-	   		this.setState({selections: []});
-	   		this.props.updateNode("filters", []);
-	   	}
-	   		
-	   	this.props.updateNode("previousinputs", _inputs);
-	}
 
 	render(){
 
@@ -146,6 +128,7 @@ export default class Node extends React.Component {
 			return acc;
 		},[]) 
 
+
 		return <div>
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>
@@ -158,7 +141,7 @@ export default class Node extends React.Component {
 
 	_toggleFilter(sid, stype, item, path, event){
 		
-		console.log("---> toggle filter!!", sid);
+		
 		const target = event.target;
 		const checked = target.checked;
 		let _filters;
@@ -179,7 +162,7 @@ export default class Node extends React.Component {
 		this.setState({selections: _filters});
 		//need to resolve input schemas privacy against filters!
 
-		console.log("ok updating filters to", _filters);
+		
 		this.props.updateNode("filters", _filters);
 	}
 

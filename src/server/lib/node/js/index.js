@@ -71,16 +71,14 @@ export function configNode(){
                 node,
                 values:buffer,
                 updateNode:  (property,value)=>{
-
                     this.props.actions.updateNode(property,value);
-                    if (node._def.schemakey && node._def.schemakey.indexOf(property) != -1){
-                        this.props.actions.updateSchema(id, node._def.schemafn(node.id, {...buffer,[property]:value}, inputs.map((i)=>{
-                          return {id:i.id, schema:i.schema};                         
-                        }) || []));
-                        if (node._def.descriptionkey && property === node._def.descriptionkey){
-                          this.props.actions.updateDescription(id, node._def.descriptionfn(value));
-                        }
-                    }
+                    const update =  {...buffer,[property]:value};
+                    
+                    this.props.actions.updateSchema(id, node._def.schemafn(node.id, update, inputs.map((i)=>{
+                        return {id:i.id, schema:i.schema};                         
+                    }) || []));
+                     
+                    this.props.actions.updateDescription(id, node._def.descriptionfn(update));
                     this.props.actions.updateDownStream(id);
                 },
                 inputs,

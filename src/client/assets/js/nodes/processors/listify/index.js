@@ -33,7 +33,7 @@ const config = {
       value: ""
     },
   },
-  schemakey:["name"],
+
   inputs: 1,
   outputs: 1,
 
@@ -44,22 +44,9 @@ const config = {
     return this.name || this.topic || "listify";
   },
 
-  /*
-  {
-                  type: "array",
-                  description: "['key1','key2', '..']",
-                  items: {
-                    type: "string"
-                  }
-                },
-  */
+  schemafn: (nid, node={}, inputs=[]) => {
 
-
-  schemafn: (subtype="", id, inputs=[]) => {
-
-    console.log("LISTIFY - evalutaing schema fn with subtype", subtype, "id", id, "inputs", inputs);
-    //ptype coming in === ptype going out
-    const ptype = extract_ptype_from_inputs(inputs,id);
+    const ptype = extract_ptype_from_inputs(inputs,nid);
     
     const schema = {
       output: {
@@ -123,7 +110,6 @@ const config = {
       }
     };
 
-    console.log("ok in listify and returning schema", schema);
    
 
     return schema;

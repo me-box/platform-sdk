@@ -52,6 +52,14 @@ const config =  {
                             required: ["payload.value"],
                             accretion: false,
                         },
+                        {
+                            type: "personal",
+                            subtype: "gender",
+                            ordinal: "primary",
+                            description: "a tweet or twitter username can be matched to gender",
+                            required: ["payload.value"],
+                            accretion: false,
+                        },
                     ]}
         		}
         	}

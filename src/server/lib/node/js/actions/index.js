@@ -11,22 +11,6 @@ const _leaf= (id, links)=>{
   return item ? false : true;
 }
 
-/*const _remove_loops=(links)=>{
-  return links.reduce((acc, item)=>{
-    if (!(acc.find(i=>_from(i) === _to(item) && _to(i) === _from(item)))){
-      acc = [...acc, item];
-    }
-    return acc;
-  },[]);
-}*/
-
-/*const _children=(id, links)=>{
-  if (_leaf(id,links)){
-    return [id];
-  }
-  return [id, ...links.filter((l)=>_from(l) === id).map(link=>[].concat(..._children(_to(link), links)))];
-}*/
-
 const _children=(id, links, seen={})=>{
   
   if (seen[[id, ...links].join()]){
@@ -73,10 +57,11 @@ const _updatedownstream = (id, dispatch, getState)=>{
         });
 
     if (node){ 
+
       dispatch({
         type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
         id: n,
-        schema: node._def.schemafn(node.id, getState().nodes.buffer, inputs || [])
+        schema: node._def.schemafn(node.id, node, inputs || [])
       });
     }
     else{
@@ -99,15 +84,16 @@ function nodeConfigureOk(){
 //TODO - reset schemas!!
 function nodeConfigureCancel(){
     return (dispatch, getState)=>{
-      const nid   = getState().nodes.configuringId;
-      const node  = getState().nodes.nodesById[nid];
+      const nodes = getState().nodes;
+      const nid   = nodes.configuringId;
+      const node  = nodes.nodesById[nid];
       const links = getState().ports.linksById;
 
       const inputs = Object.keys(links).filter((key)=>{
         const link = links[key]; 
           return link.target.id === nid;
       }).map((linkId)=>{
-        const {name, label, id, schema, subtype, type, _def:{color,icon,category}} = nodes[links[linkId].source.id];
+        const {name, label, id, schema, subtype, type, _def:{color,icon,category}} = nodes.nodesById[links[linkId].source.id];
         return {name,label,id,schema,type, subtype, color,icon,category};
       });
 
@@ -115,8 +101,6 @@ function nodeConfigureCancel(){
         acc[key]= node._def.defaults[key].value;
         return acc;
       },{});
-
-      console.log("calling update schema with", current);
 
       dispatch(updateSchema(nid, node._def.schemafn(nid, current, inputs.map((i)=>{
           return {id:i.id, schema:i.schema};                         

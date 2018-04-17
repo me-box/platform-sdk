@@ -7,9 +7,15 @@ import { connect } from 'react-redux';
 
 
 const _colours = {
-    "identifier": "#3771c8",
-    "personal" : "#E65100",
-    "sensitive" : "#B71C1C",
+    "i": "#3771c8",
+    "p" : "#E65100",
+    "s" : "#B71C1C",
+}
+
+const warnings = ["export"];
+
+const warn = (target)=>{
+    return warnings.indexOf(target.type) != -1;
 }
 
 const badge = (source, sport, target, ptype, onClick)=>{
@@ -23,14 +29,30 @@ const badge = (source, sport, target, ptype, onClick)=>{
         return {
             ...acc, 
             ...item.reduce((acc,item)=>{
-                return {...acc, [item.type]:true}
+                return {...acc, [item.type]:item}
             },{})
         }
     },{});
 
-    const types = Object.keys(_t);
 
-    
+
+    const ordinals = Object.keys(_t).reduce((acc, key)=>{
+        const ordinal = _t[key].ordinal;
+        const item = acc[key] || {};
+        if (item.ordinal && item.ordinal != ordinal){
+            item.ordinal = "*"   
+        }else{
+             item.ordinal = ordinal;
+        }
+        acc[key] = item;
+        return acc;
+    },{});
+
+    const types = Object.keys(ordinals).map((key)=>{
+        const item = ordinals[key];
+        const suffix = item.ordinal === "primary" ? "1" : item.ordinal === "secondary" ? "2" : item.ordinal;
+        return `${key[0]}${suffix}`;
+    })
 
     const outputradius = OUTPUT_WIDTH/2;
     const numOutputs = source.outputs || 1;
@@ -51,7 +73,9 @@ const badge = (source, sport, target, ptype, onClick)=>{
     const y1 = source.y;
     const y2 = target.y;
  
-    const _r = 8
+    const _r = 10;
+    const _center_r = warn(target) ? _r : _r;
+
     const _cx1 = x1+(source.w*scale);
     const _cx2 = x2-scale*source.w;
     const _cy1 = y1+portY;
@@ -65,32 +89,12 @@ const badge = (source, sport, target, ptype, onClick)=>{
     const gap = 2;
     const delta = (_r * (types.length-1)) + (gap * types.length);
 
-    /*const circles = types.map((t, i)=>{
-
-        const _dcy = _cy-delta + (i * 2 * _r) + ((i+1)*gap) + gap/2
-
-        const textprops = {
-            x:_cx,
-            y:_dcy+3,
-        }
-
-        const circlestyle = {
-            stroke:"#fff",
-            strokeWidth:2,
-            fill: _colours[t]
-        }
-
-        return  <g>
-                    <circle cx={_cx} cy={_dcy} r={_r} style={circlestyle} />
-                    <text className="badge" {...textprops}>{t[0]}</text>
-                </g>
-    });*/
     const theta = 120 * Math.PI/180;
     
-    const circlecentestyle = {
-        stroke:"#fff",
+    const circlecenterstyle = {
+        stroke:warn(target) ? "none" : "#fff",
         strokeWidth:2,
-        fill: "#ddd"
+        fill: warn(target) ? "white" : "#ddd" 
     }
     
     const linestyle = {
@@ -102,33 +106,45 @@ const badge = (source, sport, target, ptype, onClick)=>{
 
         
 
-        const _dcx = 20 * Math.sin(theta*i);
-        const _dcy = 20 * Math.cos(theta*i);
+        const _dcx = 25 * Math.sin(theta*i);
+        const _dcy = 25 * Math.cos(theta*i);
 
         //const _dcy = _cy-delta + (i * 2 * _r) + ((i+1)*gap) + gap/2
 
         const textprops = {
             x:_cx+_dcx,
             y:_cy+_dcy+3,
+
         }
+
+       
 
         const circlestyle = {
             stroke:"#fff",
             strokeWidth:2,
-            fill: _colours[t]
+            fill: _colours[t[0]]
         }
 
         return  <g onClick={onClick}>
                     <line x1={_cx} y1={_cy} x2={_cx+_dcx} y2={_cy+_dcy} style={linestyle}/>
                     <circle cx={_cx+_dcx} cy={_cy+_dcy} r={_r} style={circlestyle} />
-                    <text className="badge" {...textprops}>{t[0]}</text>
+                    <text className="badge" {...textprops}>{t}</text>
                 </g>
     });
+
+    const warningprops = {
+            x: _cx,
+            y: _cy+4,
+            fill: "white",
+            fontWeight: "bold"
+    }
+    const icontxt =  '\uf06a'
 
     return  <g>
                  
                 {circles}      
-                {circles.length > 0 && <circle cx={_cx} cy={_cy} r={_r/2}  style={circlecentestyle}/>}
+                {circles.length > 0 && <circle cx={_cx} cy={_cy} r={_center_r/2}  style={circlecenterstyle}/>}
+                {circles.length > 0 && warn(target) && <text className="warning" {...warningprops}>{icontxt}</text>}
             </g>
 }
 
@@ -147,6 +163,8 @@ export default class Badge extends Component {
         const {id, link:{source,target,sourcePort}}  = this.props;
         const onclick = ()=>{this.props.actions.linkSelected(id)}
         const ptype = source.schema && source.schema.output && source.schema.output.ptype ? source.schema.output.ptype : [];
+       
+
         return badge(source, sourcePort, target, ptype, onclick)
     }
 }

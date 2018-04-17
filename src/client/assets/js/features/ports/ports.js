@@ -69,7 +69,6 @@ const _updatedownstream = (id, dispatch, getState)=>{
 		const nodes = getState().nodes.nodesById;
 		const node = nodes[n];
 
-
 		const inputs = links.filter((key)=>{
           	return tonode(key) === n;
         }).map((linkId)=>{
@@ -77,21 +76,22 @@ const _updatedownstream = (id, dispatch, getState)=>{
           return {id,schema};
         });
 
+        
 		if (node){ 
-			
-			 const current =  Object.keys(node._def.defaults).reduce((acc, key)=>{
-        		acc[key]= node._def.defaults[key].value;
+
+			const current =  Object.keys(node._def.defaults).reduce((acc, key)=>{
+        		acc[key]= node[key];
         		return acc;
-     		 },{});
-			//const value = node._def.schemakey ? node[node._def.schemakey[0]] : null;
+     		},{});
 
 			dispatch({
 				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
 				id: n,
-				schema: node._def.schemafn(node.nid, current, inputs || [])
+				schema: node._def.schemafn(n, current, inputs || [], [])
 			});
 		}
 		else{
+			
 			dispatch({
 				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
 				id: n,
@@ -281,7 +281,7 @@ function portMouseOver(node,portType,portIndex,e){
       			portType,
       			portIndex,
     		});
-
+			
 			_updatedownstream(node.id, dispatch,getState);
 		}
 	}

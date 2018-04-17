@@ -46,10 +46,10 @@ const config = {
     }
   },
 
-  schemafn: (nid, node={}) => {
-    console.log("----> seningkit in update schame fn, nid is ", nid, " node is", node);
+  schemafn: (nid, node={}, inputs=[], samedestination=[]) => {
+   
     const subtype = node.subtype || "";
-    console.log("subtype is", subtype);
+    
     //TODO: incorporate anyOf, allOf, not (from json.schema) for required!
     //[] implictly means all of!
 
@@ -74,6 +74,7 @@ const config = {
                 required: ["payload.address"],
                 conditions: [
                   {
+                    type: "granularity",
                     granularity: {threshold: 120, unit: "seconds between scans"}
                   }
                 ],
@@ -82,7 +83,7 @@ const config = {
                 ],
                 accretion: false,
               },
-               {
+              {
                 type: "personal",
                 subtype: "relationships",
                 ordinal: "secondary",
@@ -90,6 +91,7 @@ const config = {
                 required: ["payload.address"],
                 conditions: [
                   {
+                    type: "granularity",
                     granularity: {threshold: 300, unit: "seconds between scans"}
                   }
                 ],
@@ -99,11 +101,7 @@ const config = {
                 ],
                 accretion: false,
               }
-          ].filter((ptype)=>{
-            return ptype.conditions.reduce((acc,item)=>{
-              return acc || item.granularity.threshold <= node.granularity;
-            },false);
-          })
+          ]
 
         case "accelerometer":
           return [
@@ -118,9 +116,11 @@ const config = {
 
                 evidence : ["https://doi.org/10.1089/tmj.2011.0132"],
 
+                accuracy: 0.5,
+
                 conditions: [
                   {
-                    accuracy: 0.5,
+                    type: "granularity",
                     granularity: {threshold: 20, unit: "Hz"}
                   },
                 ],
@@ -137,26 +137,73 @@ const config = {
                 evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
                 
                 required: ["payload.x","payload.y","payload.z"],
-
-                conditions: [
+                
+                accuracy: 0.5,
+                
+                //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
+                conditions: [ 
                   {
-                    accuracy: 0.5,
-                    granularity: {threshold: 20, unit: "Hz"}
-                  },
-                  {
-                    accuracy: 0.8,
-                    attributes: ["gender"]
-                  },
-                  {
-                    accuracy: 0.8,
-                    attributes: ["vocation"]
-                  },
-                  {
-                    accuracy: 0.8,
-                    attributes: ["age", "finance"]
+                    type: "granularity",   
+                    granularity: {threshold: 40, unit: "Hz"}
                   }
                 ],
                 
+                accretion: false,
+              },
+              {
+                type: "sensitive",
+                subtype: "credentials",
+                ordinal: "secondary",
+                
+                description: "accelerometer data can be used to undertake keystroke logging attacks",
+                
+                evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
+                
+                required: ["payload.x","payload.y","payload.z"],
+
+                //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
+                conditions: [ 
+                  {
+                    type: "granularity",
+                    accuracy: 0.5,
+                    granularity: {threshold: 15, unit: "Hz"}
+                  },
+                  {
+                    type: "attribute",
+                    accuracy: 0.8,
+                    attributes: ["gender"]
+                  }
+                ],
+                
+                accretion: false,
+              },
+              {
+                type: "sensitive",
+                subtype: "credentials",
+                ordinal: "secondary",
+                
+                description: "accelerometer data can be used to undertake keystroke logging attacks",
+                
+                evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
+                
+                required: ["payload.x","payload.y","payload.z"],
+
+                accuracy: 0.5,
+                //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
+                conditions: [ 
+                  {
+                    type: "granularity",
+                    granularity: {threshold: 15, unit: "Hz"}
+                  },
+                  {
+                    type: "attribute",
+                    attributes: ["vocation"]
+                  },
+                  {
+                    type: "attribute",
+                    attributes: ["age", "finance"]
+                  }
+                ],
                 accretion: false,
               },
               {
@@ -170,20 +217,18 @@ const config = {
                 
                 required: ["payload.x","payload.y","payload.z"],
                 
+                accuracy: 0.8,
+
                 conditions: [
                   {
-                    accuracy: 0.8,
+                    type: "granularity",    
                     granularity: {threshold: 20, unit: "Hz"}
                   },
                 ],
                 
                 accretion: false,
               }        
-          ].filter((ptype)=>{
-            return ptype.conditions.reduce((acc,item)=>{
-              return acc || item.granularity.threshold <= node.granularity;
-            },false);
-          })
+          ]
 
         case "linear-acceleration":
         case "magnetometer":
@@ -200,10 +245,12 @@ const config = {
                 evidence : ["https://doi.org/10.1089/tmj.2011.0132"],
                 
                 required: ["payload.x","payload.y","payload.z"],
-
+                
+                accuracy: 0.5,
+                
                 conditions: [
                   {
-                    accuracy: 0.5,
+                    type: "granularity",   
                     granularity: {threshold: 20, unit: "Hz"}
                   },
                 ],
@@ -223,21 +270,10 @@ const config = {
 
                 conditions: [
                   {
+                    type:"granularity",
                     accuracy: 0.5,
-                    granularity: {threshold: 20, unit: "Hz"}
+                    granularity: {threshold: 30, unit: "Hz"}
                   },
-                  {
-                    accuracy: 0.8,
-                    attributes: ["gender"]
-                  },
-                  {
-                    accuracy: 0.8,
-                    attributes: ["vocation"]
-                  },
-                  {
-                    accuracy: 0.8,
-                    attributes: ["age", "finance"]
-                  }
                 ],
                 
                 accretion: false,
@@ -247,7 +283,6 @@ const config = {
                 subtype: "location",
                 ordinal: "secondary",
 
-                
                 description: `${subtype} data can be used to infer a user's location`,
                 
                 evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -255,6 +290,7 @@ const config = {
 
                 conditions: [
                   {
+                    type: "granularity",
                     accuracy: 0.8,
                     granularity: {threshold: 20, unit: "Hz"}
                   },
@@ -262,11 +298,7 @@ const config = {
                 
                 accretion: false,
               }        
-            ].filter((ptype)=>{
-              return ptype.conditions.reduce((acc,item)=>{
-                return acc || item.granularity.threshold <= node.granularity;
-              },false);
-            });
+            ]
 
             case "rotation":
               return [];
@@ -280,17 +312,14 @@ const config = {
                   description: "battery level data can be used to surface routine behaviour",
                   conditions: [
                     {
+                      type: "granularity",
                       granularity: {threshold: 600, unit: "scan frequency in seconds"}
                     }
                   ],
                   required: ["plugged"],
                   accretion: false,
                 }
-              ].filter((ptype)=>{
-                return ptype.conditions.reduce((acc,item)=>{
-                  return acc || granularity.threshold <= node.granularity;
-                },false);
-              });
+              ]
 
             case "audio-level":
               return [
@@ -301,17 +330,14 @@ const config = {
                 description: "audio level analysis may be able to infer coarse behavioural characteristics (sleeping, moving, driving)",
                 conditions: [
                   {
+                    type: "granularity",
                     granularity: {threshold: 20, unit: "Hz"}
                   }
                 ],
                 required: ["payload.value"],
                 accretion: false,
               }
-            ].filter((ptype)=>{
-              return ptype.conditions.reduce((acc,item)=>{
-                return acc || item.granularity.threshold <= node.granularity;
-              },false);
-            })
+            ]
 
             case "light":
               return [
@@ -326,10 +352,11 @@ const config = {
                         "http://ieeexplore.ieee.org/document/7456511/?arnumber=7456511"
                     ],
                     required: ["payload.value"],
+                    accuracy: 0.7,
 
                     conditions: [
                         {
-                            accuracy: 0.7,
+                            type: "granularity",        
                             granularity: {
                                 threshold:10, 
                                 unit:"Hz"
@@ -348,12 +375,15 @@ const config = {
                     evidence: ["https://dl.acm.org/citation.cfm?id=2666622"],
                     
                     required: ["payload.value"],
-
+                    
+                    accuracy: 0.7,
+                    
                     conditions: [
                         {
-                            accuracy: 0.7,
+                            type: "granularity",
+                            
                             granularity: {
-                                threshold:10, 
+                                threshold:80, 
                                 unit:"Hz"
                             }
                         }
@@ -361,11 +391,7 @@ const config = {
 
                     accretion: false,
                 }
-              ].filter((ptype)=>{
-                return ptype.conditions.reduce((acc,item)=>{
-                  return acc || item.granularity.threshold <= node.granularity;
-                },false);
-              })
+              ]
 
             default:
               return []
@@ -704,7 +730,11 @@ const config = {
           type: "object",
           description: "the container object",
           properties: schema(node.subtype),
-          ptype: {[nid]:personal(node.subtype)},
+          ptype: {[nid]:personal(node.subtype).filter((ptype)=>{
+                return ptype.conditions.reduce((acc,item)=>{
+                  return acc || item.granularity && (item.granularity.threshold <= node.granularity);
+                },false);
+          })},
       }
     }
   },
@@ -770,9 +800,7 @@ const config = {
     return this.name ? "node_label_italic" : "";
   },
   descriptionfn: (node={}) => {
-    
-    console.log("in descriptionfn ", node);
-
+  
     const subtype = node.subtype;
 
     if (subtype) {

@@ -18,3 +18,13 @@ text.badge{
    	-khtml-user-select: none;
    	-webkit-user-select: none;
 }
+
+text.warning {
+  font-family: FontAwesome;
+    font-size: 18px;
+    fill: #d40000;
+    text-anchor: middle;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}

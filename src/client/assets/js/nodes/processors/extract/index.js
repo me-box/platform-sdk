@@ -1,38 +1,12 @@
 import Node from "./node";
 
-const matches = (path, ptype)=>{
-    return ptype;
-}
-
-//TODO: ptype must alos have the opriginal node id embeedded in it.  so ptype = {id:nid, types:[]}  rather than []
-//this will then make it possible to  figure out where a data item orginated from AND make it possible to tag according to src node for
-//attributes labelled the same in extract!
-
-const _existsinupstream = (upstream={}, sid)=>{
-   
-
-    if (upstream[sid]){
-        return true;
-    }else{
-        return Object.keys(upstream).reduce((acc,key)=>{
-            return acc || upstream[key].map(i=>i.id).indexOf(sid) !== -1;
-        },false);
-    }
-}
-
 const _matches =(nid, filters, key, schema)=>{
-    console.log("performing a match with filters", filters, "and key", key, ",schema", schema);
-
-    //const paths = filters.filter(i=>i.nid==key || i.sid==key).map(i=>i.path.join("."));
+  
     const paths = filters.map(i=>`${i.sid}.${i.path.join(".")}`);
-    console.log("PATHS are", paths);
-    console.log("schame is", schema);
-    //console.log('key is', key);
+    
 
     const matches = schema.filter((item)=>{
-
-        console.log("item required is", item.required);
-        
+                
         if (!item.required){ 
             return false;
         }
@@ -42,9 +16,9 @@ const _matches =(nid, filters, key, schema)=>{
             
             if (item.required.length <= 0)
                 return false;
-            console.log("doing match search against required:", item)
+           
             return item.required.reduce((acc, r)=>{
-                console.log(`looking for ${key}.${r}`);
+               
                 return acc && paths.indexOf(`${key}.${r}`) !== -1;
             },true);
         }
@@ -60,11 +34,27 @@ const _matches =(nid, filters, key, schema)=>{
         }
     });
 
-    if (matches.length> 0){
-        console.log("** MATCHES", {[nid]:matches});
-    }
-
     return (matches.length > 0) ?  matches : []
+}
+
+const _conditionsmet = (conditions, ptypes)=>{
+    const compulsoryattributes =  conditions.reduce((acc,item)=>{
+        return [...acc, ...item.attributes];
+    },[]);
+    
+    const existingattributes = ptypes.map(i=>i.subtype);
+
+    if (compulsoryattributes.length <= 0) 
+        return true;
+
+    if (existingattributes.length <= 0)
+        return false;
+
+    console.log("here!");
+
+    return compulsoryattributes.reduce((acc, item)=>{
+        return acc && existingattributes.indexOf(item) != -1;
+    },true);
 }
 
 const config = {
@@ -78,10 +68,7 @@ const config = {
         filters: {  
             value:[]
         },
-        previousinputs: {value: []}
     },
-
-    schemakey: ["filters"],
     
     inputs:1,               
     
@@ -99,16 +86,15 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(nid, node={}, inputs=[])=>{ /*(filters=[], node={}, inputs=[])=>{*/
+    //!!!!TODO - can we resolve ptypes prior to passing in here???  this can then do what it needs against node, but first stage of resolution
+    //could be done by nodelib!? 
 
-       // let paths = {};
+    schemafn:(nid, node={}, inputs=[])=>{ 
 
-        //const nid = node.id || "";
         const filters = node.filters || [];
 
         const ptypes = inputs.reduce((acc,input)=>{    
             if (input.schema && input.schema.output && input.schema.output.ptype){
-
               acc[nid] = [
                     ...(acc[nid] || []),  
                     ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
@@ -117,18 +103,28 @@ const config = {
               ]
             }
             return acc;
-        },{});
-        
-       
+        },{})
 
-        //console.log("node:", nid, "schema fn, ptypes are,", ptypes, " filters are", filters);
+        const filtered = (ptypes[nid] || []).filter((item)=>{
+           
+            if (!item.conditions || item.conditions.length <= 0) 
+                return true
+
+            if (item.ordinal === "primary")
+                return true;
+
+            const attributeconditions = item.conditions.filter(i=>i.type=="attribute");
+
+            if  (attributeconditions.length <= 0){
+                return true;
+            }
+
+            return _conditionsmet(attributeconditions, ptypes[nid].filter(i=>i.ordinal==="primary" && i.type!="identifier"));
+        });
 
         const items = filters.reduce((acc, filter)=>{
             
             const {sid, item:{type, name, description}, path} = filter;
-           
-           // paths[sid]  = [...(paths[sid] || []), path.join(".")];
-            
 
             return [...acc, {
                 type : "object",
