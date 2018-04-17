@@ -44,14 +44,6 @@ const _conditionsmet = (conditions, ptypes)=>{
     
     const existingattributes = ptypes.map(i=>i.subtype);
 
-    if (compulsoryattributes.length <= 0) 
-        return true;
-
-    if (existingattributes.length <= 0)
-        return false;
-
-    console.log("here!");
-
     return compulsoryattributes.reduce((acc, item)=>{
         return acc && existingattributes.indexOf(item) != -1;
     },true);
@@ -122,6 +114,11 @@ const config = {
             return _conditionsmet(attributeconditions, ptypes[nid].filter(i=>i.ordinal==="primary" && i.type!="identifier"));
         });
 
+        const filteredptypes = {
+            ...ptypes,
+            [nid] : filtered,
+        }
+
         const items = filters.reduce((acc, filter)=>{
             
             const {sid, item:{type, name, description}, path} = filter;
@@ -157,7 +154,7 @@ const config = {
                         items: items,
                     }
                 },
-                ptype: ptypes
+                ptype: filteredptypes,
             }
         }
     },
