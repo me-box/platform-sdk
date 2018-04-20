@@ -12,6 +12,11 @@ const _colours = {
     "s" : "#B71C1C",
 }
 
+const _ordinals = {
+    "primary": 1,
+    "secondary":2,
+}
+
 const warnings = ["export"];
 
 const warn = (target)=>{
@@ -23,34 +28,33 @@ const badge = (source, sport, target, ptype, onClick)=>{
     if (Object.keys(ptype || {}).length <= 0){
       return null;
     }
-    
+
     const _t = Object.keys(ptype || {}).reduce((acc, key)=>{
         const item = ptype[key];
-        return {
-            ...acc, 
-            ...item.reduce((acc,item)=>{
-                return {...acc, [item.type]:item}
-            },{})
-        }
+
+        return item.reduce((acc, item)=>{
+            const ordinalnum = _ordinals[item.ordinal] || -1;
+            if ((acc[item.type] || []).indexOf(ordinalnum) == -1){
+                acc[item.type] = [...(acc[item.type] || []), ordinalnum];
+            }
+            return acc;                   
+        },acc);
     },{});
 
 
 
     const ordinals = Object.keys(_t).reduce((acc, key)=>{
-        const ordinal = _t[key].ordinal;
-        const item = acc[key] || {};
-        if (item.ordinal && item.ordinal != ordinal){
-            item.ordinal = "*"   
+        const ordinalarray = _t[key];
+        if (ordinalarray.length == 1){
+            acc[key] = ordinalarray[0];
         }else{
-             item.ordinal = ordinal;
+            acc[key] = "*";
         }
-        acc[key] = item;
         return acc;
     },{});
 
     const types = Object.keys(ordinals).map((key)=>{
-        const item = ordinals[key];
-        const suffix = item.ordinal === "primary" ? "1" : item.ordinal === "secondary" ? "2" : item.ordinal;
+        const suffix = ordinals[key];
         return `${key[0]}${suffix}`;
     })
 

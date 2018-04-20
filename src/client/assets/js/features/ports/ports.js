@@ -3,6 +3,7 @@ import {OUTPUT_WIDTH} from 'constants/ViewConstants';
 import {actionConstants as portActionTypes} from './constants';
 import {actionConstants as nodeActionTypes}from "features/nodes/constants";
 import {downstreamnodes, fromnode, tonode} from "utils/tree";
+import {resolveconditions} from "utils/privacy";
 
 const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
 const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
@@ -84,10 +85,13 @@ const _updatedownstream = (id, dispatch, getState)=>{
         		return acc;
      		},{});
 
+			const schema = node._def.schemafn(n, current, inputs || [], []);
+			const resolved = node.inputs > 0 ? resolveconditions(n, schema) : schema; 
+
 			dispatch({
 				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
 				id: n,
-				schema: node._def.schemafn(n, current, inputs || [], [])
+				schema: resolved,
 			});
 		}
 		else{

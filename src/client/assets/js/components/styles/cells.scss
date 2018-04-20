@@ -171,6 +171,13 @@ html{
   padding: 9px;
   color: #727272;
   text-transform: uppercase;
+  display: inline-block;
+}
+
+.button.inlineselected{
+  background: #3f51b5;;
+  color: white;
+  font-weight: bold;
 }
 
 #sidebar .button.selected{

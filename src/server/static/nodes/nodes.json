@@ -8,7 +8,12 @@
 				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
 				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
 				{"name":"twitter", "file":"datastores/twitter/index"},
-		
+				{"name":"profile", "file":"datastores/profile/index"},
+				{"name":"sensitive", "file":"datastores/sensitive/index"},
+				
+				{"name":"gender", "file":"models/gender/index"},
+				{"name":"pregnant", "file":"models/pregnant/index"},
+				
 				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"trigger", "file":"processors/trigger/index"},
 				{"name":"extract", "file":"processors/extract/index"},

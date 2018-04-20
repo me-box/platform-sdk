@@ -28,28 +28,15 @@ function loadNode({component,node,reducer}){
 }
 
 function _schema(node){
-  
-   if (node._def.schemakey && (typeof node._def.schemakey !== "undefined")){
-      if (node._def.schemafn){
-        return node._def.schemafn(node[node._def.schemakey], node.id);
-      }
-   }
-  
-   return _defaultschema(node._def, node.id);
-}
+  if (node.schemafn){
+    const current =  Object.keys(node._def.defaults).reduce((acc, key)=>{
+        acc[key]= node[key];
+        return acc;
+    },{});
 
-function _defaultschema(def,id){  
-  if (def.schemakey){
-      
-      const key = def.defaults[def.schemakey];
-
-      if (key && (typeof key.value !== "undefined")){
-          if (def.schemafn){
-            return def.schemafn(key.value,id);
-          }
-      }
+    return node._def.schemafn(node.id, current);
   }
-  return def.schemafn ? def.schemafn() : {}
+  return {}
 }
 
 function _description(def){
@@ -59,16 +46,12 @@ function _description(def){
 
   }
 
-  //if (def.schemakey){
-  //    const key = def.defaults[def.schemakey];
-  //    if (key && key.value){
-          if (def.descriptionfn){
-              return def.descriptionfn(def);
-          }
-     // }
-  //}
-  //return def.descriptionfn ? def.descriptionfn() : {}
-  return {};
+
+  if (def.descriptionfn){
+      return def.descriptionfn(def);
+  }
+   
+  return def.type || "";
 }
 
 function dropNode({component, nt, def, reducer}, x0, y0){
@@ -89,6 +72,12 @@ function dropNode({component, nt, def, reducer}, x0, y0){
     let _def = Object.assign({},def);
     const id = getID();
 
+    
+    const current = Object.keys(def.defaults).reduce((acc, key)=>{
+          acc[key]= def.defaults[key].value;
+          return acc;
+    },{}) 
+
     const node = {
       id,
       type: nt,
@@ -96,8 +85,8 @@ function dropNode({component, nt, def, reducer}, x0, y0){
       _: (id)=>{return id},
       inputs: _def.inputs || 0,
       outputs: _def.outputs,
-      schema: _defaultschema(_def,id),
-      description: _description(_def),
+      schema: _def.schemafn ? _def.schemafn(id,current) : {},
+      description: _description(current),
       changed: true,
       selected: true,
       dirty: true,
@@ -124,19 +113,6 @@ function dropNode({component, nt, def, reducer}, x0, y0){
 
       
     dispatch({type: nodeActionTypes.NODE_DROPPED, node, config:{id: node.id, fn:component}});
-    
-    //console.log("create element");
-    //console.log(element);
-    //const root = document.getElementById('main-container');
-     
-    //  root.appendChild(g);
-
-    //const g = document.createElement('div');
-    //g.id = `config-${node.id}`;
-    //root.appendChild(g);
-    //document.body.appendChild(g);
-    //render(element, document.getElementById(`config-${node.id}`));
-    //dispatch(editorActions.closeAll());
   }
 }
 
@@ -146,20 +122,6 @@ function initNodeKeys(keys){
     keys
   }
 }
-
-/*function updateNode(property, value){
-  console.log("AM IN UPDATE NODE!!");
-
-  return (dispatch, getState)=>{
-    dispatch({
-      type: nodeActionTypes.NODE_UPDATE_VALUE,
-      property,
-      value,
-    })
-    _updatedownstream(getState().nodes.configuringId, dispatch, getState)
-  } 
-}
-*/
 
 function updateNodeValueKey(property, key, value){
 
@@ -181,23 +143,6 @@ function incrementNodeValueKey(property, key, amount, min, max){
     max,
   }
 }
-
-/*function updateSchema(id, schema){
-  return {
-    type: nodeActionTypes.NODE_UPDATE_SCHEMA,
-    id,
-    schema,
-  }
-}
-
-function updateDescription(id, description){
-  return {
-    type: nodeActionTypes.NODE_UPDATE_DESCRIPTION,
-    id,
-    description,
-  }
-}*/
-
 
 function nodeMouseDown(id){
      
@@ -227,19 +172,6 @@ function nodeDoubleClicked(id){
 
   }
 } 
-
-/*function nodeConfigureOk(){
-    
-    return {
-      type: nodeActionTypes.NODE_CONFIGURE_OK,
-    }
-} 
-
-function nodeConfigureCancel(){
-    return {
-      type: nodeActionTypes.NODE_CONFIGURE_CANCEL,
-    }
-}*/
 
 function nodeDelete(){
     //TODO; delete registration!
@@ -309,20 +241,18 @@ function receiveFlows(nodes){
 export const actionCreators = {
   dropNode,
   initNodeKeys,
-  //updateNode,
+  
   clearNodes,
   updateNodeValueKey,
   incrementNodeValueKey,
-  //updateSchema,
-  //updateDescription,
+  
   nodeMouseDown,
   nodeMouseUp,
   nodeDoubleClicked,
-  //nodeConfigureOk,
-  //nodeConfigureCancel,
+  
   deleteTab,
   mouseMove,
-  //mouseUp,
+ 
   nodeDelete,
   nodeDeselected,
   receiveFlows,

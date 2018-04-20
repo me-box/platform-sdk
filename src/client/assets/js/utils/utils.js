@@ -7,9 +7,9 @@ export function  extract_ptype_from_inputs(inputs,id=""){
             ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
                 return {
                     ...acc,
-                    [id]: input.schema.output.ptype[key],
+                    [id]: [ ...(acc[id] || []), ...input.schema.output.ptype[key]]
                 }
-            },{})
+            },acc)
           }
         }
         return acc;

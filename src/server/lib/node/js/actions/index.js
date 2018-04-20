@@ -1,3 +1,5 @@
+import {resolveconditions} from '../utils';
+
 const NODE_UPDATE_VALUE       = 'iot.red/nodes/NODE_UPDATE_VALUE';
 const NODE_UPDATE_SCHEMA      = 'iot.red/nodes/NODE_UPDATE_SCHEMA';
 const NODE_UPDATE_DESCRIPTION = 'iot.red/nodes/NODE_UPDATE_DESCRIPTION';
@@ -57,11 +59,19 @@ const _updatedownstream = (id, dispatch, getState)=>{
         });
 
     if (node){ 
+      
+      //NB: if a node has inputs then we need to calculate whether certain items of presonal data emerge as a result of the 
+      //fusion of the inputs.  We must first get the schema resulting from whatever the node does to the data, then check to see
+      //if there are any additional conditions that are satisifed and so lead to new data items (for example, if one input has a subtype "gender")
+      //and another input has a condition that relies on "gender" then resolveconditions will find it, assuming that the node combines the tow data 
+      //items first.
+
+      const schema = node._def.schemafn(node.id, node, inputs || []);
 
       dispatch({
         type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
         id: n,
-        schema: node._def.schemafn(node.id, node, inputs || [])
+        schema:  node.inputs ? resolveconditions(node.id, schema) : schema,
       });
     }
     else{

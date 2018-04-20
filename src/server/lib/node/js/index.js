@@ -3,8 +3,11 @@ import {actionCreators as nodeActions} from './actions';
 import { bindActionCreators } from 'redux';
 import NodeEditor from './components/NodeEditor/';
 import {NODE_EDITOR_PADDING, TAB_HEIGHT, PALETTE_WIDTH, TOOLBAR_HEIGHT, WORKSPACE_FOOTER} from './constants/ViewConstants';
+import {resolveconditions} from './utils';
 
-
+export function resolveConditions(nid, schema={}){
+  return resolveconditions(nid, schema);
+}
 
 export function contextTypes(cType) {
     return function (DecoratedComponent) {
@@ -42,7 +45,7 @@ export function configNode(){
            
             const {node, id, configuringId, store, buffer, local, store:{dispatch}, nodes, links, w, h} = this.props;
 
-            if (!node){
+            if (!node || !id){
                 return null;
             }
 
@@ -74,10 +77,12 @@ export function configNode(){
                     this.props.actions.updateNode(property,value);
                     const update =  {...buffer,[property]:value};
                     
-                    this.props.actions.updateSchema(id, node._def.schemafn(node.id, update, inputs.map((i)=>{
+                    const schema = node._def.schemafn(id, update, inputs.map((i)=>{
                         return {id:i.id, schema:i.schema};                         
-                    }) || []));
-                     
+                    }) || []);
+
+                    const resolved = node.inputs ? resolveconditions(id, schema) : schema;
+                    this.props.actions.updateSchema(id, resolved);
                     this.props.actions.updateDescription(id, node._def.descriptionfn(update));
                     this.props.actions.updateDownStream(id);
                 },

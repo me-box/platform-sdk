@@ -1,9 +1,11 @@
 import Node from "./node";
+import {resolveconditions} from "utils/privacy";
 
 const _matches =(nid, filters, key, schema)=>{
   
     const paths = filters.map(i=>`${i.sid}.${i.path.join(".")}`);
     
+    console.log("matching", paths, "against", schema);
 
     const matches = schema.filter((item)=>{
                 
@@ -15,7 +17,7 @@ const _matches =(nid, filters, key, schema)=>{
         if (Array.isArray(item.required)){
             
             if (item.required.length <= 0)
-                return false;
+                return true;
            
             return item.required.reduce((acc, r)=>{
                
@@ -34,20 +36,58 @@ const _matches =(nid, filters, key, schema)=>{
         }
     });
 
+    console.log("matches is", matches);
+    
     return (matches.length > 0) ?  matches : []
 }
 
-const _conditionsmet = (conditions, ptypes)=>{
-    const compulsoryattributes =  conditions.reduce((acc,item)=>{
-        return [...acc, ...item.attributes];
-    },[]);
-    
-    const existingattributes = ptypes.map(i=>i.subtype);
 
-    return compulsoryattributes.reduce((acc, item)=>{
-        return acc && existingattributes.indexOf(item) != -1;
-    },true);
-}
+const ptype =(nid, node={}, inputs=[])=>{
+    
+    const filters = node.filters || [];
+
+    return inputs.reduce((acc,input)=>{    
+        if (input.schema && input.schema.output && input.schema.output.ptype){
+          acc[nid] = [
+                ...(acc[nid] || []),  
+                ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
+                    return [...acc,  ..._matches(nid,filters,key,input.schema.output.ptype[key])]
+                },[])
+          ]
+        }
+        return acc;
+    },{})
+
+    //ok this works, but need to use the _resolve conditions later
+    /*const filtered = (ptypes[nid] || []).filter((item)=>{
+       
+        if (!item.conditions || item.conditions.length <= 0) 
+            return true
+
+        if (item.ordinal === "primary")
+            return true;
+
+        const attributeconditions = item.conditions.filter(i=>i.type=="attribute");
+
+        if  (attributeconditions.length <= 0){
+            return true;
+        }
+
+        return _conditionsmet(attributeconditions, ptypes[nid].filter(i=>i.ordinal==="primary" && i.type!="identifier"));
+    });
+
+    return {
+        ...ptypes,
+        [nid] : filtered,
+    }*/
+};
+
+/*const _sortoutconditons = (schema)=>{
+    return {
+                ...schema,
+
+};*/
+
 
 const config = {
     category: 'processors',    
@@ -78,47 +118,14 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
+   
     //!!!!TODO - can we resolve ptypes prior to passing in here???  this can then do what it needs against node, but first stage of resolution
     //could be done by nodelib!? 
-
+ 
     schemafn:(nid, node={}, inputs=[])=>{ 
 
         const filters = node.filters || [];
-
-        const ptypes = inputs.reduce((acc,input)=>{    
-            if (input.schema && input.schema.output && input.schema.output.ptype){
-              acc[nid] = [
-                    ...(acc[nid] || []),  
-                    ...Object.keys(input.schema.output.ptype).reduce((acc,key)=>{
-                        return [...acc,  ..._matches(nid,filters,key,input.schema.output.ptype[key])]
-                    },[])
-              ]
-            }
-            return acc;
-        },{})
-
-        const filtered = (ptypes[nid] || []).filter((item)=>{
-           
-            if (!item.conditions || item.conditions.length <= 0) 
-                return true
-
-            if (item.ordinal === "primary")
-                return true;
-
-            const attributeconditions = item.conditions.filter(i=>i.type=="attribute");
-
-            if  (attributeconditions.length <= 0){
-                return true;
-            }
-
-            return _conditionsmet(attributeconditions, ptypes[nid].filter(i=>i.ordinal==="primary" && i.type!="identifier"));
-        });
-
-        const filteredptypes = {
-            ...ptypes,
-            [nid] : filtered,
-        }
-
+       
         const items = filters.reduce((acc, filter)=>{
             
             const {sid, item:{type, name, description}, path} = filter;
@@ -137,7 +144,7 @@ const config = {
         },[]);
 
 
-        return {
+        return  {
             input:{
                 type: "any",
                 description: "extract will take ANY object as input"
@@ -154,9 +161,10 @@ const config = {
                         items: items,
                     }
                 },
-                ptype: filteredptypes,
+                ptype: ptype(nid,node,inputs)
             }
-        }
+        };
+
     },
 
     risk: (node={})=>{
