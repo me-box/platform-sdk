@@ -34,6 +34,7 @@ const personal = (subtype)=>{
               type: "identifier",
               ordinal: "primary",
               description: "the mac address and user-provided name can be used to unambiguously identify a user",
+              status: "inferable",
               required: ["payload.address"],
               accretion: false,
             },
@@ -41,6 +42,7 @@ const personal = (subtype)=>{
               type: "personal",
               subtype: "behaviour",
               ordinal: "secondary",
+              status: "inferable",
               description: "bluetooth scan information can be used to infer location",
               required: ["payload.address"],
               conditions: [
@@ -58,6 +60,7 @@ const personal = (subtype)=>{
               type: "personal",
               subtype: "relationships",
               ordinal: "secondary",
+              status: "inferable",
               description: "bluetooth scan information can be used to infer social relationships",
               required: ["payload.address"],
               conditions: [
@@ -80,7 +83,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "biometric",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: "mobile accelerometer data can be used to perform a gait analysis",
               
               required: ["payload.x","payload.y","payload.z"],
@@ -102,7 +105,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "credentials",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: "accelerometer data can be used to undertake keystroke logging attacks",
               
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -125,7 +128,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "credentials",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: "accelerometer data can be used to undertake keystroke logging attacks",
               
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -152,7 +155,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "credentials",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: "accelerometer data can be used to undertake keystroke logging attacks",
               
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -181,7 +184,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "location",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: "accelerometer data can be used to infer a user's location",
               
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -210,7 +213,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "biometric",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: `${subtype} data can be used to perform a gait analysis`,
               
               evidence : ["https://doi.org/10.1089/tmj.2011.0132"],
@@ -232,7 +235,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "credentials",
               ordinal: "secondary",
-              
+              status: "inferable",
               description: `${subtype} data can be used to undertake keystroke logging attacks`,
               
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -253,7 +256,7 @@ const personal = (subtype)=>{
               type: "sensitive",
               subtype: "location",
               ordinal: "secondary",
-
+              status: "inferable",
               description: `${subtype} data can be used to infer a user's location`,
               
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
@@ -281,6 +284,7 @@ const personal = (subtype)=>{
                 subtype: "behaviour",
                 ordinal: "secondary",
                 description: "battery level data can be used to surface routine behaviour",
+                status: "inferable",
                 conditions: [
                   {
                     type: "granularity",
@@ -298,6 +302,7 @@ const personal = (subtype)=>{
               type: "personal",
               subtype: "behaviour",
               ordinal: "secondary",
+              status: "inferable",
               description: "audio level analysis may be able to infer coarse behavioural characteristics (sleeping, moving, driving)",
               conditions: [
                 {
@@ -316,7 +321,7 @@ const personal = (subtype)=>{
                   type: "personal",
                   subtype: "behaviour",
                   ordinal: "secondary",
-                  
+                  status: "inferable",
                   description: "correlated light readings can be used to infer behaviour (e.g. media consumption)",
 
                   evidence: [
@@ -340,7 +345,7 @@ const personal = (subtype)=>{
                   type: "sensitive",
                   subtype: "credentials",
                   ordinal: "secondary",
-                  
+                  status: "inferable",
                   description: "correlated light readings can be used to steal banking PIN code",
 
                   evidence: ["https://dl.acm.org/citation.cfm?id=2666622"],

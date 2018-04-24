@@ -10,10 +10,10 @@
 				{"name":"twitter", "file":"datastores/twitter/index"},
 				{"name":"profile", "file":"datastores/profile/index"},
 				{"name":"sensitive", "file":"datastores/sensitive/index"},
-				
-				{"name":"gender", "file":"models/gender/index"},
+
+				{"name":"integrity", "file":"models/integrity/index"},
 				{"name":"pregnant", "file":"models/pregnant/index"},
-				
+
 				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"trigger", "file":"processors/trigger/index"},
 				{"name":"extract", "file":"processors/extract/index"},

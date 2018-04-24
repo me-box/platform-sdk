@@ -341,12 +341,14 @@ function receiveFlows(links){
 const ports = (state) => state[NAME];
 const link  = (state, ownProps)=>{
 	const link = state[NAME].linksById[ownProps.id];
-	return{
-		id: link.id,
-		source: state.nodes.nodesById[link.source.id],
-		target: state.nodes.nodesById[link.target.id],
-		sourcePort: link.sourcePort,
-	}
+	if (link){
+		return{
+			id: link.id,
+			source: state.nodes.nodesById[link.source.id],
+			target: state.nodes.nodesById[link.target.id],
+			sourcePort: link.sourcePort,
+		}
+	}	
 
 }
 

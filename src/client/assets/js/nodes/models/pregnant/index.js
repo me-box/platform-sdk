@@ -15,6 +15,10 @@ const ptype = (nid="", inputs=[])=>{
     const matches = [
         {
                 attributes:["gender", "age", "spending_habits"],
+                accuracy: 0.6
+        },
+        {
+                attributes:["browsing"],
                 accuracy: 0.5
         }
     ]
@@ -34,6 +38,7 @@ const ptype = (nid="", inputs=[])=>{
                       description: "infer whether a user is pregnant",
                       required: ["payload"],
                       accuracy: item.accuracy,
+                      status: "inferred",
                 }
             ]
         }
@@ -67,7 +72,7 @@ const config = {
         return this.name||"pregnant";
     },
     
-    description: ()=> "a node for extracting pregnancy likelihood from input data",
+    description: ()=> "a node for extracting pregnancy likelihood from input data - input data may be: gender, age and spending habits, browsing history, ",
     
     labelStyle: function() { 
         return this.name?"node_label_italic":"";

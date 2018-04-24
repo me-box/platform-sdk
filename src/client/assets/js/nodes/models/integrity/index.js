@@ -11,12 +11,13 @@ const ptype = (nid="", inputs=[])=>{
 
     return {[nid]:[{
               type: "personal",
-              category: "physical",
-              subtype: "gender",
+              category: "behaviour",
+              subtype: "integrity",
               ordinal: "secondary",
-              description: "infer user's gender",
+              description: "infer user's integrity",
               required: ["payload"],
-              accuracy: 0.5,
+              accuracy: 0.55,
+              
             }
         ]};
 }
@@ -35,15 +36,15 @@ const config = {
     
     outputs:1,             
    
-    icon: "fa-transgender",    
+    icon: "fa-thumbs-up",    
     
-    unicode: '\uf224',    
+    unicode: '\uf164',    
     
     label: function() {     
-        return this.name||"gender";
+        return this.name||"integrity";
     },
     
-    description: ()=> "a node for extracting gender from input data",
+    description: ()=> "a node for extracting user's integrity from input data",
     
     labelStyle: function() { 
         return this.name?"node_label_italic":"";
@@ -60,10 +61,11 @@ const config = {
                         properties: {
                             name: {type:'string', description: "a name assigned to this node"}, 
                             payload: {
-                                    type:'string', 
-                                    description: "one of male, or female", 
+                                    type:'number', 
+                                    description: "integrity value from 0 (no integrity) to 100 (max integrity)", 
                             }
                         },
+                        status: "inferred",
                         ptype: ptype(nid,inputs), 
                         //{..._ptype, [nid] : [...(_ptype[nid]||[]), ...ptype(nid,inputs)]}
                     }
@@ -73,18 +75,18 @@ const config = {
     risk: (subtype="")=>{
       return {
           score: 2,
-          reason: "infers gender!"
+          reason: "infers integrity!"
       }        
     },
 
     descriptionfn: (name)=>{
-        return "figures out users gender from input data";
+        return "figures out users integrity from input data";
     }
     
 }
 
 export default {
-    type:     "gender",
-    def:      Object.assign({_: (id)=>{return id}}, config, {nodetype:"gender"}),
+    type:     "integrity",
+    def:      Object.assign({_: (id)=>{return id}}, config, {nodetype:"integrity"}),
     node:     Node,
 }

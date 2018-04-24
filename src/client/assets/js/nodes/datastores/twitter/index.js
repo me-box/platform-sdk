@@ -13,9 +13,9 @@ const config =  {
         inputs:0,               
         outputs:1,             
         
-        schemafn: (subtype,nid)=>{
+        schemafn: (nid,node)=>{
         
-			const type = subtype || "twitterHashTagStream";
+			const type = node.subtype || "twitterHashTagStream";
 			
 			const _descriptions = {
 				twitterHashTagStream: "a twitter hash tag stream",
