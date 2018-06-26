@@ -285,6 +285,7 @@ const _fetchFile = function(config, username, repoowner, accessToken, repo, file
 
 const _wait = (storeurl)=> { 
 	
+
 	return new Promise((resolve,reject)=>{
 		function get () {
 			console.log(`calling ${storeurl}`);
@@ -328,12 +329,14 @@ const _postToAppStore = function(storeurl, manifest, username){
 	}
 
 	const addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
-	const _url = addscheme ? `http://${storeurl}` : storeurl;
+	const _url = addscheme ? `https://${storeurl}` : storeurl;
 
 	console.log("posting to app store", `${_url}/app/post`);
 	sendmessage(username, "debug", {msg:`posting to app store ${_url}/app/post`});
-
-	return _wait(storeurl).then(()=>{
+	
+	process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+	
+	return _wait(_url).then(()=>{
 		return new Promise((resolve, reject)=>{
 			agent
 	  			.post(`${_url}/app/post`)
@@ -348,6 +351,8 @@ const _postToAppStore = function(storeurl, manifest, username){
 	  					console.log("successfully posted to app store", res.body);
 	          			resolve(res.body);
 	  	 			}
+	  	 			console.log("unset reject auth");
+	  	 			process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";
 	  	 		})	
 	  	});
 	});
@@ -362,7 +367,7 @@ const _generateDockerfile = function(libraries, config, name){
 
 	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
 	const dcommands = [
-						`FROM tlodge/databox-sdk-red:latest`,
+						`FROM tlodge/databox-red:latest`,
 						`ADD flows.json /data/flows.json`,
 						'LABEL databox.type="app"',
 						`LABEL databox.manifestURL="${config.appstore.URL}/${name.toLowerCase()}/databox-manifest.json"`,
@@ -512,7 +517,7 @@ const _publish = function(config, user, manifest, flows, dockerfile){
 	return new Promise((resolve, reject)=>{
 		//create a new docker file
 		sendmessage(user.username, "debug", {msg:"pulling latest base container"});
-		return _pull("tlodge/databox-sdk-red:latest").then(()=>{
+		return _pull("tlodge/databox-red:latest").then(()=>{
 			sendmessage(user.username, "debug", {msg:"finshed pulling latest base container"});
 			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 

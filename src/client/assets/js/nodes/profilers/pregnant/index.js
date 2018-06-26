@@ -1,11 +1,27 @@
 import Node from "./node";
 import {extract_ptype_from_inputs} from "utils/utils";
 
+
+const allIndexes = (items, value)=>{
+    return items.reduce((acc,item,i)=>{
+        if (item===value){
+            return [...acc, i]
+        }
+        return acc;
+    },[]);   
+}
+
+const min = (items)=>{
+    return items.reduce((acc,item)=>{
+        return Math.min(item,acc);
+    },Number.MAX_SAFE_INTEGER)
+}
+
 const ptype = (nid="", inputs=[])=>{
     
     const incoming = (extract_ptype_from_inputs(inputs,nid)[nid] ||[]).reduce((acc,item)=>{
         if (item.subtype){
-            acc = [...acc, item.subtype];
+            acc = [...acc, {subtype:item.subtype, accuracy:item.accuracy||1}];
         }
         return acc;
     },[]);
@@ -18,41 +34,48 @@ const ptype = (nid="", inputs=[])=>{
                 accuracy: 0.6
         },
         {
-                attributes:["browsing"],
+                attributes:["browsing","gender"],
                 accuracy: 0.5
         }
     ]
 
     const ptypes = matches.reduce((acc,item)=>{
-        const foundall = item.attributes.reduce((acc, attribute)=>{
-            return acc && incoming.indexOf(attribute) != -1; 
-        },true);
+       
+        const subtypes = incoming.map(i=>i.subtype);
 
-        if (foundall){
+        const result = item.attributes.reduce((acc, attribute)=>{
+           
+            const indices = allIndexes(subtypes, attribute);
+           
+
+            if (indices.length > 0){    
+                const accuracy = min(indices.map(i=>incoming[i].accuracy || 1));
+                return {foundall: acc.foundall, accuracy : acc.accuracy * accuracy};
+            }
+            return {foundall:false, accuracy:acc.accuracy};
+        },{accuracy:item.accuracy, foundall:true});
+
+        if (result.foundall){
             acc = [...acc, {
-
-                      type: "sensitive",
-                      category: "health",
-                      subtype: "pregnant",
-                      ordinal: "secondary",
-                      description: "infer whether a user is pregnant",
-                      required: ["payload"],
-                      accuracy: item.accuracy,
-                      status: "inferred",
+                  type: "sensitive",
+                  category: "health",
+                  subtype: "pregnant",
+                  ordinal: "secondary",
+                  description: "infer whether a user is pregnant",
+                  required: ["payload"],
+                  accuracy: result.accuracy,
+                  status: "inferred",
                 }
             ]
         }
         return acc;
-
     },[]);
-
-
     return {[nid]:ptypes};
 }
 
 const config = {
 
-    category: 'models',    
+    category: 'profilers',    
     
     color: '#009688',
     

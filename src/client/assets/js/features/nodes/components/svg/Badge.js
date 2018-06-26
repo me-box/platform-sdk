@@ -43,10 +43,9 @@ const _range = (arr)=>{
 }
 
 const _opacity = (status=[])=>{
-    console.log("getting opacity for", status);
-
+  
     if (status.indexOf("inferable") != -1 && status.indexOf("inferred") == -1){
-        return 0.2;
+        return 0.4;
     } 
     return 1.0;
 }
@@ -70,7 +69,7 @@ export default class Badge extends Component {
         const accuracystyle ={ 
             stroke:"#fff",
             strokeWidth:2,
-            fill: "#33923F",
+            fill: min < 0.5 ? "#d40000" : "#33923F",
         }
         const textprops = {
             x:ex,
@@ -128,8 +127,6 @@ export default class Badge extends Component {
 
             return item.reduce((acc, item)=>{
 
-                console.log("looking at item", item);
-
                 const ordinalnum = _ordinals[item.ordinal] || -1;
                 
                 let val = acc[item.type] || {ordinals:[], accuracy:[], status:[]}
@@ -141,7 +138,7 @@ export default class Badge extends Component {
                     }
                 }
                 
-                if (item.accuracy){
+                if (item.accuracy && item.status != "inferable"){
                     acc[item.type] = {
                         ...acc[item.type],
                         accuracy : [...val.accuracy, item.accuracy]

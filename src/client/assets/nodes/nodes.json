@@ -10,9 +10,11 @@
 				{"name":"twitter", "file":"datastores/twitter/index"},
 				{"name":"profile", "file":"datastores/profile/index"},
 				{"name":"sensitive", "file":"datastores/sensitive/index"},
+				{"name":"browsing", "file":"datastores/browsing/index"},
 
-				{"name":"integrity", "file":"models/integrity/index"},
-				{"name":"pregnant", "file":"models/pregnant/index"},
+				{"name":"gender", "file":"profilers/gender/index"},
+				{"name":"integrity", "file":"profilers/integrity/index"},
+				{"name":"pregnant", "file":"profilers/pregnant/index"},
 
 				{"name":"dbfunction", "file":"processors/function/index"},
 				{"name":"trigger", "file":"processors/trigger/index"},

@@ -1032,11 +1032,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var router = _express2.default.Router();
-var agent = _superagent2.default
-//.get(`${req.config.github.API}/users/${username}/repos`)
-
-//.get(`${req.config.github.API}/users/${user.username}/repos`)
-.agent();
+var agent = _superagent2.default.agent();
 var networks = ["databox_default", "bridge"];
 
 
@@ -1311,12 +1307,14 @@ var _postToAppStore = function _postToAppStore(storeurl, manifest, username) {
 	}
 
 	var addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
-	var _url = addscheme ? 'http://' + storeurl : storeurl;
+	var _url = addscheme ? 'https://' + storeurl : storeurl;
 
 	console.log("posting to app store", _url + '/app/post');
 	(0, _websocket.sendmessage)(username, "debug", { msg: 'posting to app store ' + _url + '/app/post' });
 
-	return _wait(storeurl).then(function () {
+	process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+	return _wait(_url).then(function () {
 		return new Promise(function (resolve, reject) {
 			agent.post(_url + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
 				if (err) {
@@ -1326,6 +1324,8 @@ var _postToAppStore = function _postToAppStore(storeurl, manifest, username) {
 					console.log("successfully posted to app store", res.body);
 					resolve(res.body);
 				}
+				console.log("unset reject auth");
+				process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";
 			});
 		});
 	});
@@ -1338,7 +1338,7 @@ var _generateDockerfile = function _generateDockerfile(libraries, config, name) 
 	});
 
 	//add a echo statement to force it not to cache (nocache option in build doesn't seem to work
-	var dcommands = ['FROM tlodge/databox-sdk-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + name.toLowerCase() + '/databox-manifest.json"'];
+	var dcommands = ['FROM tlodge/databox-red:latest', 'ADD flows.json /data/flows.json', 'LABEL databox.type="app"', 'LABEL databox.manifestURL="' + config.appstore.URL + '/' + name.toLowerCase() + '/databox-manifest.json"'];
 
 	var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
 
@@ -1475,7 +1475,7 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
 		(0, _websocket.sendmessage)(user.username, "debug", { msg: "pulling latest base container" });
-		return _pull("tlodge/databox-sdk-red:latest").then(function () {
+		return _pull("tlodge/databox-red:latest").then(function () {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: "finshed pulling latest base container" });
 			//const manifest = _generateManifest(config, user, app.name, app, packages, allowed);
 
@@ -1543,7 +1543,9 @@ router.get('/repos/:user', function (req, res) {
 		user: username,
 		topic: "databox"
 	};
-	_superagent2.default.get(req.config.github.API + '/search/repositories').query({ q: 'user:' + user.username + ' topic:databox' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).query(query).end(function (err, data) {
+	_superagent2.default
+	//.get(`${req.config.github.API}/users/${username}/repos`)
+	.get(req.config.github.API + '/search/repositories').query({ q: 'user:' + user.username + ' topic:databox' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).query(query).end(function (err, data) {
 		if (err) {
 			console.log(err);
 			res.status(500).send({ error: 'could not retrieve repos' });
@@ -1571,7 +1573,9 @@ router.get('/repos', function (req, res) {
 	console.log("getting repos with accessToken", req.user.accessToken);
 	var user = req.user;
 
-	_superagent2.default.get(req.config.github.API + '/search/repositories').query({ q: 'user:' + user.username + ' topic:databox' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).end(function (err, data) {
+	_superagent2.default
+	//.get(`${req.config.github.API}/users/${user.username}/repos`)
+	.get(req.config.github.API + '/search/repositories').query({ q: 'user:' + user.username + ' topic:databox' }).set('Accept', 'application/json').set('Authorization', 'token ' + req.user.accessToken).end(function (err, data) {
 		if (err) {
 			console.log(err);
 			//req.logout();
@@ -2019,15 +2023,15 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 		return 'RUN cd /data/nodes/databox && npm install --save ' + library;
 	});
 
-	var dcommands = ['FROM tlodge/databox-red', 'ADD flows.json /data/flows.json'].concat(_toConsumableArray(libcommands));
+	var dcommands = ['FROM tlodge/databox-tester', 'ADD flows.json /data/flows.json'].concat(_toConsumableArray(libcommands));
 	var dockerfile = dcommands.join("\n");
 
 	console.log(dockerfile);
 
 	var path = 'tmp-' + username.toLowerCase() + '.tar.gz';
 
-	return _pullContainer("tlodge/databox-red:latest", username).then(function () {
-		return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-red');
+	return _pullContainer("tlodge/databox-tester:latest", username).then(function () {
+		return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-tester');
 	}).then(function () {
 		return (0, _utils.createTarFile)(dockerfile, JSON.stringify(flows), path);
 	}).then(function (tarfile) {
@@ -2102,8 +2106,8 @@ var _containerLogs = function _containerLogs(container, username) {
 var _startNewContainer = function _startNewContainer(username, flows) {
 	username = username.toLowerCase();
 
-	return _pullContainer("tlodge/databox-red:latest", username).then(function () {
-		return (0, _utils.createTestContainer)('tlodge/databox-red', username, network);
+	return _pullContainer("tlodge/databox-tester:latest", username).then(function () {
+		return (0, _utils.createTestContainer)('tlodge/databox-tester', username, network);
 	}, function (err) {
 		(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 	}).then(function (container) {
@@ -2154,7 +2158,7 @@ var _createContainerFromStandardImage = function _createContainerFromStandardIma
 
 				(0, _websocket.sendmessage)(username, "debug", { msg: "container already running, so removing" });
 
-				return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-red').then(function () {
+				return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-tester').then(function () {
 					_startNewContainer(username, flows);
 				});
 

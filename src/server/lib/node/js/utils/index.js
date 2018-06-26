@@ -35,29 +35,50 @@ export function textWidth(text, fontoptions) {
 
 
 export function _conditionsmet(conditions, ptypes){
-    console.log("-->checking if ", conditions, "are met!");
     
     const compulsoryattributes =  conditions.reduce((acc,item)=>{
         return [...acc, ...item.attributes];
     },[]);
-    console.log("compulory attributes", compulsoryattributes);
-
+   
     const existingattributes = ptypes.map(i=>i.subtype);
 
-    console.log("existingattributes", existingattributes);
-    
     return compulsoryattributes.reduce((acc, item)=>{
-        return acc && existingattributes.indexOf(item) != -1;
-    },true);
-};
+    	const idx = existingattributes.indexOf(item);
+    	const _item = ptypes[idx];
+
+    	console.log("FOUND ITEM", _item);
+
+    	if (_item.status && _item.status === "inferred"){
+    		console.log("got item status");
+
+    		if (idx != -1){
+	    	
+	    		const found = existingattributes[idx];
+	    	
+	    		console.log("found is", found);
+
+	    		if (found.accuracy){
+	    			console.log("found, so multiplying accuracies")
+	    			return {
+	    				...found,
+	    				accuracy: found.accuracy * _item.accuracy,
+	    			}
+	    		}
+	    		return found;
+	    	}
+    	}
+    	return acc;
+    },null);
+}
 
 export function _conditionstocheck(conditions){
     return conditions.filter(i=>i.type==="attribute");
 }
+
 //NB: if a node has inputs then we need to calculate whether certain items of personal data emerge as a result of the 
 //fusion of the inputs.  We must first get the schema resulting from whatever the node does to the data, then check to see
 //if there are any additional conditions that are satisified and so lead to new data items (for example, if one input has a subtype "gender")
-//and another input has a condition that relies on "gender" then resolveconditions will find it, assuming that the node combines the tow data 
+//and another input has a condition that relies on "gender" then resolveconditions will find it, assuming that the node combines the two data 
 //items first.
 export function resolveconditions(nid, schema={}){
     
@@ -72,22 +93,28 @@ export function resolveconditions(nid, schema={}){
                         ptype: {
 
                             ...ptype,
-                            [nid] : (ptype[nid] || []).filter((item)=>{
+                            [nid] : (ptype[nid] || []).reduce((acc, item)=>{
                    
                                 if (!item.conditions || item.conditions.length <= 0) 
-                                    return true
+                                    return [...acc,item]
 
                                 if (item.ordinal === "primary")
-                                    return true;
+                                    return [...acc, item];
 
                                 const conditions = _conditionstocheck(item.conditions);
 
                                 if  (conditions.length <= 0){
-                                    return true;
+                                    return [...acc, item];
                                 }
 
-                                return _conditionsmet(conditions, ptype[nid].filter(i=>i.ordinal==="primary" && i.type!="identifier"));
-                            })
+                                const _item = _conditionsmet(conditions, ptype[nid].filter(i=> ( (i.ordinal==="primary" && i.type!="identifier") || (i.status||"" == "inferred"))));
+
+                                if (_item){
+                                	return [...acc,_item];
+                                }
+                                
+                                return acc;
+                            },[])
                         }
                     }
                 }

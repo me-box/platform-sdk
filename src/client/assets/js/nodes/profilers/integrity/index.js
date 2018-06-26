@@ -5,11 +5,8 @@ const ptype = (nid="", inputs=[])=>{
     
     const incoming = extract_ptype_from_inputs(inputs,nid)[nid];
     
-    console.log("incomimg ptypes are", incoming);
-
-
-
-    return {[nid]:[{
+    return {[nid]:[
+            {
               type: "personal",
               category: "behaviour",
               subtype: "integrity",
@@ -17,14 +14,13 @@ const ptype = (nid="", inputs=[])=>{
               description: "infer user's integrity",
               required: ["payload"],
               accuracy: 0.55,
-              
-            }
+            },
         ]};
 }
 
 const config = {
 
-    category: 'models',    
+    category: 'profilers',    
     
     color: '#009688',
     
@@ -50,10 +46,10 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(nid="", node, inputs=[])=>{
-        
+    //need input ptypes??  might be nice - so provide browsing, x,y,z
 
-     
+    schemafn:(nid="", node, inputs=[])=>{
+      
         return {
                     output: {
                         type: "object",

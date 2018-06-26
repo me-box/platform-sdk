@@ -189,15 +189,15 @@ const _createNewImageAndContainer = function(libraries, username, flows){
 							return `RUN cd /data/nodes/databox && npm install --save ${library}`
 						});
 
-	const dcommands = [...[`FROM tlodge/databox-red`, `ADD flows.json /data/flows.json`], ...libcommands]			
+	const dcommands = [...[`FROM tlodge/databox-tester`, `ADD flows.json /data/flows.json`], ...libcommands]			
 	const dockerfile = dcommands.join("\n");
 	
 	console.log(dockerfile);
 	
 	const path = `tmp-${username.toLowerCase()}.tar.gz`;
 
-	return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
-		return stopAndRemoveContainer(`${username.toLowerCase()}-red`)
+	return _pullContainer("tlodge/databox-tester:latest", username).then(()=>{
+		return stopAndRemoveContainer(`${username.toLowerCase()}-tester`)
 	}).then(()=>{
 		return createTarFile(dockerfile, JSON.stringify(flows), path)
 	}).then((tarfile)=>{
@@ -272,8 +272,8 @@ const _containerLogs = function(container, username) {
 const _startNewContainer = function(username, flows){
 	username = username.toLowerCase();
 
-	return _pullContainer("tlodge/databox-red:latest", username).then(()=>{
-		return createTestContainer('tlodge/databox-red', username, network);
+	return _pullContainer("tlodge/databox-tester:latest", username).then(()=>{
+		return createTestContainer('tlodge/databox-tester', username, network);
 	}, (err)=>{
 		sendmessage(username, "debug", {msg:err.json.message});
 	}).then((container)=>{
@@ -325,7 +325,7 @@ const _createContainerFromStandardImage = function(username, flows){
 					
 					sendmessage(username, "debug", {msg:"container already running, so removing"});
 					
-					return stopAndRemoveContainer(`${username.toLowerCase()}-red`).then(()=>{
+					return stopAndRemoveContainer(`${username.toLowerCase()}-tester`).then(()=>{
 						_startNewContainer(username, flows);
 					});
 

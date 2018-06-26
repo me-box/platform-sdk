@@ -32,9 +32,10 @@ const personal = (subtype)=>{
         return [
             {
               type: "identifier",
-              ordinal: "primary",
+              ordinal: "secondary",
               description: "the mac address and user-provided name can be used to unambiguously identify a user",
-              status: "inferable",
+              status: "inferred",
+              //accuracy: 1,
               required: ["payload.address"],
               accretion: false,
             },
@@ -95,8 +96,12 @@ const personal = (subtype)=>{
               conditions: [
                 {
                   type: "granularity",
-                  granularity: {threshold: 20, unit: "Hz"}
+                  granularity: {threshold: 15, unit: "Hz"}
                 },
+                {
+                  type: "attribute",
+                  attributes: ["gender"]
+                }
               ],
 
               accretion: false,
@@ -118,8 +123,9 @@ const personal = (subtype)=>{
               conditions: [ 
                 {
                   type: "granularity",   
-                  granularity: {threshold: 40, unit: "Hz"}
-                }
+                  granularity: {threshold: 25, unit: "Hz"}
+                },
+              
               ],
               
               accretion: false,
@@ -134,19 +140,14 @@ const personal = (subtype)=>{
               evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
               
               required: ["payload.x","payload.y","payload.z"],
-
+              accuracy: 0.7,
               //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
               conditions: [ 
                 {
                   type: "granularity",
-                  accuracy: 0.5,
-                  granularity: {threshold: 15, unit: "Hz"}
+                  granularity: {threshold: 25, unit: "Hz"}
                 },
-                {
-                  type: "attribute",
-                  accuracy: 0.8,
-                  attributes: ["gender"]
-                }
+                
               ],
               
               accretion: false,
