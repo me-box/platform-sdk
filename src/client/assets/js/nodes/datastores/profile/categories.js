@@ -1,27 +1,27 @@
 export const categories = {
-	
-    "physical":[
-        "age",
-        "date_of_birth",
-        "gender",
-        "height",
-        "weight",
-        "tatoos",
-        "piercings",
-        "hair_colour",
-        "eye_colour",
-        "physical_traits",
-        "picture"
+
+    "physical": [
+        "profileAge",
+        "profileDateOfBirth",
+        "profileGender",
+        "profileHeight",
+        "profileWeight",
+        "profileTatoos",
+        "profilePiercings",
+        "profileHairColour",
+        "profileEyeColour",
+        "profilePhysicalTraits",
+        "profilePicture"
     ],
 
-    "education":[
+    "education": [
         "schools",
         "universities",
         "colleges",
         "qualifications"
     ],
 
-    "professional":[
+    "professional": [
         "occupation",
         "workplace",
         "employment_status",
@@ -36,7 +36,7 @@ export const categories = {
         "payroll_number"
     ],
 
-    "state":[
+    "state": [
         "national_insurance",
         "tax_code",
         "car_registration",
@@ -44,7 +44,7 @@ export const categories = {
         "nhs_number"
     ],
 
-    "household":[
+    "household": [
         "address",
         "postcode",
         "household_composition",
@@ -54,14 +54,14 @@ export const categories = {
         "occupancy_duration",
     ],
 
-    "contact":[
+    "contact": [
         "email_address",
         "landline",
         "mobile",
         "work",
     ],
 
-    "family":[
+    "family": [
         "marital_status",
         "dependent_children",
         "divorces",
@@ -69,13 +69,13 @@ export const categories = {
         "family_tree"
     ],
 
-    "ownership":[
+    "ownership": [
         "cars",
         "properties",
         "possessions"
     ],
 
-    "finances":[
+    "finances": [
         "income",
         "bank",
         "cards",
@@ -87,28 +87,28 @@ export const categories = {
         "insurance"
     ],
 
-    "consumption":[
+    "consumption": [
         "alcohol",
         "cigarettes",
         "calories",
         "spending_habits",
     ],
 
-    "behaviour":[
+    "behaviour": [
         "memberships",
         "browsing",
         "social_media",
         "routines",
     ],
 
-    "social":[
+    "social": [
         "friends",
         "acquaintances",
-       
+
     ],
 
-    "preferences":[
-        "clubs_and_societies",  
+    "preferences": [
+        "clubs_and_societies",
         "hobbies",
         "interests",
         "favourite_foods",
@@ -118,14 +118,14 @@ export const categories = {
         "colours",
     ],
 
-    "tracking":[
+    "tracking": [
         "cell_tower_logs",
         "gps_logs",
         "checkins",
         "email"
     ],
 
-    "health":[
+    "health": [
         "doctor",
     ]
 

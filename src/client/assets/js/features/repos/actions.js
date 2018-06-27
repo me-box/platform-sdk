@@ -36,6 +36,7 @@ const _flatten = (arr) => {
 }
 
 const _generateManifest = (app, reponame, packages, nodes, username) => {
+  console.log("GENERATING MANIFEST!!!");
 
   const appname = app.name.startsWith(username) ? app.name : `${username}-${app.name}`;
   reponame = reponame && reponame.trim() != "" ? reponame : appname;
@@ -69,7 +70,7 @@ const _generateManifest = (app, reponame, packages, nodes, username) => {
 
     'allowed-combinations': [],
 
-    //this needs to expand types if it is an array!!
+
     datasources: _flatten(packages.map((pkg) => {
       return pkg.datastores.map((d) => {
         return {
@@ -93,6 +94,8 @@ const _generateManifest = (app, reponame, packages, nodes, username) => {
 }
 
 //TODO: lots of duplication here..
+
+//this needs to expand types if it is an array!!
 function extractPackages(state) {
   const nodesById = state.nodes.nodesById;
   const nodes = Object.keys(nodesById).map(k => nodesById[k]);
@@ -115,8 +118,10 @@ function extractPackages(state) {
   });
 }
 
+//add in ptypes here - can ptype be made message specific??
+//since we know the input message from input node?
 function extractNodes(newNodesObj, lookuptype) {
-
+  console.log("IN EXTRACT NODES!!");
   //var i;
   //var n;
   var newNodes;
@@ -189,6 +194,9 @@ function extractNodes(newNodesObj, lookuptype) {
 
       node.inputs = n.inputs || node._def.inputs;
       node.outputs = n.outputs || node._def.outputs;
+
+      node.schema = n.schamafn ? n.schemafn(node.id, node, node.inputs) : {};
+      console.log("set node schema to", node.schema);
 
       for (var d2 in node._def.defaults) {
         if (node._def.defaults.hasOwnProperty(d2)) {
@@ -482,6 +490,8 @@ function savePressed() {
 
 
 function publish() {
+
+  console.log("publish pressed!!");
 
   return function (dispatch, getState) {
 
