@@ -1347,6 +1347,8 @@ var _generateDockerfile = function _generateDockerfile(libraries, config, name) 
 
 var _generateManifest = function _generateManifest(config, user, reponame, app, packages, allowed) {
 
+	console.log("generating manifest!");
+
 	var appname = app.name.startsWith(user.username) ? app.name : user.username + '-' + app.name;
 
 	return {
@@ -1455,6 +1457,8 @@ var _uploadImageToRegistry = function _uploadImageToRegistry(tag, registry, user
 };
 
 var _formatmanifest = function _formatmanifest(manifest) {
+
+	console.log("formatting manifest", JSON.stringify(manifest, null, 4));
 	//if empty object return
 	if (Object.keys(manifest).length === 0 && manifest.constructor === Object) {
 		return manifest;
@@ -1470,7 +1474,7 @@ var _formatmanifest = function _formatmanifest(manifest) {
 };
 
 var _publish = function _publish(config, user, manifest, flows, dockerfile) {
-	console.log("publishing app");
+	console.log("1. publishing app");
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
@@ -1703,7 +1707,16 @@ router.post('/publish', function (req, res) {
 
 	var user = req.user;
 	var repo = req.body.repo;
-	var manifest = req.body.manifest;
+	var manifest = _extends({}, req.body.manifest, {
+		datasources: [].concat(_toConsumableArray(req.body.manifest.datasources), [{
+			type: "personalLoggerActuator",
+			required: false,
+			name: "personalLoggerActuator",
+			clientid: "personalLoggerActuator",
+			granularites: []
+		}])
+	});
+
 	var flows = req.body.flows;
 	var packages = manifest.packages;
 	var allowed = manifest['allowed-combinations'];
