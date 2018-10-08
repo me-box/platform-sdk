@@ -1298,38 +1298,49 @@ var _saveToAppStore = function _saveToAppStore(config, manifest, username) {
 	}
 };
 
+//this should now post to github manifest repo!
 var _postToAppStore = function _postToAppStore(storeurl, manifest, username) {
+	return new Promise(function (resolve, reject) {
+		resolve();
+	});
+};
+/*const _postToAppStore = function (storeurl, manifest, username) {
 
 	if (storeurl.trim() === "none") {
-		return new Promise(function (resolve, reject) {
+		return new Promise((resolve, reject) => {
 			resolve();
 		});
 	}
 
-	var addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
-	var _url = addscheme ? 'https://' + storeurl : storeurl;
+	const addscheme = storeurl.indexOf("http://") == -1 && storeurl.indexOf("https://") == -1;
+	const _url = addscheme ? `https://${storeurl}` : storeurl;
 
-	console.log("posting to app store", _url + '/app/post');
-	(0, _websocket.sendmessage)(username, "debug", { msg: 'posting to app store ' + _url + '/app/post' });
+	console.log("posting to app store", `${_url}/app/post`);
+	sendmessage(username, "debug", { msg: `posting to app store ${_url}/app/post` });
 
 	process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-	return _wait(_url).then(function () {
-		return new Promise(function (resolve, reject) {
-			agent.post(_url + '/app/post').send(manifest).set('Accept', 'application/json').type('form').end(function (err, res) {
-				if (err) {
-					console.log("error posting to app store", err);
-					reject(err);
-				} else {
-					console.log("successfully posted to app store", res.body);
-					resolve(res.body);
-				}
-				console.log("unset reject auth");
-				process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";
-			});
+	return _wait(_url).then(() => {
+		return new Promise((resolve, reject) => {
+			agent
+				.post(`${_url}/app/post`)
+				.send(manifest)
+				.set('Accept', 'application/json')
+				.type('form')
+				.end(function (err, res) {
+					if (err) {
+						console.log("error posting to app store", err);
+						reject(err);
+					} else {
+						console.log("successfully posted to app store", res.body);
+						resolve(res.body);
+					}
+					console.log("unset reject auth");
+					process.env.NODE_TLS_REJECT_UNAUTHORIZED = "1";
+				})
 		});
 	});
-};
+}*/
 
 var _generateDockerfile = function _generateDockerfile(libraries, config, name) {
 
@@ -1514,7 +1525,7 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 			console.log("version ", config.version);
 			var _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : user.username.toLowerCase() + '-' + manifest.name.toLowerCase();
 			var _tag = config.registry.URL && config.registry.URL.trim() != "" ? _stripscheme(config.registry.URL) + '/' : "";
-			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname + ':' + (config.version || "latest"));
+			return (0, _utils.createDockerImage)(tarfile, '' + _tag + _appname + '-amd64:' + (config.version || "latest"));
 		}, function (err) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: err.json.message });
 			reject("could not create docker image", err);

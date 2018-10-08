@@ -20,14 +20,14 @@ export default class Node extends Component {
 
   updateProfile(key) {
     const { values = {} } = this.props;
-    const profiles = values.profiles || [];
+    const profiles = values.subtype || [];
     const index = profiles.indexOf(key);
 
     if (index == -1) {
-      this.props.updateNode("profiles", [...profiles, key]);
+      this.props.updateNode("subtype", [...profiles, key]);
     }
     else {
-      this.props.updateNode("profiles", [...profiles.slice(0, index), ...profiles.slice(index + 1)]);
+      this.props.updateNode("subtype", [...profiles.slice(0, index), ...profiles.slice(index + 1)]);
     }
   }
 
@@ -39,7 +39,7 @@ export default class Node extends Component {
 
       const cname = cx({
         button: true,
-        inlineselected: (values.profiles || []).indexOf(c) != -1,
+        inlineselected: (values.subtype || []).indexOf(c) != -1,
       })
 
       return <div className={cname} onClick={() => this.updateProfile(c)}>{c.replace("profile", "")}</div>
@@ -53,7 +53,6 @@ export default class Node extends Component {
   render() {
 
     const { node, values = {}, updateNode } = this.props;
-    console.log("--> hav values", values);
 
     const nameprops = {
       id: "name",

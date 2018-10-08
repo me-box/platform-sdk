@@ -1,219 +1,217 @@
-import { createStructuredSelector } from 'reselect';
-import {nodesWithTestOutputs} from 'utils/utils';
-import {convertNode} from 'utils/nodeUtils';
-import request  from 'superagent';
+import { createStructuredSelector, createSelector } from 'reselect';
+import { nodesWithTestOutputs } from 'utils/utils';
+import { convertNode } from 'utils/nodeUtils';
+import request from 'superagent';
 import config from 'config';
 
 
 export const NAME = 'test';
 
-const TOGGLE_VISIBLE	= 'iot.red/test/TOGGLE_VISIBLE';
-const SET_VISIBLE		= 'iot.red/test/SET_VISIBLE';
+const TOGGLE_VISIBLE = 'iot.red/test/TOGGLE_VISIBLE';
+const SET_VISIBLE = 'iot.red/test/SET_VISIBLE';
 
-const MOUSE_UP 			= 'iot.red/test/MOUSE_UP';
-const RECEIVED_TESTURL  = 'iot.red/test/RECEIVED_TESTURL';
+const MOUSE_UP = 'iot.red/test/MOUSE_UP';
+const RECEIVED_TESTURL = 'iot.red/test/RECEIVED_TESTURL';
 
-const DEPLOYING 		= 'iot.red/test/DEPLOYING';
-const DEPLOYED		    = 'iot.red/test/DEPLOYED';
-const DEPLOY_ERROR		= 'iot.red/test/DEPLOY_ERROR';
+const DEPLOYING = 'iot.red/test/DEPLOYING';
+const DEPLOYED = 'iot.red/test/DEPLOYED';
+const DEPLOY_ERROR = 'iot.red/test/DEPLOY_ERROR';
 
-const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
+const FOREIGN_MOUSE_UP = 'iot.red/mouse/MOUSE_UP';
 
 const initialState = {
-	visible:false,
+	visible: false,
 	testurl: "",
 	deploying: false,
 	deployError: false,
 }
- 
+
 export default function reducer(state = initialState, action) {
-  	
-  	switch (action.type) {
 
-	  case  TOGGLE_VISIBLE:
-	    	return {
-	    		...state, 
-	    		visible:!state.visible,
-	    	};
-	  
-	  case  SET_VISIBLE:
-	    	return {
-	    		...state,
-	    		visible:true
-	    	};
+	switch (action.type) {
 
-	  case FOREIGN_MOUSE_UP:
-	  		return {
-	  			...state, 
-	    		visible:false
-	    	};
-
-	  case RECEIVED_TESTURL:
-	  		return {
-	  			...state,
-	  			testurl: action.testurl,
-	  		}
-
-	  case DEPLOYING:
+		case TOGGLE_VISIBLE:
 			return {
-	  			...state,
-	  			deploying: true,
-	  		}
+				...state,
+				visible: !state.visible,
+			};
 
-	  case DEPLOYED:
-	  		return {
-	  			...state,
-	  			deploying:false,
-	  			deployError:false,
-	  		}
+		case SET_VISIBLE:
+			return {
+				...state,
+				visible: true
+			};
 
-	  case DEPLOY_ERROR:
-	  		return {
-	  			...state,
-	  			deploying:false,
-	  			deployError: true,
-	  		}
+		case FOREIGN_MOUSE_UP:
+			return {
+				...state,
+				visible: false
+			};
 
-	  default:
-	    return state;
+		case RECEIVED_TESTURL:
+			return {
+				...state,
+				testurl: action.testurl,
+			}
+
+		case DEPLOYING:
+			return {
+				...state,
+				deploying: true,
+			}
+
+		case DEPLOYED:
+			return {
+				...state,
+				deploying: false,
+				deployError: false,
+			}
+
+		case DEPLOY_ERROR:
+			return {
+				...state,
+				deploying: false,
+				deployError: true,
+			}
+
+		default:
+			return state;
 	}
 }
 
-export function test(){
-	
+export function test() {
+
 	return function (dispatch, getState) {
-		
+
 		dispatch(setVisible());
-		
+
 		const nodesById = getState().nodes.nodesById;
 		const portsById = getState().ports.linksById;
 		const tabsById = getState().workspace.tabsById;
-		const nodes = Object.keys(nodesById).map(k=>nodesById[k]);
-		const ports = Object.keys(portsById).map(k=>portsById[k]);
+		const nodes = Object.keys(nodesById).map(k => nodesById[k]);
+		const ports = Object.keys(portsById).map(k => portsById[k]);
 
 		//don't bother deploying if there are no outputs that can be tested (i.e. node.type == "debugger" or node.type === "app"
-	
-		if (nodesWithTestOutputs(nodes).nodes.length <= 0){
+
+		if (nodesWithTestOutputs(nodes).nodes.length <= 0) {
 			return;
 		}
-		
+
 		const channelId = getState().workspace.app.id;
-		
-		const jsonnodes = nodes.map((node)=>{
-			
-			const modifier = node.type === "app" ? {appId: channelId} : {}; //inject the appID
+
+		const jsonnodes = nodes.map((node) => {
+
+			const modifier = node.type === "app" ? { appId: channelId } : {}; //inject the appID
 			const n = Object.assign({}, convertNode(node, ports), modifier);
 
-			
+
 			return n;
 		});
-		
-		
-		const tabs = getState().workspace.tabs.map((key)=>{    
-          return{
-              id: tabsById[key].id,
-              label: tabsById[key].name,
-              type: 'tab'
-          }                                                     
-    	});
-	
+
+
+		const tabs = getState().workspace.tabs.map((key) => {
+			return {
+				id: tabsById[key].id,
+				label: tabsById[key].name,
+				type: 'tab'
+			}
+		});
+
 		dispatch(deploying());
 
-	    request
-  			.post(`${config.root}/nodered/flows`)
-  			.send([
-  					...tabs,
-  					...jsonnodes
-  				])
-  			.set('Accept', 'application/json')
-  			.type('json')
-  			.end(function(err, res){
-  				if (err){
-  					console.log(err);
-  					dispatch(deployError());
-  				}else{
-  					//TODO: make sure server responds!
-  					
-          			dispatch(deployed());
-   
-  	 			}
-  	 		});		
+		request
+			.post(`${config.root}/nodered/flows`)
+			.send([
+				...tabs,
+				...jsonnodes
+			])
+			.set('Accept', 'application/json')
+			.type('json')
+			.end(function (err, res) {
+				if (err) {
+					console.log(err);
+					dispatch(deployError());
+				} else {
+					//TODO: make sure server responds!
+
+					dispatch(deployed());
+
+				}
+			});
 	}
 }
 
-function init(){
+function init() {
 	return function (dispatch, getState) {
-		if (getState()[NAME].testurl.trim() === ""){
-			
+		if (getState()[NAME].testurl.trim() === "") {
+
 			request
-		  		.get(`${config.root}/settings/testurl`)
-		  		.set('Accept', 'application/json')
-		  		.end(function(err, res){
-		  			
-		  			const {testurl=""} = res.body;
-		  			
-		  			dispatch({
-		  				type: RECEIVED_TESTURL,
-		  				testurl
-		  			})
-		  		});
+				.get(`${config.root}/settings/testurl`)
+				.set('Accept', 'application/json')
+				.end(function (err, res) {
+
+					const { testurl = "" } = res.body;
+
+					dispatch({
+						type: RECEIVED_TESTURL,
+						testurl
+					})
+				});
 		}
 	}
 }
 
-function deployed(){
+function deployed() {
 	return {
 		type: DEPLOYED
 	}
 }
 
-function deployError(){
+function deployError() {
 	return {
 		type: DEPLOY_ERROR
 	}
 }
 
-function deploying(){
+function deploying() {
 	return {
 		type: DEPLOYING
 	}
 }
 
-function setVisible(){
+function setVisible() {
 	return {
 		type: SET_VISIBLE
 	}
 }
 
-function toggleTest(){
+function toggleTest() {
 	return {
 		type: TOGGLE_VISIBLE
 	}
 }
 
+const amvisible = (state) => state[NAME].visible && state.nodes.configuringId === null;
+const visible = createSelector([amvisible], (visible) => visible);
+const username = createSelector([(state) => state.repos.currentuser], (currentuser) => currentuser);
 
-const visible = (state) => state[NAME].visible && state.nodes.configuringId === null
 
-const username = (state)=> {
-	return state.repos.currentuser;
-}
+const nodes = (state) => state.nodes.nodes;
+const nodesById = (state) => state.nodes.nodesById;
 
-const nodestotest = (state) => {
-	return nodesWithTestOutputs(Object.keys(state.nodes.nodesById).map(k=>state.nodes.nodesById[k]));
-}	
+const testurl = createSelector([(state) => state[NAME].testurl], (testurl) => testurl);
+const _deploying = createSelector([(state) => state[NAME].deploying], (deploying) => deploying);
+const _deployError = createSelector([(state) => state[NAME].deployError], (deployError) => deployError);
 
-const testurl = (state) => state[NAME].testurl;
-
-const _deploying = (state) => state[NAME].deploying;
-
-const _deployError = (state)=> state[NAME].deployError;
-
+const nodestotest = createSelector([nodes, nodesById], (nodes, nodesById) => {
+	return nodesWithTestOutputs(nodes.map(k => nodesById[k]));
+});
 export const selector = createStructuredSelector({
 	nodestotest,
 	visible,
 	testurl,
 	username,
-	deploying : _deploying,
+	deploying: _deploying,
 	deployError: _deployError,
 });
 

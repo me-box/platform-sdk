@@ -107,13 +107,23 @@ function extractPackages(state) {
     return Object.assign({}, pkg, {
       datastores: nodes.filter((node) => {
         return (node.z === pkg.id) && (node._def.category === "datastores" || (node._def.category === "outputs" && (node.type != "app" && node.type != "debugger" && node.type != "export")))
-      }).map((node) => {
-        return {
-          id: node.id,
-          name: node.name || node.type,
-          type: node.subtype || node.type,
+      }).reduce((acc, node) => {
+        if (node.subtype && Array.isArray(node.subtype)) {
+          acc = [...acc, ...node.subtype.map(s => ({
+            id: `${node.id}_${s}`,
+            name: s,
+            type: s,
+          }))];
+        } else {
+          acc = [...acc,
+          {
+            id: node.id,
+            name: node.name || node.type,
+            type: node.subtype || node.type,
+          }];
         }
-      })
+        return acc;
+      }, [])
     })
   });
 }

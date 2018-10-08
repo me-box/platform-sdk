@@ -2,7 +2,7 @@ import { NODE_HEIGHT, NODE_WIDTH } from '../constants/ViewConstants';
 import { calculateTextWidth } from './utils';
 
 export function getID() {
-    return (1 + Math.random() * 4294967295).toString(16);
+    return (1 + Math.random() * 4294967295).toString(16).replace(".", "");
 }
 
 export function addViewProperties(node) {

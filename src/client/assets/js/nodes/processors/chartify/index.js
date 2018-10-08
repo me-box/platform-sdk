@@ -1,5 +1,5 @@
 import Node from "./node";
-import {extract_ptype_from_inputs} from "utils/utils";
+import { extract_ptype_from_inputs } from "utils/utils";
 
 const config = {
   category: 'processors',
@@ -54,15 +54,15 @@ const config = {
   inputs: 1,
   outputs: 1,
 
-  icon: "fa-bar-chart",
+  icon: "fa-chart-bar",
   unicode: '\uf080',
-  
-  label: function() {
+
+  label: function () {
     return this.name || "chartify";
   },
 
 
-  schemafn: (chart,id,inputs=[]) => {
+  schemafn: (chart, id, inputs = []) => {
 
     const subtype = chart || "bar";
     //ptype coming in === ptype going out
@@ -200,25 +200,25 @@ const config = {
 
     return {
       output: {
-          type: "object",
-          description: "the container object",
-          properties: {
-            type: {
-              type: "string",
-              description: `<i>${subtype}</i>`
-            },
-            sourceId: {
-              type: "string",
-              description: `<i>[id]</i>`
-            },
-            payload: {
-              type: "object",
-              description: "message payload",
-              properties: _payload[subtype]
-            }
+        type: "object",
+        description: "the container object",
+        properties: {
+          type: {
+            type: "string",
+            description: `<i>${subtype}</i>`
           },
-          required: ["type", "sourceId", "payload"],
-          ptype:ptype,
+          sourceId: {
+            type: "string",
+            description: `<i>[id]</i>`
+          },
+          payload: {
+            type: "object",
+            description: "message payload",
+            properties: _payload[subtype]
+          }
+        },
+        required: ["type", "sourceId", "payload"],
+        ptype: ptype,
       },
       input: {
         type: "object",
@@ -261,28 +261,28 @@ const config = {
             required: ["ts", "value"]
           }
         },
-        ptype:ptype,
+        ptype: ptype,
         required: ["type", "subtype", "sensor", "payload"]
       },
     }
   },
 
-  risk: (subtype="")=>{
-      return {
-          score: 0,
-          reason: "no risk with formatting data for a chart"
-      }        
+  risk: (subtype = "") => {
+    return {
+      score: 0,
+      reason: "no risk with formatting data for a chart"
+    }
   },
 
   descriptionfn: () => "<p> This node will take in datastore data from any datastore that creates number data and display it as a chart.  Currently the two supported types of chart are <strong> bar charts </strong> and a <strong> gauge </strong> </p>",
 
-  labelStyle: function() {
+  labelStyle: function () {
     return this.name ? "node_label_italic" : "";
   }
 }
 
 export default {
-    type:     "chartify",
-    def:      Object.assign({_: (id)=>{return id}}, config, {nodetype:"chartify"}),
-    node:     Node,
+  type: "chartify",
+  def: Object.assign({ _: (id) => { return id } }, config, { nodetype: "chartify" }),
+  node: Node,
 }

@@ -1,378 +1,378 @@
 import Node from "./node";
-import {luxvalues, axisvalues, teslavalues} from "./data";
+import { luxvalues, axisvalues, teslavalues } from "./data";
 
 
-const _luxrows = luxvalues.reduce((acc, lux)=>{
-    return `${acc}<tr><td>${lux.value}</td><td>${lux.description}</td></tr>`;
+const _luxrows = luxvalues.reduce((acc, lux) => {
+  return `${acc}<tr><td>${lux.value}</td><td>${lux.description}</td></tr>`;
 
-},"");
+}, "");
 
 const luxtable = `<table class="table table-striped table-hover"><thead><tr><th>lux value</th><th>description</th></tr></thead><tbody>${_luxrows}</tbody></table>`;
 
 
-const _teslarows = teslavalues.reduce((acc, tesla)=>{
-    return `${acc}<tr><td>${tesla.value}</td><td>${tesla.description}</td></tr>`;
+const _teslarows = teslavalues.reduce((acc, tesla) => {
+  return `${acc}<tr><td>${tesla.value}</td><td>${tesla.description}</td></tr>`;
 
-},"");
+}, "");
 
 const teslatable = `<table class="table table-striped table-hover"><thead><tr><th>microtesla value</th><th>description</th></tr></thead><tbody>${_teslarows}</tbody></table>`;
 
-const _axisrows = axisvalues.reduce((acc, axis)=>{
-    return `${acc}<tr><td>${axis.x}</td><td>${axis.y}</td><td>${axis.z}</td><td>${axis.description}</td></tr>`;
+const _axisrows = axisvalues.reduce((acc, axis) => {
+  return `${acc}<tr><td>${axis.x}</td><td>${axis.y}</td><td>${axis.z}</td><td>${axis.description}</td></tr>`;
 
-},"");
+}, "");
 
 const axistable = `<table class="table table-striped table-hover"><thead><tr><th>x</th><th>y</th><th>z</th><th>description</th></tr></thead><tbody>${_axisrows}</tbody></table>`;
 
-const personal = (subtype)=>{
-      
-    switch (subtype) {
+const personal = (subtype) => {
 
-      case "bluetooth":
-        return [
+  switch (subtype) {
+
+    case "bluetooth":
+      return [
+        {
+          type: "identifier",
+          ordinal: "secondary",
+          description: "the mac address and user-provided name can be used to unambiguously identify a user",
+          status: "inferred",
+          //accuracy: 1,
+          required: ["payload.address"],
+          accretion: false,
+        },
+        {
+          type: "personal",
+          subtype: "behaviour",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "bluetooth scan information can be used to infer location",
+          required: ["payload.address"],
+          conditions: [
             {
-              type: "identifier",
-              ordinal: "secondary",
-              description: "the mac address and user-provided name can be used to unambiguously identify a user",
-              status: "inferred",
-              //accuracy: 1,
-              required: ["payload.address"],
-              accretion: false,
-            },
-            {
-              type: "personal",
-              subtype: "behaviour",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "bluetooth scan information can be used to infer location",
-              required: ["payload.address"],
-              conditions: [
-                {
-                  type: "granularity",
-                  granularity: {threshold: 120, unit: "seconds between scans"}
-                }
-              ],
-              evidence: [
-                "https://doi.org/10.1007/11601494_1"
-              ],
-              accretion: false,
-            },
-            {
-              type: "personal",
-              subtype: "relationships",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "bluetooth scan information can be used to infer social relationships",
-              required: ["payload.address"],
-              conditions: [
-                {
-                  type: "granularity",
-                  granularity: {threshold: 300, unit: "seconds between scans"}
-                }
-              ],
-              evidence: [
-                "https://dl.acm.org/citation.cfm?id=2494176",
-                "https://doi.org/10.1109/MPRV.2005.37"
-              ],
-              accretion: false,
+              type: "granularity",
+              granularity: { threshold: 120, unit: "seconds between scans" }
             }
-        ]
-
-      case "accelerometer":
-        return [
+          ],
+          evidence: [
+            "https://doi.org/10.1007/11601494_1"
+          ],
+          accretion: false,
+        },
+        {
+          type: "personal",
+          subtype: "relationships",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "bluetooth scan information can be used to infer social relationships",
+          required: ["payload.address"],
+          conditions: [
             {
-              type: "sensitive",
-              subtype: "biometric",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "mobile accelerometer data can be used to perform a gait analysis",
-              
-              required: ["payload.x","payload.y","payload.z"],
+              type: "granularity",
+              granularity: { threshold: 300, unit: "seconds between scans" }
+            }
+          ],
+          evidence: [
+            "https://dl.acm.org/citation.cfm?id=2494176",
+            "https://doi.org/10.1109/MPRV.2005.37"
+          ],
+          accretion: false,
+        }
+      ]
 
-              evidence : ["https://doi.org/10.1089/tmj.2011.0132"],
+    case "accelerometer":
+      return [
+        {
+          type: "sensitive",
+          subtype: "biometric",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "mobile accelerometer data can be used to perform a gait analysis",
 
+          required: ["payload.x", "payload.y", "payload.z"],
+
+          evidence: ["https://doi.org/10.1089/tmj.2011.0132"],
+
+          accuracy: 0.5,
+
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 15, unit: "Hz" }
+            },
+            {
+              type: "attribute",
+              attributes: ["gender"]
+            }
+          ],
+
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "credentials",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "accelerometer data can be used to undertake keystroke logging attacks",
+
+          evidence: ["https://dl.acm.org/citation.cfm?id=2162095"],
+
+          required: ["payload.x", "payload.y", "payload.z"],
+
+          accuracy: 0.5,
+
+          //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 25, unit: "Hz" }
+            },
+
+          ],
+
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "credentials",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "accelerometer data can be used to undertake keystroke logging attacks",
+
+          evidence: ["https://dl.acm.org/citation.cfm?id=2162095"],
+
+          required: ["payload.x", "payload.y", "payload.z"],
+          accuracy: 0.7,
+          //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 25, unit: "Hz" }
+            },
+
+          ],
+
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "credentials",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "accelerometer data can be used to undertake keystroke logging attacks",
+
+          evidence: ["https://dl.acm.org/citation.cfm?id=2162095"],
+
+          required: ["payload.x", "payload.y", "payload.z"],
+
+          accuracy: 0.5,
+          //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 15, unit: "Hz" }
+            },
+            {
+              type: "attribute",
+              attributes: ["vocation"]
+            },
+            {
+              type: "attribute",
+              attributes: ["age", "finance"]
+            }
+          ],
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "location",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "accelerometer data can be used to infer a user's location",
+
+          evidence: ["https://dl.acm.org/citation.cfm?id=2162095"],
+
+          required: ["payload.x", "payload.y", "payload.z"],
+
+          accuracy: 0.8,
+
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 20, unit: "Hz" }
+            },
+          ],
+
+          accretion: false,
+        }
+      ]
+
+    case "linear-acceleration":
+    case "magnetometer":
+    case "gravity":
+    case "gyroscope":
+      return [
+        {
+          type: "sensitive",
+          subtype: "biometric",
+          ordinal: "secondary",
+          status: "inferable",
+          description: `${subtype} data can be used to perform a gait analysis`,
+
+          evidence: ["https://doi.org/10.1089/tmj.2011.0132"],
+
+          required: ["payload.x", "payload.y", "payload.z"],
+
+          accuracy: 0.5,
+
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 20, unit: "Hz" }
+            },
+          ],
+
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "credentials",
+          ordinal: "secondary",
+          status: "inferable",
+          description: `${subtype} data can be used to undertake keystroke logging attacks`,
+
+          evidence: ["https://dl.acm.org/citation.cfm?id=2162095"],
+
+          required: ["payload.x", "payload.y", "payload.z"],
+
+          conditions: [
+            {
+              type: "granularity",
               accuracy: 0.5,
+              granularity: { threshold: 30, unit: "Hz" }
+            },
+          ],
 
-              conditions: [
-                {
-                  type: "granularity",
-                  granularity: {threshold: 15, unit: "Hz"}
-                },
-                {
-                  type: "attribute",
-                  attributes: ["gender"]
-                }
-              ],
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "location",
+          ordinal: "secondary",
+          status: "inferable",
+          description: `${subtype} data can be used to infer a user's location`,
 
-              accretion: false,
-            },
-            {
-              type: "sensitive",
-              subtype: "credentials",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "accelerometer data can be used to undertake keystroke logging attacks",
-              
-              evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
-              
-              required: ["payload.x","payload.y","payload.z"],
-              
-              accuracy: 0.5,
-              
-              //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
-              conditions: [ 
-                {
-                  type: "granularity",   
-                  granularity: {threshold: 25, unit: "Hz"}
-                },
-              
-              ],
-              
-              accretion: false,
-            },
-            {
-              type: "sensitive",
-              subtype: "credentials",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "accelerometer data can be used to undertake keystroke logging attacks",
-              
-              evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
-              
-              required: ["payload.x","payload.y","payload.z"],
-              accuracy: 0.7,
-              //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
-              conditions: [ 
-                {
-                  type: "granularity",
-                  granularity: {threshold: 25, unit: "Hz"}
-                },
-                
-              ],
-              
-              accretion: false,
-            },
-            {
-              type: "sensitive",
-              subtype: "credentials",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "accelerometer data can be used to undertake keystroke logging attacks",
-              
-              evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
-              
-              required: ["payload.x","payload.y","payload.z"],
+          evidence: ["https://dl.acm.org/citation.cfm?id=2162095"],
+          required: ["payload.x", "payload.y", "payload.z"],
 
-              accuracy: 0.5,
-              //assume all conditions must hold to continue, but attributes can only be checked if we know other data going in!
-              conditions: [ 
-                {
-                  type: "granularity",
-                  granularity: {threshold: 15, unit: "Hz"}
-                },
-                {
-                  type: "attribute",
-                  attributes: ["vocation"]
-                },
-                {
-                  type: "attribute",
-                  attributes: ["age", "finance"]
-                }
-              ],
-              accretion: false,
-            },
+          conditions: [
             {
-              type: "sensitive",
-              subtype: "location",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "accelerometer data can be used to infer a user's location",
-              
-              evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
-              
-              required: ["payload.x","payload.y","payload.z"],
-              
+              type: "granularity",
               accuracy: 0.8,
-
-              conditions: [
-                {
-                  type: "granularity",    
-                  granularity: {threshold: 20, unit: "Hz"}
-                },
-              ],
-              
-              accretion: false,
-            }        
-        ]
-
-      case "linear-acceleration":
-      case "magnetometer":
-      case "gravity":
-      case "gyroscope": 
-        return [
-            {
-              type: "sensitive",
-              subtype: "biometric",
-              ordinal: "secondary",
-              status: "inferable",
-              description: `${subtype} data can be used to perform a gait analysis`,
-              
-              evidence : ["https://doi.org/10.1089/tmj.2011.0132"],
-              
-              required: ["payload.x","payload.y","payload.z"],
-              
-              accuracy: 0.5,
-              
-              conditions: [
-                {
-                  type: "granularity",   
-                  granularity: {threshold: 20, unit: "Hz"}
-                },
-              ],
-
-              accretion: false,
+              granularity: { threshold: 20, unit: "Hz" }
             },
+          ],
+
+          accretion: false,
+        }
+      ]
+
+    case "rotation":
+      return [];
+
+    case "battery":
+      return [
+        {
+          type: "personal",
+          subtype: "behaviour",
+          ordinal: "secondary",
+          description: "battery level data can be used to surface routine behaviour",
+          status: "inferable",
+          conditions: [
             {
-              type: "sensitive",
-              subtype: "credentials",
-              ordinal: "secondary",
-              status: "inferable",
-              description: `${subtype} data can be used to undertake keystroke logging attacks`,
-              
-              evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
-              
-              required: ["payload.x","payload.y","payload.z"],
-
-              conditions: [
-                {
-                  type:"granularity",
-                  accuracy: 0.5,
-                  granularity: {threshold: 30, unit: "Hz"}
-                },
-              ],
-              
-              accretion: false,
-            },
-            {
-              type: "sensitive",
-              subtype: "location",
-              ordinal: "secondary",
-              status: "inferable",
-              description: `${subtype} data can be used to infer a user's location`,
-              
-              evidence : ["https://dl.acm.org/citation.cfm?id=2162095"],
-              required: ["payload.x","payload.y","payload.z"],
-
-              conditions: [
-                {
-                  type: "granularity",
-                  accuracy: 0.8,
-                  granularity: {threshold: 20, unit: "Hz"}
-                },
-              ],
-              
-              accretion: false,
-            }        
-          ]
-
-          case "rotation":
-            return [];
-
-          case "battery":
-            return [ 
-              {
-                type: "personal",
-                subtype: "behaviour",
-                ordinal: "secondary",
-                description: "battery level data can be used to surface routine behaviour",
-                status: "inferable",
-                conditions: [
-                  {
-                    type: "granularity",
-                    granularity: {threshold: 600, unit: "scan frequency in seconds"}
-                  }
-                ],
-                required: ["plugged"],
-                accretion: false,
-              }
-            ]
-
-          case "audio-level":
-            return [
-            {
-              type: "personal",
-              subtype: "behaviour",
-              ordinal: "secondary",
-              status: "inferable",
-              description: "audio level analysis may be able to infer coarse behavioural characteristics (sleeping, moving, driving)",
-              conditions: [
-                {
-                  type: "granularity",
-                  granularity: {threshold: 20, unit: "Hz"}
-                }
-              ],
-              required: ["payload.value"],
-              accretion: false,
+              type: "granularity",
+              granularity: { threshold: 600, unit: "scan frequency in seconds" }
             }
-          ]
+          ],
+          required: ["plugged"],
+          accretion: false,
+        }
+      ]
 
-          case "light":
-            return [
-              {
-                  type: "personal",
-                  subtype: "behaviour",
-                  ordinal: "secondary",
-                  status: "inferable",
-                  description: "correlated light readings can be used to infer behaviour (e.g. media consumption)",
+    case "audio-level":
+      return [
+        {
+          type: "personal",
+          subtype: "behaviour",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "audio level analysis may be able to infer coarse behavioural characteristics (sleeping, moving, driving)",
+          conditions: [
+            {
+              type: "granularity",
+              granularity: { threshold: 20, unit: "Hz" }
+            }
+          ],
+          required: ["payload.value"],
+          accretion: false,
+        }
+      ]
 
-                  evidence: [
-                      "http://ieeexplore.ieee.org/document/7456511/?arnumber=7456511"
-                  ],
-                  required: ["payload.value"],
-                  accuracy: 0.7,
+    case "light":
+      return [
+        {
+          type: "personal",
+          subtype: "behaviour",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "correlated light readings can be used to infer behaviour (e.g. media consumption)",
 
-                  conditions: [
-                      {
-                          type: "granularity",        
-                          granularity: {
-                              threshold:10, 
-                              unit:"Hz"
-                          }
-                      }
-                  ],
-                  accretion: false,
-              },
-              {
-                  type: "sensitive",
-                  subtype: "credentials",
-                  ordinal: "secondary",
-                  status: "inferable",
-                  description: "correlated light readings can be used to steal banking PIN code",
+          evidence: [
+            "http://ieeexplore.ieee.org/document/7456511/?arnumber=7456511"
+          ],
+          required: ["payload.value"],
+          accuracy: 0.7,
 
-                  evidence: ["https://dl.acm.org/citation.cfm?id=2666622"],
-                  
-                  required: ["payload.value"],
-                  
-                  accuracy: 0.7,
-                  
-                  conditions: [
-                      {
-                          type: "granularity",
-                          
-                          granularity: {
-                              threshold:80, 
-                              unit:"Hz"
-                          }
-                      }
-                  ],
-
-                  accretion: false,
+          conditions: [
+            {
+              type: "granularity",
+              granularity: {
+                threshold: 10,
+                unit: "Hz"
               }
-            ]
+            }
+          ],
+          accretion: false,
+        },
+        {
+          type: "sensitive",
+          subtype: "credentials",
+          ordinal: "secondary",
+          status: "inferable",
+          description: "correlated light readings can be used to steal banking PIN code",
 
-          default:
-            return []
-    }
+          evidence: ["https://dl.acm.org/citation.cfm?id=2666622"],
+
+          required: ["payload.value"],
+
+          accuracy: 0.7,
+
+          conditions: [
+            {
+              type: "granularity",
+
+              granularity: {
+                threshold: 80,
+                unit: "Hz"
+              }
+            }
+          ],
+
+          accretion: false,
+        }
+      ]
+
+    default:
+      return []
+  }
 }
 
 const schema = (subtype) => {
@@ -472,7 +472,7 @@ const schema = (subtype) => {
             },
           }
         }
-    };
+      };
 
 
     case "linear-acceleration":
@@ -702,23 +702,25 @@ const schema = (subtype) => {
   }
 };
 
-const ptype = (nid,node={})=>{
+const ptype = (nid, node = {}) => {
 
-    const subtype = node.subtype || "";
+  const subtype = node.subtype || "";
 
-    return {[nid]:personal(node.subtype).filter((ptype)=>{
+  return {
+    [nid]: personal(node.subtype).filter((ptype) => {
       if (!ptype.conditions)
         return true;
-      return (ptype.conditions).reduce((acc,item)=>{
+      return (ptype.conditions).reduce((acc, item) => {
         return acc || item.granularity && (item.granularity.threshold <= node.granularity);
-      },false);
-    })};
+      }, false);
+    })
+  };
 };
 
 const config = {
-  
+
   category: 'datastores',
-  
+
   color: '#ffcc00',
 
 
@@ -737,32 +739,33 @@ const config = {
     }
   },
 
-  schemafn: (nid, node={}) => {
-   
+  schemafn: (nid, node = {}) => {
+
     const subtype = node.subtype || "";
-    
+
     //TODO: incorporate anyOf, allOf, not (from json.schema) for required!
     //[] implictly means all of!
     return {
       output: {
-          type: "object",
-          description: "the container object",
-          properties: schema(node.subtype),
-          ptype: ptype(nid,node),
+        type: "object",
+        description: "the container object",
+        properties: schema(node.subtype),
+        ptype: ptype(nid, node),
       }
     }
   },
 
-  risk: (node={})=>{
-    const subtype = node.subtype || "light";
+  risk: (subtype = "light") => {
 
-    switch(subtype){
-    
+
+
+    switch (subtype) {
+
       case "bluetooth":
         return {
           score: 2,
           reason: "bluetooth scans can reveal other devices in close proximity and could be used to fingerprint location",
-        }     
+        }
 
       case "accelerometer":
       case "linear-acceleration":
@@ -773,31 +776,31 @@ const config = {
         return {
           score: 2,
           reason: `the ${subtype} sensor can reveal information about the movement of a person carrying the device`,
-        }  
+        }
 
       case "battery":
         return {
           score: 2,
           reason: "the battery sensor can reveal limited information about a user's habits (i.e. when they charge their phone)",
-        } 
+        }
 
       case "audio-level":
         return {
           score: 2,
           reason: "the audio-level sensor can reveal how loud the environment is that a user is/was in"
-        } 
-      
+        }
+
       case "light":
         return {
           score: 1,
           reason: "assuming the camera on the device is uncovered, the light lux reading could give coarse grained information on the kind of environment a user is in (i.e. inside,outside) "
-        } 
+        }
 
       default:
         return {
           score: 0,
           reason: "unknown sensingkit subtype"
-        } 
+        }
 
     }
   },
@@ -805,16 +808,16 @@ const config = {
   inputs: 0,
   outputs: 1,
 
-  icon: "fa-android",
+  icon: "fab fa-android",
   unicode: '\uf17b',
-  label: function() {
+  label: function () {
     return this.name || "sensingkit";
   },
-  labelStyle: function() {
+  labelStyle: function () {
     return this.name ? "node_label_italic" : "";
   },
-  descriptionfn: (node={}) => {
-  
+  descriptionfn: (node = {}) => {
+
     const subtype = node.subtype;
 
     if (subtype) {
@@ -822,19 +825,19 @@ const config = {
       switch (subtype) {
 
         case 'light':
-         
+
 
           return `${chosen} <p> Measures the ambient light level (illumination) in lux captured by a device camera. The following is an indication of value ranges</p>${luxtable}`;
-        
+
         case 'bluetooth':
           return `${chosen} <p> This will return the outcomes from periodic bluetooth scans.</p>`;
 
         case 'accelerometer':
           return `${chosen} <p>This will return the device ${subtype} data. The following is an indication of value ranges</p>${axistable}`;
-      
+
         case 'magnetometer':
-           return `${chosen} <p> All values are in micro-Tesla (uT) and measure the ambient magnetic field in the X, Y and Z axis.The following is an indication of value ranges</p>${teslatable}`;
-        
+          return `${chosen} <p> All values are in micro-Tesla (uT) and measure the ambient magnetic field in the X, Y and Z axis.The following is an indication of value ranges</p>${teslatable}`;
+
         case 'linear-acceleration':
         case 'gravity':
         case 'gyroscope':
@@ -853,8 +856,8 @@ const config = {
 };
 
 export default {
-    type:     "sensingkit",
-    def:      Object.assign({_: (id)=>{return id}}, config, {nodetype:"sensingkit"}),
-    node:     Node,
+  type: "sensingkit",
+  def: Object.assign({ _: (id) => { return id } }, config, { nodetype: "sensingkit" }),
+  node: Node,
 }
 

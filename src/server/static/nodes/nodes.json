@@ -25,6 +25,10 @@
 			"file": "datastores/twitter/index"
 		},
 		{
+			"name": "browserwebcam",
+			"file": "datastores/browserwebcam/index"
+		},
+		{
 			"name": "profile",
 			"file": "datastores/profile/index"
 		},
@@ -59,6 +63,10 @@
 		{
 			"name": "trigger",
 			"file": "processors/trigger/index"
+		},
+		{
+			"name": "facedetect",
+			"file": "processors/facedetect/index"
 		},
 		{
 			"name": "extract",

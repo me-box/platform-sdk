@@ -3,12 +3,13 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 class DragDropContainer extends Component {
-  
-  render(){
-  	let style = {width:1000, height:1000, background:'green'}
+
+  render() {
+    console.log("in render drag drop container");
+    let style = { width: 1000, height: 1000, background: 'green' }
     return <div >
- 				{this.props.children}
-    		</div>
+      {this.props.children}
+    </div>
   }
 }
 

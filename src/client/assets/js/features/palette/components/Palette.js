@@ -4,72 +4,72 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import className from 'classnames';
 import Node from './Node';
-import {PALETTE_WIDTH} from 'constants/ViewConstants';
+import { PALETTE_WIDTH } from 'constants/ViewConstants';
 import { actionCreators as paletteActions, selector } from '../';
-import { actionCreators as nodeActions} from 'features/nodes/actions';
-import {contextTypes} from 'utils/ReactDecorators';
+import { actionCreators as nodeActions } from 'features/nodes/actions';
+import { contextTypes } from 'utils/ReactDecorators';
 
 @connect(selector, (dispatch) => {
-  return{
-     actions: {...bindActionCreators(paletteActions, dispatch), ...bindActionCreators(nodeActions, dispatch)},
-  }
+    return {
+        actions: { ...bindActionCreators(paletteActions, dispatch), ...bindActionCreators(nodeActions, dispatch) },
+    }
 })
 export default class Palette extends Component {
-	
-    constructor(props){
+
+    constructor(props) {
         super(props);
         this._escapeNodeType = this._escapeNodeType.bind(this);
     }
 
-    componentDidMount(){
-       
+    componentDidMount() {
+
         this.props.actions.fetchNodes();
     }
 
     _escapeNodeType(nt) {
-        return nt.replace(" ","_").replace(".","_").replace(":","_");
+        return nt.replace(" ", "_").replace(".", "_").replace(":", "_");
     }
 
     render() {
-        
-        const {store} = this.context;
-        const {palette:{categories, types}} = this.props;
-        
+        console.log("in render palette");
+        const { store } = this.context;
+        const { palette: { categories, types } } = this.props;
+
         const spinnerClassname = className({
             'palleteSpinner': true,
             'hide': types.length > 0,
         });
 
         //this should be categories, i.e. one level up!
-        const _categories = Object.keys(categories).map((key,i)=>{
-            const nodes = categories[key].map((node,i)=>{
+        const _categories = Object.keys(categories).map((key, i) => {
+            const nodes = categories[key].map((node, i) => {
                 const nodeprops = {
                     nt: node.name,
                     def: node.def,
                     reducer: node.reducer,
-                    handleDrop: this.props.actions.dropNode.bind(null, {component:node.component, nt:node.name, def:node.def, reducer:node.reducer}),
+                    handleDrop: this.props.actions.dropNode.bind(null, { component: node.component, nt: node.name, def: node.def, reducer: node.reducer }),
                 }
-                return <Node key={`i${node.name}`} {...nodeprops}/>
+                return <Node key={`i${node.name}`} {...nodeprops} />
             });
-            
+
             const style = {
                 paddingBottom: '15px',
                 fontWeight: 'bold',
             }
 
             return (<div key={i}>
-                        <div id="palette-container-events">
-                            <div id="palette-header-events" style={style}>
-                               <span>{key}</span>
-                            </div>
-                            {nodes}
-                        </div>
-                    </div>);
-                    
+                <div id="palette-container-events">
+                    <div id="palette-header-events" style={style}>
+                        <span>{key}</span>
+                    </div>
+                    {nodes}
+                </div>
+            </div>);
+
         });
 
-        const palettecontainerstyle={
-            display: types.length > 0 ? 'block':'none',
+        const palettecontainerstyle = {
+            display: types.length > 0 ? 'block' : 'none',
             background: '#4A4B4D',
             color: 'white',
             letterSpacing: 1,
@@ -85,15 +85,15 @@ export default class Palette extends Component {
                         <i className="fa fa-angle-double-down"></i>
                     </a>
                 </div>*/
-		return( 
-			<div id="palette">
-        		<img src={""} className={spinnerClassname}/>
+        return (
+            <div id="palette">
+                <img src={""} className={spinnerClassname} />
 
-        		<div id="palette-container" className="palette-scroll" style={palettecontainerstyle}>
-                     {_categories}
+                <div id="palette-container" className="palette-scroll" style={palettecontainerstyle}>
+                    {_categories}
                 </div>
-        		
-    		</div>
-		);
-	}
+
+            </div>
+        );
+    }
 }

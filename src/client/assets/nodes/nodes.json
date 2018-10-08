@@ -1,33 +1,112 @@
 {
-	"nodes":[	
-				
-				
-				{"name":"timer", "file":"inputs/inject/index"}, 
-				{"name":"bulbs-in", "file":"datastores/bulbs/index"},
-				{"name":"plugin", "file":"datastores/plug/index"},
-				{"name":"sensingkit", "file":"datastores/sensingkit/index"},
-				{"name":"osmonitor", "file":"datastores/osmonitor/index"},
-				{"name":"twitter", "file":"datastores/twitter/index"},
-				{"name":"profile", "file":"datastores/profile/index"},
-				{"name":"sensitive", "file":"datastores/sensitive/index"},
-				{"name":"browsing", "file":"datastores/browsing/index"},
-
-				{"name":"gender", "file":"profilers/gender/index"},
-				{"name":"integrity", "file":"profilers/integrity/index"},
-				{"name":"pregnant", "file":"profilers/pregnant/index"},
-
-				{"name":"dbfunction", "file":"processors/function/index"},
-				{"name":"trigger", "file":"processors/trigger/index"},
-				{"name":"extract", "file":"processors/extract/index"},
-				{"name":"chartify", "file":"processors/chartify/index"},
-				{"name":"listify", "file":"processors/listify/index"},
-			 	{"name":"webify", "file":"processors/webify/index"},
-			 	{"name":"uibuilder", "file":"processors/uibuilder/index"},
-
-			 	{"name":"export", "file":"outputs/export/index"},
-				{"name":"bulbs-out", "file":"outputs/bulbs/index"},
-				{"name":"databoxapp", "file":"outputs/databoxapp/index"},
-				{"name":"plugout", "file":"outputs/plug/index"},
-				{"name":"debugger", "file":"debug/debugger/index"}
-			 ]
+	"nodes": [
+		{
+			"name": "timer",
+			"file": "inputs/inject/index"
+		},
+		{
+			"name": "bulbs-in",
+			"file": "datastores/bulbs/index"
+		},
+		{
+			"name": "plugin",
+			"file": "datastores/plug/index"
+		},
+		{
+			"name": "sensingkit",
+			"file": "datastores/sensingkit/index"
+		},
+		{
+			"name": "osmonitor",
+			"file": "datastores/osmonitor/index"
+		},
+		{
+			"name": "twitter",
+			"file": "datastores/twitter/index"
+		},
+		{
+			"name": "browserwebcam",
+			"file": "datastores/browserwebcam/index"
+		},
+		{
+			"name": "profile",
+			"file": "datastores/profile/index"
+		},
+		{
+			"name": "sensitive",
+			"file": "datastores/sensitive/index"
+		},
+		{
+			"name": "browsing",
+			"file": "datastores/browsing/index"
+		},
+		{
+			"name": "personalflow",
+			"file": "datastores/personalflow/index"
+		},
+		{
+			"name": "gender",
+			"file": "profilers/gender/index"
+		},
+		{
+			"name": "integrity",
+			"file": "profilers/integrity/index"
+		},
+		{
+			"name": "pregnant",
+			"file": "profilers/pregnant/index"
+		},
+		{
+			"name": "dbfunction",
+			"file": "processors/function/index"
+		},
+		{
+			"name": "trigger",
+			"file": "processors/trigger/index"
+		},
+		{
+			"name": "facedetect",
+			"file": "processors/facedetect/index"
+		},
+		{
+			"name": "extract",
+			"file": "processors/extract/index"
+		},
+		{
+			"name": "chartify",
+			"file": "processors/chartify/index"
+		},
+		{
+			"name": "listify",
+			"file": "processors/listify/index"
+		},
+		{
+			"name": "webify",
+			"file": "processors/webify/index"
+		},
+		{
+			"name": "uibuilder",
+			"file": "processors/uibuilder/index"
+		},
+		{
+			"name": "export",
+			"file": "outputs/export/index"
+		},
+		{
+			"name": "bulbs-out",
+			"file": "outputs/bulbs/index"
+		},
+		{
+			"name": "databoxapp",
+			"file": "outputs/databoxapp/index"
+		},
+		{
+			"name": "plugout",
+			"file": "outputs/plug/index"
+		},
+		{
+			"name": "debugger",
+			"file": "debug/debugger/index"
+		}
+	]
 }

@@ -320,7 +320,13 @@ const _saveToAppStore = function (config, manifest, username) {
 	}
 }
 
+//this should now post to github manifest repo!
 const _postToAppStore = function (storeurl, manifest, username) {
+	return new Promise((resolve, reject) => {
+		resolve();
+	});
+}
+/*const _postToAppStore = function (storeurl, manifest, username) {
 
 	if (storeurl.trim() === "none") {
 		return new Promise((resolve, reject) => {
@@ -356,7 +362,7 @@ const _postToAppStore = function (storeurl, manifest, username) {
 				})
 		});
 	});
-}
+}*/
 
 const _generateDockerfile = function (libraries, config, name) {
 
@@ -557,7 +563,7 @@ const _publish = function (config, user, manifest, flows, dockerfile) {
 			console.log("version ", config.version);
 			const _appname = manifest.name.startsWith(user.username) ? manifest.name.toLowerCase() : `${user.username.toLowerCase()}-${manifest.name.toLowerCase()}`;
 			const _tag = config.registry.URL && config.registry.URL.trim() != "" ? `${_stripscheme(config.registry.URL)}/` : "";
-			return createDockerImage(tarfile, `${_tag}${_appname}:${config.version || "latest"}`);
+			return createDockerImage(tarfile, `${_tag}${_appname}-amd64:${config.version || "latest"}`);
 		}, (err) => {
 			sendmessage(user.username, "debug", { msg: err.json.message });
 			reject("could not create docker image", err);

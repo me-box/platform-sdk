@@ -1,92 +1,71 @@
 import { createStructuredSelector } from 'reselect';
-import {OUTPUT_WIDTH} from 'constants/ViewConstants';
-import {actionConstants as portActionTypes} from './constants';
-import {actionConstants as nodeActionTypes}from "features/nodes/constants";
-import {downstreamnodes, fromnode, tonode} from "utils/tree";
-import {resolveconditions} from "utils/privacy";
+import { OUTPUT_WIDTH } from 'constants/ViewConstants';
+import { actionConstants as portActionTypes } from './constants';
+import { actionConstants as nodeActionTypes } from "features/nodes/constants";
+import { downstreamnodes, fromnode, tonode } from "utils/tree";
+import { resolveconditions } from "utils/privacy";
 
-const FOREIGN_MOUSE_UP =  'iot.red/mouse/MOUSE_UP';
+const FOREIGN_MOUSE_UP = 'iot.red/mouse/MOUSE_UP';
 const FOREIGN_CLEAR = 'iot.red/editor/CLEAR';
-const {NODE_MOUSE_DOWN} = nodeActionTypes;
+const { NODE_MOUSE_DOWN } = nodeActionTypes;
 
 export const NAME = 'ports';
 
 const initialState = {
-	output:null, 
-	
-	selectedId: null, 
-	
-	activeLink:{
-	
-		source:{
-			x:0,
-			y:0
-		}, 
-		target:{
-			x:0,
-			y:0
-		}
-	}, 
-	
-	links:[], 
-	linksById:{},
+	output: null,
 
-	offset:{
-		x:0, 
-		y:0
+	selectedId: null,
+
+	activeLink: {
+
+		source: {
+			x: 0,
+			y: 0
+		},
+		target: {
+			x: 0,
+			y: 0
+		}
+	},
+
+	links: [],
+	linksById: {},
+
+	offset: {
+		x: 0,
+		y: 0
 	}
 };
 
-const _flatten = (arr=[])=>{
-	return arr.reduce((acc, row)=>{
-		if (Array.isArray(row)){
-			return row.reduce((acc, src)=>{
-				acc.push(src);
-					return acc;
-			}, acc);
-		}
-		return [...acc, row];
-	}, [])
-}
 
-const _dedup = (arr=[])=>{
-	let seen = {};
-	return arr.filter((item)=>{
-		if (seen[item])
-			return false;
-		seen[item] = true;
-		return true;
-	});
-}
+const _updatedownstream = (id, dispatch, getState) => {
 
-const _updatedownstream = (id, dispatch, getState)=>{
-			
 	const links = getState().ports["links"];
 
-	const downstream = downstreamnodes(id,links);
+	const downstream = downstreamnodes(id, links);
 
-	downstream.forEach((n)=>{
+	downstream.forEach((n) => {
 
 		const nodes = getState().nodes.nodesById;
 		const node = nodes[n];
 
-		const inputs = links.filter((key)=>{
-          	return tonode(key) === n;
-        }).map((linkId)=>{
-          const {id, schema} = nodes[fromnode(linkId)];
-          return {id,schema};
-        });
+		const inputs = links.filter((key) => {
+			return tonode(key) === n;
+		}).map((linkId) => {
+			const { id, schema } = nodes[fromnode(linkId)];
+			return { id, schema };
+		});
 
-        
-		if (node){ 
 
-			const current =  Object.keys(node._def.defaults).reduce((acc, key)=>{
-        		acc[key]= node[key];
-        		return acc;
-     		},{});
+		if (node) {
+
+			const current = Object.keys(node._def.defaults).reduce((acc, key) => {
+				acc[key] = node[key];
+				return acc;
+			}, {});
 
 			const schema = node._def.schemafn(n, current, inputs || [], []);
-			const resolved = node.inputs > 0 ? resolveconditions(n, schema) : schema; 
+			const resolved = node.inputs > 0 ? resolveconditions(n, schema) : schema;
 
 			dispatch({
 				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
@@ -94,8 +73,8 @@ const _updatedownstream = (id, dispatch, getState)=>{
 				schema: resolved,
 			});
 		}
-		else{
-			
+		else {
+
 			dispatch({
 				type: 'iot.red/nodes/NODE_UPDATE_SCHEMA',
 				id: n,
@@ -110,261 +89,272 @@ export default function reducer(state = initialState, action) {
 	switch (action.type) {
 
 		case portActionTypes.LINK_SELECTED:
-			
-			return Object.assign({}, state, {selectedId: action.link});
-		
+
+			return { ...state, selectedId: action.link };
+
 		case NODE_MOUSE_DOWN:
-			return Object.assign({}, state, {selectedId: null});
-		
+			return {
+				...state,
+				selectedId: null
+			};
+
 		case portActionTypes.TAB_DELETE:
-		
-			return Object.assign({}, state, {
-				links: state.links.filter((id)=>{
-                	const link = state.linksById[id];
-                	return (link.source.z !== action.id && link.target.z !== action.id);
-            	}),
-            	linksById: Object.keys(state.linksById).reduce((acc,id)=>{
-                	const link = state.linksById[id];
-                	if  (link.source.z !== action.id && link.target.z !== action.id){
-                   		acc[id] = link;
-                	}
-                	return acc;
-            	},{})
-			});
+
+			return {
+				...state,
+				links: state.links.filter((id) => {
+					const link = state.linksById[id];
+					return (link.source.z !== action.id && link.target.z !== action.id);
+				}),
+				linksById: Object.keys(state.linksById).reduce((acc, id) => {
+					const link = state.linksById[id];
+					if (link.source.z !== action.id && link.target.z !== action.id) {
+						acc[id] = link;
+					}
+					return acc;
+				}, {})
+			};
 
 		case portActionTypes.CLEAR_LINKS:
-			return Object.assign({}, state, initialState);
+			return { ...state, ...initialState }
 
 		case portActionTypes.DELETE_LINK:
-			
-      		return Object.assign({}, state, {
-            	links: state.links.filter((id)=>id != state.selectedId),
-            	linksById: Object.keys(state.linksById).reduce((acc,id)=>{
-                	if (id != state.selectedId){
-                   		acc[id] = state.linksById[id];
-                	}
-                	return acc;
-            	},{}),
-            	selectedId: null,
-            });
-            
-            	
-		case portActionTypes.DELETE_NODE:
-      	
-      		return Object.assign({}, state, {
-            	links: state.links.filter((id)=>{
-                	const link = state.linksById[id];
-                	return (link.source.id !== action.node && link.target.id !== action.node);
-            	}),
-            	linksById: Object.keys(state.linksById).reduce((acc,id)=>{
-                	const link = state.linksById[id];
-                	if  (link.source.id !== action.node && link.target.id !== action.node){
-                   		acc[id] = link;
-                	}
-                	return acc;
-            	},{})
-     	 	});
-     	 	
 
-      	
+			return {
+				...state,
+				links: state.links.filter((id) => id != state.selectedId),
+				linksById: Object.keys(state.linksById).reduce((acc, id) => {
+					if (id != state.selectedId) {
+						acc[id] = state.linksById[id];
+					}
+					return acc;
+				}, {}),
+				selectedId: null,
+			};
+
+		case portActionTypes.DELETE_NODE:
+
+			return {
+				...state,
+				links: state.links.filter((id) => {
+					const link = state.linksById[id];
+					return (link.source.id !== action.node && link.target.id !== action.node);
+				}),
+				linksById: Object.keys(state.linksById).reduce((acc, id) => {
+					const link = state.linksById[id];
+					if (link.source.id !== action.node && link.target.id !== action.node) {
+						acc[id] = link;
+					}
+					return acc;
+				}, {})
+			};
+
+
+
 		case portActionTypes.RECEIVE_FLOWS:
 
-			return Object.assign({}, state, {
-            	links: action.links.map((link)=>link.id),
-            	linksById: action.links.reduce((acc, item)=>{
-              		acc[item.id] = item;
-              		return acc;
-            	},{})
-        	})
-      
+			return {
+				...state,
+				links: action.links.map((link) => link.id),
+				linksById: action.links.reduce((acc, item) => {
+					acc[item.id] = item;
+					return acc;
+				}, {})
+			}
+
 		case portActionTypes.PORT_MOUSE_OVER:
-			
-			if (state.output && (state.output.node.id != action.node.id && action.node.inputs > 0) && action.portIndex == 0){
+
+			if (state.output && (state.output.node.id != action.node.id && action.node.inputs > 0) && action.portIndex == 0) {
 
 				const id = `${state.output.sourcePort}:${state.output.node.id}:${action.node.id}:${action.portIndex}`;
 
-				return Object.assign({}, state, {
-								            		links: [...state.links, id],
-								            		linksById: Object.assign({}, state.linksById, {
-								            							[id]:{
-								            									id,
-								                            					sourcePort: state.output.sourcePort,
-								                            					source: state.output.node,
-								                            	 				target: {
-																			    	id: action.node.id,
-																			    	z : action.node.z
-																			    },
-								                    					}
-								                    }),
-								                    output: null,
-								        		})
+				return {
+					...state,
+					links: [...state.links, id],
+					linksById: {
+						...state.linksById,
+						[id]: {
+							id,
+							sourcePort: state.output.sourcePort,
+							source: state.output.node,
+							target: {
+								id: action.node.id,
+								z: action.node.z
+							},
+						}
+					},
+					output: null,
+				}
 			}
 			return state;
 
 		case portActionTypes.PORT_MOUSE_DOWN:
-			
+
 			const privacy = action.node.schema && action.node.schema.output ? action.node.schema.output.ptype || [] : [];
-			
-	    	return Object.assign({}, state, {
-	    		output: {
-    				node: {
-				    	id: action.node.id,
-				    	z : action.node.z,
-				    	privacy,
-				    },
-    				sourcePort: action.portIndex,
-    				portType: action.portType,
-	    		},
-	    		offset: {x: action.node.x+(action.node.w/2), y: action.node.y},
-	    	})
 
-	    case FOREIGN_MOUSE_UP:
-	    	return Object.assign({}, state, {
-	    		output: null
-	    	})
+			return {
+				...state,
+				output: {
+					node: {
+						id: action.node.id,
+						z: action.node.z,
+						privacy,
+					},
+					sourcePort: action.portIndex,
+					portType: action.portType,
+				},
+				offset: { x: action.node.x + (action.node.w / 2), y: action.node.y },
+			};
 
-	    case portActionTypes.MOUSE_MOVE:
-	    	if (state.output){
-		    	return Object.assign({}, state, {
-		    		activeLink: {
-		    						//need a soruce port!
+		case FOREIGN_MOUSE_UP:
+			return {
+				...state,
+				output: null
+			};
 
-		    						source: {	
-		    								x: OUTPUT_WIDTH-5,
-		    								y: -5,
-										  },
+		case portActionTypes.MOUSE_MOVE:
+			if (state.output) {
+				return {
+					...state,
+					activeLink: {
+						//need a soruce port!
 
-		    						target: {
-		    								x:action.x-state.offset.x,
-		    								y:action.y-state.offset.y,
-		    							}
-		    					}
-		    	})
-	    	}
-	    	return state;
+						source: {
+							x: OUTPUT_WIDTH - 5,
+							y: -5,
+						},
+
+						target: {
+							x: action.x - state.offset.x,
+							y: action.y - state.offset.y,
+						}
+					}
+				}
+			}
+			return state;
 
 
-	    case FOREIGN_CLEAR:
-	    	return initialState;
+		case FOREIGN_CLEAR:
+			return initialState;
 
-    	default:
-    		return state;
-    }
+		default:
+			return state;
+	}
 }
 
 
-function linkSelected(link){
-	
+function linkSelected(link) {
+
 	return function (dispatch, getState) {
 		dispatch({
 			type: portActionTypes.LINK_SELECTED,
 			link,
 		});
 		//dispatch(nodeActions.nodeDeselected());
-	}	
+	}
 }
 
-function portMouseDown(node,portType,portIndex,e){
-	
-	return {
-     	type: portActionTypes.PORT_MOUSE_DOWN,
-      	node,
-      	portType,
-      	portIndex,
-    }
-} 
+function portMouseDown(node, portType, portIndex, e) {
 
-function portMouseOver(node,portType,portIndex,e){
- 	
- 	return (dispatch, getState)=>{
-		if (getState().ports.output){
-			
+	return {
+		type: portActionTypes.PORT_MOUSE_DOWN,
+		node,
+		portType,
+		portIndex,
+	}
+}
+
+function portMouseOver(node, portType, portIndex, e) {
+
+	return (dispatch, getState) => {
+		if (getState().ports.output) {
+
 			dispatch({
-     	 		type: portActionTypes.PORT_MOUSE_OVER,
-      			node,
-      			portType,
-      			portIndex,
-    		});
-			
-			_updatedownstream(node.id, dispatch,getState);
+				type: portActionTypes.PORT_MOUSE_OVER,
+				node,
+				portType,
+				portIndex,
+			});
+
+			_updatedownstream(node.id, dispatch, getState);
 		}
 	}
-} 
+}
 
-function linkDelete(link){
-	
-	return (dispatch, getState)=>{
-		dispatch ({
+function linkDelete(link) {
+
+	return (dispatch, getState) => {
+		dispatch({
 			type: portActionTypes.DELETE_LINK,
 			link
 		});
-		_updatedownstream(tonode(link), dispatch,getState);
+		_updatedownstream(tonode(link), dispatch, getState);
 	}
 }
 
-function clearLinks(){
+function clearLinks() {
 	return {
 		type: portActionTypes.CLEAR_LINKS,
 	}
 }
 
-function nodeDelete(node){
+function nodeDelete(node) {
 	return {
 		type: portActionTypes.DELETE_NODE,
 		node
 	}
 }
 
-function mouseMove(x,y){
-  return {
-     type: portActionTypes.MOUSE_MOVE,
-     x,
-     y,
-  }
+function mouseMove(x, y) {
+	return {
+		type: portActionTypes.MOUSE_MOVE,
+		x,
+		y,
+	}
 }
 
-function deleteTab(id){
-	
-    return {
-        type: portActionTypes.TAB_DELETE,
-        id
-    }
+function deleteTab(id) {
+
+	return {
+		type: portActionTypes.TAB_DELETE,
+		id
+	}
 }
 
-function receiveFlows(links){
-  return {
-      type: portActionTypes.RECEIVE_FLOWS,
-      links,
-  }
+function receiveFlows(links) {
+	return {
+		type: portActionTypes.RECEIVE_FLOWS,
+		links,
+	}
 }
 
 const ports = (state) => state[NAME];
-const link  = (state, ownProps)=>{
+const link = (state, ownProps) => {
 	const link = state[NAME].linksById[ownProps.id];
-	if (link){
-		return{
+	if (link) {
+		return {
 			id: link.id,
 			source: state.nodes.nodesById[link.source.id],
 			target: state.nodes.nodesById[link.target.id],
 			sourcePort: link.sourcePort,
 		}
-	}	
+	}
 
 }
 
 export const selector = createStructuredSelector({
-  ports,
-  link,
+	ports,
+	link,
 });
 
 export const actionCreators = {
-  linkSelected,
-  linkDelete,
-  clearLinks,
-  nodeDelete,
-  portMouseDown,
-  portMouseOver,
-  mouseMove,
-  deleteTab,
-  receiveFlows,
+	linkSelected,
+	linkDelete,
+	clearLinks,
+	nodeDelete,
+	portMouseDown,
+	portMouseOver,
+	mouseMove,
+	deleteTab,
+	receiveFlows,
 };
