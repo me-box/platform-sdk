@@ -235,9 +235,16 @@ export default function reducer(state = initialState, action) {
       return state;
 
     case nodeActionTypes.MOUSE_UP:
-      return Object.assign({}, state, {
+      const { x, y } = state.nodePos[state.draggingNode];
+      return {
+        ...state,
         draggingNode: null,
-      });
+        nodesById: {
+          ...state.nodesById,
+          [state.draggingNode]: { ...state.nodesById[state.draggingNode], x, y }
+        }
+      }
+
 
     case nodeActionTypes.MOUSE_MOVE:
 
@@ -273,20 +280,59 @@ export default function reducer(state = initialState, action) {
   }
 }
 
-const nodes = (state) => state[NAME];
+const nodesById = (state) => state[NAME].nodesById;
+const linksById = (state) => state.ports.linksById;
 const nodePos = (state) => state[NAME].nodePos;
 const selectedId = (state) => state[NAME].selectedId;
 const configuringId = (state) => state[NAME].configuringId;
 const node = (state, ownProps) => state[NAME].nodesById[ownProps.id];
 const buffer = (state) => state[NAME].buffer;
 const id = (state, newProps) => newProps.id;
+const w = (state) => state.editor.screen.w;
+const h = (state) => state.editor.screen.h;
+const tabId = (state) => state.workspace.currentId;
+const configsById = (state) => state.nodes.configsById;
 
 const cpos = createSelector([id, nodePos], (id, nodePos) => {
   return id ? nodePos[id] || { x: 0, y: 0 } : { x: 0, y: 0 };
 });
 
+const nodes = createSelector([nodesById, tabId], (nodesById, tabId) => {
+  return Object.keys(nodesById).reduce((acc, key) => {
+    const n = nodesById[key];
+    if (n.z === tabId) {
+      acc = [...acc, n.id];
+    }
+    return acc;
+  }, []);
+})
+
+const links = createSelector([linksById, tabId], (linksById, tabId) => {
+  return Object.keys(linksById).reduce((acc, key) => {
+    const l = linksById[key];
+    if (l.source.z === tabId) {
+      acc = [...acc, l.id];
+    }
+    return acc;
+  }, []);
+})
+
+const configs = createSelector([nodesById, configsById, tabId], (nodesById, configsById, tabId) => {
+  return Object.keys(nodesById).reduce((acc, key) => {
+    const n = nodesById[key];
+    if (n.z === tabId) {
+      acc = [...acc, configsById[n.id]];
+    }
+    return acc;
+  }, []);
+});
+
 export const selector = createStructuredSelector({
   nodes,
+  configs,
+  links,
+  w,
+  h,
   selectedId,
   configuringId,
   node,

@@ -1,4 +1,4 @@
-import { createStructuredSelector } from 'reselect';
+import { createStructuredSelector, createSelector } from 'reselect';
 import { OUTPUT_WIDTH } from 'constants/ViewConstants';
 import { actionConstants as portActionTypes } from './constants';
 import { actionConstants as nodeActionTypes } from "features/nodes/constants";
@@ -329,22 +329,30 @@ function receiveFlows(links) {
 }
 
 const ports = (state) => state[NAME];
-const link = (state, ownProps) => {
-	const link = state[NAME].linksById[ownProps.id];
+const clink = (state, ownProps) => state[NAME].linksById[ownProps.id];
+const nodesById = (state) => state.nodes.nodesById;
+
+const link = createSelector([clink, nodesById], (link, nodesById) => {
 	if (link) {
 		return {
 			id: link.id,
-			source: state.nodes.nodesById[link.source.id],
-			target: state.nodes.nodesById[link.target.id],
+			source: nodesById[link.source.id],
+			target: nodesById[link.target.id],
 			sourcePort: link.sourcePort,
 		}
 	}
 
-}
+});
+
+const nodePos = (state) => state.nodes.nodePos;
+
+const cpos = createSelector([nodePos], (nodePos) => nodePos);
+const selectedId = (state) => state[NAME].selectedId;
 
 export const selector = createStructuredSelector({
-	ports,
+	selectedId,
 	link,
+	cpos,
 });
 
 export const actionCreators = {

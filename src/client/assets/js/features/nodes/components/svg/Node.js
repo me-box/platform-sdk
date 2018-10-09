@@ -25,8 +25,10 @@ export default class Node extends Component {
     }
 
     render() {
-        console.log("in render node!");
-        const { id, node, selectedId, cpos: { x, y } } = this.props;
+
+        const { id, node, selectedId, cpos = { x: 0, y: 0 } } = this.props;
+
+        const { x, y } = cpos;
         const xpos = x == 0 ? node.x : x;
         const ypos = y == 0 ? node.y : y;
 
