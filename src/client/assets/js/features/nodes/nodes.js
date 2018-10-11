@@ -11,7 +11,7 @@ const FOREIGN_MOUSE_UP = 'iot.red/mouse/MOUSE_UP';
 
 function _configureNode(current, changes) {
 
-  let _n = Object.assign({}, current, changes);
+  let _n = { ...current, ...changes };
 
   try {
     _n.label = (typeof _n._def.label === "function" ? _n._def.label.bind(_n).call() : _n._def.label) || _n._def.label;
@@ -27,8 +27,6 @@ function _configureNode(current, changes) {
       console.log(`Definition error: ${d.type}.labelStyle`, err);
     }
   }
-
-  //const w = Math.max(NODE_WIDTH,GRID_SIZE*(Math.ceil((calculateTextWidth(_n.label, "node_label", 50)+(_n.inputs>0?7:0))/GRID_SIZE)));
   const w = NODE_WIDTH;
   _n.w = w;
 
@@ -57,57 +55,64 @@ export default function reducer(state = initialState, action) {
 
     case nodeActionTypes.RECEIVE_FLOWS:
 
-      return Object.assign({}, state, {
+      return {
+        ...state,
         nodes: action.nodes.map((node) => node.id),
         nodesById: action.nodes.reduce((acc, item) => {
           acc[item.id] = item;
           return acc;
         }, {})
-      })
+      }
 
     case nodeActionTypes.NODE_CLEAR_ALL:
       return initialState;
 
 
     case nodeActionTypes.NODE_DROPPED:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         nodes: [...state.nodes, action.node.id],
-        nodesById: Object.assign({}, state.nodesById, { [action.node.id]: action.node }),
-        configsById: Object.assign({}, state.configsById, {
+        nodesById: { ...state.nodesById, [action.node.id]: action.node },
+        configsById: {
+          ...state.configsById,
           [action.node.id]: {
             fn: action.config.fn,
             id: action.config.id,
           }
-        }),
-      })
+        },
+      }
 
     case nodeActionTypes.NODE_MOUSE_DOWN:
-
-      return Object.assign({}, state, {
+      console.log("SEEN NODE MOUSE DOWN!!!")
+      return {
+        ...state,
         draggingNode: action.id,
         selectedId: action.id,
-      })
+      }
 
     case nodeActionTypes.NODE_DOUBLE_CLICKED:
 
-      return Object.assign({}, state, {
+      return {
+        ...state,
         draggingNode: null,
         selectedId: action.id,
         configuringId: action.id,
-      })
+      }
 
 
     case LINK_SELECTED:
     case nodeActionTypes.NODE_DESELECTED:
     case FOREIGN_MOUSE_UP:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         selectedId: null,
-      });
+      };
 
     //called from features/tabs
     case nodeActionTypes.TAB_DELETE:
 
-      return Object.assign({}, state, {
+      return {
+        ...state,
         nodes: state.nodes.filter((id) => {
           const node = state.nodesById[id];
           return node.z != action.id;
@@ -119,15 +124,15 @@ export default function reducer(state = initialState, action) {
           }
           return acc;
         }, {})
-      });
+      };
 
     case nodeActionTypes.NODE_DELETE:
-
 
       if (!state.selectedId) {
         return state;
       }
-      return Object.assign({}, state, {
+      return {
+        ...state,
         nodes: state.nodes.filter(item => state.selectedId != item),
         nodesById: Object.keys(state.nodesById).reduce((acc, key) => {
           if (key != state.selectedId) {
@@ -136,21 +141,19 @@ export default function reducer(state = initialState, action) {
           return acc;
         }, {}),
         selectedId: null
-      });
+      };
 
     //set up the editing buffer by copying all saved properties from defaults into it.
     case nodeActionTypes.NODE_CONFIGURE:
       const defaults = state.nodesById[action.id]._def.defaults || {};
       const values = Object.keys(defaults).reduce((acc, key) => {
         acc[key] = state.nodesById[state.selectedId][key];
-        //state.selected[key];
         return acc;
       }, {});
       return {
         ...state,
         buffer: values,
       }
-    //return Object.assign({}, state, { buffer: values });
 
     case nodeActionTypes.NODE_INIT_VALUES:
 
@@ -161,10 +164,6 @@ export default function reducer(state = initialState, action) {
           ...action.keys,
         }
       }
-
-    // Object.assign({}, state, {
-    // buffer: Object.assign({}, state.buffer, action.keys)
-    //})
 
 
     case nodeActionTypes.NODE_UPDATE_VALUE:
@@ -183,14 +182,13 @@ export default function reducer(state = initialState, action) {
 
       v[action.key] = Math.max(action.min || value + action.amount, value + action.amount);
 
-      const nobj = Object.assign({}, state.buffer[action.property] || {}, v);
+      const nobj = { ...(state.buffer[action.property] || {}), ...v };
 
-      return Object.assign({}, state, {
-        buffer: Object.assign({}, state.buffer, { [action.property]: nobj }),
-      })
+      return {
+        ...state,
+        buffer: { ...state.buffer, [action.property]: nobj }
+      };
 
-
-      return state;
 
     case nodeActionTypes.NODE_UPDATE_VALUE_KEY:
       //do some magic with the acuon value too - if array etc.
@@ -208,34 +206,38 @@ export default function reducer(state = initialState, action) {
           v[action.key] = action.value;
         }
 
-        const newobject = Object.assign({}, state.buffer[action.property] || {}, v);
+        const newobject = { ...(state.buffer[action.property] || {}), ...v };
 
-        return Object.assign({}, state, {
-          buffer: Object.assign({}, state.buffer, { [action.property]: newobject }),
-        })
+        return {
+          ...state,
+          buffer: { ...state.buffer, [action.property]: newobject },
+        };
       }
 
       return state;
 
     case nodeActionTypes.NODE_CONFIGURE_CANCEL:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         configuringId: null,
         buffer: {},
-      })
+      }
 
     //set the values in current node to values in buffer
     case nodeActionTypes.NODE_CONFIGURE_OK:
       if (state.configuringId) {
-        return Object.assign({}, state, {
+        return {
+          ...state,
           configuringId: null,
           buffer: {},
-          nodesById: Object.assign({}, state.nodesById, { [state.configuringId]: _configureNode(state.nodesById[state.configuringId], state.buffer) }),
-        });
+          nodesById: { ...state.nodesById, [state.configuringId]: _configureNode(state.nodesById[state.configuringId], state.buffer) },
+        };
       }
       return state;
 
     case nodeActionTypes.MOUSE_UP:
-      const { x, y } = state.nodePos[state.draggingNode];
+
+      const { x = 0, y = 0 } = state.nodePos[state.draggingNode] || state.nodesById[state.draggingNode] || {};
       return {
         ...state,
         draggingNode: null,
@@ -255,31 +257,36 @@ export default function reducer(state = initialState, action) {
             ...state.nodePos,
             [state.draggingNode]: { x: action.x, y: action.y }
           }
-          // nodesById: Object.assign({}, state.nodesById, { [state.draggingNode]: Object.assign({}, state.nodesById[state.draggingNode], { x: action.x, y: action.y }) })
         };
       }
       return state;
 
     case nodeActionTypes.NODE_UPDATE_SCHEMA:
-      return Object.assign({}, state, {
-        nodesById: Object.assign({}, state.nodesById, {
-          [action.id]: Object.assign({}, state.nodesById[action.id], { schema: action.schema })
-        })
-      });
+      return {
+        ...state,
+        nodesById: {
+          ...state.nodesById,
+          [action.id]: { ...state.nodesById[action.id], schema: action.schema }
+        }
+      };
 
     case nodeActionTypes.NODE_UPDATE_DESCRIPTION:
 
-      return Object.assign({}, state, {
-        nodesById: Object.assign({}, state.nodesById, {
-          [action.id]: Object.assign({}, state.nodesById[action.id], { description: action.description })
-        })
-      });
+      return {
+        ...state,
+        nodesById: {
+          ...state.nodesById,
+          [action.id]: { ...state.nodesById[action.id], description: action.description }
+        }
+      };
 
     default:
       return state;
   }
 }
 
+const portSelected = (state) => state.ports.output;
+const draggingNode = (state) => state[NAME].draggingNode;
 const nodesById = (state) => state[NAME].nodesById;
 const linksById = (state) => state.ports.linksById;
 const nodePos = (state) => state[NAME].nodePos;
@@ -335,6 +342,8 @@ export const selector = createStructuredSelector({
   h,
   selectedId,
   configuringId,
+  draggingNode,
+  portSelected,
   node,
   buffer,
   cpos,

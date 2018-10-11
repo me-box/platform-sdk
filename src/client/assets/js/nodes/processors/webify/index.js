@@ -22,13 +22,16 @@ const config = {
 
 	icon: "far fa-file-code",
 	unicode: '\uf1c9',
+
 	label: function () {
 		return this.name || "webify";
 	},
 
-	schemafn: (value = "", id = "", inputs = []) => {
+	schemafn: (nid, node, inputs = []) => {
 
-		const ptype = extract_ptype_from_inputs(inputs);
+
+		//whatever personal data comes in is emitted in some form in payload.values;
+		const ptype = extract_ptype_from_inputs(inputs, nid, "payload.values");
 
 		return {
 			output: {

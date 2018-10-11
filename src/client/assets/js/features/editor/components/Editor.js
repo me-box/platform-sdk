@@ -71,7 +71,6 @@ export default class Editor extends Component {
 
   render() {
 
-    console.log("in render editor");
 
     const { editor: { screen: { w, h } }, publishervisible } = this.props;
 
@@ -109,10 +108,7 @@ export default class Editor extends Component {
     }
   }
 
-
-
   _handleResize(e) {
-
     const w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     const h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     this.props.actions.windowResize(w, h);

@@ -36,7 +36,7 @@ const _flatten = (arr) => {
 }
 
 const _generateManifest = (app, reponame, packages, nodes, username) => {
-  console.log("GENERATING MANIFEST!!!");
+
 
   const appname = app.name.startsWith(username) ? app.name : `${username}-${app.name}`;
   reponame = reponame && reponame.trim() != "" ? reponame : appname;
@@ -131,9 +131,9 @@ function extractPackages(state) {
 //add in ptypes here - can ptype be made message specific??
 //since we know the input message from input node?
 function extractNodes(newNodesObj, lookuptype) {
-  console.log("IN EXTRACT NODES!!");
-  //var i;
-  //var n;
+
+  console.log("extracting nodes", newNodesObj, lookuptype);
+
   var newNodes;
 
   if (typeof newNodesObj === "string") {
@@ -166,6 +166,7 @@ function extractNodes(newNodesObj, lookuptype) {
     if (n.type !== "tab") {
 
       const def = lookuptype(n.type).def;
+
 
       const node = {
         x: n.x,
@@ -205,8 +206,9 @@ function extractNodes(newNodesObj, lookuptype) {
       node.inputs = n.inputs || node._def.inputs;
       node.outputs = n.outputs || node._def.outputs;
 
-      node.schema = n.schamafn ? n.schemafn(node.id, node, node.inputs) : {};
-      console.log("set node schema to", node.schema);
+
+      //node.schema = def.schemafn ? def.schemafn(node.id, node) : {};
+
 
       for (var d2 in node._def.defaults) {
         if (node._def.defaults.hasOwnProperty(d2)) {
@@ -225,6 +227,9 @@ function extractNodes(newNodesObj, lookuptype) {
       }
 
       node_map[n.id] = node;
+
+      console.log("ok node is now", node);
+
       acc.push(node);
     }
     return acc;
@@ -565,15 +570,15 @@ function requestFlows() {
 }
 
 function receiveFlows(data, lookuptypes) {
-
+  console.log("IN RECEIEVE FLOWS!");
   const { nodes, links } = extractNodes(data, lookuptypes);
 
   return function (dispatch, getState) {
     //unregisterAll(store);
+
     dispatch(portActions.clearLinks());
     dispatch(nodeActions.clearNodes());
-
-    dispatch(nodeActions.receiveFlows(nodes));
+    dispatch(nodeActions.receiveFlows(nodes, links));
     dispatch(portActions.receiveFlows(links));
 
     dispatch(toggleVisible());

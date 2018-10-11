@@ -26,6 +26,7 @@ const config = {
     },
 
     schemafn: (nid, node = {}) => {
+
         return {
             output: {
                 type: "object",

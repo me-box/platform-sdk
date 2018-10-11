@@ -104,7 +104,9 @@ class NodeCanvas extends Component {
   _onMouseMove(e) {
     const { clientX, clientY } = e;
 
-    if (this.state.mousePressed) {
+    //console.log(this.props);
+
+    if (this.props.draggingNode != null || this.props.portSelected != null) {
       this.mouseMove(clientX, clientY);
     }
   }
@@ -115,9 +117,9 @@ class NodeCanvas extends Component {
   }
 
   _onMouseUp(e) {
+
     this.setState({ mousePressed: false });
     this.mouseUp(e);
   }
 }
-
 export default connect(selector)(DropTarget(ItemTypes.NODE, canvasTarget, collect)(NodeCanvas));

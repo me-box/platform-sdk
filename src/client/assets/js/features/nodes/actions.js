@@ -8,14 +8,21 @@ import { scopeify } from 'utils/scopeify';
 import { register, unregister, unregisterAll } from 'app/store/configureStore';
 import { downstreamnodes, fromnode, tonode } from "utils/tree";
 
-function loadNode({ component, node, reducer }) {
+function loadNode({ component, node, links, reducer }) {
+
   return function (dispatch, getState) {
 
+    //const _node = Object.assign({}, node, { schema: _schema(node), description: _description(node._def) });
+    const nodes = getState().nodes.nodesById;
 
+    const inputs = links.filter((link) => {
+      return link.target.id === node.id;
+    }).map((link) => {
+      const { id, schema } = nodes[link.source.id];
+      return { id, schema };
+    });
 
-    const _node = Object.assign({}, node, { schema: _schema(node), description: _description(node._def) });
-
-
+    const _node = { ...node, schema: _schema(node, inputs), description: _description(node._def) };
     addViewProperties(_node);
 
 
@@ -24,17 +31,20 @@ function loadNode({ component, node, reducer }) {
     }
 
     dispatch({ type: nodeActionTypes.NODE_DROPPED, node: _node, config: { id: _node.id, fn: component } });
+
+
+
   };
 }
 
-function _schema(node) {
-  if (node.schemafn) {
+function _schema(node, inputs) {
+  if (node._def.schemafn) {
     const current = Object.keys(node._def.defaults).reduce((acc, key) => {
       acc[key] = node[key];
       return acc;
     }, {});
 
-    return node._def.schemafn(node.id, current);
+    return node._def.schemafn(node.id, current, inputs);
   }
   return {}
 }
@@ -228,15 +238,20 @@ function nodeMouseUp() {
 
 
 
-function receiveFlows(nodes) {
+//need links to use to calculate schemas based on inputs!
 
+function receiveFlows(nodes, links) {
+  console.log("NODE ACTIONS SEEN RECEIVE FLOWS!");
   return (dispatch, getState) => {
 
     const lookuptype = lookup.bind(null, getState().palette.types)
     const _nodes = nodes.map((node) => {
       const { component, reducer } = lookuptype(node.type)
-      dispatch(loadNode({ component, node, reducer }));
+      console.log("LOADING NODE", node);
+      dispatch(loadNode({ component, node, links, reducer }));
     });
+
+
   };
 
   return {

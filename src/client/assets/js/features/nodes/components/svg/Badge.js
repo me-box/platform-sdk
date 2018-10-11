@@ -110,9 +110,14 @@ export default class Badge extends Component {
 
     renderBadge() {
 
-        const { id, link: { source, target, sourcePort = 0 } } = this.props;
+        const { id, link: { source, target, sourcePort = 0 }, cpos = {} } = this.props;
+
+        const { x: sx, y: sy } = cpos[source.id] || { x: source.x, y: source.y };
+        const { x: tx, y: ty } = cpos[target.id] || { x: target.x, y: target.y };
 
         const onClick = () => { this.props.actions.linkSelected(id) }
+
+
 
         const ptype = source.schema && source.schema.output && source.schema.output.ptype ? source.schema.output.ptype : [];
 
@@ -123,8 +128,6 @@ export default class Badge extends Component {
 
 
         const _t = Object.keys(ptype || {}).reduce((acc, key) => {
-            console.log("ok ptype is", ptype);
-            console.log("an key is", key);
 
             const item = ptype[key] || [];
 
@@ -134,7 +137,6 @@ export default class Badge extends Component {
 
                 let val = acc[item.type] || { ordinals: [], accuracy: [], status: [] }
 
-                console.log("OK VAL IS", val, "item is", item);
 
                 if (val.ordinals.indexOf(ordinalnum) == -1) {
                     acc[item.type] = {
@@ -197,8 +199,8 @@ export default class Badge extends Component {
         //const sourcePort = sport || 0;
         const portY = -((numOutputs - 1) / 2) * OUTPUT_GAP + OUTPUT_GAP * sourcePort;
 
-        const dy = target.y - (source.y + portY);
-        const dx = target.x - (source.x + source.w);
+        const dy = ty - (sy + portY);
+        const dx = tx - (sx + source.w);
 
         let scale = LINE_CURVE_SCALE;
 
@@ -206,10 +208,10 @@ export default class Badge extends Component {
             scale += 2 * (Math.min(outputradius * source.w, Math.abs(dx)) / (outputradius * source.w));
         }
 
-        const x1 = source.x + (source.w / 2) + outputradius;
-        const x2 = target.x - (target.w / 2) - outputradius;
-        const y1 = source.y;
-        const y2 = target.y;
+        const x1 = sx + (source.w / 2) + outputradius;
+        const x2 = tx - (target.w / 2) - outputradius;
+        const y1 = sy;
+        const y2 = ty;
 
         const _r = 10;
         const _center_r = warn(target) ? _r : _r;

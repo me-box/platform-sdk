@@ -17,7 +17,6 @@ const initialState = {
 	selectedId: null,
 
 	activeLink: {
-
 		source: {
 			x: 0,
 			y: 0
@@ -38,24 +37,19 @@ const initialState = {
 };
 
 
-const _updatedownstream = (id, dispatch, getState) => {
-
-	const links = getState().ports["links"];
-
-	const downstream = downstreamnodes(id, links);
+const _updatedownstream = (id, dispatch, downstream, getState) => {
 
 	downstream.forEach((n) => {
 
 		const nodes = getState().nodes.nodesById;
 		const node = nodes[n];
 
-		const inputs = links.filter((key) => {
+		const inputs = getState().ports.links.filter((key) => {
 			return tonode(key) === n;
 		}).map((linkId) => {
 			const { id, schema } = nodes[fromnode(linkId)];
 			return { id, schema };
 		});
-
 
 		if (node) {
 
@@ -245,12 +239,9 @@ export default function reducer(state = initialState, action) {
 
 function linkSelected(link) {
 
-	return function (dispatch, getState) {
-		dispatch({
-			type: portActionTypes.LINK_SELECTED,
-			link,
-		});
-		//dispatch(nodeActions.nodeDeselected());
+	return {
+		type: portActionTypes.LINK_SELECTED,
+		link,
 	}
 }
 
@@ -269,6 +260,9 @@ function portMouseOver(node, portType, portIndex, e) {
 	return (dispatch, getState) => {
 		if (getState().ports.output) {
 
+			const links = getState().ports.links;
+			const downstream = downstreamnodes(node.id, links);
+
 			dispatch({
 				type: portActionTypes.PORT_MOUSE_OVER,
 				node,
@@ -276,7 +270,7 @@ function portMouseOver(node, portType, portIndex, e) {
 				portIndex,
 			});
 
-			_updatedownstream(node.id, dispatch, getState);
+			_updatedownstream(node.id, dispatch, downstream, getState);
 		}
 	}
 }
@@ -284,11 +278,16 @@ function portMouseOver(node, portType, portIndex, e) {
 function linkDelete(link) {
 
 	return (dispatch, getState) => {
+		const links = getState().ports.links;
+		const id = tonode(link)
+		const downstream = downstreamnodes(id, links);
+
 		dispatch({
 			type: portActionTypes.DELETE_LINK,
 			link
 		});
-		_updatedownstream(tonode(link), dispatch, getState);
+
+		_updatedownstream(id, dispatch, downstream, getState);
 	}
 }
 
@@ -299,9 +298,17 @@ function clearLinks() {
 }
 
 function nodeDelete(node) {
-	return {
-		type: portActionTypes.DELETE_NODE,
-		node
+
+	return (dispatch, getState) => {
+		const links = getState().ports.links;
+		const downstream = downstreamnodes(node, links);
+
+		dispatch({
+			type: portActionTypes.DELETE_NODE,
+			node
+		});
+
+		_updatedownstream(node, dispatch, downstream, getState);
 	}
 }
 
@@ -328,7 +335,6 @@ function receiveFlows(links) {
 	}
 }
 
-const ports = (state) => state[NAME];
 const clink = (state, ownProps) => state[NAME].linksById[ownProps.id];
 const nodesById = (state) => state.nodes.nodesById;
 
