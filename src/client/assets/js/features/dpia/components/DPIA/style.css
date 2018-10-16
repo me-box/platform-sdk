@@ -8,6 +8,11 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+#dpia .content{
+   
+padding: 10px;
+}
+
 #dpia .intro {
     display: flex;
     flex-direction: row;
