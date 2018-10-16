@@ -1,0 +1,122 @@
+#dpia{
+    position: absolute;
+    top: 64px;
+    left: 178px;
+    width: calc(100vw - 178px);
+    height: calc(100vh - 64px);
+    background: rgba(255,255,255,0.2);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#dpia .intro {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    background: #EBEBEB;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+#dpia .intro .text{
+    background: #EBEBEB;
+   padding: 15px;
+   display: flex;
+   flex: 2.5;
+}
+
+#dpia .intro .text .title{
+    display: block;
+   color: #465662;
+   font-weight: 700;
+}
+
+#dpia .intro .text .overview{
+    display: block;
+    color: black;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+#dpia .intro .status{
+    display: flex;
+    flex: 1;
+   align-self: center;
+   justify-content: center;
+    padding: 10px;
+    font-weight: 700;
+    font-size: 1.3em;
+}
+
+#dpia .intro .statusbutton{
+   background: #d35a51;
+   
+   width: 100%;
+   text-align: center;
+   color: white;
+   padding: 7px;
+}
+
+#dpia .category .title{
+   text-align: center;
+   font-weight: 700;
+   margin-bottom: 15px;
+   margin-top: 30px;
+}
+
+#dpia .category .description{
+    background: #465662;
+    padding: 15px;
+    text-align: center;
+    color: white;
+    margin-bottom: 7px;
+    font-weight: 700;
+}
+
+#dpia .category {
+    background:white;
+   
+}
+#dpia .category .criteria{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 7px;
+    background: #EBEBEB;
+    border: 1px solid;
+}
+
+
+#dpia .category .criteria .text{
+    display:flex;
+   flex: 1 1 auto;
+    background: white;
+   color: black;
+   text-align: left;
+   border-right: 1px solid;
+}
+
+#dpia .category .criteria .check{
+    display:flex;
+    flex: 0 0 auto;
+  width: 50px;
+  align-self: center;
+  justify-content: center;
+
+}
+
+#dpia .category .criteria .text .title{
+   text-align: left;
+   font-size: 0.9em;
+   margin-bottom: 7px;
+   margin-top:0px;
+}
+
+
+#dpia .category .criteria .text .description{
+   padding:0;
+   text-align: left;
+   background: white;
+   color: black;
+   font-weight: normal;
+   font-size: 0.9em;
+  
+}
+

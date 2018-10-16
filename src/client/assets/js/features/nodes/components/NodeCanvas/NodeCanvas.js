@@ -94,6 +94,7 @@ class NodeCanvas extends Component {
         {_badges}
       </svg>
       {_configs}
+
     </div>);
   }
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { LINE_CURVE_SCALE, OUTPUT_WIDTH, OUTPUT_GAP } from 'constants/ViewConstants';
-import cx from 'classnames';
 import { actionCreators as linkActions, selector } from 'features/ports';
+import { actionCreators as dpiaActions } from 'features/dpia';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
@@ -52,7 +52,7 @@ const _opacity = (status = []) => {
 
 @connect(selector, (dispatch) => {
     return {
-        actions: { ...bindActionCreators(linkActions, dispatch) },
+        actions: { ...bindActionCreators({ ...linkActions, ...dpiaActions }, dispatch) },
     }
 })
 
@@ -63,6 +63,7 @@ export default class Badge extends Component {
         super(props);
         this.renderBadge = this.renderBadge.bind(this);
         this.renderAccuracy = this.renderAccuracy.bind(this);
+        this.state = { showdpia: false };
     }
 
     renderRange(min, max, ex, ey) {
@@ -106,7 +107,6 @@ export default class Badge extends Component {
         }
         return null;
     }
-
 
     renderBadge() {
 
@@ -289,7 +289,7 @@ export default class Badge extends Component {
         return <g>
             {circles}
             {circles.length > 0 && <circle cx={_cx} cy={_cy} r={_center_r / 2} style={circlecenterstyle} />}
-            {circles.length > 0 && warn(target) && <text className="warning" {...warningprops}>{icontxt}</text>}
+            {circles.length > 0 && warn(target) && <text onClick={this.props.actions.toggleDPIA} className="warning" {...warningprops}>{icontxt}</text>}
 
         </g>
 
@@ -298,5 +298,6 @@ export default class Badge extends Component {
 
     render() {
         return this.renderBadge();
+
     }
 }

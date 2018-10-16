@@ -22,7 +22,7 @@ import Publisher from 'features/workspace/components/Publisher';
 import TestManager from 'features/test/components/TestManager';
 import Help from 'features/help/components/Help';
 import ServerConsole from 'features/serverconsole/components/ServerConsole';
-
+import DPIA from 'features/dpia/components/DPIA';
 
 @connect((state) => {
   return {
@@ -93,7 +93,7 @@ export default class Editor extends Component {
       <ServerConsole h={h - TOOLBAR_HEIGHT} w={w} />
       <Help h={h - TOOLBAR_HEIGHT} w={w} />
       <Toolbar {...toolbarprops} />
-
+      <DPIA />
     </div>)
   }
 
