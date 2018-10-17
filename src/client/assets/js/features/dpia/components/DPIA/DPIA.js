@@ -19,10 +19,13 @@ export default class DPIA extends Component {
     }
 
     renderDPIA() {
+        const { categories } = this.props;
+
+        console.log("DPIA CATEGORIES", categories);
 
         const dialogueprops = {
-            ok: this.props.actions.toggleDPIA,
-            cancel: this.props.actions.toggleDPIA,
+            ok: (e) => { console.log("ok clikced"); this.props.actions.toggleDPIA() },
+            cancel: (e) => { console.log("cancel clikced"); this.props.actions.toggleDPIA() },
             title: "DPIA",
         }
         return <div id="dpia">

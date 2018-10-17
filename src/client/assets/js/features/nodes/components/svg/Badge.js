@@ -289,7 +289,7 @@ export default class Badge extends Component {
         return <g>
             {circles}
             {circles.length > 0 && <circle cx={_cx} cy={_cy} r={_center_r / 2} style={circlecenterstyle} />}
-            {circles.length > 0 && warn(target) && <text onClick={this.props.actions.toggleDPIA} className="warning" {...warningprops}>{icontxt}</text>}
+            {circles.length > 0 && warn(target) && <text onClick={(e) => this.props.actions.toggleDPIA(target.id)} className="warning" {...warningprops}>{icontxt}</text>}
 
         </g>
 
