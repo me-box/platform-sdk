@@ -75,21 +75,57 @@ const categories = createSelector([nid, links, nodes], (nid, links, nodes) => {
         const node = nodes[nid];
         const nodeinputs = _inputs(nid, links);
 
-        const personaldata = nodeinputs.reduce((acc, nid) => {
-            const node = nodes[nid];
-            if (node.schema && node.schema.output && node.schema.output.ptype) {
-                const ptype = node.schema.output.ptype;
-                acc = [...acc, ...Object.keys(ptype).reduce((acc, key) => {
-                    return [...acc, ...ptype[key]];
-                }, [])]
+        const datastores = Object.keys(nodes).reduce((acc, key) => {
+            const n = nodes[key];
+            console.log("n is", n);
+
+            if (n._def && n._def.category === "datastores") {
+                acc = [...acc, n];
             }
             return acc;
         }, []);
 
+        const personaldata = datastores.reduce((acc, n) => {
+            console.log("n is", n);
+            if (n._def && n._def.category === "datastores") {
+                if (n.schema && n.schema.output && n.schema.output.ptype) {
+                    const ptype = n.schema.output.ptype;
+
+                    const ips = Object.keys(ptype).reduce((acc, key) => {
+                        return ptype[key].reduce((acc, p) => {
+                            acc[p.type] = [...(acc[p.type] || []), p.subtype || "true"];
+                            return acc;
+                        }, {});
+                    }, {});
+
+                    return {
+                        personal: _dedup([...(acc.personal || []), ...(ips.personal || [])]),
+                        sensitive: _dedup([...(acc.sensitive || []), ...(ips.sensitive || [])]),
+                        identifier: _dedup([...(acc.identifier || []), ...(ips.identifier || [])]),
+                    }
+                }
+            }
+            return acc;
+        }, {});
+
+        const pdatastr = Object.keys(personaldata).reduce((acc, k) => {
+            if (k === "identifier") {
+                return [...acc, "identifier data"];
+            }
+            if (personaldata[k].length > 0) {
+                return [...acc, `${k} data (${personaldata[k].join(",")})`]
+            }
+            return acc;
+        }, []);
+
+        const personaldescription = `Your app uses ${datastores.length} data sources which emit ${pdatastr.join(" and ")} `;
+        console.log(personaldescription);
+
+
         console.log("personal data is ", personaldata);
 
         const upstreamnodes = upstream(node.id, links);
-        const nature = [{ id: "sensitive" }, { id: "evaluation" }];
+        const nature = Object.keys(datastores).length > 0 ? [{ id: "personal", description: "" }, { id: "evaluation" }] : [];
         const exported = [{ id: "automated" }, { id: "systematic" }, { id: "restriction" }, { id: "matching" }];
         const users = [{ id: "vulnerable" }];
     }
