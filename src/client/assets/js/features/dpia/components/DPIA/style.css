@@ -125,3 +125,21 @@ padding: 10px;
   
 }
 
+#dpia .evaluation >div{
+    display: inline-block;
+   padding:10px;
+   margin-right: 10px;
+  
+   background:#EBEBEB;
+}
+
+
+#dpia text.icon {
+	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+    font-size: 1.4em;
+    fill: white;
+    text-anchor: middle;
+    -moz-user-select: none;
+   	-khtml-user-select: none;
+   	-webkit-user-select: none;
+}
