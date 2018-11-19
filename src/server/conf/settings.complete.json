@@ -12,7 +12,7 @@
         "URL": "http://localhost:8091"
     },
     "registry": {
-        "URL": "https://registry.iotdatabox.com"
+        "URL": ""
     },
     "mongo": {
         "URL": "mongodb://localhost:27017"
@@ -23,5 +23,6 @@
     },
     "testserver": {
         "URL": "http://localhost:9090"
-    }
+    },
+    "version": "0.5.0"
 }

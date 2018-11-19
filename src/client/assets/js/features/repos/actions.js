@@ -45,7 +45,7 @@ const _generateManifest = (app, reponame, packages, nodes, username) => {
 
     'manifest-version': 1,
     name: appname,
-    version: "0.1.0",
+    version: "0.3.0",
     description: app.description,
     author: username,
     licence: "MIT",

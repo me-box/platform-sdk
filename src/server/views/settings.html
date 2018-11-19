@@ -1,94 +1,139 @@
 <!doctype html>
 <html class="no-js" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Databox - nearly there</title>
-    <link rel="stylesheet" href="/css/settings.css">
-    <link rel="stylesheet" href="/css/docs.css">
-  </head>
-  <body>  
-    <div id="settings">
-        <!-- Start Top Bar -->
-      <div class="top-bar">
-        <div class="top-bar-left">
-          <ul class="menu">
-            <li class="menu-text">databox</li>
-          </ul>
-        </div>
-        <div class="top-bar-right">
-          <ul class="menu">
-            <li><a href="https://github.com/me-box/platform-sdk">sdk github</a></li>
-            <li><a href="https://github.com/me-box/databox">databox github</a></li>
-            <li><a href="http://www.databoxproject.uk">databox project</a></li>
-          </ul>
-        </div>
-      </div>
-      <!-- End Top Bar -->
 
-        <div class="callout large primary">
-        <div class="row column text-center">
-          <h1>nearly there...</h1>
-        </div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Databox - nearly there</title>
+  <link rel="stylesheet" href="/css/settings.css">
+  <link rel="stylesheet" href="/css/docs.css">
+</head>
+
+<body>
+  <div id="settings">
+    <!-- Start Top Bar -->
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <ul class="menu">
+          <li class="menu-text">databox</li>
+        </ul>
       </div>
-      <div class="content">
-        <div class="grid-x" >
-          <div class="cell">
-              <p>Your settings are currently:</p>
+      <div class="top-bar-right">
+        <ul class="menu">
+          <li><a href="https://github.com/me-box/platform-sdk">sdk github</a></li>
+          <li><a href="https://github.com/me-box/databox">databox github</a></li>
+          <li><a href="http://www.databoxproject.uk">databox project</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- End Top Bar -->
+
+    <div class="callout large primary">
+      <div class="row column text-center">
+        <h1>nearly there...</h1>
+      </div>
+    </div>
+    <div class="content">
+      <div class="callout secondary">
+        <h3> submit your app credentials</h3>
+        <p>
+          Before using the Databox IDE you have to register it as a new github application. Just follow the
+          instructions below to get a client ID and secret, then add them to the form below and click update
+        </p>
+        <form action="/config/update" method="post">
+          <div class="grid-container">
+            <div class="grid-x grid-padding-x">
+              <div class="medium-6 cell">
+                <label>Github CLIENT ID
+                  <input type="text" name="CLIENT_ID" value="<%= config.CLIENT_ID %>" value="abcjdl" placeholder="github client id">
+                </label>
+              </div>
+              <div class="medium-6 cell">
+                <label>Github CLIENT SECRET
+                  <input type="text" name="CLIENT_SECRET" value="<%= config.CLIENT_SECRET %>" placeholder="github client secret">
+                </label>
+              </div>
+            </div>
+            <div class="grid-x grid-padding-x">
+              <div class="medium-6 cell">
+                <label>Github callback url
+                  <input type="text" name="CALLBACK" value="<%= config.CALLBACK %>" placeholder="github callback url">
+                </label>
+              </div>
+            </div>
+            <div class="grid-x grid-padding-x">
+              <div class="medium-6 cell">
+                <input type="submit" value="update!">
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="grid-x">
+        <div class="cell">
+          <!--<p>Your settings are currently:</p>
               <pre class="highlighter-rouge">
                 <code>
                   <%= config %>
                 </code>
-              </pre>
-          </div>
-        </div>
-        <div class="grid-x" >
-          <div class="cell">
-              <p> You now need to register a new github app at <a href="https://github.com/settings/developers"  target="_blank">https://github.com/settings/developers</a></p>
-              <p> When presented with the following screen, click on <i>Register a new application</i>
-              <figure class="figure">
-                  <img src="/images/github/github1.jpg" class="thumbnail" width="80%" alt="github register application">
-                  <figcaption class="figure-caption text-center">github register application</figcaption>
-              </figure>
-              <p>When prompted to fill in details, you can give the application any name, and provide any legitimate url for the homepage.  The callback url must be:</p>
-              <div class="highlighter-rouge">
-                <code>http://localhost:8086/auth/github/callback</code>
-              </div>
-              <figure class="figure">
-                  <img src="/images/github/github2.jpg" class="thumbnail" width="80%" alt="github add callback and name">
-                  <figcaption class="figure-caption text-center">github add callback and name</figcaption>
-               </figure>
-
-               <p> You will then be provided with a Client ID and Client Secret.  These are what you need to finish the install:</p>
-               
-               <figure class="figure">
-                  <img src="/images/github/github3.jpg" class="thumbnail" width="80%" alt="clientID and secret">
-                  <figcaption class="figure-caption text-center">clientID and secret</figcaption>
-               </figure>
-
-          </div>
+              </pre-->
         </div>
 
-        <div class="grid-x" >
-          <div class="cell">
-              <p> Now open [your databox directory]/sdk/settings.json and put in your  Client ID and Client Secret and then restart the sdk. </p>
-              <p> To restart the sdk, in the databox directory, run:</p>
-               <div class="highlighter-rouge">
-               <code>docker-compose -f docker-databox-sdk.yaml restart databox-sdk</code>   
-              </div> 
-              <p> And wait until you see:</p>
-              <div class="highlighter-rouge">
-                <code>Restarting databox-sdk ... done  </code>
-              </div>
-          </div>
+      </div>
+      <div class="grid-x">
+        <div class="cell">
+          <h3> registering your app</h3>
+          <p> Register your new github app at <a href="https://github.com/settings/developers" target="_blank">https://github.com/settings/developers</a></p>
+          <p> When presented with the following screen, click on <i>Register a new application</i>
+            <figure class="figure">
+              <img src="/images/github/github1.jpg" class="thumbnail" width="80%" alt="github register application">
+              <figcaption class="figure-caption text-center">github register application</figcaption>
+            </figure>
+            <p>When prompted to fill in details, you can give the application any name, and provide any legitimate url
+              for the homepage. The callback url must be:</p>
+            <div class="highlighter-rouge">
+              <code>http://localhost:8086/auth/github/callback</code>
+            </div>
+            <figure class="figure">
+              <img src="/images/github/github2.jpg" class="thumbnail" width="80%" alt="github add callback and name">
+              <figcaption class="figure-caption text-center">github add callback and name</figcaption>
+            </figure>
+
+            <p> You will then be provided with a Client ID and Client Secret. These are what you need to finish the
+              install:</p>
+
+            <figure class="figure">
+              <img src="/images/github/github3.jpg" class="thumbnail" width="80%" alt="clientID and secret">
+              <figcaption class="figure-caption text-center">clientID and secret</figcaption>
+            </figure>
+
         </div>
-        
-        <div class="grid-x" >
-          <div class="cell">
-              <p>Once done and restarted, if you go to <a href="http://localhost:8086/"  target="_blank">http://localhost:8086/</a> you should be prompted to login to the sdk.</p>
+      </div>
+
+      <div class="grid-x">
+        <div class="cell">
+          <p> Now open [your databox directory]/sdk/settings.json and put in your Client ID and Client Secret and then
+            restart the sdk. </p>
+          <p> To restart the sdk, in the databox directory, run:</p>
+          <div class="highlighter-rouge">
+            <code>docker-compose -f docker-databox-sdk.yaml restart databox-sdk</code>
+          </div>
+          <p> And wait until you see:</p>
+          <div class="highlighter-rouge">
+            <code>Restarting databox-sdk ... done  </code>
           </div>
         </div>
       </div>
+
+      <div class="grid-x">
+        <div class="cell">
+          <p>Once done and restarted, if you go to <a href="http://localhost:8086/" target="_blank">http://localhost:8086/</a>
+            you should be prompted to login to the sdk.</p>
+        </div>
+      </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

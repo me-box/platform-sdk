@@ -26,9 +26,9 @@ export default class TestManager extends Component {
 
 	render() {
 
-		const { /*nodestotest: { nodes, error, warning },*/ visible, testurl, username, deploying, deployError } = this.props;
+		const { nodestotest: { nodes, error, warning }, visible, testurl, username, deploying, deployError } = this.props;
 		//const { visible, testurl, username, deploying, deployError } = this.props;
-		const nodes = [], error = [], warning = [];
+		//const nodes = [], error = [], warning = [];
 
 		console.log("in render test manager");
 

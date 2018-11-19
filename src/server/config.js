@@ -1,54 +1,55 @@
 import fs from 'fs';
 
-export function fetch(options={}){
+export function fetch(options = {}) {
+        console.log("fecthing confoig settings!");
+        return new Promise((resolve, reject) => {
 
-   return new Promise((resolve, reject)=>{
-        
-        fs.readFile("./conf/settings.json", 'utf8', function(err, data){
-            if (err){
-                return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(),null,4)).then((settings)=>{
-                   
-                    resolve(settings);
-                    return;
-                });
-            }
-            try{
-                const settings = JSON.parse(data);
-               
-                resolve(settings);
-                return;
-            }catch(err){
-                console.log("error reading settings file!", err);   
-                reject(defaultsettings());
-            };
-        });
-   });
-}
+                fs.readFile("./conf/settings.json", 'utf8', function (err, data) {
+                        console.log("read in config!");
+                        if (err) {
+                                return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4)).then((settings) => {
 
-export function write(file){
-        return new Promise((resolve, reject)=>{
-            try{
-                fs.mkdir("./conf", function(){
-
-                    fs.writeFile("./conf/settings.json", file, function(err) {
-                        if (err){
-                            console.log("hmmm error writing conf/settings.json")
-                            reject(JSON.parse(file));
-                            return;
+                                        resolve(settings);
+                                        return;
+                                });
                         }
-                        console.log("successfully created directory");
-                        resolve(JSON.parse(file));
-                    });
+                        try {
+                                const settings = JSON.parse(data);
+
+                                resolve(settings);
+                                return;
+                        } catch (err) {
+                                console.log("error reading settings file!", err);
+                                reject(defaultsettings());
+                        };
                 });
-            }catch(err){
-                console.log("error writing conf file", err);
-                reject(JSON.parse(file));
-                return;
-            }
-        });   
+        });
 }
 
-export function defaultdevsettings(){        
+export function write(file) {
+        return new Promise((resolve, reject) => {
+                try {
+                        fs.mkdir("./conf", function () {
+
+                                fs.writeFile("./conf/settings.json", file, function (err) {
+                                        if (err) {
+                                                console.log("hmmm error writing conf/settings.json")
+                                                reject(JSON.parse(file));
+                                                return;
+                                        }
+                                        console.log("successfully created directory");
+                                        resolve(JSON.parse(file));
+                                });
+                        });
+                } catch (err) {
+                        console.log("error writing conf file", err);
+                        reject(JSON.parse(file));
+                        return;
+                }
+        });
+}
+
+export function defaultdevsettings() {
         return {
 
                 "secret": "asdaksgdsahgdhsagd ahjsgdjhsg",
@@ -71,7 +72,7 @@ export function defaultdevsettings(){
                 },
 
                 "mongo": {
-                        "URL" : "mongodb://localhost:27017"
+                        "URL": "mongodb://localhost:27017"
                 },
 
                 "redis": {
@@ -86,7 +87,7 @@ export function defaultdevsettings(){
         }
 }
 
-export function defaultsettings(){        
+export function defaultsettings() {
         return {
 
                 "secret": "asjhgdsajhd6sa7d78as6s87adsakgdsadgaskdgsagdk",
@@ -109,7 +110,7 @@ export function defaultsettings(){
                 },
 
                 "mongo": {
-                        "URL" : "mongodb://mongo:27017"
+                        "URL": "mongodb://mongo:27017"
                 },
 
                 "redis": {

@@ -8,23 +8,21 @@ import { scopeify } from 'utils/scopeify';
 import { register, unregister, unregisterAll } from 'app/store/configureStore';
 import { downstreamnodes, fromnode, tonode } from "utils/tree";
 
-function loadNode({ component, node, links, reducer }) {
+function loadNode({ component, node, reducer, schemas = {} }) {
+  console.log("|| AM IN LOAD NODE!!!", node);
 
   return function (dispatch, getState) {
 
-    //const _node = Object.assign({}, node, { schema: _schema(node), description: _description(node._def) });
-    const nodes = getState().nodes.nodesById;
 
-    const inputs = links.filter((link) => {
-      return link.target.id === node.id;
-    }).map((link) => {
-      const { id, schema } = nodes[link.source.id];
-      return { id, schema };
-    });
+    const schema = schemas[node.id] || {};
 
-    const _node = { ...node, schema: _schema(node, inputs), description: _description(node._def) };
+    const _node = { ...node, schema, description: _description(node._def) };
+
+
+
     addViewProperties(_node);
 
+    console.log("**** created node", _node);
 
     if (reducer) {
       register(_node.id, scopeify(_node.id, reducer));
@@ -38,6 +36,8 @@ function loadNode({ component, node, links, reducer }) {
 }
 
 function _schema(node, inputs) {
+  console.log("OK IN _SCGAME for node", node, "inoputs", inputs);
+
   if (node._def.schemafn) {
     const current = Object.keys(node._def.defaults).reduce((acc, key) => {
       acc[key] = node[key];
@@ -53,7 +53,6 @@ function _description(def) {
 
   if (def.nodetype === "dbfunction") {
     JSON.stringify(def.defaults, null, 4);
-
   }
 
 
@@ -236,28 +235,61 @@ function nodeMouseUp() {
   }
 }
 
+function resolve(nid, nodes, links, resolved) {
 
+  if (resolved[nid]) {
+    return resolved[nid];
+  }
 
+  const inputs = links.filter((link) => {
+    return link.target.id === nid;
+  });
+
+  if (inputs.length === 0) {
+    return _schema(nodes[nid], []);
+  }
+
+  return _schema(nodes[nid], inputs.map((i) => ({ ...nodes[i.source.id], schema: resolve(i.source.id, nodes, links, resolved) })));
+}
 //need links to use to calculate schemas based on inputs!
 
 function receiveFlows(nodes, links) {
-  console.log("NODE ACTIONS SEEN RECEIVE FLOWS!");
   return (dispatch, getState) => {
 
-    const lookuptype = lookup.bind(null, getState().palette.types)
+    const lookuptype = lookup.bind(null, getState().palette.types);
+
+    const schemas = {};
+
+    const tmpnodes = nodes.reduce((acc, n) => {
+      return { ...acc, [n.id]: n }
+    }, {});
+
+    console.log("----> tmp nodes are", tmpnodes);
+
+    nodes.map(node => {
+      const inputs = links.filter((link) => {
+        return link.target.id === node.id;
+      }).map((link) => {
+        schemas[link.source.id] = resolve(link.source.id, tmpnodes, links, schemas);
+      });
+    })
+
+    console.log("now resolved is", schemas);
+
     const _nodes = nodes.map((node) => {
-      const { component, reducer } = lookuptype(node.type)
-      console.log("LOADING NODE", node);
-      dispatch(loadNode({ component, node, links, reducer }));
+      const { component, reducer } = lookuptype(node.type);
+
+      console.log("** LOADING NODE", node, "component", component);
+      dispatch(loadNode({ component, node, reducer, schemas }));
     });
-
-
+    console.log("DISPATCHING RECEIEVE FLOWS///!");
   };
 
   return {
     type: nodeActionTypes.RECEIVE_FLOWS,
     nodes,
-  }
+  };
+
 }
 
 

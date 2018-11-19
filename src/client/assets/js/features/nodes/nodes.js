@@ -54,7 +54,7 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
 
     case nodeActionTypes.RECEIVE_FLOWS:
-
+      console.log("---> recieved flows", action.nodes);
       return {
         ...state,
         nodes: action.nodes.map((node) => node.id),

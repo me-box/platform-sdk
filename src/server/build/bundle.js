@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -79,10 +79,16 @@ module.exports = require("fs");
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("minimist");
+module.exports = require("babel-runtime/helpers/extends");
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+module.exports = require("minimist");
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -94,7 +100,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = init;
 exports.sendmessage = sendmessage;
 
-var _socket = __webpack_require__(20);
+var _socket = __webpack_require__(24);
 
 var _socket2 = _interopRequireDefault(_socket);
 
@@ -103,7 +109,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var ns = void 0;
 
 function init(server, store, secret) {
-
+  console.log("initing socket io");
   var io = _socket2.default.listen(server);
 
   ns = io.of('/databox');
@@ -124,6 +130,7 @@ function init(server, store, secret) {
       console.log("socket disconnect!");
     });
   });
+  console.log("finished initing socket io");
 }
 
 function sendmessage(room, event, message) {
@@ -131,7 +138,13 @@ function sendmessage(room, event, message) {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/toConsumableArray");
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -141,7 +154,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _dockerode = __webpack_require__(23);
+var _dockerode = __webpack_require__(27);
 
 var _dockerode2 = _interopRequireDefault(_dockerode);
 
@@ -151,25 +164,37 @@ var docker = new _dockerode2.default({ socketPath: '/var/run/docker.sock' });
 exports.default = docker;
 
 /***/ }),
-/* 5 */
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/regenerator");
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = require("babel-runtime/helpers/asyncToGenerator");
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport");
 
 /***/ }),
-/* 6 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = require("superagent");
 
 /***/ }),
-/* 7 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 8 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -178,6 +203,11 @@ module.exports = require("path");
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+
+var _toConsumableArray2 = __webpack_require__(5);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 exports.matchLibraries = matchLibraries;
 exports.flatten = flatten;
 exports.dedup = dedup;
@@ -188,7 +218,7 @@ exports.createTestContainer = createTestContainer;
 exports.writeTempFile = writeTempFile;
 exports.removeTempFile = removeTempFile;
 
-var _zlib = __webpack_require__(24);
+var _zlib = __webpack_require__(28);
 
 var _zlib2 = _interopRequireDefault(_zlib);
 
@@ -196,17 +226,15 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _tarStream = __webpack_require__(25);
+var _tarStream = __webpack_require__(29);
 
 var _tarStream2 = _interopRequireDefault(_tarStream);
 
-var _docker = __webpack_require__(4);
+var _docker = __webpack_require__(6);
 
 var _docker2 = _interopRequireDefault(_docker);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function matchLibraries(code) {
 
@@ -230,7 +258,7 @@ function matchLibraries(code) {
 		});
 	}
 
-	return [].concat(_toConsumableArray(r1), _toConsumableArray(r2));
+	return [].concat((0, _toConsumableArray3.default)(r1), (0, _toConsumableArray3.default)(r2));
 }
 
 function flatten(arr) {
@@ -308,12 +336,12 @@ function createTarFile(dockerfile, flowfile, path) {
 		pack.entry({name: "flows.json"}, flowfile, function(err){
 			if (err){
 			
-       	   		reject(err);
-       		}
-       		console.log("finalising");
-       		pack.finalize();
-       	
-       		const stream = pack.pipe(gzip).pipe(tarball);
+						reject(err);
+			}
+			console.log("finalising");
+			pack.finalize();
+		
+			const stream = pack.pipe(gzip).pipe(tarball);
 	
 			stream.on('finish', function (err) {
 				resolve(path);
@@ -323,25 +351,26 @@ function createTarFile(dockerfile, flowfile, path) {
 })
 }*/
 
-/*export function createTarFile(dockerfile, path){
-		
-	return new Promise((resolve, reject)=>{
-		
+/*export function createTarFile(dockerfile, path) {
+
+	console.log("OK IN CREATE TAR FILE!!")
+	return new Promise((resolve, reject) => {
+
 		var tarball = fs.createWriteStream(path);
-		const gzip   = zlib.createGzip();
-		const pack   = tar.pack();
-	
-		pack.entry({name: 'Dockerfile'}, dockerfile, function(err){
-        	if (err){
-        	   reject(err);
-        	}
-        	pack.finalize();
-        	
-        	const stream = pack.pipe(gzip).pipe(tarball);
-		
+		const gzip = zlib.createGzip();
+		const pack = tar.pack();
+
+		pack.entry({ name: 'Dockerfile' }, dockerfile, function (err) {
+			if (err) {
+				reject(err);
+			}
+			pack.finalize();
+
+			const stream = pack.pipe(gzip).pipe(tarball);
+
 			stream.on('finish', function (err) {
 				resolve(path);
-			});	
+			});
 		});
 	});
 }*/
@@ -353,13 +382,21 @@ function createDockerImage(tarfile, tag) {
 	return new Promise(function (resolve, reject) {
 		_docker2.default.buildImage(tarfile, { t: tag, nocache: true }, function (err, output) {
 			if (err) {
+				console.log("error building image", err);
 				console.warn(err);
 				reject(err);
 				return;
 			}
 			output.pipe(process.stdout);
 
+			output.on('error', function (err) {
+				console.log("ERROR!!!", err);
+				reject(err);
+				return;
+			});
+
 			output.on('end', function () {
+				console.log("FINISHED!!!");
 				resolve(tag);
 			});
 		});
@@ -421,7 +458,8 @@ function createTestContainer(image, name, network) {
 	//#PortBindings: { "9123/tcp": [{ "HostPort": "9123" }] }, 
 	//"9123/tcp":{},
 	return new Promise(function (resolve, reject) {
-		_docker2.default.createContainer({ Image: image,
+		_docker2.default.createContainer({
+			Image: image,
 			PublishAllPorts: true,
 			Links: ["mock-datasource:mock-datasource", "databox-test-server:databox-test-server" /*, "openface:openface"*/],
 			Env: ["TESTING=true", "MOCK_DATA_SOURCE=http://mock-datasource:8080"],
@@ -482,20 +520,32 @@ function removeTempFile(fileName) {
 }
 
 /***/ }),
-/* 9 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(10);
+module.exports = __webpack_require__(14);
 
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _http = __webpack_require__(11);
+var _regenerator = __webpack_require__(7);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _extends2 = __webpack_require__(2);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _asyncToGenerator2 = __webpack_require__(8);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _http = __webpack_require__(15);
 
 var _http2 = _interopRequireDefault(_http);
 
@@ -503,29 +553,29 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _expressSession = __webpack_require__(12);
+var _expressSession = __webpack_require__(16);
 
 var _expressSession2 = _interopRequireDefault(_expressSession);
 
-var _connectRedis = __webpack_require__(13);
+var _connectRedis = __webpack_require__(17);
 
 var _connectRedis2 = _interopRequireDefault(_connectRedis);
 
-var _bodyParser = __webpack_require__(14);
+var _bodyParser = __webpack_require__(18);
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _config = __webpack_require__(15);
+var _config = __webpack_require__(19);
 
-var _strategies = __webpack_require__(16);
+var _strategies = __webpack_require__(20);
 
 var _strategies2 = _interopRequireDefault(_strategies);
 
-var _minimist = __webpack_require__(2);
+var _minimist = __webpack_require__(3);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
-var _websocket = __webpack_require__(3);
+var _websocket = __webpack_require__(4);
 
 var _websocket2 = _interopRequireDefault(_websocket);
 
@@ -556,14 +606,16 @@ function checkcredentials(config) {
 
 function addroutes(app, auth) {
   console.log("adding routes");
-  app.use('/auth', __webpack_require__(21));
-  app.use('/github', auth, __webpack_require__(22));
-  app.use('/nodered', auth, __webpack_require__(26));
-  app.use('/samples', auth, __webpack_require__(28));
-  app.use('/uibuilder', auth, __webpack_require__(29));
+  app.use('/auth', __webpack_require__(25));
+  app.use('/github', auth, __webpack_require__(26));
+  app.use('/nodered', auth, __webpack_require__(30));
+  app.use('/samples', auth, __webpack_require__(32));
+  app.use('/uibuilder', auth, __webpack_require__(33));
+  console.log("successfully added routes");
 }
 
 function start(config) {
+  var _this = this;
 
   var app = (0, _express2.default)();
 
@@ -587,9 +639,10 @@ function start(config) {
   }));
 
   app.set('view engine', 'html');
-  app.engine('html', __webpack_require__(31).renderFile);
+  app.engine('html', __webpack_require__(35).renderFile);
 
   var server = _http2.default.createServer(app);
+  console.log("created server!");
 
   var auth = function auth(req, res, next) {
 
@@ -606,7 +659,9 @@ function start(config) {
     addroutes(app, auth);
   }
 
+  console.log("calling init");
   (0, _websocket2.default)(server, RedisStore, config.secret);
+  console.log("done!");
 
   app.get('/login', function (req, res) {
     res.render('login');
@@ -640,7 +695,7 @@ function start(config) {
     if (checkcredentials(config)) {
       res.redirect("/login");
     } else {
-      res.render('settings', { title: "Nearly there - you just need set your github settings", config: JSON.stringify(config.github || {}, null, 2) });
+      res.render('settings', { title: "Nearly there - you just need set your github settings", config: config.github });
     }
   });
 
@@ -648,36 +703,68 @@ function start(config) {
     res.send({ testurl: config.testserver.URL });
   });
 
+  app.post('/config/update', function () {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(req, res) {
+      var settings;
+      return _regenerator2.default.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              console.log("seen an upatde!!", req.body);
+              _context.next = 3;
+              return (0, _config.fetch)({ dev: dev });
+
+            case 3:
+              settings = _context.sent;
+              _context.next = 6;
+              return (0, _config.write)(JSON.stringify((0, _extends3.default)({}, settings, { github: (0, _extends3.default)({}, settings.github, req.body) }), null, 4));
+
+            case 6:
+              res.send({ testurl: config.testserver.URL });
+
+            case 7:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, _this);
+    }));
+
+    return function (_x, _x2) {
+      return _ref.apply(this, arguments);
+    };
+  }());
+
   console.log('listening on port ' + PORT);
   server.listen(PORT);
 }
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("connect-redis");
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -700,10 +787,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function fetch() {
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-
+        console.log("fecthing confoig settings!");
         return new Promise(function (resolve, reject) {
 
                 _fs2.default.readFile("./conf/settings.json", 'utf8', function (err, data) {
+                        console.log("read in config!");
                         if (err) {
                                 return write(JSON.stringify(options.dev ? defaultdevsettings() : defaultsettings(), null, 4)).then(function (settings) {
 
@@ -824,7 +912,7 @@ function defaultsettings() {
 }
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -835,11 +923,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = initPassport;
 
-var _passport = __webpack_require__(5);
+var _passport = __webpack_require__(9);
 
 var _passport2 = _interopRequireDefault(_passport);
 
-var _passportGithub = __webpack_require__(17);
+var _passportGithub = __webpack_require__(21);
 
 var _passportGithub2 = _interopRequireDefault(_passportGithub);
 
@@ -861,7 +949,7 @@ function initPassport(app, config) {
 		return;
 	}
 
-	var User = __webpack_require__(18)(config.mongo.URL);
+	var User = __webpack_require__(22)(config.mongo.URL);
 
 	app.use(_passport2.default.initialize());
 	app.use(_passport2.default.session());
@@ -907,19 +995,19 @@ function initPassport(app, config) {
 }
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-github");
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _mongoose = __webpack_require__(19);
+var _mongoose = __webpack_require__(23);
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
@@ -938,19 +1026,19 @@ module.exports = function (url) {
 };
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = require("socket.io");
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -960,7 +1048,7 @@ var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _passport = __webpack_require__(5);
+var _passport = __webpack_require__(9);
 
 var _passport2 = _interopRequireDefault(_passport);
 
@@ -995,19 +1083,33 @@ router.get('/github/callback', _passport2.default.authenticate('github', { failu
 module.exports = router;
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _regenerator = __webpack_require__(7);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = __webpack_require__(8);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _extends2 = __webpack_require__(2);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _toConsumableArray2 = __webpack_require__(5);
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
 var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(6);
+var _superagent = __webpack_require__(10);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -1015,21 +1117,19 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = __webpack_require__(7);
+var _path = __webpack_require__(11);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _docker = __webpack_require__(4);
+var _docker = __webpack_require__(6);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _utils = __webpack_require__(8);
+var _utils = __webpack_require__(12);
 
-var _websocket = __webpack_require__(3);
+var _websocket = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var router = _express2.default.Router();
 var agent = _superagent2.default.agent();
@@ -1118,7 +1218,7 @@ var _createCommit = function _createCommit(config, user, repo, sha, filename, co
 	});
 };
 
-var _createRepo = function _createRepo(config, user, name, description, flows, manifest, dockerfile, commitmessage, accessToken) {
+var _createRepo = function _createRepo(config, user, name, description, flows, dockerfile, commitmessage, accessToken) {
 
 	return new Promise(function (resolve, reject) {
 
@@ -1175,26 +1275,15 @@ var _createRepo = function _createRepo(config, user, name, description, flows, m
 			accessToken: accessToken
 		})]);
 	}).then(function (values) {
+		console.log("ok, created flows, now creating dockerfile!", dockerfile);
 
-		var repo = values[0];
-
-		return Promise.all([Promise.resolve(repo.name), Promise.resolve(values[1]), _addFile({
-			config: config,
-			username: user.username,
-			repo: repo.name,
-			filename: 'databox-manifest.json',
-			email: user.email || user.username + '@me-box.com',
-			message: commitmessage,
-			content: new Buffer(JSON.stringify(_formatmanifest(manifest), null, 4)).toString('base64'),
-			accessToken: accessToken
-		})]);
-	}).then(function (values) {
 		var reponame = values[0];
+		console.log("reponame is", reponame);
 
-		return Promise.all([Promise.resolve(reponame), Promise.resolve(values[1]), Promise.resolve(values[2]), _addFile({
+		return Promise.all([Promise.resolve(reponame), Promise.resolve(values[1]), _addFile({
 			config: config,
 			username: user.username,
-			repo: reponame,
+			repo: reponame.name,
 			filename: 'Dockerfile',
 			email: user.email || user.username + '@me-box.com',
 			message: commitmessage,
@@ -1241,6 +1330,7 @@ var _fetchFile = function _fetchFile(config, username, repoowner, accessToken, r
 	return new Promise(function (resolve, reject) {
 		_superagent2.default.get(config.github.API + '/repos/' + repoowner + '/' + repo + '/contents/' + filename).set('Accept', 'application/json').set('Authorization', 'token ' + accessToken).end(function (err, data) {
 			if (err || !data.ok) {
+				console.log("rejecting!");
 				reject(err);
 			} else {
 
@@ -1253,9 +1343,6 @@ var _fetchFile = function _fetchFile(config, username, repoowner, accessToken, r
 						resolve({ content: str });
 					}
 				} catch (error) {
-					console.log("error parsing JSON");
-					console.log(error);
-					console.log(jsonstr);
 					resolve({ content: {} });
 				}
 			}
@@ -1353,7 +1440,7 @@ var _generateDockerfile = function _generateDockerfile(libraries, config, name) 
 
 	var startcommands = ["EXPOSE 8080", "CMD /root/start.sh"];
 
-	return [].concat(dcommands, _toConsumableArray(libcommands), startcommands).join("\n");
+	return [].concat(dcommands, (0, _toConsumableArray3.default)(libcommands), startcommands).join("\n");
 };
 
 var _generateManifest = function _generateManifest(config, user, reponame, app, packages, allowed) {
@@ -1382,7 +1469,7 @@ var _generateManifest = function _generateManifest(config, user, reponame, app, 
 				name: pkg.name,
 				purpose: pkg.purpose,
 				required: pkg.install === "compulsory",
-				datastores: Array.from(new Set([].concat(_toConsumableArray(pkg.datastores.map(function (d) {
+				datastores: Array.from(new Set([].concat((0, _toConsumableArray3.default)(pkg.datastores.map(function (d) {
 					return d.id;
 				}))))),
 				risk: pkg.risk,
@@ -1437,17 +1524,19 @@ var _stripscheme = function _stripscheme(url) {
 
 var _uploadImageToRegistry = function _uploadImageToRegistry(tag, registry, username) {
 
+	console.log("uploading image to registry", tag, registry, username);
 	return new Promise(function (resolve, reject) {
 		if (registry && registry.trim() !== "") {
 
 			var image = _docker2.default.getImage(tag);
-
+			console.log("ok have image to upload", tag);
+			console.log(image);
 			image.push({ registry: registry }, function (err, stream) {
 
 				_docker2.default.modem.followProgress(stream, onFinished, onProgress);
 
 				function onFinished(err, output) {
-					console.log("FINSIHED PUSHING IMAGE!");
+					console.log("FINISHED PUSHING IMAGE!");
 					if (err) {
 						(0, _websocket.sendmessage)(username, "debug", { msg: err.json.message });
 						reject(err);
@@ -1467,7 +1556,7 @@ var _uploadImageToRegistry = function _uploadImageToRegistry(tag, registry, user
 	});
 };
 
-var _formatmanifest = function _formatmanifest(manifest) {
+var _formatmanifest = function _formatmanifest(manifest, config, user) {
 
 	console.log("formatting manifest", JSON.stringify(manifest, null, 4));
 	//if empty object return
@@ -1475,17 +1564,96 @@ var _formatmanifest = function _formatmanifest(manifest) {
 		return manifest;
 	}
 
-	return _extends({}, manifest, {
+	return (0, _extends3.default)({}, manifest, {
 		name: manifest.name.toLowerCase(),
 		homepage: manifest.homepage.toLowerCase(),
-		repository: _extends({}, manifest.repository, {
+		"docker-image": manifest.name.toLowerCase(),
+		"docker-registry": _stripscheme(config.registry.URL) || user.username,
+		"docker-image-tag": "latest",
+		repository: (0, _extends3.default)({}, manifest.repository, {
 			url: manifest.repository.url.toLowerCase()
 		})
 	});
 };
 
+var _buildImage = function () {
+	var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(config, user, manifest, flows, dockerfile) {
+		var path, tarfile, _appname, _tag, tag;
+
+		return _regenerator2.default.wrap(function _callee$(_context) {
+			while (1) {
+				switch (_context.prev = _context.next) {
+					case 0:
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: "pulling latest base container" });
+
+						_context.next = 3;
+						return _pull("tlodge/databox-red:latest").catch(function (err) {
+							console.log("failed to pull latest base image!");
+							(0, _websocket.sendmessage)(user.username, "debug", { msg: "could not pull latest image", err: err });
+							throw err;
+						});
+
+					case 3:
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: "finshed pulling latest base container" });
+
+						path = user.username + '-tmp.tar.gz';
+						_context.next = 7;
+						return (0, _utils.createTarFile)(dockerfile, flows, path).catch(function (err) {
+							console.log("failed to create tar file for building docker image!", err);
+							(0, _websocket.sendmessage)(user.username, "debug", { msg: "could not create tar file!" });
+							throw err;
+						});
+
+					case 7:
+						tarfile = _context.sent;
+
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: "successfully created tar file, creating docker image" });
+
+						_appname = manifest.name.toLowerCase(); //.replace(`${user.username}-`, "");
+
+						_tag = config.registry.URL && config.registry.URL.trim() != "" ? '' + _stripscheme(config.registry.URL) : '' + user.username.toLowerCase();
+						_context.next = 13;
+						return (0, _utils.createDockerImage)(tarfile, _tag + '/' + _appname + '-amd64:' + (config.version || "latest")).catch(function (err) {
+							console.log("failed to create docker image", err);
+							(0, _websocket.sendmessage)(user.username, "debug", { msg: err });
+							throw err;
+						});
+
+					case 13:
+						tag = _context.sent;
+
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: 'uploading to registry with tag ' + tag });
+
+						_context.next = 17;
+						return _uploadImageToRegistry(tag, '' + config.registry.URL, user.username.toLowerCase()).catch(function (err) {
+							(0, _websocket.sendmessage)(user.username, "debug", { msg: err });
+							console.log("failed to upload image to registry!", err);
+							throw err;
+						});
+
+					case 17:
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: "successfully published" });
+
+					case 18:
+					case 'end':
+						return _context.stop();
+				}
+			}
+		}, _callee, undefined);
+	}));
+
+	return function _buildImage(_x, _x2, _x3, _x4, _x5) {
+		return _ref.apply(this, arguments);
+	};
+}();
+
+//TODO: remove this - no longer needed
 var _publish = function _publish(config, user, manifest, flows, dockerfile) {
-	console.log("1. publishing app");
 
 	return new Promise(function (resolve, reject) {
 		//create a new docker file
@@ -1496,7 +1664,7 @@ var _publish = function _publish(config, user, manifest, flows, dockerfile) {
 
 
 			var data = {
-				manifest: JSON.stringify(_formatmanifest(manifest)),
+				manifest: JSON.stringify(_formatmanifest(manifest, config, user)),
 
 				poster: JSON.stringify({
 					username: user.username
@@ -1620,10 +1788,12 @@ router.get('/flow', function (req, res) {
 	var repo = req.query.repo;
 	var owner = req.query.username || user.username;
 
-	return Promise.all([_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'databox-manifest.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'Dockerfile')]).then(function (values) {
+	console.log("would fetch", repo + '-manifest.json');
 
-		var flows = _extends({}, values[0], { content: JSON.parse(values[0].content) });
-		var manifest = _extends({}, values[1], { content: JSON.parse(values[1].content) });
+	return Promise.all([_fetchFile(req.config, user.username, owner, user.accessToken, repo, 'flows.json'), _fetchFile(req.config, user.username, owner, user.accessToken, "databox-manifest-store", repo + '-manifest.json'), _fetchFile(req.config, user.username, owner, user.accessToken, repo, 'Dockerfile')]).then(function (values) {
+
+		var flows = (0, _extends3.default)({}, values[0], { content: JSON.parse(values[0].content) });
+		var manifest = (0, _extends3.default)({}, values[1], { content: JSON.parse(values[1].content) });
 
 		res.send({
 			result: 'success',
@@ -1649,9 +1819,9 @@ router.post('/repo/new', function (req, res) {
 	var dockerfile = '# ' + name + ' Dockerfile';
 	var commitmessage = req.body.message || "first commit";
 
-	console.log("manifest", JSON.stringify(_formatmanifest(manifest), null, 4));
+	console.log("manifest", JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4));
 
-	return _createRepo(req.config, user, name, description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (repo) {
+	return _createRepo(req.config, user, name, description, flows, dockerfile, commitmessage, req.user.accessToken).then(function (repo) {
 		console.log("successfully created repo", repo);
 		return repo;
 	}).then(function (values) {
@@ -1681,14 +1851,14 @@ router.post('/repo/update', function (req, res) {
 
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(req.body.flows.reduce(function (acc, node) {
 		if (node.type === "dbfunction") {
-			acc = [].concat(_toConsumableArray(acc), [(0, _utils.matchLibraries)(node.func)]);
+			acc = [].concat((0, _toConsumableArray3.default)(acc), [(0, _utils.matchLibraries)(node.func)]);
 		}
 		return acc;
 	}, [])));
 
 	var dockerfile = _generateDockerfile(libraries, req.config, req.body.manifest.name);
 	var flowscontent = new Buffer(JSON.stringify(req.body.flows, null, 4)).toString('base64');
-	var manifestcontent = new Buffer(JSON.stringify(_formatmanifest(req.body.manifest), null, 4)).toString('base64');
+	var manifestcontent = new Buffer(JSON.stringify(_formatmanifest(req.body.manifest, req.config, user), null, 4)).toString('base64');
 	var dockerfilecontent = new Buffer(dockerfile).toString('base64');
 
 	return _createCommit(req.config, user, repo, sha.flows, 'flows.json', flowscontent, message, user.accessToken).then(function (data) {
@@ -1714,12 +1884,297 @@ router.post('/repo/update', function (req, res) {
 	});
 });
 
-router.post('/publish', function (req, res) {
+var _manifestStoreExists = function _manifestStoreExists(API, user) {
+	return new Promise(function (resolve, reject) {
+		_superagent2.default.get(API + '/repos/' + user.username + '/databox-manifest-store').set('Accept', 'application/json').set('Authorization', 'token ' + user.accessToken).end(function (err, data) {
+
+			if (data.body && data.body.message && data.body.message === "Not Found") {
+				resolve(null);
+				return;
+			} else if (err) {
+				resolve(null);
+				return;
+			}
+			resolve(true);
+		});
+	});
+};
+
+var _createNewRepo = function _createNewRepo(options) {
+	var config = options.config,
+	    user = options.user,
+	    repo = options.repo,
+	    description = options.description,
+	    message = options.message,
+	    data = options.data;
+
+
+	return new Promise(function (resolve, reject) {
+
+		_superagent2.default.post(config.github.API + '/user/repos').send({
+			"name": repo,
+			"description": description,
+			"private": false,
+			"has_issues": false,
+			"has_wiki": false,
+			"has_downloads": false
+		}).set('Authorization', 'token ' + user.accessToken).set('Accept', 'application/json').end(function (err, data) {
+			if (err) {
+				console.log("--> failed to create repo!");
+				console.log(err);
+				reject(err);
+			} else {
+
+				var result = data.body;
+
+				//give github time it needs to set up repo
+
+				setTimeout(function () {
+					resolve({
+						name: result.name,
+						updated: result.updated_at,
+						icon: result.owner.avatar_url,
+						url: result.url
+					});
+				}, 2000);
+			}
+		});
+	}).then(function (repo) {
+		return _addFile({
+			config: config,
+			username: user.username,
+			repo: repo.name,
+			filename: data.name,
+			email: user.email || user.username + '@me-box.com',
+			message: message,
+			content: data.value,
+			accessToken: user.accessToken
+		});
+	});
+};
+
+var _fileExists = function () {
+	var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(config, user, filename) {
+		return _regenerator2.default.wrap(function _callee2$(_context2) {
+			while (1) {
+				switch (_context2.prev = _context2.next) {
+					case 0:
+						_context2.next = 2;
+						return _fetchFile(config, user.username, user.username, user.accessToken, "databox-manifest-store", filename).catch(function (err) {
+							return false;
+						});
+
+					case 2:
+						return _context2.abrupt('return', _context2.sent);
+
+					case 3:
+					case 'end':
+						return _context2.stop();
+				}
+			}
+		}, _callee2, undefined);
+	}));
+
+	return function _fileExists(_x6, _x7, _x8) {
+		return _ref2.apply(this, arguments);
+	};
+}();
+
+var _saveManifestToStore = function () {
+	var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(config, user, content, filename) {
+		var repo, file;
+		return _regenerator2.default.wrap(function _callee3$(_context3) {
+			while (1) {
+				switch (_context3.prev = _context3.next) {
+					case 0:
+						_context3.next = 2;
+						return _manifestStoreExists(config.github.API, user);
+
+					case 2:
+						repo = _context3.sent;
+
+						if (repo) {
+							_context3.next = 9;
+							break;
+						}
+
+						_context3.next = 6;
+						return _createNewRepo({ config: config, user: user, repo: "databox-manifest-store", description: "databox manifest store", message: "first commit", data: { name: filename, value: content } });
+
+					case 6:
+						return _context3.abrupt('return', _context3.sent);
+
+					case 9:
+						_context3.next = 11;
+						return _fileExists(config, user, filename);
+
+					case 11:
+						file = _context3.sent;
+
+						if (!file) {
+							_context3.next = 18;
+							break;
+						}
+
+						_context3.next = 15;
+						return _createCommit(config, user, "databox-manifest-store", file.sha, filename, content, "update commit", user.accessToken);
+
+					case 15:
+						return _context3.abrupt('return', _context3.sent);
+
+					case 18:
+						_context3.next = 20;
+						return _addFile({
+							config: config,
+							username: user.username,
+							repo: "databox-manifest-store",
+							filename: filename,
+							email: user.email || user.username + '@me-box.com',
+							message: "first commit",
+							content: content,
+							accessToken: user.accessToken
+						});
+
+					case 20:
+						return _context3.abrupt('return', _context3.sent);
+
+					case 21:
+					case 'end':
+						return _context3.stop();
+				}
+			}
+		}, _callee3, undefined);
+	}));
+
+	return function _saveManifestToStore(_x9, _x10, _x11, _x12) {
+		return _ref3.apply(this, arguments);
+	};
+}();
+
+router.post('/publish', function () {
+	var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(req, res) {
+		var user, repo, manifest, flows, commitmessage, libraries, dockerfile, flowcontent, manifestcontent, dockerfilecontent, message, flowcommit, dockercommit, manifestcommit, reponame, _manifestcontent, values;
+
+		return _regenerator2.default.wrap(function _callee4$(_context4) {
+			while (1) {
+				switch (_context4.prev = _context4.next) {
+					case 0:
+						user = req.user;
+						repo = req.body.repo;
+						manifest = (0, _extends3.default)({}, req.body.manifest, {
+							datasources: [].concat((0, _toConsumableArray3.default)(req.body.manifest.datasources), [{
+								type: "personalLoggerActuator",
+								required: false,
+								name: "personalLoggerActuator",
+								clientid: "personalLoggerActuator",
+								granularites: []
+							}])
+						});
+						flows = req.body.flows;
+						commitmessage = 'publish commit';
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: 'publishing manifest, ' + JSON.stringify(manifest, null, 4) });
+
+						//first save the manifest and flows file - either create new repo or commit changes	
+						libraries = (0, _utils.dedup)((0, _utils.flatten)(flows.reduce(function (acc, node) {
+							if (node.type === "dbfunction") {
+								acc = [].concat((0, _toConsumableArray3.default)(acc), [(0, _utils.matchLibraries)(node.func)]);
+							}
+							return acc;
+						}, [])));
+
+						//generate docker file
+
+						dockerfile = _generateDockerfile(libraries, req.config, manifest.name);
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: 'dockerfile, ' + dockerfile });
+
+						if (!(repo && repo.sha && repo.sha.flows && repo.sha.Dockerfile)) {
+							_context4.next = 29;
+							break;
+						}
+
+						//commit
+
+						(0, _websocket.sendmessage)(user.username, "debug", { msg: 'commiting changes' });
+						flowcontent = new Buffer(JSON.stringify(flows, null, 4)).toString('base64');
+						manifestcontent = new Buffer(JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4)).toString('base64');
+						dockerfilecontent = new Buffer(dockerfile).toString('base64');
+						message = commitmessage;
+						_context4.next = 17;
+						return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken);
+
+					case 17:
+						flowcommit = _context4.sent;
+						_context4.next = 20;
+						return _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken);
+
+					case 20:
+						dockercommit = _context4.sent;
+						_context4.next = 23;
+						return _saveManifestToStore(req.config, user, manifestcontent, repo.name + '-manifest.json');
+
+					case 23:
+						manifestcommit = _context4.sent;
+						_context4.next = 26;
+						return _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
+
+					case 26:
+						res.send({
+							result: 'success', repo: repo.name,
+							sha: {
+								flows: flowcommit.body.content.sha,
+								Dockerfile: dockercommit.body.content.sha
+							}
+						});
+
+						_context4.next = 39;
+						break;
+
+					case 29:
+						reponame = manifest.name.toLowerCase();
+						_manifestcontent = new Buffer(JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4)).toString('base64');
+						_context4.next = 33;
+						return _createRepo(req.config, user, reponame, manifest.description, flows, dockerfile, commitmessage, req.user.accessToken);
+
+					case 33:
+						values = _context4.sent;
+						_context4.next = 36;
+						return _saveManifestToStore(req.config, req.user, _manifestcontent, reponame + '-manifest.json');
+
+					case 36:
+						_context4.next = 38;
+						return _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
+
+					case 38:
+						res.send({
+							result: 'success',
+							repo: repo.name,
+							sha: {
+								flows: values[1].content.sha,
+								Dockerfile: values[2].content.sha
+							}
+						});
+
+					case 39:
+					case 'end':
+						return _context4.stop();
+				}
+			}
+		}, _callee4, undefined);
+	}));
+
+	return function (_x13, _x14) {
+		return _ref4.apply(this, arguments);
+	};
+}());
+
+router.post('/publishold', function (req, res) {
 
 	var user = req.user;
 	var repo = req.body.repo;
-	var manifest = _extends({}, req.body.manifest, {
-		datasources: [].concat(_toConsumableArray(req.body.manifest.datasources), [{
+	var manifest = (0, _extends3.default)({}, req.body.manifest, {
+		datasources: [].concat((0, _toConsumableArray3.default)(req.body.manifest.datasources), [{
 			type: "personalLoggerActuator",
 			required: false,
 			name: "personalLoggerActuator",
@@ -1739,7 +2194,7 @@ router.post('/publish', function (req, res) {
 	//first save the manifest and flows file - either create new repo or commit changes	
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(flows.reduce(function (acc, node) {
 		if (node.type === "dbfunction") {
-			acc = [].concat(_toConsumableArray(acc), [(0, _utils.matchLibraries)(node.func)]);
+			acc = [].concat((0, _toConsumableArray3.default)(acc), [(0, _utils.matchLibraries)(node.func)]);
 		}
 		return acc;
 	}, [])));
@@ -1759,7 +2214,6 @@ router.post('/publish', function (req, res) {
 		var message = commitmessage;
 
 		return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken).then(function (data) {
-
 			return Promise.all([Promise.resolve(data.body.content.sha), _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken)]);
 		}, function (err) {
 			(0, _websocket.sendmessage)(user.username, "debug", { msg: 'error commiting ' + JSON.stringify(err) });
@@ -1788,7 +2242,7 @@ router.post('/publish', function (req, res) {
 		var reponame = manifest.name.toLowerCase();
 		(0, _websocket.sendmessage)(user.username, "debug", { msg: 'creating a new repo ' + reponame });
 
-		return _createRepo(req.config, user, reponame, manifest.description, flows, manifest, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
+		return _createRepo(req.config, user, reponame, manifest.description, flows, dockerfile, commitmessage, req.user.accessToken).then(function (values) {
 			return Promise.all([Promise.resolve(values), _publish(req.config, user, manifest, JSON.stringify(flows), dockerfile)]);
 		}, function (err) {
 			console.log("error creating repo", err.response.text);
@@ -1813,64 +2267,68 @@ router.post('/publish', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = require("dockerode");
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = require("tar-stream");
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-//import net from 'net';
-//import JsonSocket from 'json-socket';
+var _toConsumableArray2 = __webpack_require__(5);
 
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _extends2 = __webpack_require__(2);
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _express = __webpack_require__(0);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _superagent = __webpack_require__(6);
+var _superagent = __webpack_require__(10);
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
-var _docker = __webpack_require__(4);
+var _docker = __webpack_require__(6);
 
 var _docker2 = _interopRequireDefault(_docker);
 
-var _stream = __webpack_require__(27);
+var _stream = __webpack_require__(31);
 
 var _stream2 = _interopRequireDefault(_stream);
 
-var _websocket = __webpack_require__(3);
+var _websocket = __webpack_require__(4);
 
-var _utils = __webpack_require__(8);
+var _utils = __webpack_require__(12);
 
-var _minimist = __webpack_require__(2);
+var _minimist = __webpack_require__(3);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var router = _express2.default.Router();
+//import net from 'net';
+//import JsonSocket from 'json-socket';
+
 
 var argv = (0, _minimist2.default)(process.argv.slice(2));
 var DEVMODE = argv.dev || false;
@@ -1888,7 +2346,7 @@ var _postFlows = function _postFlows(ip, port, data, username) {
 	var flows = data.map(function (node) {
 		var outputtypes = ["app", "debugger", "bulbsout", "plugout"];
 		var modifier = outputtypes.indexOf(node.type) != -1 ? { appId: username } : {}; //inject the appID
-		return _extends({}, node, modifier);
+		return (0, _extends3.default)({}, node, modifier);
 	});
 
 	return new Promise(function (resolve, reject) {
@@ -2047,7 +2505,7 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 		return 'RUN cd /data/nodes/databox && npm install --save ' + library;
 	});
 
-	var dcommands = ['FROM tlodge/databox-tester', 'ADD flows.json /data/flows.json'].concat(_toConsumableArray(libcommands));
+	var dcommands = ['FROM tlodge/databox-tester', 'ADD flows.json /data/flows.json'].concat((0, _toConsumableArray3.default)(libcommands));
 	var dockerfile = dcommands.join("\n");
 
 	console.log(dockerfile);
@@ -2206,7 +2664,7 @@ router.post('/flows', function (req, res) {
 
 	var libraries = (0, _utils.dedup)((0, _utils.flatten)(req.body.reduce(function (acc, node) {
 		if (node.type === "dbfunction") {
-			acc = [].concat(_toConsumableArray(acc), [(0, _utils.matchLibraries)(node.func)]);
+			acc = [].concat((0, _toConsumableArray3.default)(acc), [(0, _utils.matchLibraries)(node.func)]);
 		}
 		return acc;
 	}, [])));
@@ -2229,13 +2687,13 @@ router.post('/flows', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = require("stream");
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2291,7 +2749,7 @@ router.get('/:sensor', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2305,17 +2763,17 @@ var _fs = __webpack_require__(1);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _path = __webpack_require__(7);
+var _path = __webpack_require__(11);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _minimist = __webpack_require__(2);
+var _minimist = __webpack_require__(3);
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Promise = __webpack_require__(30);
+var Promise = __webpack_require__(34);
 Promise.promisifyAll(_fs2.default);
 var argv = (0, _minimist2.default)(process.argv.slice(2));
 var router = _express2.default.Router();
@@ -2430,13 +2888,13 @@ router.post('/image/add', function (req, res) {
 module.exports = router;
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports) {
 
 module.exports = require("bluebird");
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports) {
 
 module.exports = require("ejs");
