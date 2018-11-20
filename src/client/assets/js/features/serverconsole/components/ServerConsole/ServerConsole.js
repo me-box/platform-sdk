@@ -31,7 +31,7 @@ export default class ServerConsole extends Component {
 
 
 	renderMessages() {
-		console.log("ok have props", this.props);
+
 		const { serverconsole: { messages } } = this.props;
 		const _messages = messages.map((m, i) => {
 			return <li key={i}>

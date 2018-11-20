@@ -28,7 +28,7 @@ export function addViewProperties(node) {
 }
 
 export function convertNode(n, links = []) {
-    console.log("--> am in convert node!", n);
+
     var node = {};
     node.id = n.id;
     node.type = n.type;

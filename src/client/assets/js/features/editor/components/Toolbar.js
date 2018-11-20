@@ -20,7 +20,7 @@ export default class Toolbar extends Component {
 	//<Button flat label="logout" href="/auth/logout"/>,
 
 	render() {
-		console.log("in render toolbar");
+
 		const actions = [
 			<Risk />,
 			<Button flat label="clear" onClick={this.props.clear} />,

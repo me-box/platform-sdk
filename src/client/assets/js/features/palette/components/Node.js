@@ -52,7 +52,7 @@ class Node extends Component {
     }
 
     render() {
-        console.log("in render palette node!");
+
         const { isDragging, connectDragSource, nt, def } = this.props;
 
         const opacity = isDragging ? 0.4 : 1;

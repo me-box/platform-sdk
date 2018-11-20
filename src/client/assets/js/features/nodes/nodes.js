@@ -54,7 +54,7 @@ export default function reducer(state = initialState, action) {
   switch (action.type) {
 
     case nodeActionTypes.RECEIVE_FLOWS:
-      console.log("---> recieved flows", action.nodes);
+
       return {
         ...state,
         nodes: action.nodes.map((node) => node.id),
@@ -83,7 +83,7 @@ export default function reducer(state = initialState, action) {
       }
 
     case nodeActionTypes.NODE_MOUSE_DOWN:
-      console.log("SEEN NODE MOUSE DOWN!!!")
+
       return {
         ...state,
         draggingNode: action.id,
@@ -237,20 +237,26 @@ export default function reducer(state = initialState, action) {
 
     case nodeActionTypes.MOUSE_UP:
 
-      const { x = 0, y = 0 } = state.nodePos[state.draggingNode] || state.nodesById[state.draggingNode] || {};
-      return {
-        ...state,
-        draggingNode: null,
-        nodesById: {
-          ...state.nodesById,
-          [state.draggingNode]: { ...state.nodesById[state.draggingNode], x, y }
+      if (state.draggingNode) {
+        const { x = 0, y = 0 } = state.nodePos[state.draggingNode] || state.nodesById[state.draggingNode] || {};
+
+        return {
+          ...state,
+          draggingNode: null,
+          nodesById: {
+            ...state.nodesById,
+            [state.draggingNode]: { ...state.nodesById[state.draggingNode], x, y }
+          }
         }
       }
+
+      return state;
 
 
     case nodeActionTypes.MOUSE_MOVE:
 
       if (state.draggingNode != null) {
+
         return {
           ...state,
           nodePos: {

@@ -44,7 +44,7 @@ export default class ExampleManager extends Component {
 	}
 
 	render() {
-		console.log("in render examples");
+
 		const { examples, visible } = this.props;
 		const close = <Button icon onClick={this.props.actions.toggleVisible}>close</Button>;
 		let dialogue = null;

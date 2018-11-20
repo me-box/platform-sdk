@@ -132,7 +132,7 @@ const _payload = function (schema, id, selectedid) {
 export default class Schema extends Component {
 
 	render() {
-		console.log("in render schema");
+
 		const { schema = null, id = "", selectedid = "" } = this.props;
 
 		if (!schema || (Object.keys(schema).length === 0 && schema.constructor === Object))

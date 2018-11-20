@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux';
 export default class NetworkStatus extends Component {
 
 	render() {
-		console.log("in render net status");
+
 		const { network: { status } } = this.props;
 
 

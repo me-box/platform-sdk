@@ -170,7 +170,7 @@ export default class RepoManager extends Component {
 	}
 
 	render() {
-		console.log("in render repo manager");
+
 		const { repos: { repos, visible, savedialogue, saveasdialogue } } = this.props;
 		const { toggleSaveAsDialogue } = this.props.actions;
 		const close = <Button icon onClick={this.props.actions.toggleVisible}>close</Button>;

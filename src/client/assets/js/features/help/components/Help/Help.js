@@ -279,7 +279,7 @@ export default class Help extends Component {
 	}
 
 	onExit(e) {
-		console.log("MOUSE EXITED!!");
+
 	}
 
 	onDrag(e) {
@@ -295,7 +295,7 @@ export default class Help extends Component {
 	}
 
 	render() {
-		console.log("in render help");
+
 		const { visible, w, h, node } = this.props;
 		const { y = 0 } = node || {};
 
@@ -308,9 +308,6 @@ export default class Help extends Component {
 		const className = cx({
 			closed: !visible
 		});
-
-
-
 
 		return <div>
 			<div className="inner">

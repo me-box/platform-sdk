@@ -29,7 +29,7 @@ export default class Workspace extends React.Component {
 	}
 
 	render() {
-		console.log("in render workspace");
+
 		const { workspace: { currentId, tabs, tabsById } } = this.props;
 
 		const style = {

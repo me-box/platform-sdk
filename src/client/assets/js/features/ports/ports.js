@@ -39,6 +39,8 @@ const initialState = {
 
 const _updatedownstream = (id, dispatch, downstream, getState) => {
 
+
+
 	downstream.forEach((n) => {
 
 		const nodes = getState().nodes.nodesById;
@@ -186,6 +188,7 @@ export default function reducer(state = initialState, action) {
 
 			const privacy = action.node.schema && action.node.schema.output ? action.node.schema.output.ptype || [] : [];
 
+
 			return {
 				...state,
 				output: {
@@ -196,6 +199,19 @@ export default function reducer(state = initialState, action) {
 					},
 					sourcePort: action.portIndex,
 					portType: action.portType,
+				},
+				activeLink: {
+					//need a soruce port!
+
+					source: {
+						x: OUTPUT_WIDTH - 5,
+						y: -5,
+					},
+
+					target: {
+						x: OUTPUT_WIDTH - 5,
+						y: -5,
+					}
 				},
 				offset: { x: action.node.x + (action.node.w / 2), y: action.node.y },
 			};

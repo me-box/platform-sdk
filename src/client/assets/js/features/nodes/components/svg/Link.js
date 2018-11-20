@@ -21,10 +21,16 @@ const path = (source, sport, target) => {
         scale += 2 * (Math.min(outputradius * source.w, Math.abs(dx)) / (outputradius * source.w));
     }
 
+
+
+
+
     const x1 = source.x + (source.w / 2) + outputradius;
     const x2 = target.x - (target.w / 2) - outputradius;
     const y1 = source.y;
     const y2 = target.y;
+
+
 
     return `M ${x1} ${source.y + portY}`
         + `C ${x1 + (source.w * scale)} ${y1 + portY} `

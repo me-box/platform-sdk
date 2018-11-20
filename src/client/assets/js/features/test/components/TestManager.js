@@ -30,7 +30,7 @@ export default class TestManager extends Component {
 		//const { visible, testurl, username, deploying, deployError } = this.props;
 		//const nodes = [], error = [], warning = [];
 
-		console.log("in render test manager");
+
 
 		const iconstyle = {
 			alignSelf: 'center',

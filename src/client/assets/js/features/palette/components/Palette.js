@@ -31,7 +31,7 @@ export default class Palette extends Component {
     }
 
     render() {
-        console.log("in render palette");
+
         const { store } = this.context;
         const { palette: { categories, types } } = this.props;
 

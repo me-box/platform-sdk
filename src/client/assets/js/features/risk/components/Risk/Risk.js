@@ -84,7 +84,7 @@ export default class Risk extends Component {
   }
 
   render() {
-    console.log("in render risk");
+
     return <div id="risk">
       {this.renderIcons()}
       {this.state.visible && this.renderOverview()}
