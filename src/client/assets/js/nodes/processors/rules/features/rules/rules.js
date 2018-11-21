@@ -69,9 +69,29 @@ const  paths = (state, newProps)=>{
     return links;
 }
 
+const outputtypes = (state, newProps)=>{
+    const links = state.ports.links.reduce((acc, link)=>{
+        const [port, from, to] = link.split(":");
+        if (from===newProps.id){
+            const node = state.nodes.nodesById[to];
+            return [...acc, 
+                {
+                    id:node.id,
+                    name:node.name||node.type, 
+                    schema: (node.schema || {}).input || {},
+                }
+            ];
+        }
+        return acc;
+    },[]);
+
+    return links;
+}
+
 export const selector = createStructuredSelector({
     rules,
     paths,
+    outputtypes,
 });
 
 export const actionCreators = {
