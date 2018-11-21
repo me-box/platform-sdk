@@ -50,12 +50,17 @@ export default class RuleEditor extends Component {
       this.renderAttributeNames = this.renderAttributeNames.bind(this);
       this.renderOperators =  this.renderOperators.bind(this);
       this.renderOperand = this.renderOperand.bind(this);
-
+      this.renderOutpuType = this.renderOutputType.bind(this);
+      this.renderOutput = this.renderOutput.bind(this);
       //change handlers
       this.handleInputChange = this.handleInputChange.bind(this);
       this.handleAttributeChange = this.handleAttributeChange.bind(this);
       this.handleOperatorChange = this.handleOperatorChange.bind(this);
+      this.handleOutputTypeChange = this.handleOutputTypeChange.bind(this);
+     
+
       this.currenttype = this.currenttype.bind(this);
+      this.outputItems = this.outputItems.bind(this);
       this.state = {};
    }    
 
@@ -64,10 +69,7 @@ export default class RuleEditor extends Component {
     const input = this.state.input || paths[0].id;
     const items =  paths.find(p=>p.id===input).paths.map(p=>p.path.join("."))
     const attribute = this.state.attribute || items[0];
-
     const item =  paths.find(p=>p.id===input).paths.find(p=>p.path.join(".")==attribute);
-
-    console.log("Current type is", item.type);
     return item.type;
    }
 
@@ -81,6 +83,10 @@ export default class RuleEditor extends Component {
 
    handleOperatorChange(value){
     this.setState({operator: value})
+   }
+
+   handleOutputTypeChange(value){
+    this.setState({outputType: value})
    }
    
    renderInputNames(){
@@ -162,10 +168,49 @@ export default class RuleEditor extends Component {
       }
 
    }
+
+   outputItems(){
+    const {outputtypes=[]} = this.props;
+
+    return  [
+       {label:"output a string", value:"string"},
+       {label:"output a number", value:"number"}, 
+     ...outputtypes.map(o=>({
+       label: `output a ${o.name} object`, 
+       value:o.id
+     }))];
+   }
+
+   renderOutputType(){
+     const items = this.outputItems();
+
+    return <SelectField
+    id="outputtypes"
+    value = {this.state.outputType || items[0].value}
+    placeholder="operator"
+    className="md-cell"
+    position={SelectField.Positions.ABOVE}
+    menuItems={items}
+    simplifiedMenu={false}
+    onChange={this.handleOutputTypeChange}
+  />
+   }
+
+   renderOutput(){
+      const items = this.outputItems();
+      const value = this.state.outputType || items[0].value;
+
+      return <div>
+        {value}
+      </div>
+   }
+   
 // <Button flat onClick={(e)=>{this.props.actions.serRule("rule")}}>set rule!!</Button>
    render() {
-      const {paths} = this.props;
-      console.log("payts", paths);
+      const {outputtypes} = this.props;
+
+      console.log("have outpiut types", outputtypes);
+
       return (<div id="ruleeditor">
             <div className="container">
                 <div> when </div>
@@ -173,9 +218,11 @@ export default class RuleEditor extends Component {
                 <div> {this.renderAttributeNames()}</div>
                 <div> {this.renderOperators()} </div>
                 <div> {this.renderOperand()}</div>
-                <div> then output </div>
-              </div>
-               
-            </div>);
+                <div> {this.renderOutputType()}</div>
+            </div> 
+            <div className="output">
+              {this.renderOutput()}
+            </div>
+          </div>);
     }
 }
