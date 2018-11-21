@@ -1,0 +1,22 @@
+#ruleeditor{
+    padding: 20px;
+}
+#ruleeditor .container{
+    display: flex;
+    flex-direction: row;
+}
+
+#ruleeditor .container >div{
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    align-self: center;
+}
+
+#ruleeditor input[type="text"].md-text-field{
+    width: auto;
+}
+
+#ruleeditor .md-cell{
+    width: auto;
+}

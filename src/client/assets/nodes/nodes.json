@@ -73,6 +73,10 @@
 			"file": "processors/extract/index"
 		},
 		{
+			"name": "rules",
+			"file": "processors/rules/index"
+		},
+		{
 			"name": "chartify",
 			"file": "processors/chartify/index"
 		},
