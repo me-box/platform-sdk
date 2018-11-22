@@ -36,34 +36,12 @@
 			"name": "sensitive",
 			"file": "datastores/sensitive/index"
 		},
-		{
-			"name": "browsing",
-			"file": "datastores/browsing/index"
-		},
-		{
-			"name": "personalflow",
-			"file": "datastores/personalflow/index"
-		},
-		{
-			"name": "gender",
-			"file": "profilers/gender/index"
-		},
-		{
-			"name": "integrity",
-			"file": "profilers/integrity/index"
-		},
-		{
-			"name": "pregnant",
-			"file": "profilers/pregnant/index"
-		},
+		
 		{
 			"name": "dbfunction",
 			"file": "processors/function/index"
 		},
-		{
-			"name": "trigger",
-			"file": "processors/trigger/index"
-		},
+		
 		{
 			"name": "facedetect",
 			"file": "processors/facedetect/index"
@@ -71,6 +49,10 @@
 		{
 			"name": "extract",
 			"file": "processors/extract/index"
+		},
+		{
+			"name": "rules",
+			"file": "processors/rules/index"
 		},
 		{
 			"name": "chartify",

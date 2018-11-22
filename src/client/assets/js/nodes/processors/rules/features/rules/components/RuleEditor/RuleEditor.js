@@ -346,7 +346,7 @@ export default class RuleEditor extends Component {
           <TextField
             id="floating-center-title"
             lineDirection="center"
-            placeholder={value}
+            placeholder={`your output ${value}`}
             className="md-cell md-cell--bottom"
             onChange={(msg)=>this.handleMessageChange(rule, msg)}
           />
@@ -359,16 +359,19 @@ export default class RuleEditor extends Component {
      const style ={
         background: rule.ruleId % 2 === 0 ? "#f2f2f2": "white",
         marginBottom: 10,
-        border: "1px solid #b6b6b6"
+        borderTop: "1px solid #b6b6b6",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+
      }
 
     return <div style={style} key={rule.ruleId}>
       <div className="container">
-        <div> when </div>
+        <div className="rulelabel"> when </div>
         <div> {this.renderInputNames(rule)}</div>
         <div> {this.renderAttributeNames(rule)}</div>
         <div> {this.renderOperators(rule)} </div>
         <div> {this.renderOperand(rule)}</div>
+        <div className="rulelabel">then</div>
         <div> {this.renderOutputType(rule)}</div>
       </div> 
       <div className="output">
