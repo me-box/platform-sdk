@@ -57,7 +57,7 @@ const config = {
                 properties: {
                     type: { type: 'string', description: `one of either 'set-bulb-on', 'set-bulb-hue', 'set-bulb-brightness'`, enum: ["set-bulb-on", "set-bulb-hue", "set-bulb-brightness"] },
                     payload: {
-                        type: 'oneOf', description: `'type' dependent`, oneOf: _descriptions.map((item) => {
+                        type: 'oneOf', selector:"type", description: `'type' dependent`, oneOf: _descriptions.map((item) => {
                             return item;
                         })
                     }

@@ -15,8 +15,30 @@
 
 #ruleeditor input[type="text"].md-text-field{
     width: auto;
+    background: transparent;
 }
 
 #ruleeditor .md-cell{
     width: auto;
+}
+
+
+#ruleeditor .add{
+    font-size: 3em;
+    font-weight: 700;
+    text-align: center;
+}
+
+#ruleeditor .primitiveinput{
+   width: 300px;
+   display:flex;
+   flex: 1 0 auto;
+   justify-content: center;
+    align-self: center;
+}
+
+#ruleeditor .outputcentered{
+    display: flex;
+    flex-direction: column;
+    
 }

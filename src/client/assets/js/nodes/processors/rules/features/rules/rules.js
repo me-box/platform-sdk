@@ -2,21 +2,36 @@
 
 import { createStructuredSelector } from 'reselect';
 
-const SET_RULE= 'rules/rules/SET_RULE';
+const CREATE_RULE= 'rules/rules/CREATE_RULE';
+const UPDATE_RULE= 'rules/rules/UPDATE_RULE';
 
 // This will be used in our root reducer and selectors
 export const NAME = 'rules';
 
 const initialState = {
-    rules: [],
+    rules: [{}],
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
 
-    case SET_RULE:
-      return state;
-    
+    case CREATE_RULE:
+        return {
+          ...state,
+          rules: [...state.rules,{}],
+      }
+
+    case UPDATE_RULE:
+       return   { 
+            ...state,
+            rules: state.rules.map((r,i)=>{
+                if (i==action.rule.ruleId){
+                     return action.rule;
+                }
+                return r;
+            })
+        }
+
     default:
       return state;
   }
@@ -26,17 +41,28 @@ export default function reducer(state = initialState, action = {}) {
 // Action creators
 
 
-function setRule(id, rule){
+function createRule(id){
   return {
     id,
-    type: SET_RULE,
-    rule
+    type: CREATE_RULE,
   }
 }
 
-// Selectors
-const rules = (state) => state;
+function updateRule(id,rule){
+    return {
+        id,
+        type: UPDATE_RULE,
+        rule,
+    }
+}
 
+// Selectors
+const rules = (state, newProps) => {
+    if (newProps.id){
+        return (state[newProps.id].rules || {}).rules ||[];
+    }
+    return [];
+}
 const flatten = list => list.reduce(
     (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
 )
@@ -95,5 +121,6 @@ export const selector = createStructuredSelector({
 });
 
 export const actionCreators = {
-  setRule
+  updateRule,
+  createRule,
 };
