@@ -98,7 +98,7 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(nid="", node, inputs=[])=>{
+    schemafn:(nid="", node={}, inputs=[])=>{
         
 
      

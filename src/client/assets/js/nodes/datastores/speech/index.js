@@ -26,8 +26,8 @@ const config = {
         return this.name||this.topic||"speech";
     },
     
-    schemafn: (subtype)=>{
-        const type = subtype || "speech";
+    schemafn: (nid, node)=>{
+        const type = node.subtype || "speech";
     
 
         return {

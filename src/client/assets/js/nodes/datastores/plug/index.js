@@ -1,4 +1,5 @@
 import Node from "./node";
+import { compose } from "redux";
 
 
 const config = {
@@ -26,8 +27,11 @@ const config = {
         return this.name || this.topic || "plugin";
     },
 
-    schemafn: (subtype, id) => {
-        const type = subtype || "TP-PowerState";
+    schemafn: (nid,node={}) => {
+
+       
+
+        const type = node.subtype || "TP-PowerState";
 
         const privacy = (type) => {
             switch (type) {
@@ -143,6 +147,8 @@ const config = {
         }
 
         const payloads = (type) => {
+            
+         
 
             switch (type) {
 
@@ -172,6 +178,7 @@ const config = {
                         }
                     }
                 default:
+               
                     return {}
             }
         };
@@ -197,7 +204,7 @@ const config = {
                     }
                 },
                 ptype: {
-                    [id]: privacy(type)
+                    [nid]: privacy(type)
                 },
                 required: ["id", "type", "subtype", "payload"],
             }

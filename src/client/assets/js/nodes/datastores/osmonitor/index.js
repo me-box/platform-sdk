@@ -19,9 +19,9 @@ const config = {
   inputs: 0,
   outputs: 1,
 
-  schemafn: (subtype) => {
+  schemafn: (nid, node) => {
 
-    const type = subtype || "loadavg1";
+    const type = node.subtype || "loadavg1";
 
     const _descriptions = {
       loadavg1: "a load average value for the last minute",

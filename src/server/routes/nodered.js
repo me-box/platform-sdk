@@ -197,7 +197,7 @@ const _createNewImageAndContainer = function (libraries, username, flows) {
 	const path = `tmp-${username.toLowerCase()}.tar.gz`;
 
 	return _pullContainer("tlodge/databox-tester:latest", username).then(() => {
-		return stopAndRemoveContainer(`${username.toLowerCase()}-tester`)
+		return stopAndRemoveContainer(`${username.toLowerCase()}-red`)
 	}).then(() => {
 		return createTarFile(dockerfile, JSON.stringify(flows), path)
 	}).then((tarfile) => {

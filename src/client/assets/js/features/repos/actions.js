@@ -132,8 +132,6 @@ function extractPackages(state) {
 //since we know the input message from input node?
 function extractNodes(newNodesObj, lookuptype) {
 
-  console.log("extracting nodes", newNodesObj, lookuptype);
-
   var newNodes;
 
   if (typeof newNodesObj === "string") {
@@ -227,9 +225,6 @@ function extractNodes(newNodesObj, lookuptype) {
       }
 
       node_map[n.id] = node;
-
-      console.log("ok node is now", node);
-
       acc.push(node);
     }
     return acc;
@@ -570,7 +565,7 @@ function requestFlows() {
 }
 
 function receiveFlows(data, lookuptypes) {
-  console.log("IN RECEIEVE FLOWS!");
+ 
   const { nodes, links } = extractNodes(data, lookuptypes);
 
   return function (dispatch, getState) {

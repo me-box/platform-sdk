@@ -9,15 +9,15 @@ class Dialogue extends React.Component {
 	render() {
 
 		const dialoguestyle = {
-			position: 'relative',
+			position: "fixed",
 			width: `calc(100vw - ${198}px)`,
-			top: 10,
-			left: 10,
+			top: 70,
+			left: 184,
 			background: 'white',
 			boxShadow: '0 3px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.09)',
 			border: '1px solid #d3d3d3',
 		}
-
+		
 		const fullwidth = {
 			width: "100%",
 			height: "100%",

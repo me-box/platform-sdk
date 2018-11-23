@@ -7,12 +7,7 @@ const config = {
     color: '#3771C8',
     defaults: {
         name: { value: "" },
-        templatesById: { value: {} },
-        templates: { value: [] },
-        mappings: { value: [] },
-        transformers: { value: {} },
-        canvasdimensions: { value: null },
-        tree: { value: {} },
+        rules: { value: [] },
     },
 
     inputs: 1,
@@ -27,7 +22,7 @@ const config = {
         return this.name || "rules";
     },
 
-    schemafn: (value = "", id, inputs = []) => {
+    schemafn: (nid, node={}, inputs = []) => {
         return {
             input: {
                 type: "any",

@@ -607,7 +607,7 @@ router.get('/flow', function (req, res) {
 
 //create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new  flows.json / manifest.json file.
 
-router.post('/repo/new', function (req, res) {
+router.post('/repo/new', async function (req, res) {
 
 	var user = req.user;
 	var name = req.body.name.toLowerCase();
@@ -618,23 +618,24 @@ router.post('/repo/new', function (req, res) {
 	var commitmessage = req.body.message || "first commit";
 	const manifestfile = JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4);
 
-	return _createRepo(req.config, user, name, description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken).then(repo => {
-		console.log("successfully created repo", repo);
-		return repo;
-	}).then((values) => {
-		res.send({
-			result: 'success',
-			repo: values[0],
-			sha: {
-				flows: values[1].content.sha,
-				manifest: values[2].content.sha,
-				Dockerfile: values[3].content.sha,
-			}
-		});
-	}, (err) => {
-		console.log(err);
+	const values = await _createRepo(req.config, user, name, description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken).catch((err)=>{
 		res.status(500).send({ error: 'could not create files' });
+		return;
 	});
+
+
+	const reponame = manifest.name.toLowerCase();
+
+	res.send({
+				result: 'success', 
+				repo: reponame, 
+				sha: {
+					flows: values[0].content.sha,
+					manifest: values[1].content.sha,
+					Dockerfile: values[2].content.sha,
+				}
+			});
+
 });
 
 router.post('/repo/update', function (req, res) {

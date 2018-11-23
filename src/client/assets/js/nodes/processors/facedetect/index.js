@@ -47,7 +47,7 @@ const config = {
 
     //need input ptypes??  might be nice - so provide browsing, x,y,z
 
-    schemafn: (nid = "", node, inputs = []) => {
+    schemafn: (nid = "", node={}, inputs = []) => {
 
         return {
             output: {

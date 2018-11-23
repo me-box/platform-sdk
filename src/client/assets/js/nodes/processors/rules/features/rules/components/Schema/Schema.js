@@ -2,38 +2,13 @@ import React, { Component } from 'react';
 import Textfield from 'components/form/Textfield';
 import Select from 'components/form/Select';
 
-const _oneof = (schema, id, selectedid)=>{
-    
-	return schema.map((item, i)=>{
-	
-		let tail = null;
-	
-		if (item.type === "object"){
-			if (item.properties){
-				tail = "ob"//_oneofpayload(item, id, selectedid)
-			}
-		}
-		else if (item.type === "oneof"){
+const dwidth = "400";
 
-			if (item.oneOf){
-				tail = "oneof";//_oneof(item.oneOf, id, selectedid)
-			}
-		}
-		else{
-			//perhaps have a different format primitive for oneof items?
-			const style = {
-				background: '#2196F3',
-				border: 'none',
-				color: 'white',
-				fontWeight: 'normal'
-			}
-			tail = `if ${item.key}=${item.value}, ${item.description}` ;//_formatprimitive(item,`if ${item.key}=${item.value}`,id,selectedid, style);
-		}
-									
-		return 	<div key={i}>{tail}</div>
-	});
-};
-
+const extract = (msg, path) => {
+    return path.reduce((acc, item) => {
+        return acc[item];
+    }, msg)
+}
 
 export default class Schema extends React.Component {
 
@@ -44,16 +19,15 @@ export default class Schema extends React.Component {
         this.formatobject = this.formatobject.bind(this);
         this.formatoneof = this.formatoneof.bind(this);
         this.formatenum = this.formatenum.bind(this);
+        this.formatany = this.formatany.bind(this);
         this.updateMessage = this.updateMessage.bind(this);
         this.state = {};
     }
 
     updateMessage(property, value){
-        console.log("SEEN AN UPDATE MESSAGE!!!");
+       
         this.setState({[property]:value});
         this.props.onChange({...this.props.message, ...this.state, [property]:value});
-
-        console.log({...this.props.message, ...this.state, [property]:value});
     }
 
     payload(schema){
@@ -71,18 +45,59 @@ export default class Schema extends React.Component {
             if (type==="oneof"){
                 return this.formatoneof(item, key);
             }
+            if (type==="any"){
+                return this.formatany(item,key);
+            }
             return this.formatprimitive(item,key);
         });
     }
 
-    formatprimitive(item,key){
-        const {id, selectedid=""} = this.props;
+    formatany(item, key, attributestyle={}){
+
+        const {rule} = this.props;
+        const value = extract(rule.outputMessage, key.split(".")) || ""
+      
+        const anyprops = {
+            id: "any",
+            value,
+            onChange: (property, event) => {
+                this.updateMessage(property, event.target.value);
+            },
+        }
+        return <div key={key}>
+                    <div className="flexrow">
+                        <div className="attributetitle" style={attributestyle}>
+                            <div className="centered">
+                                <strong>{key}</strong>
+                            </div>
+                        </div>
+                        
+                         <div className="fixed" style={{borderRight: '1px solid #b6b6b6',  width:`${dwidth}`}}>
+                            <div className="schemadescription">
+                                <div dangerouslySetInnerHTML={{__html: item.description || ""}}></div>
+                            </div>
+                        </div>
+
+                         <div style={{borderRight: '1px solid #b6b6b6'}}>
+                            <div className="centered">
+                            <Textfield {...anyprops}/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    }
+
+    formatprimitive(item,key, attributestyle={}){
+        const {id, selectedid="", rule} = this.props;
+        const value = extract(rule.outputMessage, key.split(".")) || "";
+
         if (item.enum){
             return this.formatenum(item,key);
         }
     
-        const nameprops = {
-            id: "name",
+        const primitiveprops = {
+            id: "primitive",
+            value,
             onChange: (property, event) => {
                 this.updateMessage(property, event.target.value);
             },
@@ -97,14 +112,15 @@ export default class Schema extends React.Component {
                             </div>
                         </div>
                         
-                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:400}}>
+                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6',  width:`${dwidth}`}}>
                             <div className="schemadescription">
                                 <div dangerouslySetInnerHTML={{__html: (item.description || "").replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
                             </div>
                         </div>
-                        <div style={{borderRight: '1px solid #b6b6b6'}}>
+
+                         <div style={{borderRight: '1px solid #b6b6b6'}}>
                             <div className="centered">
-                            <Textfield {...nameprops}/>
+                            <Textfield {...primitiveprops}/>
                             </div>
                         </div>
                     </div>
@@ -112,12 +128,6 @@ export default class Schema extends React.Component {
     }
 
     formatobject(item,key){
-        const nameprops = {
-            id: "name",
-            onChange: (property, event) => {
-                this.updateMessage(property, event.target.value);
-            },
-        }
         return 	<div key={key}>
                     <div className="flexrow">
                     
@@ -126,14 +136,9 @@ export default class Schema extends React.Component {
                                 <strong>{key}</strong>
                             </div>
                         </div>
-                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6', width: 400}}>
+                        <div  style={{borderRight: '1px solid #b6b6b6'}}>
                             <div className="flexcolumn">
                                 {this.payload(item.properties)}
-                            </div>
-                        </div>
-                        <div style={{borderRight: '1px solid #b6b6b6'}}>
-                            <div className="centered">
-                                <Textfield {...nameprops}/>
                             </div>
                         </div>
                     </div>
@@ -141,11 +146,15 @@ export default class Schema extends React.Component {
     }
 
     formatoneof(item,key){
-        const selected = this.state[item.selector] || "";
+        const {rule} = this.props;
+        const selected =  rule.outputMessage[item.selector] || this.state[item.selector];
+        
         const currentItem = item.oneOf.find(i=>i.value===selected) || {};
+        const value = extract(rule.outputMessage, key.split(".")) || "";
 
-        const nameprops = {
+        const oneofprops = {
             id: key,
+            value,
             onChange: (property, event) => {
                 this.updateMessage(property, event.target.value);
             },
@@ -158,7 +167,7 @@ export default class Schema extends React.Component {
                                 <strong>{key}</strong>
                             </div>
                         </div>
-                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6', width: 400}}>
+                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:`${dwidth}`}}>
                             <div className="flexcolumn">
                             <div className="schemadescription">
                                  {currentItem.description}
@@ -168,7 +177,7 @@ export default class Schema extends React.Component {
                         <div style={{borderRight: '1px solid #b6b6b6'}}>
                             <div className="centered">
                            
-                                <Textfield {...nameprops}/>
+                                <Textfield {...oneofprops}/>
                             </div>
                         </div>
                     </div>
@@ -176,9 +185,12 @@ export default class Schema extends React.Component {
     }
 
     formatenum(item,key, attributestyle={}){
-        const {id, selectedid=""} = this.props;
+        const {id, selectedid="", rule} = this.props;
+        const value = extract(rule.outputMessage, key.split(".")) || item.enum[0];
+
         const selectprops = {
             id,
+            value,
             options: item.enum.map(e=>({name:e, value:e})),
             onSelect: (e) => {
                 this.updateMessage(key, e.target.value);
@@ -192,7 +204,7 @@ export default class Schema extends React.Component {
                             </div>
                         </div>
                         
-                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:400}}>
+                        <div className="fixed" style={{borderRight: '1px solid #b6b6b6', width:`${dwidth}`}}>
                             <div className="schemadescription">
                                 <div dangerouslySetInnerHTML={{__html: (item.description || "").replace("[id]", id).replace("[selectedid]", selectedid)}}></div>
                             </div>
@@ -208,7 +220,7 @@ export default class Schema extends React.Component {
 
 	render(){
 
-		const {schema, id, selectedid=""} = this.props;
+		const {schema} = this.props;
 
 		if (!schema || Object.keys(schema).length <= 0){ 
             return null;
@@ -229,7 +241,7 @@ export default class Schema extends React.Component {
 													attribute name
 												</div>
 											</div>
-                                            <div className="header fixed" style={{width:400}}>
+                                            <div className="header fixed" style={{width:`${dwidth}`}}>
 												<div className="centered">
 													description
 												</div>

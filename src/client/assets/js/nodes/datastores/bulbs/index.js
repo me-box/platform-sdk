@@ -27,8 +27,10 @@ const config = {
     },
 
 
-    schemafn: (subtype, id) => {
-        const type = subtype || "bulb-on";
+    schemafn: (nid,node={}) => {
+
+      
+        const type = node.subtype || "bulb-on";
 
         const personal = (type) => {
             switch (type) {
@@ -146,6 +148,7 @@ const config = {
         };
 
         const payloads = (type) => {
+           
 
             switch (type) {
 
@@ -257,7 +260,7 @@ const config = {
                         required: ["ts", "value"]
                     }
                 },
-                ptype: { [id]: personal(type) },
+                ptype: { [nid]: personal(type) },
                 required: ["id", "type", "subtype", "payload"],
             }
         }

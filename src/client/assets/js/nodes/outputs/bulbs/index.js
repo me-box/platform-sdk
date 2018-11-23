@@ -23,9 +23,9 @@ const config = {
         return this.name || this.topic || "bulbs-out";
     },
 
-    schemafn: (subtype) => {
+    schemafn: (nid, node={}) => {
 
-        const type = subtype || "bulb-on";
+        const type = node.subtype || "bulb-on";
 
         const _descriptions = [
             {

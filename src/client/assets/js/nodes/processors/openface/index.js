@@ -30,7 +30,7 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(filters)=>{
+    schemafn:()=>{
 
         return {
                     output: {

@@ -9,15 +9,10 @@ import { compose } from 'redux';
 
 @configNode()
 export default class Node extends Component {	
-	 
-
-  componentDidMount(){
-      const {dispatch, node:{id}, values={}} = this.props;     
-  }
-  
+     
   render() {
        
-      const {node:{id},values={},updateNode, inputs=[], store} = this.props;
+      const {node, node:{id},values={},updateNode, inputs=[], store} = this.props;
 
 
       const nameprops = {
@@ -39,7 +34,7 @@ export default class Node extends Component {
           			<Cells>	
           				<Cell title={"name"} content={nameinput}/>
           			</Cells>
-                   <RuleEditor id={id}/>
+                   <RuleEditor id={id} updateNode={updateNode} defaultrules={node.rules || []}/>
         	    </div>	
           
     }

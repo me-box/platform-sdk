@@ -26,7 +26,8 @@ const config = {
         return this.name || "personalFlow";
     },
 
-    schemafn: (subtype, id) => {
+    schemafn: (nid,node={}) => {
+
 
         return {
             output: {
@@ -47,7 +48,7 @@ const config = {
                     }
                 },
                 ptype: {
-                    [id]: []
+                    [nid]: []
                 },
                 required: ["id", "subtype", "payload"],
             }

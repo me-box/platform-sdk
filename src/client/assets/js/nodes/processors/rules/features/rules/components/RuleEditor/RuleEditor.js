@@ -26,6 +26,7 @@ const NUMBER_OPERATORS = [
 ]
 
 const TIME_OPERATORS = [
+  {label: "is same as", value: "same"},
   {label: "is earlier than", value: "earlier"},
   {label: "is later than", value: "later"},
   {label: "is between", value: "between"},
@@ -100,19 +101,30 @@ export default class RuleEditor extends Component {
       this.state = {};
    }    
 
+
+   componentDidMount(){
+     const {defaultrules} = this.props;
+     this.props.actions.setRules(this.props.id, defaultrules);
+   }
+  
+
    currenttype(rule={}){
-    const {paths} = this.props;
-    const input = rule.input || paths[0].id;
-    const items =  paths.find(p=>p.id===input).paths.map(p=>p.path.join("."))
+    const {paths=[]} = this.props;
+
+    const defaultinput = paths.length > 0 ? paths[0].id : "";
+
+    const input = rule.input || defaultinput;
+    
+    const items =  ((paths.find(p=>p.id===input) || {}).paths || []).map(p=>p.path.join("."))
 
     
     const attribute = rule.attribute || items[0];
-    const item =  paths.find(p=>p.id===input).paths.find(p=>p.path.join(".")==attribute);
-    return item.type;
+    const item =  ((paths.find(p=>p.id===input) || {}).paths ||[]).find(p=>p.path.join(".")==attribute);
+    return (item || {}).type || "";
    }
 
    updateRule(rule={}, property, value){
-    const {paths} = this.props;
+    const {paths, updateNode} = this.props;
     const input = rule.input || paths[0].id;
 
     const inputitems = paths.map(p=>p.id);
@@ -133,11 +145,11 @@ export default class RuleEditor extends Component {
         [property]: value, 
         
      }
-    this.props.actions.updateRule(this.props.id, _rule);
+    this.props.actions.updateRule(this.props.id, _rule, updateNode);
    }
 
    createRule(){
-     this.props.actions.createRule(this.props.id);
+     this.props.actions.createRule(this.props.id, this.props.updateNode);
    }
 
    handleInputChange(rule, value){
@@ -166,9 +178,10 @@ export default class RuleEditor extends Component {
     if (output && output.schema){
       const defaultobj = objectfromschema(output.schema);
       this.setState({outputMessage:defaultobj});
-      this.updateRule(rule, "outputMessage",defaultobj);
+      this.updateRule({...rule,outputType:value}, "outputMessage",defaultobj);
+    }else{
+      this.updateRule(rule, "outputType", value);
     }
-    this.updateRule(rule, "outputType", value);
    }
    
    handleMessageChange(rule,value){
@@ -177,11 +190,13 @@ export default class RuleEditor extends Component {
    }
 
    renderInputNames(rule){
-      const {paths} = this.props;
-      const items = paths.map(p=>({label:`${p.name}'s`, value: p.id}));
+      const {paths=[]} = this.props;
+      const items = paths.map(p=>({label:`${p.name}'s`, value: p.id})) || [];
+      const defaultitem = items.length> 0 ? items[0].value : "";
+
       return <SelectField
       id="inputnames"
-      value = {rule.input || items[0].value}
+      value = {rule.input || defaultitem}
       placeholder="input"
       className="md-cell"
       position={SelectField.Positions.ABOVE}
@@ -192,10 +207,11 @@ export default class RuleEditor extends Component {
     }
 
    renderAttributeNames(rule){
-    const {paths} = this.props;
+    const {paths=[]} = this.props;
     
-    const input = rule.input || paths[0].id;
-    const items =  paths.find(p=>p.id===input).paths.map(p=>p.path.join("."))
+    const defaultinput = paths.length > 0 ? paths[0].id : "";
+    const input = rule.input || defaultinput;
+    const items =  ((paths.find(p=>p.id===input)||{}).paths || []).map(p=>p.path.join("."))
     
     return <SelectField
     id="inputnames"
@@ -210,13 +226,15 @@ export default class RuleEditor extends Component {
    }
 
    renderOperators(rule){
+     
     const type = this.currenttype(rule);
    
     const items = _operandsForType[type] || [];
-   
+    const defaultoperator = items.length > 0 ? items[0].value : "";
+
     return <SelectField
     id="inputnames"
-    value = {rule.operator || items[0].value}
+    value = {rule.operator || defaultoperator}
     placeholder="operator"
     className="md-cell"
     position={SelectField.Positions.ABOVE}
@@ -229,8 +247,7 @@ export default class RuleEditor extends Component {
 
    renderOperand(rule){
       const type = this.currenttype(rule);
-      const items = _operandsForType[type] || [];
-      const operand = rule.operator || items[0].value;
+      const operand = rule.operand || "";
 
       switch (operand){
         
@@ -239,6 +256,7 @@ export default class RuleEditor extends Component {
         case "startswith":
         return <TextField
           id="floating-center-title"
+          value={operand}
           lineDirection="center"
           placeholder="a string"
           className="md-cell md-cell--bottom"
@@ -253,6 +271,7 @@ export default class RuleEditor extends Component {
         case "lte":
         return <TextField
           id="floating-center-title"
+          value={operand}
           lineDirection="center"
           placeholder="a number"
           className="md-cell md-cell--bottom"
@@ -262,6 +281,7 @@ export default class RuleEditor extends Component {
         case "range":
         return <TextField
           id="floating-center-title"
+          value={operand}
           lineDirection="center"
           placeholder="a range from:to"
           className="md-cell md-cell--bottom"
@@ -272,6 +292,7 @@ export default class RuleEditor extends Component {
         case "later":
         return <TextField
           id="floating-center-title"
+          value={operand}
           lineDirection="center"
           placeholder="a time hh-mm-ss"
           className="md-cell md-cell--bottom"
@@ -281,6 +302,7 @@ export default class RuleEditor extends Component {
         case "between":
         return <TextField
           id="floating-center-title"
+          value={operand}
           lineDirection="center"
           placeholder="a time range hh-mm-ss:hh:mm:ss"
           className="md-cell md-cell--bottom"
@@ -290,6 +312,7 @@ export default class RuleEditor extends Component {
         default: 
         return <TextField
           id="floating-center-title"
+          value={operand}
           lineDirection="center"
           placeholder=""
           className="md-cell md-cell--bottom"
@@ -312,8 +335,10 @@ export default class RuleEditor extends Component {
    }
 
    renderOutputType(rule){
-     const items = this.outputItems();
+   
 
+    const items = this.outputItems();
+    
     return <SelectField
     id="outputtypes"
     value = {rule.outputType || items[0].value}
@@ -327,17 +352,22 @@ export default class RuleEditor extends Component {
    }
 
    renderOutput(rule){
+
+      
+
       const {outputtypes=[]} = this.props;
       const items = this.outputItems();
       const value = rule.outputType || items[0].value;
-      const primitives = ["string", "number", "time"];
+      const primitives = ["string", "number", "time", "boolean"];
+
+      
 
       if (primitives.indexOf(value) === -1){
         const output = outputtypes.find(o=>o.id===value);
         const defaultobj = objectfromschema(output.schema);
-      
+     
         return <div>
-          <Schema schema={output.schema} message={defaultobj} id={output.id} selectedid={this.state.input} onChange={(msg)=>this.handleMessageChange(rule, msg)}/>
+          <Schema schema={output.schema} message={defaultobj} id={output.id} selectedid={this.state.input} rule={rule} onChange={(msg)=>this.handleMessageChange(rule, msg)}/>
         </div>
       }
 
@@ -356,6 +386,7 @@ export default class RuleEditor extends Component {
    }
 
    renderRule(rule){
+     const {id}=this.props;
      const style ={
         background: rule.ruleId % 2 === 0 ? "#f2f2f2": "white",
         marginBottom: 10,
@@ -365,6 +396,9 @@ export default class RuleEditor extends Component {
      }
 
     return <div style={style} key={rule.ruleId}>
+    {this.props.rules.length > 1 && <div onClick={(e)=>this.props.actions.deleteRule(id,rule.ruleId)} className="deleterule">
+        -
+      </div>}
       <div className="container">
         <div className="rulelabel"> when </div>
         <div> {this.renderInputNames(rule)}</div>
@@ -377,6 +411,7 @@ export default class RuleEditor extends Component {
       <div className="output">
         {this.renderOutput(rule)}
       </div>
+      
     </div>
    }
 
@@ -385,9 +420,6 @@ export default class RuleEditor extends Component {
    
   
       const {outputtypes, rules=[]} = this.props;
-
-      
-      console.log("have RULES", rules);
       
       const items = rules.map((r,i)=>this.renderRule({...r,ruleId:i}));
 

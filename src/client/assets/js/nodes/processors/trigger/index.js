@@ -27,7 +27,7 @@ const config = {
   },
 
 
-  schemafn: (value="", id, inputs=[]) => {
+  schemafn: (nid, node={}, inputs=[]) => {
 
     return { 
         output:{

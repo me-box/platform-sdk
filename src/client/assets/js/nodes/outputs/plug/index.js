@@ -24,7 +24,7 @@ const config = {
     return this.name || "plugout";
   },
 
-  schemafn: (subtype) => {
+  schemafn: () => {
     return {
       input: {
         type: "object",

@@ -55,9 +55,9 @@ const config = {
         }
     },
 
-    schemafn: (payload) => {
+    schemafn: (nid, node={}) => {
 
-        const subtype = payload || "date";
+        const subtype = node.payload || "date";
 
         const translate = {
             "num": { type: "numeric", description: 'a numeric value' },

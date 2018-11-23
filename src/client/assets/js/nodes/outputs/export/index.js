@@ -23,7 +23,7 @@ const config = {
         return this.name||this.topic||"export";
     },
     
-    schemafn: (subtype)=>{	
+    schemafn: ()=>{	
     
     	return {
 			input:{

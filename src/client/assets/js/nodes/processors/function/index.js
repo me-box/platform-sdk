@@ -34,7 +34,7 @@ const config = {
         return this.name?"node_label_italic":"";
     },
 
-    schemafn:(outputdef, id, inputs=[])=>{
+    schemafn:(nid, node={}, inputs=[])=>{
 
         //ptype coming in === ptype going out
         const ptype = extract_ptype_from_inputs(inputs);
@@ -42,7 +42,7 @@ const config = {
         let output = {};
 
         try{
-            output =  JSON.parse(outputdef)
+            output =  JSON.parse(node.outputdef)
         }
         catch(err){
 

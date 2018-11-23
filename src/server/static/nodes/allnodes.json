@@ -10,17 +10,25 @@
 				{"name":"bulbs-in", "file":"datastores/bulbs/node"},
 				{"name":"plugin", "file":"datastores/plug/node"},
 				{"name":"wirelessthings", "file":"datastores/wirelessthings/node"},
-				
+				{"name": "browsing", "file": "datastores/browsing/index"},
+				{"name": "personalflow","file": "datastores/personalflow/index"},
 			 	{"name":"function", "file":"processors/function/node"},
 				{"name":"listify", "file":"processors/listify/node"},
 			 	{"name":"chartify", "file":"processors/chartify/node"},
 			 	{"name":"webify", "file":"processors/webify/node"},
-			 	
+				 {"name": "trigger","file": "processors/trigger/index"},
+				 
+
 			 	{"name":"databoxapp", "file":"outputs/databoxapp/node"},
 			 	{"name":"debugger", "file":"debug/debugger/node"},
 			 	{"name":"pipstaprint", "file":"outputs/pipstaprint/node"},
 			 	{"name":"notify", "file":"outputs/notify/node"},
 			 	{"name":"bulbs-out", "file":"outputs/bulbs/node"},
-			 	{"name":"plugout", "file":"outputs/plug/node"}
+				 {"name":"plugout", "file":"outputs/plug/node"},
+				 
+				
+				{"name": "gender","file": "profilers/gender/index"},
+				{"name": "integrity","file": "profilers/integrity/index"},
+				{"name": "pregnant","file": "profilers/pregnant/index"}
 			 ]
 }

@@ -56,7 +56,7 @@ export default class Schema extends Component {
 
   	  render(){
           const {schema} = this.props;
-          console.log("in render schema with", schema);
+          
           
   	  		const key = "";
   	  		if (schema.type === "object"){

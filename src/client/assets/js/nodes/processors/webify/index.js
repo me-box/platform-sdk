@@ -27,7 +27,7 @@ const config = {
 		return this.name || "webify";
 	},
 
-	schemafn: (nid, node, inputs = []) => {
+	schemafn: (nid, node={}, inputs = []) => {
 
 
 		//whatever personal data comes in is emitted in some form in payload.values;

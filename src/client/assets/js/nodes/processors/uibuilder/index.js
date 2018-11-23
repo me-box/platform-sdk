@@ -27,7 +27,7 @@ const config = {
         return this.name || "uibuilder";
     },
 
-    schemafn: (value = "", id, inputs = []) => {
+    schemafn: (nid, node={}, inputs = []) => {
         return {
             input: {
                 type: "any",

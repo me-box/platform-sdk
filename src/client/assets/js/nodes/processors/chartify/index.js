@@ -62,9 +62,9 @@ const config = {
   },
 
 
-  schemafn: (chart, id, inputs = []) => {
+  schemafn: (nid, node, inputs = []) => {
 
-    const subtype = chart || "bar";
+    const subtype = node.chart || "bar";
     //ptype coming in === ptype going out
     const ptype = extract_ptype_from_inputs(inputs);
 

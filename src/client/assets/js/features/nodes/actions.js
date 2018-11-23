@@ -1,43 +1,28 @@
-import React from 'react';
-import { render } from 'react-dom';
 import { actionConstants as nodeActionTypes } from "./constants";
 import { NODE_WIDTH, MOUSE_X_OFFSET, MOUSE_Y_OFFSET } from 'constants/ViewConstants';
 import { getID, addViewProperties, lookup } from 'utils/nodeUtils';
-import { calculateTextWidth, toggleItem } from 'utils/utils';
 import { scopeify } from 'utils/scopeify';
 import { register, unregister, unregisterAll } from 'app/store/configureStore';
-import { downstreamnodes, fromnode, tonode } from "utils/tree";
+
 
 function loadNode({ component, node, reducer, schemas = {} }) {
-  console.log("|| AM IN LOAD NODE!!!", node);
-
+  
   return function (dispatch, getState) {
 
-
     const schema = schemas[node.id] || {};
-
     const _node = { ...node, schema, description: _description(node._def) };
-
-
-
     addViewProperties(_node);
-
-    console.log("**** created node", _node);
-
+  
     if (reducer) {
       register(_node.id, scopeify(_node.id, reducer));
     }
 
     dispatch({ type: nodeActionTypes.NODE_DROPPED, node: _node, config: { id: _node.id, fn: component } });
-
-
-
   };
 }
 
 function _schema(node, inputs) {
-  console.log("OK IN _SCGAME for node", node, "inoputs", inputs);
-
+  
   if (node._def.schemafn) {
     const current = Object.keys(node._def.defaults).reduce((acc, key) => {
       acc[key] = node[key];
@@ -54,7 +39,6 @@ function _description(def) {
   if (def.nodetype === "dbfunction") {
     JSON.stringify(def.defaults, null, 4);
   }
-
 
   if (def.descriptionfn) {
     return def.descriptionfn(def);
@@ -257,39 +241,36 @@ function receiveFlows(nodes, links) {
   return (dispatch, getState) => {
 
     const lookuptype = lookup.bind(null, getState().palette.types);
-
     const schemas = {};
 
     const tmpnodes = nodes.reduce((acc, n) => {
       return { ...acc, [n.id]: n }
     }, {});
 
-    console.log("----> tmp nodes are", tmpnodes);
-
     nodes.map(node => {
-      const inputs = links.filter((link) => {
+      
+      links.filter((link) => {
         return link.target.id === node.id;
       }).map((link) => {
         schemas[link.source.id] = resolve(link.source.id, tmpnodes, links, schemas);
       });
+      
+      links.filter((link) => {
+        return link.source.id === node.id;
+      }).map((link) => {
+        schemas[link.target.id] = {
+            ...(schemas[link.target.id] || {}),
+            ...resolve(link.target.id, tmpnodes, links, schemas)
+        }
+      });
     })
-
-    console.log("now resolved is", schemas);
 
     const _nodes = nodes.map((node) => {
       const { component, reducer } = lookuptype(node.type);
-
-      console.log("** LOADING NODE", node, "component", component);
       dispatch(loadNode({ component, node, reducer, schemas }));
     });
-    console.log("DISPATCHING RECEIEVE FLOWS///!");
-  };
 
-  return {
-    type: nodeActionTypes.RECEIVE_FLOWS,
-    nodes,
   };
-
 }
 
 

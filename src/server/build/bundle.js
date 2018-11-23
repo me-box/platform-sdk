@@ -1751,35 +1751,54 @@ router.get('/flow', function (req, res) {
 
 //create a new 'app' (i.e a github repo prefixed with 'databox.').  Will also create a new  flows.json / manifest.json file.
 
-router.post('/repo/new', function (req, res) {
+router.post('/repo/new', function () {
+	var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(req, res) {
+		var user, name, description, flows, manifest, dockerfile, commitmessage, manifestfile, values, reponame;
+		return _regenerator2.default.wrap(function _callee3$(_context3) {
+			while (1) {
+				switch (_context3.prev = _context3.next) {
+					case 0:
+						user = req.user;
+						name = req.body.name.toLowerCase();
+						description = req.body.description || "";
+						flows = req.body.flows || [];
+						manifest = req.body.manifest || {};
+						dockerfile = '# ' + name + ' Dockerfile';
+						commitmessage = req.body.message || "first commit";
+						manifestfile = JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4);
+						_context3.next = 10;
+						return _createRepo(req.config, user, name, description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken).catch(function (err) {
+							res.status(500).send({ error: 'could not create files' });
+							return;
+						});
 
-	var user = req.user;
-	var name = req.body.name.toLowerCase();
-	var description = req.body.description || "";
-	var flows = req.body.flows || [];
-	var manifest = req.body.manifest || {};
-	var dockerfile = '# ' + name + ' Dockerfile';
-	var commitmessage = req.body.message || "first commit";
-	var manifestfile = JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4);
+					case 10:
+						values = _context3.sent;
+						reponame = manifest.name.toLowerCase();
 
-	return _createRepo(req.config, user, name, description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken).then(function (repo) {
-		console.log("successfully created repo", repo);
-		return repo;
-	}).then(function (values) {
-		res.send({
-			result: 'success',
-			repo: values[0],
-			sha: {
-				flows: values[1].content.sha,
-				manifest: values[2].content.sha,
-				Dockerfile: values[3].content.sha
+
+						res.send({
+							result: 'success',
+							repo: reponame,
+							sha: {
+								flows: values[0].content.sha,
+								manifest: values[1].content.sha,
+								Dockerfile: values[2].content.sha
+							}
+						});
+
+					case 13:
+					case 'end':
+						return _context3.stop();
+				}
 			}
-		});
-	}, function (err) {
-		console.log(err);
-		res.status(500).send({ error: 'could not create files' });
-	});
-});
+		}, _callee3, this);
+	}));
+
+	return function (_x15, _x16) {
+		return _ref5.apply(this, arguments);
+	};
+}());
 
 router.post('/repo/update', function (req, res) {
 
@@ -1895,76 +1914,76 @@ var _createNewRepo = function _createNewRepo(options) {
 };
 
 var _fileExists = function () {
-	var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(config, user, filename) {
-		return _regenerator2.default.wrap(function _callee3$(_context3) {
-			while (1) {
-				switch (_context3.prev = _context3.next) {
-					case 0:
-						_context3.next = 2;
-						return _fetchFile(config, user.username, user.username, user.accessToken, "databox-manifest-store", filename).catch(function (err) {
-							return false;
-						});
-
-					case 2:
-						return _context3.abrupt('return', _context3.sent);
-
-					case 3:
-					case 'end':
-						return _context3.stop();
-				}
-			}
-		}, _callee3, undefined);
-	}));
-
-	return function _fileExists(_x15, _x16, _x17) {
-		return _ref5.apply(this, arguments);
-	};
-}();
-
-var _saveManifestToStore = function () {
-	var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(config, user, content, filename) {
-		var repo, file;
+	var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(config, user, filename) {
 		return _regenerator2.default.wrap(function _callee4$(_context4) {
 			while (1) {
 				switch (_context4.prev = _context4.next) {
 					case 0:
 						_context4.next = 2;
+						return _fetchFile(config, user.username, user.username, user.accessToken, "databox-manifest-store", filename).catch(function (err) {
+							return false;
+						});
+
+					case 2:
+						return _context4.abrupt('return', _context4.sent);
+
+					case 3:
+					case 'end':
+						return _context4.stop();
+				}
+			}
+		}, _callee4, undefined);
+	}));
+
+	return function _fileExists(_x17, _x18, _x19) {
+		return _ref6.apply(this, arguments);
+	};
+}();
+
+var _saveManifestToStore = function () {
+	var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(config, user, content, filename) {
+		var repo, file;
+		return _regenerator2.default.wrap(function _callee5$(_context5) {
+			while (1) {
+				switch (_context5.prev = _context5.next) {
+					case 0:
+						_context5.next = 2;
 						return _manifestStoreExists(config.github.API, user);
 
 					case 2:
-						repo = _context4.sent;
+						repo = _context5.sent;
 
 						if (repo) {
-							_context4.next = 9;
+							_context5.next = 9;
 							break;
 						}
 
-						_context4.next = 6;
+						_context5.next = 6;
 						return _createNewRepo({ config: config, user: user, repo: "databox-manifest-store", description: "databox manifest store", message: "first commit", data: { name: filename, value: content } });
 
 					case 6:
-						return _context4.abrupt('return', _context4.sent);
+						return _context5.abrupt('return', _context5.sent);
 
 					case 9:
-						_context4.next = 11;
+						_context5.next = 11;
 						return _fileExists(config, user, filename);
 
 					case 11:
-						file = _context4.sent;
+						file = _context5.sent;
 
 						if (!file) {
-							_context4.next = 18;
+							_context5.next = 18;
 							break;
 						}
 
-						_context4.next = 15;
+						_context5.next = 15;
 						return _createCommit(config, user, "databox-manifest-store", file.sha, filename, content, "update commit", user.accessToken);
 
 					case 15:
-						return _context4.abrupt('return', _context4.sent);
+						return _context5.abrupt('return', _context5.sent);
 
 					case 18:
-						_context4.next = 20;
+						_context5.next = 20;
 						return _addFile({
 							config: config,
 							username: user.username,
@@ -1977,28 +1996,28 @@ var _saveManifestToStore = function () {
 						});
 
 					case 20:
-						return _context4.abrupt('return', _context4.sent);
+						return _context5.abrupt('return', _context5.sent);
 
 					case 21:
 					case 'end':
-						return _context4.stop();
+						return _context5.stop();
 				}
 			}
-		}, _callee4, undefined);
+		}, _callee5, undefined);
 	}));
 
-	return function _saveManifestToStore(_x18, _x19, _x20, _x21) {
-		return _ref6.apply(this, arguments);
+	return function _saveManifestToStore(_x20, _x21, _x22, _x23) {
+		return _ref7.apply(this, arguments);
 	};
 }();
 
 router.post('/publish', function () {
-	var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(req, res) {
+	var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(req, res) {
 		var user, repo, manifest, flows, commitmessage, libraries, dockerfile, manifestfile, flowcontent, manifestcontent, dockerfilecontent, message, flowcommit, dockercommit, manifestcommit, storecommit, reponame, _manifestcontent, values;
 
-		return _regenerator2.default.wrap(function _callee5$(_context5) {
+		return _regenerator2.default.wrap(function _callee6$(_context6) {
 			while (1) {
-				switch (_context5.prev = _context5.next) {
+				switch (_context6.prev = _context6.next) {
 					case 0:
 						user = req.user;
 						repo = req.body.repo;
@@ -2036,7 +2055,7 @@ router.post('/publish', function () {
 						(0, _websocket.sendmessage)(user.username, "debug", { msg: 'dockerfile, ' + dockerfile });
 
 						if (!(repo && repo.sha && repo.sha.flows && repo.sha.Dockerfile)) {
-							_context5.next = 35;
+							_context6.next = 35;
 							break;
 						}
 
@@ -2047,27 +2066,27 @@ router.post('/publish', function () {
 						manifestcontent = new Buffer(manifestfile).toString('base64');
 						dockerfilecontent = new Buffer(dockerfile).toString('base64');
 						message = commitmessage;
-						_context5.next = 18;
+						_context6.next = 18;
 						return _createCommit(req.config, user, repo.name, repo.sha.flows, 'flows.json', flowcontent, message, req.user.accessToken);
 
 					case 18:
-						flowcommit = _context5.sent;
-						_context5.next = 21;
+						flowcommit = _context6.sent;
+						_context6.next = 21;
 						return _createCommit(req.config, user, repo.name, repo.sha.Dockerfile, 'Dockerfile', dockerfilecontent, message, req.user.accessToken);
 
 					case 21:
-						dockercommit = _context5.sent;
-						_context5.next = 24;
+						dockercommit = _context6.sent;
+						_context6.next = 24;
 						return _createCommit(req.config, user, repo.name, repo.sha.manifest, 'databox-manifest.json', manifestcontent, message, req.user.accessToken);
 
 					case 24:
-						manifestcommit = _context5.sent;
-						_context5.next = 27;
+						manifestcommit = _context6.sent;
+						_context6.next = 27;
 						return _saveManifestToStore(req.config, user, manifestcontent, repo.name + '-manifest.json');
 
 					case 27:
-						storecommit = _context5.sent;
-						_context5.next = 30;
+						storecommit = _context6.sent;
+						_context6.next = 30;
 						return _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
 
 					case 30:
@@ -2086,25 +2105,25 @@ router.post('/publish', function () {
 							}
 						});
 
-						_context5.next = 46;
+						_context6.next = 46;
 						break;
 
 					case 35:
 						reponame = manifest.name.toLowerCase();
 						_manifestcontent = new Buffer(JSON.stringify(_formatmanifest(manifest, req.config, user), null, 4)).toString('base64');
-						_context5.next = 39;
+						_context6.next = 39;
 						return _createRepo(req.config, user, reponame, manifest.description, flows, dockerfile, manifestfile, commitmessage, req.user.accessToken);
 
 					case 39:
-						values = _context5.sent;
+						values = _context6.sent;
 
 
 						console.log("ok values are", values);
-						_context5.next = 43;
+						_context6.next = 43;
 						return _saveManifestToStore(req.config, req.user, _manifestcontent, reponame + '-manifest.json');
 
 					case 43:
-						_context5.next = 45;
+						_context6.next = 45;
 						return _buildImage(req.config, user, manifest, JSON.stringify(flows), dockerfile);
 
 					case 45:
@@ -2120,14 +2139,14 @@ router.post('/publish', function () {
 
 					case 46:
 					case 'end':
-						return _context5.stop();
+						return _context6.stop();
 				}
 			}
-		}, _callee5, undefined);
+		}, _callee6, undefined);
 	}));
 
-	return function (_x22, _x23) {
-		return _ref7.apply(this, arguments);
+	return function (_x24, _x25) {
+		return _ref8.apply(this, arguments);
 	};
 }());
 
@@ -2380,7 +2399,7 @@ var _createNewImageAndContainer = function _createNewImageAndContainer(libraries
 	var path = 'tmp-' + username.toLowerCase() + '.tar.gz';
 
 	return _pullContainer("tlodge/databox-tester:latest", username).then(function () {
-		return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-tester');
+		return (0, _utils.stopAndRemoveContainer)(username.toLowerCase() + '-red');
 	}).then(function () {
 		return (0, _utils.createTarFile)(dockerfile, JSON.stringify(flows), path);
 	}).then(function (tarfile) {
